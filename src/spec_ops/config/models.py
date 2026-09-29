@@ -86,3 +86,7 @@ class SpecOpsConfig:
     @property
     def adr_dir(self) -> Path:
         return self.project_docs_dir / "adrs"
+
+    @property
+    def docs_dir(self) -> Path:
+        return (self.root_dir / "docs").resolve()

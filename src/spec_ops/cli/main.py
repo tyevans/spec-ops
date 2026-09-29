@@ -33,6 +33,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_init.add_argument("--name", help="Project name (defaults to directory name)")
     p_init.add_argument("--dir", default=".", help="Target directory (default: current directory)")
     p_init.add_argument("--profile", default="core,bdd,ddd", help="Comma-separated architectural profiles to install (default: core,bdd,ddd)")
+    p_init.add_argument("--diataxis", action="store_true", default=True, help="Scaffold Diataxis documentation structure (default: True)")
+    p_init.add_argument("--no-diataxis", dest="diataxis", action="store_false", help="Skip Diataxis documentation scaffolding")
+
+    # docs
+    p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")
+    docs_subs = p_docs.add_subparsers(dest="docs_action", help="Documentation action")
+    p_build = docs_subs.add_parser("build", help="Compile static HTML documentation site and living 2D visualizer")
+    p_build.add_argument("--out", help="Output directory for static site (default: site/)")
+    p_build.add_argument("--base-url", default="/spec-ops/", help="Base URL path for links (default: /spec-ops/)")
 
     # profiles
     p_prof = subparsers.add_parser("profiles", help="Inspect and list architectural profiles and baseline ADRs")
@@ -115,7 +124,7 @@ def main() -> int:
     if args.command == "init":
         target = Path(args.dir).resolve()
         profile_list = [p.strip() for p in args.profile.split(",") if p.strip()]
-        created = init_project(target, name=args.name, profiles=profile_list)
+        created = init_project(target, name=args.name, profiles=profile_list, diataxis=args.diataxis)
         print(f"✨ Initialized SpecOps in {target}")
         print(f"📋 Installed Profiles: {', '.join(profile_list)}")
         print(f"📁 Created {len(created)} file(s) and directory structures.")
@@ -123,6 +132,18 @@ def main() -> int:
         return 0
 
     config = load_config()
+
+    if args.command == "docs":
+        if args.docs_action == "build" or not args.docs_action:
+            from ..docs.builder import build_docs_site
+            out_dir = Path(args.out).resolve() if getattr(args, "out", None) else None
+            base_url = getattr(args, "base_url", "/spec-ops/")
+            site_dir = build_docs_site(config, out_dir=out_dir, base_url=base_url)
+            print(f"🎉 Compiled Diataxis documentation and living 2D visualizer to {site_dir}")
+            return 0
+        else:
+            parser.parse_args(["docs", "--help"])
+            return 0
 
     if args.command == "health":
         checker = HealthChecker(config)
@@ -296,9 +317,8 @@ def main() -> int:
         # Step 5: Visualizer & Docs build
         if getattr(args, "build_docs", False):
             print("📚 Compiling documentation and living 2D visualizer...")
-            build_script = config.root_dir / "scripts" / "build_docs.py"
-            if build_script.exists():
-                subprocess.run([sys.executable, str(build_script)], cwd=config.root_dir, check=False)
+            from ..docs.builder import build_docs_site
+            build_docs_site(config)
 
         print("\n🎉 Autonomous cycle completed cleanly.")
         return 0

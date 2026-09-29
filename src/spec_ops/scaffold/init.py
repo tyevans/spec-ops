@@ -151,12 +151,14 @@ Establish initial system architecture, core domain models, and blackbox test har
 from ..profiles.registry import resolve_adrs_for_profiles
 from .agents_md import generate_agents_md
 from .ci_workflow import generate_ci_workflow
+from .diataxis import scaffold_diataxis_docs
 
 
 def init_project(
     target_dir: Path,
     name: str | None = None,
     profiles: list[str] | None = None,
+    diataxis: bool = True,
 ) -> list[Path]:
     """Scaffolds the full SpecOps directory structure and starter files with baseline ADRs."""
     root = target_dir.resolve()
@@ -256,5 +258,10 @@ Establish initial system architecture, core domain models, and blackbox test har
             gitignore.write_text(existing.rstrip() + "\n" + "\n".join(to_add) + "\n", encoding="utf-8")
     else:
         _write(Path(".gitignore"), "\n".join(ignores))
+
+    # 8. Diataxis 4-quadrant documentation
+    if diataxis:
+        diataxis_files = scaffold_diataxis_docs(root, project_name, agents_md_content=agents_md)
+        created_files.extend(diataxis_files)
 
     return created_files

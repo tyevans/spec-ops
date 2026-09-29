@@ -45,6 +45,9 @@ def find_config_file(root_dir: Path | None = None) -> Path | None:
 
 
 def load_config(config_path: Path | None = None, root_dir: Path | None = None) -> SpecOpsConfig:
+    if config_path and config_path.is_dir():
+        root_dir = config_path
+        config_path = None
     effective_root = (root_dir or Path.cwd()).resolve()
     target_file = config_path or find_config_file(effective_root)
 
