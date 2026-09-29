@@ -74,95 +74,7 @@ GRAPH_JS = r"""
            (node.bc && node.bc.toLowerCase().includes(q));
   }
 
-  function computeFlowLayout() {
-    const colOrder = ["persona", "story", "prd", "task", "adr", "bc"];
-    const colWidth = Math.max(width, 1600) / (colOrder.length + 1);
-    const buckets = {};
-    colOrder.forEach(t => { buckets[t] = []; });
-    nodes.forEach(n => {
-      const b = buckets[n.type] || buckets["task"];
-      b.push(n);
-    });
-
-    colOrder.forEach((type, colIdx) => {
-      const arr = buckets[type];
-      const colX = colWidth * (colIdx + 0.85);
-      const totalH = Math.max(height - 180, arr.length * 52);
-      const step = totalH / Math.max(arr.length, 1);
-      arr.forEach((n, i) => {
-        n.x = colX + (Math.sin(i * 2) * 16);
-        n.y = 90 + (i + 0.5) * step;
-        n.vx = 0; n.vy = 0;
-      });
-    });
-  }
-
-  function computeRadialLayout() {
-    const rings = { persona: 160, prd: 300, story: 460, task: 650, adr: 840, bc: 1020 };
-    const buckets = {};
-    Object.keys(rings).forEach(t => { buckets[t] = []; });
-    nodes.forEach(n => {
-      const b = buckets[n.type] || buckets["task"];
-      b.push(n);
-    });
-
-    const cx = width / 2, cy = height / 2;
-    Object.keys(rings).forEach(type => {
-      const arr = buckets[type];
-      const r = rings[type];
-      arr.forEach((n, i) => {
-        const angle = (i / Math.max(arr.length, 1)) * 2 * Math.PI - Math.PI / 2;
-        n.x = cx + Math.cos(angle) * r;
-        n.y = cy + Math.sin(angle) * r;
-        n.vx = 0; n.vy = 0;
-      });
-    });
-  }
-
-  window.switchLayout = function(layout) {
-    currentLayout = layout;
-    ["network", "flow", "radial"].forEach(l => {
-      const btn = document.getElementById("btn-layout-" + l);
-      if (btn) {
-        if (l === layout) btn.classList.add("active");
-        else btn.classList.remove("active");
-      }
-    });
-
-    if (layout === "flow") {
-      isPhysicsRunning = false;
-      computeFlowLayout();
-    } else if (layout === "radial") {
-      isPhysicsRunning = false;
-      computeRadialLayout();
-    } else {
-      isPhysicsRunning = true;
-      nodes.forEach(n => {
-        n.vx += (Math.random() - 0.5) * 6;
-        n.vy += (Math.random() - 0.5) * 6;
-      });
-    }
-    updatePhysicsBtn();
-  };
-
-  window.togglePhysics = function() {
-    isPhysicsRunning = !isPhysicsRunning;
-    updatePhysicsBtn();
-  };
-
-  function updatePhysicsBtn() {
-    const btn = document.getElementById("btn-physics-toggle");
-    if (btn) btn.textContent = isPhysicsRunning ? "⏸️ Freeze" : "▶️ Run";
-  }
-
-  window.shufflePhysics = function() {
-    isPhysicsRunning = true;
-    updatePhysicsBtn();
-    nodes.forEach(n => {
-      n.vx += (Math.random() - 0.5) * 14;
-      n.vy += (Math.random() - 0.5) * 14;
-    });
-  };
+  let flowStages = [];
 
   function tick() {
     if (isPhysicsRunning && currentLayout === "network") {
@@ -212,6 +124,20 @@ GRAPH_JS = r"""
     ctx.save();
     ctx.translate(panX, panY);
     ctx.scale(zoom, zoom);
+
+    if (currentLayout === "flow" && flowStages && flowStages.length > 0) {
+      flowStages.forEach(st => {
+        const midX = (st.xMin + st.xMax) / 2;
+        ctx.textAlign = "center";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.font = "bold 10px ui-sans-serif, system-ui, sans-serif";
+        ctx.fillText(st.title, midX, st.yMin - 12);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.font = "9px ui-monospace, monospace";
+        ctx.fillText(st.count + (st.count === 1 ? " node" : " nodes"), midX, st.yMin);
+      });
+      ctx.textAlign = "left";
+    }
 
     if (currentLayout === "radial") {
       const cx = width / 2, cy = height / 2;
