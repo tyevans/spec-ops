@@ -1,20 +1,19 @@
 ---
 id: '0026'
 title: Hardened Worker Process Sandboxing and Network Egress Interceptor
-status: Proposed
-created: 2026-09-29
+status: Complete
 dependencies:
-  - TASK-0011
-  - TASK-0025
+- TASK-0011
+- TASK-0025
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0007
 governing_prds:
-  - PRD-0002
+- PRD-0002
 governing_stories:
-  - US-0054
-  - US-0109
+- US-0054
+- US-0109
 target_bc: security
 ---
 

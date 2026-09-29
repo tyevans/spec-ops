@@ -129,23 +129,62 @@ def is_destructive_rm(tokens: list[str]) -> bool:
     return False
 
 
-def extract_executables(cmd_str: str) -> list[tuple[str, list[str]]]:
-    """Extracts all executable binaries and their token lists from a command string.
+def is_index_in_single_quotes(cmd_str: str, index: int) -> bool:
+    """Returns True if character at index is inside single quotes '...'."""
+    in_single = False
+    in_double = False
+    escaped = False
+    for i, char in enumerate(cmd_str):
+        if i >= index:
+            break
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\" and not in_single:
+            escaped = True
+            continue
+        if char == "'" and not in_double:
+            in_single = not in_single
+            continue
+        if char == '"' and not in_single:
+            in_double = not in_double
+            continue
+    return in_single
 
-    Recursively inspects subshell substitutions ($(...), `...`), compound operators,
-    and shell wrapper invocations (bash -c, sh -c).
-    """
-    results: list[tuple[str, list[str]]] = []
+
+def is_index_escaped(cmd_str: str, index: int) -> bool:
+    """Returns True if character at index is preceded by an odd number of backslashes."""
+    count = 0
+    k = index - 1
+    while k >= 0 and cmd_str[k] == "\\":
+        count += 1
+        k -= 1
+    return count % 2 == 1
+
+
+def extract_executables_with_context(cmd_str: str) -> list[tuple[str, list[str], bool]]:
+    """Extracts executable binaries, token lists, and single-quote status from a command string."""
+    results: list[tuple[str, list[str], bool]] = []
 
     # 1. Extract embedded command substitutions $(...)
-    for sub in SUBSHELL_DOLLAR_RE.findall(cmd_str):
-        if sub.strip():
-            results.extend(extract_executables(sub.strip()))
+    for m in SUBSHELL_DOLLAR_RE.finditer(cmd_str):
+        if is_index_escaped(cmd_str, m.start()):
+            continue
+        sub = m.group(1).strip()
+        if sub:
+            quoted = is_index_in_single_quotes(cmd_str, m.start())
+            inner = extract_executables_with_context(sub)
+            results.extend([(b, t, quoted or q) for b, t, q in inner])
 
     # 2. Extract backtick substitutions `...`
-    for sub in SUBSHELL_BACKTICK_RE.findall(cmd_str):
-        if sub.strip():
-            results.extend(extract_executables(sub.strip()))
+    for m in SUBSHELL_BACKTICK_RE.finditer(cmd_str):
+        if is_index_escaped(cmd_str, m.start()):
+            continue
+        sub = m.group(1).strip()
+        if sub:
+            quoted = is_index_in_single_quotes(cmd_str, m.start())
+            inner = extract_executables_with_context(sub)
+            results.extend([(b, t, quoted or q) for b, t, q in inner])
 
     # 3. Clean subshell placeholders from the outer string to avoid re-parsing
     cleaned = SUBSHELL_DOLLAR_RE.sub(" ", cmd_str)
@@ -184,11 +223,21 @@ def extract_executables(cmd_str: str) -> list[tuple[str, list[str]]]:
                 c_idx = cmd_tokens.index("-c")
                 if c_idx + 1 < len(cmd_tokens):
                     sub_cmd = cmd_tokens[c_idx + 1]
-                    results.extend(extract_executables(sub_cmd))
+                    inner = extract_executables_with_context(sub_cmd)
+                    results.extend([(b, t, False) for b, t, _ in inner])
 
-        results.append((bin_name, cmd_tokens))
+        results.append((bin_name, cmd_tokens, False))
 
     return results
+
+
+def extract_executables(cmd_str: str) -> list[tuple[str, list[str]]]:
+    """Extracts all executable binaries and their token lists from a command string.
+
+    Recursively inspects subshell substitutions ($(...), `...`), compound operators,
+    and shell wrapper invocations (bash -c, sh -c).
+    """
+    return [(b, t) for b, t, _ in extract_executables_with_context(cmd_str)]
 
 
 def validate_command(
@@ -209,11 +258,11 @@ def validate_command(
     allowed = set(allowed_commands) if allowed_commands is not None else None
     prohibited = set(prohibited_commands or FORBIDDEN_UTILITIES)
 
-    executables = extract_executables(cmd_str)
+    executables = extract_executables_with_context(cmd_str)
     if not executables:
         return True, "No executable binaries found.", None
 
-    for bin_name, tokens in executables:
+    for bin_name, tokens, is_single_quoted in executables:
         # Check destructive commands (e.g. rm -rf /)
         if is_destructive_rm(tokens):
             return (
@@ -230,8 +279,8 @@ def validate_command(
                 bin_name,
             )
 
-        # Check allowlist if configured
-        if allowed is not None and bin_name not in allowed:
+        # Check allowlist if configured and command is not inside literal single quotes
+        if not is_single_quoted and allowed is not None and bin_name not in allowed:
             # Allow common harmless builtins/wrappers if they don't violate prohibitions
             harmless_builtins = {"echo", "true", "false", "exit", "test", "cd", "export", "set", "pwd"}
             if bin_name not in harmless_builtins:
@@ -242,6 +291,7 @@ def validate_command(
                 )
 
     return True, "Command is permissible.", None
+
 
 
 def resolve_audit_log_path(worktree_dir: Path | str) -> Path:

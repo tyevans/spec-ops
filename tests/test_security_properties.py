@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import json
 import shlex
+from pathlib import Path
 
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from spec_ops.security import (
     FORBIDDEN_UTILITIES,
+    ExecutionSandbox,
     extract_executables,
     is_loopback_address,
     validate_command,
@@ -118,3 +121,57 @@ def test_property_network_loopback_classification(ip):
     ip_str = str(ip)
     is_loop = is_loopback_address(ip_str)
     assert is_loop == (ip.is_loopback or ip_str == "0.0.0.0")
+
+
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+@given(
+    args=st.lists(
+        st.text(
+            alphabet=st.characters(blacklist_categories=("Cs",), blacklist_characters="\n\r\x00"),
+            min_size=0,
+            max_size=20,
+        ),
+        min_size=0,
+        max_size=5,
+    ),
+    unallowed_bin=st.sampled_from(["curl", "wget", "sudo", "unauthorized_tool", "evil_subshell"]),
+    chain_mode=st.sampled_from(["direct", "and", "semicolon", "pipe"]),
+)
+def test_property_non_allowlisted_command_terminates_with_126_and_audits(
+    tmp_path: Path, args: list[str], unallowed_bin: str, chain_mode: str
+):
+    """Invariant: Generative property testing using @given(st.lists(st.text())) verifies that any
+
+    command execution attempting non-allowlisted binaries consistently terminates with exit code 126
+    and writes an audit event, regardless of arguments or chaining.
+    """
+    sandbox = ExecutionSandbox(
+        worktree_dir=tmp_path,
+        allowed_commands=ALLOWED_BASELINE,
+        prohibited_commands=FORBIDDEN_UTILITIES,
+    )
+    arg_str = " ".join(shlex.quote(a) for a in args)
+    target_cmd = f"{unallowed_bin} {arg_str}".strip()
+
+    if chain_mode == "direct":
+        full_cmd = target_cmd
+    elif chain_mode == "and":
+        full_cmd = f"git status && {target_cmd}"
+    elif chain_mode == "semicolon":
+        full_cmd = f"git status; {target_cmd}"
+    else:
+        full_cmd = f"git status | {target_cmd}"
+
+    res = sandbox.run(full_cmd)
+    assert res.returncode == 126
+    assert "Command Prohibited" in res.stderr
+
+    log_path = tmp_path / ".security-audit.log"
+    assert log_path.is_file()
+    lines = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    assert len(lines) > 0
+    last_event = lines[-1]
+    assert last_event["exit_code"] == 126
+    assert last_event["event"] == "SECURITY_ALERT_COMMAND_PROHIBITED"
+    assert last_event["prohibited_binary"] == unallowed_bin
+

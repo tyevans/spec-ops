@@ -178,3 +178,15 @@ def test_cli_cycle_flags():
     assert "--skip-review" in res.stdout
 
 
+def test_cli_worker_execute_syntax(tmp_path: Path):
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "worker", "execute", "TASK-0099"],
+        cwd=str(tmp_path),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 1
+    assert "Task TASK-0099 not found" in res.stdout
+
+

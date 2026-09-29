@@ -209,8 +209,19 @@ def main() -> int:
         worker = BacklogWorkerEngine(config)
         queue = BacklogQueue(config.backlog_dir)
         target_task = None
-        if args.task:
-            clean_id = args.task.upper()
+        target_task_id = args.task
+        action_or_task = getattr(args, "action_or_task", None)
+        task_pos = getattr(args, "task_pos", None)
+        if action_or_task:
+            if action_or_task.lower() == "execute":
+                target_task_id = task_pos or target_task_id
+            else:
+                target_task_id = action_or_task or target_task_id
+        elif task_pos:
+            target_task_id = task_pos
+
+        if target_task_id:
+            clean_id = target_task_id.upper()
             if not clean_id.startswith("TASK-") and clean_id.isdigit():
                 clean_id = f"TASK-{clean_id.zfill(4)}"
             for t in queue.list_all_tasks():
@@ -218,7 +229,7 @@ def main() -> int:
                     target_task = t
                     break
             if not target_task:
-                print(f"❌ Task {args.task} not found in backlog.")
+                print(f"❌ Task {target_task_id} not found in backlog.")
                 return 1
         else:
             ready = queue.get_ready_unblocked_tasks()

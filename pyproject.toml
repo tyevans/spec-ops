@@ -41,6 +41,7 @@ only_mutate = [
     "src/spec_ops/prd/lifecycle.py*",
     "src/spec_ops/security/secrets/entropy.py*",
     "src/spec_ops/security/secrets/patterns.py*",
+    "src/spec_ops/security/interceptor.py*",
 ]
 pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
@@ -51,7 +52,11 @@ pytest_add_cli_args_test_selection = [
     "tests/test_prd_linter.py",
     "tests/test_prd_lifecycle.py",
     "tests/test_secrets_scanner.py",
+    "tests/test_worker_sandboxing.py",
+    "tests/test_security_properties.py",
+    "tests/test_bdd_sandbox_scenarios.py",
 ]
 runner = "pytest"
+
 
 

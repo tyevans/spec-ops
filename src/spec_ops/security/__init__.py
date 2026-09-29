@@ -7,12 +7,13 @@ from .interceptor import (
     FORBIDDEN_UTILITIES,
     create_interceptor_shims,
     extract_executables,
+    extract_executables_with_context,
     record_security_violation,
     resolve_audit_log_path,
     validate_command,
 )
 from .models import BenchmarkReport, BenchmarkResult, SecurityViolationEvent
-from .network import isolated_network, is_loopback_address
+from .network_guard import generate_network_isolation_sitecustomize, is_loopback_address, isolated_network
 from .sandbox import ExecutionSandbox
 
 __all__ = [
@@ -23,6 +24,8 @@ __all__ = [
     "SecurityViolationEvent",
     "create_interceptor_shims",
     "extract_executables",
+    "extract_executables_with_context",
+    "generate_network_isolation_sitecustomize",
     "is_loopback_address",
     "isolated_network",
     "record_security_violation",
@@ -30,4 +33,3 @@ __all__ = [
     "run_comparative_benchmark",
     "validate_command",
 ]
-

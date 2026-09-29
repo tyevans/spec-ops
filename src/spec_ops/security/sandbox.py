@@ -15,7 +15,7 @@ from .interceptor import (
     resolve_audit_log_path,
     validate_command,
 )
-from .network import generate_network_isolation_sitecustomize
+from .network_guard import generate_network_isolation_sitecustomize
 
 
 class ExecutionSandbox:

@@ -1,22 +1,21 @@
 ---
-id: '0038'
+id: 0038
 title: Zero-Dependency Local Web PRD Studio Architecture Spike
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0008
-  - TASK-0017
-  - TASK-0034
+- TASK-0008
+- TASK-0017
+- TASK-0034
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0003
+- PRD-0003
 target_bc: prd
 ---
 
