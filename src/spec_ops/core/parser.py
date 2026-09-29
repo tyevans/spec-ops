@@ -58,7 +58,36 @@ def parse_personas(persona_file: Path) -> list[Persona]:
         role_match = re.search(r"[—–-]\s*(.+)$", header)
         role = role_match.group(1).strip() if role_match else ""
         pid = name.lower().split()[0]
-        personas.append(Persona(id=pid, name=name, role=role))
+
+        pain_points = []
+        pain_match = re.search(r"- \*\*Pain Points\*\*:(.*?)(?=- \*\*|\Z)", sec, re.DOTALL)
+        if pain_match:
+            pain_points = [
+                re.sub(r"^\s*-\s*", "", l).strip()
+                for l in pain_match.group(1).splitlines()
+                if l.strip().startswith("-")
+            ]
+
+        goals = []
+        goal_match = re.search(r"- \*\*Goals.*?\*\*:(.*?)(?=- \*\*|\Z)", sec, re.DOTALL)
+        if goal_match:
+            goals = [
+                re.sub(r"^\s*-\s*", "", l).strip()
+                for l in goal_match.group(1).splitlines()
+                if l.strip().startswith("-")
+            ]
+
+        personas.append(
+            Persona(
+                id=pid,
+                name=name,
+                role=role,
+                pain_points=pain_points,
+                goals=goals,
+                raw_markdown=f"## {sec}",
+                file_path=persona_file,
+            )
+        )
     return personas
 
 
@@ -103,6 +132,11 @@ def parse_user_story(file_path: Path) -> UserStory:
     raw_id = str(meta.get("id", file_path.stem.split("-")[0]))
     cid = f"US-{raw_id.zfill(4)}" if raw_id.isdigit() else raw_id
     scenarios = re.findall(r"Scenario:\s*(.+)", content)
+
+    as_a_m = re.search(r"\*\*As an?\*\*\s*([^\n,]+)", content, re.IGNORECASE)
+    i_want_m = re.search(r"\*\*I want\*\*\s*([^\n,]+)", content, re.IGNORECASE)
+    so_that_m = re.search(r"\*\*So that\*\*\s*([^\n.]+)", content, re.IGNORECASE)
+
     return UserStory(
         id=cid,
         title=str(meta.get("title", file_path.stem)),
@@ -110,6 +144,9 @@ def parse_user_story(file_path: Path) -> UserStory:
         persona=str(meta.get("persona", "")),
         feature=str(meta.get("feature", "")),
         governing_prd=str(meta.get("governing_prd", "")),
+        as_a=as_a_m.group(1).strip() if as_a_m else "",
+        i_want=i_want_m.group(1).strip() if i_want_m else "",
+        so_that=so_that_m.group(1).strip() if so_that_m else "",
         scenarios=scenarios,
         raw_markdown=content,
         file_path=file_path,
@@ -128,10 +165,26 @@ def parse_prd(file_path: Path) -> PRD:
     implementing_tasks = [
         f"TASK-{m.zfill(4)}" for m in re.findall(r"TASK-(\d+)", content, re.IGNORECASE)
     ]
+
+    prob_m = re.search(r"## What the person cannot do today\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+    problem_statement = prob_m.group(1).strip() if prob_m else ""
+
+    outcomes = []
+    outcomes_m = re.search(r"## Checkable Outcomes\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+    if outcomes_m:
+        outcomes = [
+            re.sub(r"^\s*(?:\d+\.|\*|-)\s*", "", l).strip()
+            for l in outcomes_m.group(1).splitlines()
+            if l.strip() and (l.strip()[0].isdigit() or l.strip().startswith(("-", "*")))
+        ]
+
     return PRD(
         id=cid,
         title=str(meta.get("title", file_path.stem)),
         status=str(meta.get("status", "Accepted")),
+        target_persona=str(meta.get("target_persona", "")),
+        problem_statement=problem_statement,
+        outcomes=outcomes,
         linked_stories=list(dict.fromkeys(linked_stories)),
         implementing_tasks=list(dict.fromkeys(implementing_tasks)),
         raw_markdown=content,
@@ -146,10 +199,19 @@ def parse_adr(file_path: Path) -> ADR:
     raw_id = f"ADR-{num_match.group(1).zfill(4)}" if num_match else file_path.stem.upper()
     title_line = content.splitlines()[0] if content else file_path.stem
     clean_title = re.sub(r"^#\s*(ADR-\d+:\s*)?", "", title_line).strip()
+
+    ctx_m = re.search(r"## Context\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+    dec_m = re.search(r"## Decision\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+    con_m = re.search(r"## Consequences\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+
     return ADR(
         id=raw_id,
         title=clean_title,
         status="Accepted",
+        domain="Architecture",
+        context=ctx_m.group(1).strip() if ctx_m else "",
+        decision=dec_m.group(1).strip() if dec_m else "",
+        consequences=con_m.group(1).strip() if con_m else "",
         raw_markdown=content,
         file_path=file_path,
     )

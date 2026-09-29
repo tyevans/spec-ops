@@ -13,6 +13,15 @@ from ..core.parser import SpecOpsParser
 from .template import VISUALIZER_HTML_TEMPLATE
 
 
+def _rel_path(root: Path, file_path: Path | None) -> str:
+    if not file_path:
+        return ""
+    try:
+        return str(file_path.resolve().relative_to(root.resolve()))
+    except Exception:
+        return str(file_path)
+
+
 def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
     parser = SpecOpsParser(config.project_docs_dir)
     data = parser.parse_all()
@@ -25,6 +34,7 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
     for task in data.tasks:
         if task.canonical_id in git_map:
             commits, prs = git_map[task.canonical_id]
+            task.commits = commits
             task.prs = list(dict.fromkeys(task.prs + prs))
 
     graph = build_graph_data(data)
@@ -75,24 +85,91 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
                 "pr_url": t.pr_url,
                 "priority_rank": t.priority_rank,
                 "body": t.body,
+                "raw_markdown": t.raw_markdown,
+                "file_path": _rel_path(config.root_dir, t.file_path),
+                "commits": [
+                    {
+                        "hash": c.hash,
+                        "author": c.author,
+                        "date": c.date,
+                        "subject": c.subject,
+                        "prs": c.prs,
+                    }
+                    for c in t.commits
+                ],
             }
             for t in data.tasks
         ],
         "personas": [
-            {"id": p.id, "name": p.name, "role": p.role, "story_ids": p.story_ids}
+            {
+                "id": p.id,
+                "name": p.name,
+                "role": p.role,
+                "quote": p.quote,
+                "pain_points": p.pain_points,
+                "goals": p.goals,
+                "features": p.features,
+                "story_ids": p.story_ids,
+                "raw_markdown": p.raw_markdown,
+                "file_path": _rel_path(config.root_dir, p.file_path),
+            }
             for p in data.personas
         ],
         "stories": [
-            {"id": s.id, "title": s.title, "persona": s.persona, "governing_prd": s.governing_prd}
+            {
+                "id": s.id,
+                "title": s.title,
+                "status": s.status,
+                "persona": s.persona,
+                "feature": s.feature,
+                "governing_prd": s.governing_prd,
+                "as_a": s.as_a,
+                "i_want": s.i_want,
+                "so_that": s.so_that,
+                "scenarios": s.scenarios,
+                "implementing_tasks": s.implementing_tasks,
+                "raw_markdown": s.raw_markdown,
+                "file_path": _rel_path(config.root_dir, s.file_path),
+            }
             for s in data.stories
         ],
         "prds": [
-            {"id": p.id, "title": p.title, "status": p.status, "tasks": p.implementing_tasks}
+            {
+                "id": p.id,
+                "title": p.title,
+                "status": p.status,
+                "target_persona": p.target_persona,
+                "problem_statement": p.problem_statement,
+                "outcomes": p.outcomes,
+                "linked_stories": p.linked_stories,
+                "tasks": p.implementing_tasks,
+                "raw_markdown": p.raw_markdown,
+                "file_path": _rel_path(config.root_dir, p.file_path),
+            }
             for p in data.prds
         ],
         "adrs": [
-            {"id": a.id, "title": a.title, "domain": a.domain}
+            {
+                "id": a.id,
+                "title": a.title,
+                "status": a.status,
+                "domain": a.domain,
+                "context": a.context,
+                "decision": a.decision,
+                "consequences": a.consequences,
+                "implementing_tasks": a.implementing_tasks,
+                "raw_markdown": a.raw_markdown,
+                "file_path": _rel_path(config.root_dir, a.file_path),
+            }
             for a in data.adrs
+        ],
+        "bounded_contexts": [
+            {
+                "id": bc,
+                "title": f"Bounded Context: {bc}",
+                "tasks": [t.canonical_id for t in data.tasks if t.target_bc == bc],
+            }
+            for bc in sorted({t.target_bc for t in data.tasks if t.target_bc})
         ],
     }
 

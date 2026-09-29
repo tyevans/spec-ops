@@ -16,6 +16,9 @@ class Persona:
     goals: list[str] = field(default_factory=list)
     features: list[str] = field(default_factory=list)
     story_ids: list[str] = field(default_factory=list)
+    quote: str = ""
+    raw_markdown: str = ""
+    file_path: Path | None = None
 
 
 @dataclass
@@ -26,7 +29,11 @@ class UserStory:
     persona: str = ""
     feature: str = ""
     governing_prd: str = ""
+    as_a: str = ""
+    i_want: str = ""
+    so_that: str = ""
     scenarios: list[str] = field(default_factory=list)
+    implementing_tasks: list[str] = field(default_factory=list)
     raw_markdown: str = ""
     file_path: Path | None = None
 
@@ -37,6 +44,8 @@ class PRD:
     title: str
     status: str = "Accepted"
     target_persona: str = ""
+    problem_statement: str = ""
+    outcomes: list[str] = field(default_factory=list)
     linked_stories: list[str] = field(default_factory=list)
     implementing_tasks: list[str] = field(default_factory=list)
     raw_markdown: str = ""
@@ -62,6 +71,7 @@ class Task:
     body: str = ""
     raw_markdown: str = ""
     file_path: Path = field(default_factory=Path)
+    commits: list[CommitInfo] = field(default_factory=list)
 
     @property
     def canonical_id(self) -> str:
@@ -81,6 +91,10 @@ class ADR:
     title: str
     status: str = "Accepted"
     domain: str = ""
+    context: str = ""
+    decision: str = ""
+    consequences: str = ""
+    implementing_tasks: list[str] = field(default_factory=list)
     raw_markdown: str = ""
     file_path: Path | None = None
 

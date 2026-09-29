@@ -40,7 +40,7 @@ All project management specifications live under `docs/project/`:
 
 | Directory | Purpose |
 |---|---|
-| `docs/project/user_stories/PERSONAS.md` | Core user personas (Alex, Jordan, Morgan) |
+| `docs/project/user_stories/PERSONAS.md` | Core user personas (Alex, Jordan, Morgan, Riley, Taylor, Sasha) |
 | `docs/project/product/` | PRDs progressing from `idea/` to `accepted/` and `shipped/` |
 | `docs/project/user_stories/` | Gherkin user stories defining end-to-end user value |
 | `docs/project/adrs/` | Architectural Decision Records organized with `REGISTRY.md` |

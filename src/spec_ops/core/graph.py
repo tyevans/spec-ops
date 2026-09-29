@@ -50,22 +50,26 @@ def link_tasks_to_entities(data: ProjectData) -> None:
                 tasks[tid].governing_prds.append(prd.id)
 
     for t in data.tasks:
-        for prd_id in re.findall(r"PRD-\d+", t.raw_markdown, re.IGNORECASE):
+        for prd_id in re.findall(r"PRD-\d+", t.raw_markdown, re.IGNORECASE) + t.governing_prds:
             cid = f"PRD-{prd_id.split('-')[-1].zfill(4)}"
             if cid not in t.governing_prds:
                 t.governing_prds.append(cid)
             if cid in prds and t.canonical_id not in prds[cid].implementing_tasks:
                 prds[cid].implementing_tasks.append(t.canonical_id)
 
-        for us_id in re.findall(r"US-\d+", t.raw_markdown, re.IGNORECASE):
+        for us_id in re.findall(r"US-\d+", t.raw_markdown, re.IGNORECASE) + t.governing_stories:
             cid = f"US-{us_id.split('-')[-1].zfill(4)}"
             if cid not in t.governing_stories:
                 t.governing_stories.append(cid)
+            if cid in stories and t.canonical_id not in stories[cid].implementing_tasks:
+                stories[cid].implementing_tasks.append(t.canonical_id)
 
-        for adr_id in re.findall(r"ADR-\d+", t.raw_markdown, re.IGNORECASE):
+        for adr_id in re.findall(r"ADR-\d+", t.raw_markdown, re.IGNORECASE) + t.governing_adrs:
             cid = f"ADR-{adr_id.split('-')[-1].zfill(4)}"
             if cid not in t.governing_adrs:
                 t.governing_adrs.append(cid)
+            if cid in adrs and t.canonical_id not in adrs[cid].implementing_tasks:
+                adrs[cid].implementing_tasks.append(t.canonical_id)
 
 
 def link_stories_to_prds(data: ProjectData) -> None:
