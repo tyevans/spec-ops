@@ -17,6 +17,7 @@ from .models import (
     ExecutionSettings,
     ProjectSettings,
     QualitySettings,
+    SandboxSettings,
     SecuritySettings,
     SliceConfig,
     SpecOpsConfig,
@@ -116,6 +117,15 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
 
     # Parse execution
     exec_data = data.get("execution", {})
+    sb_data = exec_data.get("sandbox")
+    if sb_data is not None and isinstance(sb_data, dict):
+        sandbox = SandboxSettings(
+            enabled=sb_data.get("enabled", True),
+            allowed_commands=list(sb_data.get("allowed_commands", ["uv", "git", "pytest", "ruff"])),
+            isolate_network=sb_data.get("isolate_network", False),
+        )
+    else:
+        sandbox = SandboxSettings(enabled=False)
     execution = ExecutionSettings(
         agent_command=exec_data.get("agent_command", "agy -p '{prompt}'"),
         reviewer_command=exec_data.get("reviewer_command", ""),
@@ -124,6 +134,7 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
         backlog_isolation=exec_data.get("backlog_isolation", True),
         enable_review=exec_data.get("enable_review", True),
         target_agents=list(exec_data.get("target_agents", [])),
+        sandbox=sandbox,
     )
 
     # Parse security

@@ -27,7 +27,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0022 (Complete)**: [`0022-visualizer-tab-and-filter-url-state-synchronization`](complete/0022-visualizer-tab-and-filter-url-state-synchronization.md)
 - **TASK-0023 (Complete)**: [`0023-entity-permalinks-and-canvas-focal-targeting`](complete/0023-entity-permalinks-and-canvas-focal-targeting.md)
 - **TASK-0024 (Complete)**: [`0024-security-profile-and-constitution-guardrails`](complete/0024-security-profile-and-constitution-guardrails.md)
-- **TASK-0025 (Refined)**: [`0025-worker-process-sandboxing-architecture-spike`](refined/0025-worker-process-sandboxing-architecture-spike.md)
+- **TASK-0025 (Complete)**: [`0025-worker-process-sandboxing-architecture-spike`](complete/0025-worker-process-sandboxing-architecture-spike.md)
 - **TASK-0071 (Refined)**: [`0071-inference-driven-backlog-refinement-and-architectural-reconciliation`](refined/0071-inference-driven-backlog-refinement-and-architectural-reconciliation.md)
 - **TASK-0026 (Proposed)**: [`0026-worker-process-sandboxing-and-execution-interceptors`](proposed/0026-worker-process-sandboxing-and-execution-interceptors.md)
 - **TASK-0027 (Refined)**: [`0027-worktree-secret-and-credential-detection-engine`](refined/0027-worktree-secret-and-credential-detection-engine.md)

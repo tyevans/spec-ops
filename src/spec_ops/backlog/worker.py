@@ -43,6 +43,12 @@ class BacklogWorkerEngine:
             if (cwd / "uv.lock").exists() and "uv lock --check" not in commands:
                 commands.insert(0, "uv lock --check")
 
+        sandbox_config = getattr(self.config.execution, "sandbox", None)
+        if sandbox_config and getattr(sandbox_config, "isolate_network", False):
+            from ..security.sandbox import ExecutionSandbox
+            sandbox = ExecutionSandbox(worktree_dir=cwd, isolate_network=True)
+            return sandbox.run_preflight_suite(commands, cwd=cwd)
+
         logs: list[str] = []
         for cmd in commands:
             res = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
@@ -150,15 +156,31 @@ class BacklogWorkerEngine:
 
             continue_session = attempt > 1
             cmd = build_agent_cmd(cmd_template, current_prompt, prompt_file, continue_session=continue_session)
-            res = subprocess.run(cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
+            sandbox_config = getattr(self.config.execution, "sandbox", None)
+            if sandbox_config and getattr(sandbox_config, "enabled", True):
+                from ..security.sandbox import ExecutionSandbox
+                sandbox = ExecutionSandbox(
+                    worktree_dir=worktree_dir,
+                    allowed_commands=sandbox_config.allowed_commands,
+                    isolate_network=sandbox_config.isolate_network,
+                )
+                res = sandbox.run(cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
+            else:
+                res = subprocess.run(cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
 
             # If continuing session failed, retry attempt without -c
-            if res.returncode != 0 and continue_session and "-c" in cmd:
+            if res.returncode != 0 and continue_session and "-c" in cmd and res.returncode != 126:
                 fallback_cmd = build_agent_cmd(cmd_template, current_prompt, prompt_file, continue_session=False)
-                res = subprocess.run(fallback_cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
+                if sandbox_config and getattr(sandbox_config, "enabled", True):
+                    res = sandbox.run(fallback_cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
+                else:
+                    res = subprocess.run(fallback_cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
 
             if res.returncode != 0:
                 err_msg = res.stderr.strip() or res.stdout.strip() or f"process returned code {res.returncode}"
+                if res.returncode == 126:
+                    print(f"❌ Security violation: {err_msg[:300]}")
+                    return False, f"Command Prohibited (exit code 126): {err_msg}"
                 print(f"❌ Agent command returned code {res.returncode}: {err_msg[:300]}")
                 feedback = f"\n\n## Agent Execution Failure (Attempt {attempt})\n{err_msg}\nPlease resolve this failure."
                 current_prompt = prompt + feedback

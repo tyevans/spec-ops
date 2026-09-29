@@ -52,6 +52,13 @@ class QualitySettings:
 
 
 @dataclass
+class SandboxSettings:
+    enabled: bool = False
+    allowed_commands: list[str] = field(default_factory=lambda: ["uv", "git", "pytest", "ruff"])
+    isolate_network: bool = False
+
+
+@dataclass
 class ExecutionSettings:
     agent_command: str = "agy --dangerously-skip-permissions -p {prompt}"
     reviewer_command: str = ""
@@ -60,6 +67,7 @@ class ExecutionSettings:
     backlog_isolation: bool = True
     enable_review: bool = True
     target_agents: list[str] = field(default_factory=list)
+    sandbox: SandboxSettings = field(default_factory=SandboxSettings)
 
 
 @dataclass
