@@ -190,6 +190,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       <li><a href="/spec-ops/operating-manual.html">Operating Manual</a></li>
       <li><a href="/spec-ops/visualizer/">🌐 2D Graph Visualizer</a></li>
     </ul>
+    <h2>Architecture Treatise</h2>
+    <ul>
+      <li><a href="/spec-ops/delivering-real-value.html">🔥 Delivering Real Value</a></li>
+    </ul>
     <h2>Tutorials</h2>
     <ul>
       <li><a href="/spec-ops/tutorials/01-getting-started.html">Getting Started</a></li>
@@ -209,6 +213,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <ul>
       <li><a href="/spec-ops/explanation/project-management-as-code.html">Project Management as Code</a></li>
       <li><a href="/spec-ops/explanation/hard-invariants.html">Hard Invariants & Anti-Rot</a></li>
+      <li><a href="/spec-ops/explanation/delivering-integrated-value.html">Delivering Integrated Value</a></li>
     </ul>
   </nav>
   <main class="content">
@@ -247,6 +252,7 @@ def build_docs_site() -> None:
     # 4. Render markdown docs to HTML
     doc_sources = [
         (DOCS_DIR / "index.md", SITE_DIR / "index.html", "Welcome"),
+        (DOCS_DIR / "delivering-real-value.md", SITE_DIR / "delivering-real-value.html", "Delivering Real Integrated Value"),
         (DOCS_DIR / "operating-manual.md", SITE_DIR / "operating-manual.html", "Operating Manual"),
         (DOCS_DIR / "tutorials" / "01-getting-started.md", SITE_DIR / "tutorials" / "01-getting-started.html", "Getting Started"),
         (DOCS_DIR / "how-to" / "bootstrap-project.md", SITE_DIR / "how-to" / "bootstrap-project.html", "Bootstrap Project"),
@@ -256,6 +262,7 @@ def build_docs_site() -> None:
         (DOCS_DIR / "reference" / "baseline-adrs.md", SITE_DIR / "reference" / "baseline-adrs.html", "Baseline ADRs"),
         (DOCS_DIR / "explanation" / "project-management-as-code.md", SITE_DIR / "explanation" / "project-management-as-code.html", "Project Management as Code"),
         (DOCS_DIR / "explanation" / "hard-invariants.md", SITE_DIR / "explanation" / "hard-invariants.html", "Hard Invariants"),
+        (DOCS_DIR / "explanation" / "delivering-integrated-value.md", SITE_DIR / "explanation" / "delivering-integrated-value.html", "Delivering Integrated Value"),
     ]
 
     for src, dst, title in doc_sources:

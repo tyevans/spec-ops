@@ -6,6 +6,8 @@ SpecOps extracts the hard-won engineering disciplines, guardrails, and autonomou
 
 Rather than isolating requirements, tickets, and roadmaps in external SaaS silos (Jira, Linear, Notion), SpecOps treats project management as **machine-readable, version-controlled code** living directly within git alongside production source code.
 
+📖 **Architectural Treatise**: [Delivering Real Integrated Value: How SpecOps Eliminates Functional Silos and the "Mocked Perfection" Trap](docs/delivering-real-value.md)
+
 ---
 
 ## Why SpecOps? (The Core Philosophy)
