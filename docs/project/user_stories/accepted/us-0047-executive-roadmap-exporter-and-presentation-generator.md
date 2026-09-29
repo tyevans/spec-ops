@@ -5,13 +5,13 @@ status: Accepted
 created: 2026-09-29
 persona: Taylor (The Product Manager)
 feature: FEAT-MAP-01
-governing_prd: PRD-0001
+governing_prd: PRD-0003
 ---
 
 # US-0047 — Executive Roadmap Exporter and Zero-Overhead Presentation Generator
 
 ## Governing PRD
-- [`PRD-0001: SpecOps Autonomous Project Management Engine`](../../product/accepted/prd-0001-spec-ops-autonomous-project-management-engine.md)
+- [`PRD-0003: Product Discovery, Web PRD Studio & Living UAT Verification`](../../product/accepted/prd-0003-product-discovery-web-prd-studio-and-living-uat-verification.md)
 
 ## User Story
 

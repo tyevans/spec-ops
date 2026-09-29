@@ -5,13 +5,13 @@ status: Accepted
 created: 2026-09-29
 persona: Alex (The Agentic Systems Architect)
 feature: FEAT-SCH-01
-governing_prd: PRD-0001
+governing_prd: PRD-0005
 ---
 
 # US-0017 — Specification Frontmatter Schema Validation and Automated In-Place Migration
 
 ## Governing PRD
-- [`PRD-0001: SpecOps Autonomous Project Management Engine`](../../product/accepted/prd-0001-spec-ops-autonomous-project-management-engine.md)
+- [`PRD-0005: Relational Knowledge Graph, Architectural Profiles & Living Reporting`](../../product/accepted/prd-0005-relational-knowledge-graph-architectural-profiles-and-living-reporting.md)
 
 ## User Story
 
