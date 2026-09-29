@@ -18,5 +18,6 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
 | `spec-ops worker` | `[--task TASK_ID] [--dry-run] [--no-merge]` | Execute backlog task in isolated worktree |
 | `spec-ops cycle` | `[--max-tasks N] [--dry-run] [--no-merge] [--build-docs]` | Run end-to-end autonomous development cycle |
-| `spec-ops rescue` | `[TASK_ID] [--list] [--complete] [--discard]` | Inspect and recover stalled or failed autonomous worktrees |
+| `spec-ops rescue` | `[TASK_ID] [--list] [--complete] [--discard] [--prune]` | Inspect and recover stalled or failed autonomous worktrees |
+| `spec-ops tui` | `[--once] [--view {overview,backlog,tree,health}]` | Launch interactive Terminal UI (TUI) dashboard |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL]` | Compile Diataxis documentation static site and embedded 2D visualizer |

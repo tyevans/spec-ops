@@ -89,3 +89,15 @@ def test_cli_rescue(tmp_path: Path):
     assert res_prune.returncode == 0
     assert "Pruned and cleaned up" in res_prune.stdout
 
+
+def test_cli_tui_once():
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "tui", "--once", "--view", "overview"],
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0
+    assert "SpecOps TUI" in res.stdout
+    assert "Backlog Management" in res.stdout
+
+
