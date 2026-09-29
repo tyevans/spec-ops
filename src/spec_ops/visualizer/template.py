@@ -99,6 +99,7 @@ _BASE_SHELL = """<!DOCTYPE html>
             <span>File:</span>
             <span class="filepath-text" id="drawer-filepath-text">docs/project/...</span>
             <button class="copy-btn" id="drawer-copy-btn" onclick="copyFilePath()">📋 Copy Path</button>
+            <button class="copy-btn" id="drawer-permalink-btn" onclick="copyDeepLink()">🔗 Copy Deep Link</button>
           </div>
         </div>
         <button class="close-btn" onclick="closeDrawer()">&times;</button>

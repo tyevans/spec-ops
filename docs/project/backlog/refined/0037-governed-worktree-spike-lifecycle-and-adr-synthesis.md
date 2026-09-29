@@ -1,24 +1,23 @@
 ---
 id: '0037'
 title: Governed Worktree Spike Lifecycle and Empirical ADR Synthesis
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0002
-  - TASK-0011
+- TASK-0002
+- TASK-0011
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0003
+- PRD-0003
 governing_stories:
-  - US-0097
-  - US-0098
+- US-0097
+- US-0098
 target_bc: prd
 ---
 

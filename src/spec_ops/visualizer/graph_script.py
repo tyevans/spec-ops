@@ -26,6 +26,25 @@ GRAPH_JS = r"""
   let isPanning = false, panStartX = 0, panStartY = 0;
   let draggedNode = null;
   let searchQuery = "";
+  let focusedNodeId = null;
+  let targetPanX = null;
+  let targetPanY = null;
+
+  window.focusNode = function(nodeId) {
+    if (!nodeId) {
+      focusedNodeId = null;
+      targetPanX = null;
+      targetPanY = null;
+      return;
+    }
+    const cleanId = String(nodeId).toUpperCase();
+    const target = nodes.find(n => n.id.toUpperCase() === cleanId || n.id.replace("TASK-", "") === cleanId.replace("TASK-", ""));
+    if (target) {
+      focusedNodeId = target.id;
+      targetPanX = width / 2 - target.x * zoom;
+      targetPanY = height / 2 - target.y * zoom;
+    }
+  };
 
   function resize() {
     width = canvas.width = canvas.clientWidth;
@@ -120,6 +139,17 @@ GRAPH_JS = r"""
       });
     }
 
+    if (targetPanX !== null && targetPanY !== null) {
+      panX += (targetPanX - panX) * 0.15;
+      panY += (targetPanY - panY) * 0.15;
+      if (Math.hypot(targetPanX - panX, targetPanY - panY) < 1) {
+        panX = targetPanX;
+        panY = targetPanY;
+        targetPanX = null;
+        targetPanY = null;
+      }
+    }
+
     ctx.clearRect(0, 0, width, height);
     ctx.save();
     ctx.translate(panX, panY);
@@ -175,6 +205,19 @@ GRAPH_JS = r"""
       ctx.fill();
       ctx.shadowBlur = 0;
 
+      if (focusedNodeId && (n.id === focusedNodeId || n.id.toUpperCase() === focusedNodeId.toUpperCase())) {
+        const pulse = Math.sin(Date.now() / 200) * 4;
+        ctx.save();
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 3;
+        ctx.shadowColor = "#38bdf8";
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius + 8 + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "10px ui-monospace, SFMono-Regular, Menlo, monospace";
       ctx.fillText(n.id, n.x + n.radius + 4, n.y + 3);
@@ -191,6 +234,8 @@ GRAPH_JS = r"""
   }
 
   canvas.addEventListener("mousedown", e => {
+    targetPanX = null;
+    targetPanY = null;
     const rect = canvas.getBoundingClientRect();
     const sx = e.clientX - rect.left, sy = e.clientY - rect.top;
     const { x, y } = screenToWorld(sx, sy);
@@ -240,5 +285,11 @@ GRAPH_JS = r"""
 
   document.getElementById("search-input").addEventListener("input", e => {
     searchQuery = e.target.value.trim();
+    if (typeof filterState !== "undefined") {
+      filterState.query = searchQuery;
+    }
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(false);
+    }
   });
 """

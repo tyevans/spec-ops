@@ -1,7 +1,7 @@
 ---
 id: '0022'
 title: Visualizer Tab and Filter URL State Synchronization
-status: Refined
+status: Complete
 dependencies:
 - TASK-0017
 governing_adrs:

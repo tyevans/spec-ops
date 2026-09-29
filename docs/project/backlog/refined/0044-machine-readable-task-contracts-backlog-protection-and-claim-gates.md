@@ -1,25 +1,25 @@
 ---
 id: '0044'
-title: Machine-Readable Task Contracts, Backlog Protection Guardrails, and Autonomous Claim Gates
-status: Proposed
-created: 2026-09-29
+title: Machine-Readable Task Contracts, Backlog Protection Guardrails, and Autonomous
+  Claim Gates
+status: Refined
 dependencies:
-  - TASK-0007
-  - TASK-0011
+- TASK-0007
+- TASK-0011
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0006
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0006
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0027
-  - US-0030
-  - US-0031
+- US-0027
+- US-0030
+- US-0031
 target_bc: worker
 ---
 

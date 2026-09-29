@@ -38,7 +38,7 @@ VIEWS_JS = r"""
     groupBy: "release",
   };
 
-  window.switchTab = function(tabName) {
+  function internalSwitchTab(tabName) {
     activeTab = tabName;
     document.querySelectorAll(".tab-btn").forEach(btn => {
       if (btn.dataset.tab === tabName) btn.classList.add("active");
@@ -59,11 +59,27 @@ VIEWS_JS = r"""
       if (graphControls) graphControls.style.display = "none";
       renderActiveView();
     }
+  }
+
+  window.switchTab = function(tabName) {
+    if (tabName === activeTab) return;
+    internalSwitchTab(tabName);
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(true);
+    }
   };
 
   window.setFilter = function(key, val) {
     filterState[key] = val;
+    if (key === "query") {
+      searchQuery = String(val).trim();
+      const si = document.getElementById("search-input");
+      if (si && si.value !== val) si.value = val;
+    }
     renderActiveView();
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(false);
+    }
   };
 
   window.filterByLinked = function(id, targetTab) {
@@ -72,12 +88,18 @@ VIEWS_JS = r"""
       window.switchTab(targetTab);
     } else {
       renderActiveView();
+      if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+        updateUrl(false);
+      }
     }
   };
 
   window.clearLinkedFilter = function() {
     filterState.linked = null;
     renderActiveView();
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(false);
+    }
   };
 
   function getFilteredTasks() {

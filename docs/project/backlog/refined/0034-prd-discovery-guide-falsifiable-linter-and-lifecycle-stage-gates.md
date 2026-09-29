@@ -1,24 +1,24 @@
 ---
 id: '0034'
-title: PRD Discovery Guide, Falsifiable Markdown Linter, and Lifecycle Stage-Gate Engine
-status: Proposed
-created: 2026-09-29
+title: PRD Discovery Guide, Falsifiable Markdown Linter, and Lifecycle Stage-Gate
+  Engine
+status: Refined
 dependencies:
-  - TASK-0003
-  - TASK-0006
+- TASK-0003
+- TASK-0006
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0003
+- PRD-0003
 governing_stories:
-  - US-0044
-  - US-0099
+- US-0044
+- US-0099
 target_bc: prd
 ---
 

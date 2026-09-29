@@ -5,7 +5,7 @@ DRAWER_JS = r"""
 
   function renderMarkdown(md) {
     if (!md) return "";
-    let html = md
+    return md
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/```([a-z]*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
       .replace(/`([^`]+)`/g, "<code>$1</code>")
@@ -18,7 +18,6 @@ DRAWER_JS = r"""
       .replace(/^\s*-\s+(.*$)/gim, "<li>$1</li>")
       .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
       .replace(/\n\n+/g, "<p></p>");
-    return html;
   }
 
   function findEntity(id) {
@@ -45,14 +44,7 @@ DRAWER_JS = r"""
   }
 
   function pill(id, type) {
-    const cls = {
-      task: "pill-task",
-      adr: "pill-adr",
-      story: "pill-story",
-      prd: "pill-prd",
-      persona: "pill-persona",
-      bc: "pill-bc"
-    }[type] || "pill-task";
+    const cls = { task: "pill-task", adr: "pill-adr", story: "pill-story", prd: "pill-prd", persona: "pill-persona", bc: "pill-bc" }[type] || "pill-task";
     return `<button class="entity-pill ${cls}" onclick="openDrawer('${id}')">${id}</button>`;
   }
 
@@ -60,7 +52,6 @@ DRAWER_JS = r"""
     const statusBg = t.status === "Complete" ? "rgba(16,185,129,0.2); color:#6ee7b7; border-color:rgba(16,185,129,0.4)"
       : (t.status === "Refined" ? "rgba(245,158,11,0.2); color:#fcd34d; border-color:rgba(245,158,11,0.4)"
       : "rgba(139,92,246,0.2); color:#c4b5fd; border-color:rgba(139,92,246,0.4)");
-
     const commits = t.commits || [];
     const prs = t.prs || [];
 
@@ -73,57 +64,22 @@ DRAWER_JS = r"""
           ${t.priority_rank < 900000 ? `<span class="entity-pill" style="color:#94a3b8">Rank #${t.priority_rank}</span>` : ""}
         </div>
       </div>
-
       <div class="card-box">
-        <div class="card-box-title">
-          <span>Git Commits & Pull Requests</span>
-          <span>${commits.length} commits / ${prs.length} PRs</span>
-        </div>
-        ${prs.length > 0 ? `
-          <div class="pills-container">
-            <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;">Pull Requests:</span>
-            ${prs.map(p => `<span class="entity-pill pill-story">🔀 ${p}</span>`).join("")}
-          </div>` : ""}
-        ${commits.length > 0 ? `
-          <div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto;">
-            ${commits.map(c => `
-              <div class="commit-row">
-                <div class="commit-meta">
-                  <span class="commit-hash">${c.hash}</span>
-                  <span class="commit-date">${c.date} by ${c.author}</span>
-                </div>
-                <div class="commit-subject">${c.subject}</div>
-              </div>`).join("")}
-          </div>` : `
-          <p style="font-size:0.76rem; color:var(--text-muted); font-style:italic;">No linked git commits detected. Commits referencing <code>task-XXXX</code> or frontmatter <code>prs:</code> link automatically.</p>`}
+        <div class="card-box-title"><span>Git Commits & Pull Requests</span><span>${commits.length} commits / ${prs.length} PRs</span></div>
+        ${prs.length > 0 ? `<div class="pills-container"><span style="font-size:0.75rem; color:var(--text-muted); align-self:center;">Pull Requests:</span>${prs.map(p => `<span class="entity-pill pill-story">🔀 ${p}</span>`).join("")}</div>` : ""}
+        ${commits.length > 0 ? `<div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto;">${commits.map(c => `
+          <div class="commit-row"><div class="commit-meta"><span class="commit-hash">${c.hash}</span><span class="commit-date">${c.date} by ${c.author}</span></div><div class="commit-subject">${c.subject}</div></div>`).join("")}</div>` : `<p style="font-size:0.76rem; color:var(--text-muted); font-style:italic;">No linked git commits detected. Commits referencing <code>task-XXXX</code> or frontmatter <code>prs:</code> link automatically.</p>`}
       </div>
-
       <div class="card-box">
         <div class="card-box-title">Traceability & Governance</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.78rem;">
-          <div>
-            <div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing ADRs:</div>
-            <div class="pills-container">${t.governing_adrs && t.governing_adrs.length ? t.governing_adrs.map(a => pill(a, "adr")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
-          </div>
-          <div>
-            <div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Dependencies:</div>
-            <div class="pills-container">${t.dependencies && t.dependencies.length ? t.dependencies.map(d => pill(d, "task")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
-          </div>
-          <div>
-            <div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing Stories:</div>
-            <div class="pills-container">${t.governing_stories && t.governing_stories.length ? t.governing_stories.map(s => pill(s, "story")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
-          </div>
-          <div>
-            <div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing PRDs:</div>
-            <div class="pills-container">${t.governing_prds && t.governing_prds.length ? t.governing_prds.map(p => pill(p, "prd")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
-          </div>
+          <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing ADRs:</div><div class="pills-container">${t.governing_adrs && t.governing_adrs.length ? t.governing_adrs.map(a => pill(a, "adr")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
+          <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Dependencies:</div><div class="pills-container">${t.dependencies && t.dependencies.length ? t.dependencies.map(d => pill(d, "task")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
+          <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing Stories:</div><div class="pills-container">${t.governing_stories && t.governing_stories.length ? t.governing_stories.map(s => pill(s, "story")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
+          <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing PRDs:</div><div class="pills-container">${t.governing_prds && t.governing_prds.length ? t.governing_prds.map(p => pill(p, "prd")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
         </div>
       </div>
-
-      <div class="card-box">
-        <div class="card-box-title">Specification Content</div>
-        <div class="markdown-box">${renderMarkdown(t.body || t.raw_markdown)}</div>
-      </div>
+      <div class="card-box"><div class="card-box-title">Specification Content</div><div class="markdown-box">${renderMarkdown(t.body || t.raw_markdown)}</div></div>
     `;
   }
 
@@ -135,7 +91,6 @@ DRAWER_JS = r"""
           ${s.governing_prd ? `<span class="entity-pill pill-prd" onclick="openDrawer('${s.governing_prd}')">PRD: ${s.governing_prd}</span>` : ""}
         </div>
       </div>
-
       ${(s.as_a || s.i_want || s.so_that) ? `
         <div class="card-box">
           <div class="card-box-title">User Value Proposition</div>
@@ -145,29 +100,19 @@ DRAWER_JS = r"""
             ${s.so_that ? `<div><strong style="color:#67e8f9">So that:</strong> ${s.so_that}</div>` : ""}
           </div>
         </div>` : ""}
-
       ${(s.scenarios && s.scenarios.length > 0) ? `
         <div class="card-box">
           <div class="card-box-title">Acceptance Criteria (BDD Scenarios)</div>
           <div style="display:flex; flex-direction:column; gap:6px;">
             ${s.scenarios.map(sc => `
               <div style="background:rgba(15,23,42,0.6); border:1px solid var(--border-subtle); border-radius:6px; padding:8px 10px; font-size:0.8rem; display:flex; gap:8px; align-items:flex-start;">
-                <span style="color:#10b981; font-weight:bold;">✓</span>
-                <span style="color:#e2e8f0;">${sc}</span>
+                <span style="color:#10b981; font-weight:bold;">✓</span><span style="color:#e2e8f0;">${sc}</span>
               </div>`).join("")}
           </div>
         </div>` : ""}
-
       ${(s.implementing_tasks && s.implementing_tasks.length > 0) ? `
-        <div class="card-box">
-          <div class="card-box-title">Implementing Backlog Tasks</div>
-          <div class="pills-container">${s.implementing_tasks.map(t => pill(t, "task")).join("")}</div>
-        </div>` : ""}
-
-      <div class="card-box">
-        <div class="card-box-title">Full Specification Markdown</div>
-        <div class="markdown-box">${renderMarkdown(s.raw_markdown)}</div>
-      </div>
+        <div class="card-box"><div class="card-box-title">Implementing Backlog Tasks</div><div class="pills-container">${s.implementing_tasks.map(t => pill(t, "task")).join("")}</div></div>` : ""}
+      <div class="card-box"><div class="card-box-title">Full Specification Markdown</div><div class="markdown-box">${renderMarkdown(s.raw_markdown)}</div></div>
     `;
   }
 
@@ -179,43 +124,25 @@ DRAWER_JS = r"""
           ${p.target_persona ? `<span class="entity-pill pill-persona" onclick="openDrawer('${p.target_persona}')">Target: ${p.target_persona}</span>` : ""}
         </div>
       </div>
-
-      ${p.problem_statement ? `
-        <div class="card-box">
-          <div class="card-box-title" style="color:#fda4af">Problem Statement</div>
-          <div class="markdown-box">${renderMarkdown(p.problem_statement)}</div>
-        </div>` : ""}
-
+      ${p.problem_statement ? `<div class="card-box"><div class="card-box-title" style="color:#fda4af">Problem Statement</div><div class="markdown-box">${renderMarkdown(p.problem_statement)}</div></div>` : ""}
       ${(p.outcomes && p.outcomes.length > 0) ? `
         <div class="card-box">
           <div class="card-box-title">Checkable Outcomes</div>
           <div style="display:flex; flex-direction:column; gap:6px;">
             ${p.outcomes.map(o => `
               <div style="background:rgba(15,23,42,0.6); border:1px solid var(--border-subtle); border-radius:6px; padding:8px 10px; font-size:0.8rem; display:flex; gap:8px;">
-                <span style="color:#f43f5e; font-weight:bold;">•</span>
-                <span style="color:#e2e8f0;">${o}</span>
+                <span style="color:#f43f5e; font-weight:bold;">•</span><span style="color:#e2e8f0;">${o}</span>
               </div>`).join("")}
           </div>
         </div>` : ""}
-
       <div class="card-box">
         <div class="card-box-title">Traceability Links</div>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          <div>
-            <div style="color:var(--text-muted); font-size:0.76rem; font-weight:600; margin-bottom:4px;">Linked User Stories:</div>
-            <div class="pills-container">${p.linked_stories && p.linked_stories.length ? p.linked_stories.map(s => pill(s, "story")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
-          </div>
-          <div>
-            <div style="color:var(--text-muted); font-size:0.76rem; font-weight:600; margin-bottom:4px;">Implementing Tasks:</div>
-            <div class="pills-container">${p.tasks && p.tasks.length ? p.tasks.map(t => pill(t, "task")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
-          </div>
+          <div><div style="color:var(--text-muted); font-size:0.76rem; font-weight:600; margin-bottom:4px;">Linked User Stories:</div><div class="pills-container">${p.linked_stories && p.linked_stories.length ? p.linked_stories.map(s => pill(s, "story")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
+          <div><div style="color:var(--text-muted); font-size:0.76rem; font-weight:600; margin-bottom:4px;">Implementing Tasks:</div><div class="pills-container">${p.tasks && p.tasks.length ? p.tasks.map(t => pill(t, "task")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
         </div>
       </div>
-
-      <div class="card-box">
-        <div class="card-box-title">Full PRD Markdown</div>
-        <div class="markdown-box">${renderMarkdown(p.raw_markdown)}</div>
-      </div>
+      <div class="card-box"><div class="card-box-title">Full PRD Markdown</div><div class="markdown-box">${renderMarkdown(p.raw_markdown)}</div></div>
     `;
   }
 
@@ -227,35 +154,12 @@ DRAWER_JS = r"""
           <span class="entity-pill pill-adr">${a.domain || 'Architecture'}</span>
         </div>
       </div>
-
-      ${a.context ? `
-        <div class="card-box">
-          <div class="card-box-title" style="color:#a5b4fc">Context</div>
-          <div class="markdown-box">${renderMarkdown(a.context)}</div>
-        </div>` : ""}
-
-      ${a.decision ? `
-        <div class="card-box">
-          <div class="card-box-title" style="color:#c4b5fd">Decision</div>
-          <div class="markdown-box">${renderMarkdown(a.decision)}</div>
-        </div>` : ""}
-
-      ${a.consequences ? `
-        <div class="card-box">
-          <div class="card-box-title" style="color:#94a3b8">Consequences</div>
-          <div class="markdown-box">${renderMarkdown(a.consequences)}</div>
-        </div>` : ""}
-
+      ${a.context ? `<div class="card-box"><div class="card-box-title" style="color:#a5b4fc">Context</div><div class="markdown-box">${renderMarkdown(a.context)}</div></div>` : ""}
+      ${a.decision ? `<div class="card-box"><div class="card-box-title" style="color:#c4b5fd">Decision</div><div class="markdown-box">${renderMarkdown(a.decision)}</div></div>` : ""}
+      ${a.consequences ? `<div class="card-box"><div class="card-box-title" style="color:#94a3b8">Consequences</div><div class="markdown-box">${renderMarkdown(a.consequences)}</div></div>` : ""}
       ${(a.implementing_tasks && a.implementing_tasks.length > 0) ? `
-        <div class="card-box">
-          <div class="card-box-title">Implementing Tasks (${a.implementing_tasks.length})</div>
-          <div class="pills-container">${a.implementing_tasks.map(t => pill(t, "task")).join("")}</div>
-        </div>` : ""}
-
-      <div class="card-box">
-        <div class="card-box-title">Full ADR Markdown</div>
-        <div class="markdown-box">${renderMarkdown(a.raw_markdown)}</div>
-      </div>
+        <div class="card-box"><div class="card-box-title">Implementing Tasks (${a.implementing_tasks.length})</div><div class="pills-container">${a.implementing_tasks.map(t => pill(t, "task")).join("")}</div></div>` : ""}
+      <div class="card-box"><div class="card-box-title">Full ADR Markdown</div><div class="markdown-box">${renderMarkdown(a.raw_markdown)}</div></div>
     `;
   }
 
@@ -263,43 +167,26 @@ DRAWER_JS = r"""
     return `
       <div class="card-box">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:42px; height:42px; border-radius:10px; background:#f59e0b; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:#fff;">
-            ${(p.name || 'P')[0]}
-          </div>
-          <div>
-            <div style="font-weight:700; font-size:1.05rem; color:#fff;">${p.name}</div>
-            <div style="font-size:0.78rem; color:var(--text-muted);">${p.role || ''}</div>
-          </div>
+          <div style="width:42px; height:42px; border-radius:10px; background:#f59e0b; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.2rem; color:#fff;">${(p.name || 'P')[0]}</div>
+          <div><div style="font-weight:700; font-size:1.05rem; color:#fff;">${p.name}</div><div style="font-size:0.78rem; color:var(--text-muted);">${p.role || ''}</div></div>
         </div>
       </div>
-
       ${(p.pain_points && p.pain_points.length > 0) ? `
         <div class="card-box">
           <div class="card-box-title" style="color:#f59e0b">Pain Points</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            ${p.pain_points.map(pt => `
-              <div style="font-size:0.8rem; display:flex; gap:8px; color:#e2e8f0;">
-                <span>⚠️</span><span>${pt}</span>
-              </div>`).join("")}
-          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">${p.pain_points.map(pt => `<div style="font-size:0.8rem; display:flex; gap:8px; color:#e2e8f0;"><span>⚠️</span><span>${pt}</span></div>`).join("")}</div>
         </div>` : ""}
-
       ${(p.goals && p.goals.length > 0) ? `
         <div class="card-box">
           <div class="card-box-title" style="color:#10b981">Goals with SpecOps</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            ${p.goals.map(g => `
-              <div style="font-size:0.8rem; display:flex; gap:8px; color:#e2e8f0;">
-                <span>🎯</span><span>${g}</span>
-              </div>`).join("")}
-          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">${p.goals.map(g => `<div style="font-size:0.8rem; display:flex; gap:8px; color:#e2e8f0;"><span>🎯</span><span>${g}</span></div>`).join("")}</div>
         </div>` : ""}
-
       ${(p.story_ids && p.story_ids.length > 0) ? `
         <div class="card-box">
           <div class="card-box-title">Desired User Stories</div>
           <div class="pills-container">${p.story_ids.map(s => pill(s, "story")).join("")}</div>
         </div>` : ""}
+      <div class="card-box"><div class="card-box-title">Full Persona Profile</div><div class="markdown-box">${renderMarkdown(p.raw_markdown)}</div></div>
     `;
   }
 
@@ -324,6 +211,7 @@ DRAWER_JS = r"""
     const filepathEl = document.getElementById("drawer-filepath-text");
     const bodyEl = document.getElementById("drawer-body");
     const copyBtn = document.getElementById("drawer-copy-btn");
+    const permalinkBtn = document.getElementById("drawer-permalink-btn");
 
     if (badge) {
       badge.textContent = type;
@@ -338,16 +226,10 @@ DRAWER_JS = r"""
       badge.style = typeColors[type] || typeColors.TASK;
     }
 
-    if (titleEl) {
-      titleEl.textContent = (entity.id || entity.name) + (entity.title ? ": " + entity.title : "");
-    }
-
-    if (filepathEl) {
-      filepathEl.textContent = entity.file_path || "docs/project/";
-    }
-    if (copyBtn) {
-      copyBtn.style.display = entity.file_path ? "inline-block" : "none";
-    }
+    if (titleEl) titleEl.textContent = (entity.name || entity.id) + (entity.title ? ": " + entity.title : "");
+    if (filepathEl) filepathEl.textContent = entity.file_path || "docs/project/";
+    if (copyBtn) copyBtn.style.display = entity.file_path ? "inline-block" : "none";
+    if (permalinkBtn) permalinkBtn.style.display = "inline-block";
 
     if (bodyEl) {
       if (type === "TASK") bodyEl.innerHTML = renderTaskCard(entity);
@@ -362,6 +244,13 @@ DRAWER_JS = r"""
     document.getElementById("drawer").classList.add("open");
     const backdrop = document.getElementById("drawer-backdrop");
     if (backdrop) backdrop.classList.add("open");
+
+    if (typeof activeTab !== "undefined" && activeTab === "graph" && window.focusNode) {
+      window.focusNode(entity.id || id);
+    }
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(true);
+    }
   };
 
   window.closeDrawer = function() {
@@ -369,18 +258,45 @@ DRAWER_JS = r"""
     const backdrop = document.getElementById("drawer-backdrop");
     if (backdrop) backdrop.classList.remove("open");
     currentEntity = null;
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(false);
+    }
+  };
+
+  window.copyDeepLink = function() {
+    const url = (typeof window !== "undefined" && window.location) ? window.location.href : location.href;
+    const btn = document.getElementById("drawer-permalink-btn");
+    const showSuccess = () => {
+      if (btn) {
+        const prev = btn.textContent;
+        btn.textContent = "✓ Copied!";
+        setTimeout(() => { btn.textContent = prev; }, 1500);
+      }
+    };
+    const nav = (typeof window !== "undefined" && window.navigator) || (typeof navigator !== "undefined" ? navigator : null);
+    if (nav && nav.clipboard && nav.clipboard.writeText) {
+      nav.clipboard.writeText(url).then(showSuccess).catch(showSuccess);
+    } else {
+      showSuccess();
+    }
   };
 
   window.copyFilePath = function() {
     if (!currentEntity || !currentEntity.file_path) return;
-    navigator.clipboard.writeText(currentEntity.file_path).then(() => {
+    const nav = (typeof window !== "undefined" && window.navigator) || (typeof navigator !== "undefined" ? navigator : null);
+    const showSuccess = () => {
       const btn = document.getElementById("drawer-copy-btn");
       if (btn) {
         const prev = btn.textContent;
         btn.textContent = "✓ Copied!";
         setTimeout(() => { btn.textContent = prev; }, 1500);
       }
-    });
+    };
+    if (nav && nav.clipboard && nav.clipboard.writeText) {
+      nav.clipboard.writeText(currentEntity.file_path).then(showSuccess).catch(showSuccess);
+    } else {
+      showSuccess();
+    }
   };
 
   canvas.addEventListener("click", e => {
