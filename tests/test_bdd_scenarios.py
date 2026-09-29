@@ -22,6 +22,8 @@ scenarios(
 )
 
 
+
+
 @pytest.fixture
 def bdd_context(tmp_path: Path) -> dict[str, Any]:
     """Shared state container for BDD scenarios."""

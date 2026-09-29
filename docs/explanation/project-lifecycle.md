@@ -46,13 +46,13 @@ flowchart TD
     subgraph Phase3["Phase 3: Autonomous & Hybrid Engineering"]
         P3_Worktree["Spawn Isolated Worktree (.worktrees/task-XXXX)\n(Morgan / Riley)"]:::eng
         P3_Frontdoor["Frontdoor Blackbox TDD (No Mock Backdoors)\n(Morgan / Riley)"]:::eng
-        P3_Preflight{"In-Worktree Preflight\nPasses?"}:::eng
-        P3_SelfHeal["Self-Healing Feedback Loop\n(Max 3 attempts)\n(Morgan)"]:::eng
+        P3_Gate{"Concurrent CI Preflight\n& Architectural Review\nBoth Pass?"}:::eng
+        P3_SelfHeal["Self-Healing Feedback Loop\n(Preflight logs + Review feedback)\n(Morgan)"]:::eng
         P3_Rescue["Human Takeover / Rescue\n(Riley)"]:::eng
 
-        P3_Worktree --> P3_Frontdoor --> P3_Preflight
-        P3_Preflight -- No (Attempts < 3) --> P3_SelfHeal --> P3_Frontdoor
-        P3_Preflight -- No (Exhausted) --> P3_Rescue --> P3_Preflight
+        P3_Worktree --> P3_Frontdoor --> P3_Gate
+        P3_Gate -- No (Attempts < 3) --> P3_SelfHeal --> P3_Frontdoor
+        P3_Gate -- No (Exhausted) --> P3_Rescue --> P3_Gate
     end
 
     subgraph Phase4["Phase 4: Merge Lock Integration & Synchronization"]
@@ -72,7 +72,7 @@ flowchart TD
     Phase0 --> Phase1
     P1_Decomp --> P2_Curate
     P2_Health --> P3_Worktree
-    P3_Preflight -- Yes --> P4_Iso
+    P3_Gate -- Yes --> P4_Iso
     P4_Merge --> Phase5
     P5_AntiRot -.->|Replenish Backlog / New PRD| Phase1
 ```
@@ -128,13 +128,14 @@ The lifecycle spans 8 operational dimensions, each containing specific activitie
 - **System Impact**: Prevents specification rot; ensures coding agents always have clear, unblocked tasks ready for execution.
 
 ### Dimension 4: Autonomous & Hybrid Engineering Execution
-- **Persona Touchpoints**: Morgan (Agent), Riley (Developer).
+- **Persona Touchpoints**: Morgan (Agent), Riley (Developer), Jordan (Lead).
 - **Core Activities**:
   - *Worktree Isolation*: Spawning dedicated git worktrees (`.worktrees/task-XXXX`) on branch `feat/<task-slug>`.
   - *Frontdoor Blackbox TDD*: Writing tests that interact strictly through public interfaces (ADR-0003); zero private backdoors.
-  - *Self-Healing Feedback Loops*: Re-prompting the agent with diagnostic failure logs up to 3 attempts (ADR-0004).
+  - *Concurrent CI Preflight & Architectural Review*: Running automated CI test/lint gates in parallel with an autonomous architectural reviewer evaluating completeness and ADR compliance (ADR-0012).
+  - *Self-Healing Feedback Loops*: Re-prompting the implementation agent with combined preflight diagnostics and architectural review feedback up to 3 repair attempts (ADR-0004, ADR-0012).
   - *Human Worktree Rescue*: Riley taking over stalled worktrees when agent attempts exhaust.
-- **System Impact**: Eliminates git merge lockups; broken code never leaves the worktree; prevents the "silo of mocked perfection".
+- **System Impact**: Eliminates git merge lockups; ensures both functional correctness and architectural alignment; broken or incomplete code never leaves the worktree.
 
 ### Dimension 5: Code Quality, Anti-Rot & Continuous Refactoring
 - **Persona Touchpoints**: Alex (Architect), Riley (Developer).

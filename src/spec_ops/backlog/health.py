@@ -26,6 +26,7 @@ EXCLUDE_DIRS = {
     ".worktrees",
 }
 
+
 SOURCE_EXTENSIONS = {
     ".py",
     ".ts",

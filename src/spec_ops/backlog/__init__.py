@@ -20,6 +20,7 @@ from .events import (
 )
 from .health import FileLengthViolation, HealthChecker, HealthCheckReport
 from .queue import BacklogQueue, write_task_file
+from .reviewer import ReviewResult, TaskReviewEngine
 from .worker import BacklogWorkerEngine, WorkerResult
 
 __all__ = [
@@ -37,6 +38,7 @@ __all__ = [
     "RecordPreflight",
     "RefineTask",
     "ReleaseTask",
+    "ReviewResult",
     "TaskClaimed",
     "TaskCompleted",
     "TaskDecider",
@@ -44,8 +46,11 @@ __all__ = [
     "TaskProposed",
     "TaskRefined",
     "TaskReleased",
+    "TaskReviewEngine",
     "TaskState",
     "WorkerResult",
     "task_id_to_uuid",
     "write_task_file",
 ]
+
+
