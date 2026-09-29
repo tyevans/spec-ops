@@ -58,8 +58,14 @@ class BacklogWorkerEngine:
         self.queue = BacklogQueue(config.backlog_dir)
 
     def run_preflight(self, cwd: Path) -> tuple[bool, str]:
-        """Runs configured preflight verification commands."""
-        commands = self.config.quality.preflight
+        """Runs configured preflight verification commands with supply-chain lockfile checks."""
+        commands = list(self.config.quality.preflight)
+
+        # Enforce lockfile integrity if enabled and lockfile exists
+        if getattr(self.config.quality, "enforce_lockfile", True):
+            if (cwd / "uv.lock").exists() and "uv lock --check" not in commands:
+                commands.insert(0, "uv lock --check")
+
         logs: list[str] = []
         for cmd in commands:
             res = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
@@ -126,7 +132,10 @@ class BacklogWorkerEngine:
         preflight_log = ""
         for attempt in range(1, max_attempts + 1):
             print(f"🤖 Agent attempt {attempt}/{max_attempts} for {task.canonical_id}...")
-            res = subprocess.run(cmd, shell=True, cwd=worktree_dir, capture_output=True, text=True)
+            env = os.environ.copy()
+            env["SPEC_OPS_WORKTREE"] = str(worktree_dir.resolve())
+            env["PWD"] = str(worktree_dir.resolve())
+            res = subprocess.run(cmd, shell=True, cwd=worktree_dir, env=env, capture_output=True, text=True)
             if res.returncode != 0:
                 print(f"⚠️ Agent command returned code {res.returncode}: {res.stderr[:200]}")
 
@@ -180,9 +189,15 @@ class BacklogWorkerEngine:
             if not diff_res.stdout.strip():
                 return WorkerResult(task.canonical_id, False, "No modifications produced by worker.")
 
+            commit_msg = (
+                f"feat({task.canonical_id.lower()}): {task.title}\n\n"
+                f"Task-ID: {task.canonical_id}\n"
+                f"Governing-ADRs: {', '.join(task.governing_adrs) or 'None'}\n"
+                f"Provenance: spec-ops autonomous worker"
+            )
             subprocess.run(["git", "add", "-A"], cwd=worktree_dir, check=True)
             subprocess.run(
-                ["git", "commit", "-m", f"feat({task.canonical_id.lower()}): {task.title}"],
+                ["git", "commit", "-m", commit_msg],
                 cwd=worktree_dir,
                 check=True,
             )
@@ -193,7 +208,7 @@ class BacklogWorkerEngine:
                     subprocess.run(["git", "merge", "--squash", branch], cwd=self.repo_root, check=True, capture_output=True)
                     self.queue.complete_task(task)
                     subprocess.run(
-                        ["git", "commit", "-m", f"feat({task.canonical_id.lower()}): {task.title}"],
+                        ["git", "commit", "-m", commit_msg],
                         cwd=self.repo_root,
                         capture_output=True,
                     )

@@ -50,3 +50,31 @@ def test_cli_visualizer_build(tmp_path: Path):
     assert res.returncode == 0
     assert out_html.is_file()
     assert "SpecOps Visualizer" in out_html.read_text(encoding="utf-8")
+
+
+def test_cli_rescue(tmp_path: Path):
+    subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "init", "--name", "RescueTest", "--dir", str(tmp_path)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    # List when empty
+    res_list = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "rescue", "--list"],
+        cwd=str(tmp_path),
+        capture_output=True,
+        text=True,
+    )
+    assert res_list.returncode == 0
+    assert "Active / Stalled Worktrees" in res_list.stdout
+
+    # Inspect non-existent
+    res_inspect = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "rescue", "0099"],
+        cwd=str(tmp_path),
+        capture_output=True,
+        text=True,
+    )
+    assert res_inspect.returncode == 1
+    assert "No worktree found" in res_inspect.stdout

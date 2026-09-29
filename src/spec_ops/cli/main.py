@@ -82,7 +82,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_cycle.add_argument("--max-tasks", type=int, default=1, help="Maximum number of ready tasks to execute (default: 1)")
     p_cycle.add_argument("--dry-run", action="store_true", help="Run without invoking agents")
     p_cycle.add_argument("--no-merge", action="store_true", help="Do not squash-merge branches to main")
-    p_cycle.add_argument("--build-docs", action="store_true", help="Recompile documentation site and visualizer")
+    # rescue
+    p_rescue = subparsers.add_parser("rescue", help="Inspect and recover stalled or failed autonomous worktrees")
+    p_rescue.add_argument("task_id", nargs="?", help="Target task canonical ID (e.g. TASK-0011 or 0011)")
+    p_rescue.add_argument("--list", action="store_true", help="List all active/stalled worktrees")
+    p_rescue.add_argument("--complete", action="store_true", help="Verify preflight and merge rescued worktree into main")
+    p_rescue.add_argument("--discard", action="store_true", help="Discard worktree and branch")
 
     return parser
 
@@ -296,6 +301,51 @@ def main() -> int:
                 subprocess.run([sys.executable, str(build_script)], cwd=config.root_dir, check=False)
 
         print("\n🎉 Autonomous cycle completed cleanly.")
+        return 0
+
+    if args.command == "rescue":
+        from ..backlog.rescue import WorktreeRescueManager
+
+        mgr = WorktreeRescueManager(config)
+
+        if args.list or not args.task_id:
+            wts = mgr.list_active_worktrees()
+            print("=== Active / Stalled Worktrees (.worktrees/) ===")
+            if not wts:
+                print("No active or stalled worktrees found.")
+                return 0
+            for w in wts:
+                dirty = " [DIRTY]" if w.is_dirty else ""
+                print(f"• {w.task_id} ({w.branch}){dirty} at {w.worktree_dir}")
+                if w.failure_feedback:
+                    print(f"  Diagnostics: {w.failure_feedback[:100]}...")
+            return 0
+
+        if args.complete:
+            ok, msg = mgr.complete_rescue(args.task_id)
+            print(f"=== Worktree Rescue: {args.task_id} ===")
+            print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
+            print(msg)
+            return 0 if ok else 1
+
+        if args.discard:
+            ok, msg = mgr.discard_worktree(args.task_id)
+            print(msg)
+            return 0 if ok else 1
+
+        info = mgr.inspect_task(args.task_id)
+        if not info:
+            print(f"❌ No worktree found for {args.task_id}.")
+            return 1
+
+        print(f"=== Stalled Worktree: {info.task_id} ===")
+        print(f"Directory: {info.worktree_dir}")
+        print(f"Branch:    {info.branch}")
+        print(f"Dirty:     {info.is_dirty}")
+        if info.failure_feedback:
+            print(f"\nLast Diagnostics:\n{info.failure_feedback}\n")
+        print("👉 To finish and integrate: run 'spec-ops rescue <task-id> --complete'")
+        print("👉 To discard: run 'spec-ops rescue <task-id> --discard'")
         return 0
 
     return 0

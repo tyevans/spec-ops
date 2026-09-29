@@ -1,18 +1,17 @@
 ---
 id: '0014'
 title: Multi-Agent Platform Adapters (Claude, Cursor, Antigravity)
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0010
-  - TASK-0011
+- TASK-0010
+- TASK-0011
 governing_adrs:
-  - ADR-0001
-  - ADR-0005
+- ADR-0001
+- ADR-0005
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0007
+- US-0007
 target_bc: core
 ---
 

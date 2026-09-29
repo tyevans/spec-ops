@@ -44,6 +44,7 @@ class ArchitectureSettings:
 class QualitySettings:
     testing_style: str = "blackbox-frontdoor"
     require_bdd: bool = True
+    enforce_lockfile: bool = True
     preflight: list[str] = field(
         default_factory=lambda: ["pytest"]
     )

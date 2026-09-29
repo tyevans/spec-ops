@@ -53,3 +53,22 @@ def test_backlog_curator_jit_refinement(tmp_path: Path):
 
     refined_after = [t for t in queue.list_all_tasks() if t.status == "Refined"]
     assert len(refined_after) > 1
+
+
+def test_worker_preflight_lockfile_check(tmp_path: Path):
+    from spec_ops.backlog.worker import BacklogWorkerEngine
+    init_project(tmp_path, name="PreflightTest")
+    config = load_config(root_dir=tmp_path)
+    config.quality.preflight = ["python3 -c 'print(\"ok\")'"]
+    worker = BacklogWorkerEngine(config)
+
+    # Without uv.lock
+    ok, log = worker.run_preflight(tmp_path)
+    assert ok
+    assert "✓ 'python3 -c 'print(\"ok\")'' passed" in log
+
+    # With dummy uv.lock but uv lock fails because dummy lockfile is invalid
+    (tmp_path / "uv.lock").write_text("invalid lockfile content", encoding="utf-8")
+    ok2, log2 = worker.run_preflight(tmp_path)
+    assert not ok2
+    assert "uv lock --check" in log2
