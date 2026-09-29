@@ -1,18 +1,17 @@
 ---
 id: '0022'
 title: Visualizer Tab and Filter URL State Synchronization
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0017
+- TASK-0017
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0006
+- ADR-0001
+- ADR-0002
+- ADR-0006
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0010
+- US-0010
 target_bc: visualizer
 ---
 

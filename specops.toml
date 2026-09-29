@@ -30,7 +30,7 @@ preflight = [
 ]
 
 [execution]
-agent_command = "agy -p '{prompt}'"
+agent_command = "agy --dangerously-skip-permissions -p {prompt}"
 agent_max_attempts = 3
 git_branch_prefix = "feat/"
 backlog_isolation = true

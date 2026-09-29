@@ -49,19 +49,32 @@ def build_task_prompt(task: Task, config: SpecOpsConfig) -> str:
     return "\n".join(parts)
 
 
-def build_agent_cmd(cmd_template: str, prompt: str, prompt_file: Path) -> list[str]:
+def build_agent_cmd(
+    cmd_template: str,
+    prompt: str,
+    prompt_file: Path,
+    continue_session: bool = False,
+) -> list[str]:
     """Safely builds argv list for agent command without shell quote-mangling."""
     import shlex
 
-    if "{prompt_file}" in cmd_template:
-        formatted = cmd_template.format(prompt_file=str(prompt_file))
+    parts = shlex.split(cmd_template)
+    if parts and parts[0] == "agy":
+        if "--dangerously-skip-permissions" not in parts:
+            parts.insert(1, "--dangerously-skip-permissions")
+        if continue_session and "-c" not in parts and "--continue" not in parts:
+            parts.insert(2, "-c")
+
+    reconstructed = " ".join(parts)
+    if "{prompt_file}" in reconstructed:
+        formatted = reconstructed.format(prompt_file=str(prompt_file))
         return shlex.split(formatted)
-    elif "{prompt}" in cmd_template:
+    elif "{prompt}" in reconstructed:
         placeholder = "__SPEC_OPS_PROMPT_PAYLOAD__"
-        parts = shlex.split(cmd_template.replace("{prompt}", placeholder))
-        return [prompt if p == placeholder else p for p in parts]
+        argv = shlex.split(reconstructed.replace("{prompt}", placeholder))
+        return [prompt if p == placeholder else p for p in argv]
     else:
-        return shlex.split(cmd_template) + [str(prompt_file)]
+        return parts + [str(prompt_file)]
 
 
 class BacklogWorkerEngine:
@@ -76,7 +89,6 @@ class BacklogWorkerEngine:
         """Runs configured preflight verification commands with supply-chain lockfile checks."""
         commands = list(self.config.quality.preflight)
 
-        # Enforce lockfile integrity if enabled and lockfile exists
         if getattr(self.config.quality, "enforce_lockfile", True):
             if (cwd / "uv.lock").exists() and "uv lock --check" not in commands:
                 commands.insert(0, "uv lock --check")
@@ -91,26 +103,57 @@ class BacklogWorkerEngine:
         return True, "\n".join(logs)
 
     def create_worktree(self, branch: str, worktree_dir: Path) -> None:
-        if worktree_dir.exists():
-            shutil.rmtree(worktree_dir, ignore_errors=True)
-        res = subprocess.run(["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"], cwd=self.repo_root)
-        if res.returncode == 0:
-            subprocess.run(["git", "branch", "-D", branch], cwd=self.repo_root, capture_output=True)
-
+        """Robustly creates or resets an isolated git worktree branch."""
+        # 1. Force remove worktree from git tracking if already registered
         subprocess.run(
-            ["git", "worktree", "add", "-b", branch, str(worktree_dir), "HEAD"],
+            ["git", "worktree", "remove", "--force", str(worktree_dir)],
             cwd=self.repo_root,
-            check=True,
             capture_output=True,
         )
+        # 2. Prune any stale administrative records in .git/worktrees/
+        subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
 
-    def cleanup_worktree(self, worktree_dir: Path, branch: str, delete_branch: bool = False) -> None:
+        # 3. Clean up leftover directory if git worktree remove left anything behind
         if worktree_dir.exists():
-            subprocess.run(
-                ["git", "worktree", "remove", "--force", str(worktree_dir)],
+            shutil.rmtree(worktree_dir, ignore_errors=True)
+
+        # 4. Prune again to ensure git recognizes the directory is gone
+        subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
+
+        # 5. Delete existing branch if it exists so we can start clean from HEAD
+        chk = subprocess.run(["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"], cwd=self.repo_root)
+        if chk.returncode == 0:
+            subprocess.run(["git", "branch", "-D", branch], cwd=self.repo_root, capture_output=True)
+
+        # 6. Add worktree with -B to create or reset branch cleanly from HEAD
+        add_res = subprocess.run(
+            ["git", "worktree", "add", "-B", branch, str(worktree_dir), "HEAD"],
+            cwd=self.repo_root,
+            capture_output=True,
+            text=True,
+        )
+        if add_res.returncode != 0:
+            # Fallback retry with prune in case of transient record lock
+            subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
+            retry_res = subprocess.run(
+                ["git", "worktree", "add", "-B", branch, str(worktree_dir), "HEAD"],
                 cwd=self.repo_root,
                 capture_output=True,
+                text=True,
             )
+            if retry_res.returncode != 0:
+                raise RuntimeError(
+                    f"Failed to create worktree: {retry_res.stderr.strip() or add_res.stderr.strip()}"
+                )
+
+    def cleanup_worktree(self, worktree_dir: Path, branch: str, delete_branch: bool = False) -> None:
+        """Removes a worktree and optionally deletes its associated branch."""
+        subprocess.run(
+            ["git", "worktree", "remove", "--force", str(worktree_dir)],
+            cwd=self.repo_root,
+            capture_output=True,
+        )
+        if worktree_dir.exists():
             shutil.rmtree(worktree_dir, ignore_errors=True)
         subprocess.run(
             ["git", "worktree", "prune"],
@@ -145,8 +188,15 @@ class BacklogWorkerEngine:
             env["SPEC_OPS_WORKTREE"] = str(worktree_dir.resolve())
             env["PWD"] = str(worktree_dir.resolve())
 
-            cmd = build_agent_cmd(cmd_template, current_prompt, prompt_file)
+            continue_session = attempt > 1
+            cmd = build_agent_cmd(cmd_template, current_prompt, prompt_file, continue_session=continue_session)
             res = subprocess.run(cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
+
+            # If continuing session failed, retry attempt without -c
+            if res.returncode != 0 and continue_session and "-c" in cmd:
+                fallback_cmd = build_agent_cmd(cmd_template, current_prompt, prompt_file, continue_session=False)
+                res = subprocess.run(fallback_cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
+
             if res.returncode != 0:
                 err_msg = res.stderr.strip() or res.stdout.strip() or f"process returned code {res.returncode}"
                 print(f"❌ Agent command returned code {res.returncode}: {err_msg[:300]}")
@@ -184,11 +234,13 @@ class BacklogWorkerEngine:
         branch = f"{self.config.execution.git_branch_prefix}{task.slug}"
         worktree_dir = self.repo_root / ".worktrees" / f"task-{task.id}"
         success = False
+        worktree_created = False
 
         print(f"🚀 Starting worker for {task.canonical_id}: '{task.title}'")
         try:
             worktree_dir.parent.mkdir(parents=True, exist_ok=True)
             self.create_worktree(branch, worktree_dir)
+            worktree_created = True
 
             preflight_ok, preflight_log = self.run_preflight(worktree_dir)
             if not preflight_ok:
@@ -242,9 +294,11 @@ class BacklogWorkerEngine:
                     subprocess.run(["git", "checkout", "main"], cwd=self.repo_root, check=True, capture_output=True)
                     subprocess.run(["git", "merge", "--squash", branch], cwd=self.repo_root, check=True, capture_output=True)
                     self.queue.complete_task(task)
+                    subprocess.run(["git", "add", "-A"], cwd=self.repo_root, check=True, capture_output=True)
                     subprocess.run(
                         ["git", "commit", "-m", commit_msg],
                         cwd=self.repo_root,
+                        check=True,
                         capture_output=True,
                     )
                 success = True
@@ -256,6 +310,7 @@ class BacklogWorkerEngine:
             return WorkerResult(task.canonical_id, False, f"Worker error: {e}")
         finally:
             if not success and not dry_run:
-                print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
+                if worktree_created and worktree_dir.exists() and any(worktree_dir.iterdir()):
+                    print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
             else:
                 self.cleanup_worktree(worktree_dir, branch, delete_branch=dry_run or local_merge)

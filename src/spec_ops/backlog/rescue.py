@@ -186,6 +186,7 @@ class WorktreeRescueManager:
                 subprocess.run(["git", "checkout", "main"], cwd=self.repo_root, check=True, capture_output=True)
                 subprocess.run(["git", "merge", "--squash", info.branch], cwd=self.repo_root, check=True, capture_output=True)
                 self.queue.complete_task(target_task)
+                subprocess.run(["git", "add", "-A"], cwd=self.repo_root, check=True, capture_output=True)
                 subprocess.run(
                     ["git", "commit", "-m", f"feat({clean_id.lower()}): {target_task.title} (rescued)"],
                     cwd=self.repo_root,
@@ -207,3 +208,14 @@ class WorktreeRescueManager:
         worker_engine = BacklogWorkerEngine(self.config)
         worker_engine.cleanup_worktree(info.worktree_dir, info.branch, delete_branch=True)
         return True, f"Discarded worktree for {info.task_id}."
+
+    def prune_all_worktrees(self) -> int:
+        """Safely cleans up all worktrees under .worktrees/ and prunes git records."""
+        count = 0
+        worker_engine = BacklogWorkerEngine(self.config)
+        for info in self.list_active_worktrees():
+            worker_engine.cleanup_worktree(info.worktree_dir, info.branch, delete_branch=True)
+            count += 1
+        subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
+        return count
+

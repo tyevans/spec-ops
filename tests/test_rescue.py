@@ -62,3 +62,22 @@ def test_build_agent_cmd():
 
     cmd3 = build_agent_cmd("aider --message", "prompt", Path("task.md"))
     assert cmd3 == ["aider", "--message", "task.md"]
+
+    cmd_continue = build_agent_cmd("agy -p {prompt}", "feedback prompt", Path("prompt.md"), continue_session=True)
+    assert cmd_continue == ["agy", "--dangerously-skip-permissions", "-c", "-p", "feedback prompt"]
+
+
+def test_rescue_manager_prune_all(tmp_path: Path):
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    mgr = WorktreeRescueManager(cfg)
+
+    wt1 = tmp_path / ".worktrees" / "task-0001"
+    wt2 = tmp_path / ".worktrees" / "task-0002"
+    wt1.mkdir(parents=True)
+    wt2.mkdir(parents=True)
+
+    assert len(mgr.list_active_worktrees()) == 2
+    count = mgr.prune_all_worktrees()
+    assert count == 2
+    assert len(mgr.list_active_worktrees()) == 0
+

@@ -1,16 +1,15 @@
 ---
 id: '0021'
 title: Diataxis Documentation Drift Auditor and Validator
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0015
+- TASK-0015
 governing_adrs:
-  - ADR-0008
+- ADR-0008
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0008
+- US-0008
 target_bc: core
 ---
 

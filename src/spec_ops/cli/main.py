@@ -101,6 +101,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_rescue.add_argument("--list", action="store_true", help="List all active/stalled worktrees")
     p_rescue.add_argument("--complete", action="store_true", help="Verify preflight and merge rescued worktree into main")
     p_rescue.add_argument("--discard", action="store_true", help="Discard worktree and branch")
+    p_rescue.add_argument("--prune", action="store_true", help="Prune and clean up all stale/orphaned worktrees")
 
     return parser
 
@@ -193,12 +194,8 @@ def main() -> int:
         m = p_data.health_metrics
         print(f"=== SpecOps Project Statistics ({config.project.name}) ===")
         print(f"Total Tasks: {m['total_tasks']} ({m['complete_tasks']} Complete, {m['refined_tasks']} Refined, {m['proposed_tasks']} Proposed)")
-        print(f"User Stories: {m['total_stories']}")
-        print(f"PRDs: {m['total_prds']}")
-        print(f"ADRs: {m['total_adrs']}")
-        print(f"Personas: {m['total_personas']}")
-        print(f"Traceability Edges: {m['total_edges']}")
-        print(f"Ready Buffer Health: {m['ready_buffer_health']}")
+        print(f"User Stories: {m['total_stories']} | PRDs: {m['total_prds']} | ADRs: {m['total_adrs']} | Personas: {m['total_personas']}")
+        print(f"Traceability Edges: {m['total_edges']} | Ready Buffer Health: {m['ready_buffer_health']}")
         return 0
 
     if args.command == "prd":
@@ -343,6 +340,11 @@ def main() -> int:
         from ..backlog.rescue import WorktreeRescueManager
 
         mgr = WorktreeRescueManager(config)
+
+        if getattr(args, "prune", False):
+            count = mgr.prune_all_worktrees()
+            print(f"🧹 Pruned and cleaned up {count} worktree(s).")
+            return 0
 
         if args.list or not args.task_id:
             wts = mgr.list_active_worktrees()
