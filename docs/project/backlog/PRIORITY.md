@@ -37,7 +37,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0031 (Proposed)**: [`0031-merkle-compliance-manifest-architecture-spike`](proposed/0031-merkle-compliance-manifest-architecture-spike.md)
 - **TASK-0032 (Proposed)**: [`0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier`](proposed/0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier.md)
 - **TASK-0033 (Proposed)**: [`0033-living-security-posture-and-compliance-radar-dashboard`](proposed/0033-living-security-posture-and-compliance-radar-dashboard.md)
-- **TASK-0034 (Refined)**: [`0034-prd-discovery-guide-falsifiable-linter-and-lifecycle-stage-gates`](refined/0034-prd-discovery-guide-falsifiable-linter-and-lifecycle-stage-gates.md)
+- **TASK-0034 (Complete)**: [`0034-prd-discovery-guide-falsifiable-linter-and-lifecycle-stage-gates`](complete/0034-prd-discovery-guide-falsifiable-linter-and-lifecycle-stage-gates.md)
 - **TASK-0035 (Proposed)**: [`0035-outcome-to-bdd-decomposition-and-incremental-delta-evolution`](proposed/0035-outcome-to-bdd-decomposition-and-incremental-delta-evolution.md)
 - **TASK-0036 (Proposed)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](proposed/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
 - **TASK-0037 (Refined)**: [`0037-governed-worktree-spike-lifecycle-and-adr-synthesis`](refined/0037-governed-worktree-spike-lifecycle-and-adr-synthesis.md)

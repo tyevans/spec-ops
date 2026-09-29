@@ -74,6 +74,26 @@ def build_parser() -> argparse.ArgumentParser:
     p_create.add_argument("--summary", default="", help="Brief summary of problem statement")
     p_create.add_argument("--stage", default="accepted", help="Stage (accepted, idea, shaped)")
 
+    p_new = prd_subs.add_parser("new", help="Interactively guide creation of a new PRD draft in idea/")
+    p_new.add_argument("--title", help="PRD title")
+    p_new.add_argument("--persona", help="Target persona")
+    p_new.add_argument("--component", help="Target component / bounded context")
+    p_new.add_argument("--friction", help="What the person cannot do today")
+    p_new.add_argument("--good", help="What good looks like (core capabilities)")
+    p_new.add_argument("--anti-goals", help="What this does not do (scope boundaries)")
+    p_new.add_argument("--outcomes", help="Checkable outcomes")
+    p_new.add_argument("--non-interactive", action="store_true", help="Do not prompt interactively")
+
+    p_lint = prd_subs.add_parser("lint", help="Lint PRD markdown files for mandatory sections and falsifiable outcomes")
+    p_lint.add_argument("path", nargs="?", default=None, help="PRD file or directory to lint (default: all PRDs)")
+
+    p_promote = prd_subs.add_parser("promote", help="Promote PRD through lifecycle stages")
+    p_promote.add_argument("prd_id", help="PRD canonical ID (e.g. PRD-0002) or file path")
+    p_promote.add_argument("--stage", required=True, choices=["idea", "shaped", "accepted", "shipped"], help="Target stage")
+
+    p_ship = prd_subs.add_parser("ship", help="Archive accepted PRD to shipped upon backlog completion")
+    p_ship.add_argument("prd_id", help="PRD canonical ID (e.g. PRD-0001)")
+
     prd_subs.add_parser("audit", help="Audit PRD decomposition state and buffer readiness")
 
     p_decompose = prd_subs.add_parser("decompose", help="Decompose a PRD into vertical slices and stories")

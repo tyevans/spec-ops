@@ -16,6 +16,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops health` | `[--security]` | Verify file length limits, PRIORITY sync, and security profile guardrails |
 | `spec-ops stats` | None | Report project statistics and entity counts |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
+| `spec-ops prd new` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--friction FRICTION] [--good GOOD] [--anti-goals ANTI_GOALS] [--outcomes OUTCOMES] [--non-interactive]` | Interactively scaffold a new PRD specification in idea stage |
+| `spec-ops prd lint` | `[PATH]` | Lint PRD markdown files for mandatory sections and falsifiable outcomes |
+| `spec-ops prd promote` | `<PRD_ID> --stage STAGE` | Advance PRD through lifecycle stage gates |
+| `spec-ops prd ship` | `<PRD_ID>` | Transition accepted PRD to shipped upon backlog completion |
 | `spec-ops prd audit` | None | Audit PRD lifecycle statuses |
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike]` | Decompose PRD into vertical slices |
 | `spec-ops curate` | None | Promote unblocked tasks to refined buffer |

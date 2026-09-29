@@ -167,37 +167,8 @@ def main() -> int:
         return 0
 
     if args.command == "prd":
-        mgr = PRDManager(config)
-        if args.prd_action == "create":
-            p = mgr.create_prd(
-                title=args.title,
-                persona=args.persona,
-                component=args.component,
-                summary=args.summary,
-                stage=args.stage,
-            )
-            print(f"✅ Created PRD at {p}")
-            return 0
-        elif args.prd_action == "audit":
-            res = mgr.audit()
-            print(f"=== PRD Audit ===")
-            print(f"Total PRDs: {res.total_prds}")
-            print(f"Undecomposed PRDs: {len(res.undecomposed_prds)} ({', '.join(res.undecomposed_prds) or 'None'})")
-            print(f"Ready Tasks Buffer: {res.ready_tasks_count} ({res.buffer_status})")
-            if res.warnings:
-                for w in res.warnings:
-                    print(f"⚠️ {w}")
-            return 0
-        elif args.prd_action == "decompose":
-            decomposer = PRDDecomposer(config)
-            tasks = decomposer.decompose(args.prd_id, include_spike=not args.no_spike)
-            print(f"✅ Decomposed {args.prd_id} into {len(tasks)} task(s):")
-            for t in tasks:
-                print(f"   - {t.name}")
-            return 0
-        else:
-            parser.parse_args(["prd", "--help"])
-            return 0
+        from .prd_handler import handle_prd_command
+        return handle_prd_command(args, config, parser)
 
     if args.command == "curate":
         curator = BacklogCurator(config)

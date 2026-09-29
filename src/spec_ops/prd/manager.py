@@ -133,3 +133,18 @@ component: {component}
             buffer_status=buffer_status,
             warnings=warnings,
         )
+
+    def promote(self, prd_id_or_path: str | Path, stage: str) -> tuple[bool, str]:
+        """Promotes PRD to target lifecycle stage."""
+        from .lifecycle import PRDLifecycleManager
+        return PRDLifecycleManager(self.config).promote(prd_id_or_path, stage)
+
+    def ship(self, prd_id_or_path: str | Path) -> tuple[bool, str]:
+        """Archives accepted PRD to shipped."""
+        from .lifecycle import PRDLifecycleManager
+        return PRDLifecycleManager(self.config).ship(prd_id_or_path)
+
+    def lint(self, path: Path | str | None = None):
+        """Lints target PRD path."""
+        from .linter import PRDLinter
+        return PRDLinter(self.config.root_dir).lint_path(path)
