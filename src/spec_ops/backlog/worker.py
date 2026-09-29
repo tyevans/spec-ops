@@ -49,6 +49,21 @@ def build_task_prompt(task: Task, config: SpecOpsConfig) -> str:
     return "\n".join(parts)
 
 
+def build_agent_cmd(cmd_template: str, prompt: str, prompt_file: Path) -> list[str]:
+    """Safely builds argv list for agent command without shell quote-mangling."""
+    import shlex
+
+    if "{prompt_file}" in cmd_template:
+        formatted = cmd_template.format(prompt_file=str(prompt_file))
+        return shlex.split(formatted)
+    elif "{prompt}" in cmd_template:
+        placeholder = "__SPEC_OPS_PROMPT_PAYLOAD__"
+        parts = shlex.split(cmd_template.replace("{prompt}", placeholder))
+        return [prompt if p == placeholder else p for p in parts]
+    else:
+        return shlex.split(cmd_template) + [str(prompt_file)]
+
+
 class BacklogWorkerEngine:
     """Coordinates autonomous task execution in isolated git worktrees."""
 
@@ -108,21 +123,6 @@ class BacklogWorkerEngine:
                 cwd=self.repo_root,
                 capture_output=True,
             )
-
-def build_agent_cmd(cmd_template: str, prompt: str, prompt_file: Path) -> list[str]:
-    """Safely builds argv list for agent command without shell quote-mangling."""
-    import shlex
-
-    if "{prompt_file}" in cmd_template:
-        formatted = cmd_template.format(prompt_file=str(prompt_file))
-        return shlex.split(formatted)
-    elif "{prompt}" in cmd_template:
-        placeholder = "__SPEC_OPS_PROMPT_PAYLOAD__"
-        parts = shlex.split(cmd_template.replace("{prompt}", placeholder))
-        return [prompt if p == placeholder else p for p in parts]
-    else:
-        return shlex.split(cmd_template) + [str(prompt_file)]
-
 
     def invoke_agent(self, task: Task, worktree_dir: Path, dry_run: bool = False) -> tuple[bool, str]:
         """Invokes configured agent command with self-healing feedback loop."""
