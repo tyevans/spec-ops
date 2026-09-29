@@ -20,6 +20,8 @@ governing_stories:
 - US-0044
 - US-0099
 target_bc: prd
+claimed_by: worker-3
+branch: feat/0034-prd-discovery-guide--falsifiable-markdow
 ---
 
 # TASK-0034: PRD Discovery Guide, Falsifiable Markdown Linter, and Lifecycle Stage-Gate Engine

@@ -1,20 +1,21 @@
 ---
 id: '0025'
 title: 'Architectural Spike: Worker Process Sandboxing and Execution Interceptors'
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0024
+- TASK-0024
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0007
 governing_prds:
-  - PRD-0002
+- PRD-0002
 governing_stories:
-  - US-0054
-  - US-0109
+- US-0054
+- US-0109
 target_bc: security
+claimed_by: worker-1
+branch: feat/0025-architectural-spike--worker-process-sand
 ---
 
 # TASK-0025: Architectural Spike: Worker Process Sandboxing and Execution Interceptors
