@@ -57,6 +57,7 @@ class ExecutionSettings:
     agent_max_attempts: int = 3
     git_branch_prefix: str = "feat/"
     backlog_isolation: bool = True
+    target_agents: list[str] = field(default_factory=list)
 
 
 @dataclass

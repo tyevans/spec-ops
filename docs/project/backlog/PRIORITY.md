@@ -21,7 +21,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0019 (Complete)**: [`0019-supply-chain-sandboxing-and-lockfile-preflight`](complete/0019-supply-chain-sandboxing-and-lockfile-preflight.md)
 - **TASK-0020 (Complete)**: [`0020-pre-commit-hooks-and-proactive-warning-scanner`](complete/0020-pre-commit-hooks-and-proactive-warning-scanner.md)
 - **TASK-0013 (Complete)**: [`0013-interactive-terminal-ui-dashboard`](complete/0013-interactive-terminal-ui-dashboard.md)
-- **TASK-0014 (Refined)**: [`0014-multi-agent-platform-adapters`](refined/0014-multi-agent-platform-adapters.md)
+- **TASK-0014 (Complete)**: [`0014-multi-agent-platform-adapters`](complete/0014-multi-agent-platform-adapters.md)
 - **TASK-0021 (Refined)**: [`0021-diataxis-documentation-drift-auditor`](refined/0021-diataxis-documentation-drift-auditor.md)
 - **TASK-0022 (Refined)**: [`0022-visualizer-tab-and-filter-url-state-synchronization`](refined/0022-visualizer-tab-and-filter-url-state-synchronization.md)
 - **TASK-0023 (Proposed)**: [`0023-entity-permalinks-and-canvas-focal-targeting`](proposed/0023-entity-permalinks-and-canvas-focal-targeting.md)

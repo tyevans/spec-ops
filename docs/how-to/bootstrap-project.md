@@ -28,3 +28,18 @@ spec-ops init --name "PaymentService" --profile core,bdd
 ```
 
 This generates `specops.toml` and sequentially renumbers installed baseline ADRs without ID collisions.
+
+---
+
+## Configuring Multi-Agent Platform Adapters
+
+SpecOps supports generating platform-native configuration, rule sets, and slash commands for AI coding assistants:
+
+```bash
+spec-ops init --name "PaymentService" --agent antigravity,claude,cursor
+```
+
+Supported platform targets:
+- `claude`: Generates `CLAUDE.md` with PMaC hard invariants, key verification commands, and DoR/DoD workflows.
+- `cursor`: Generates `.cursorrules` with coding invariants and preflight handoff checklists.
+- `antigravity`: Generates `GEMINI.md` operating manual and slash command definitions (`/curate`, `/health`, `/worker`) in `.agents/skills/`.

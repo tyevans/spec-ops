@@ -149,3 +149,24 @@ def test_property_priority_rank_parsing(task_ids: list[int]):
         for expected_rank, tid in enumerate(task_ids, start=1):
             cid = f"TASK-{tid:04d}"
             assert ranks[cid] == expected_rank
+
+
+@given(
+    agents=st.lists(
+        st.sampled_from(["antigravity", "claude", "cursor", "ANTIGRAVITY", "Claude", "  cursor  "]),
+        min_size=0,
+        max_size=10,
+    )
+)
+def test_property_target_agents_parsing(agents: list[str]):
+    """Target Agent Parsing Invariant: Normalized agent list is always a deduplicated canonical subset."""
+    from spec_ops.scaffold.adapters import SUPPORTED_AGENTS, parse_target_agents
+
+    parsed = parse_target_agents(agents)
+    # Output must be a subset of SUPPORTED_AGENTS
+    assert all(a in SUPPORTED_AGENTS for a in parsed)
+    # Output must have no duplicates
+    assert len(parsed) == len(set(parsed))
+    # Output must be sorted in canonical order
+    indices = [SUPPORTED_AGENTS.index(a) for a in parsed]
+    assert indices == sorted(indices)

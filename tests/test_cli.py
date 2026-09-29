@@ -1,8 +1,10 @@
-"""Tests for SpecOps CLI subcommands."""
-
+import os
 import subprocess
 import sys
 from pathlib import Path
+
+SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+CLI_ENV = {**os.environ, "PYTHONPATH": f"{SRC_DIR}:{os.environ.get('PYTHONPATH', '')}".rstrip(":")}
 
 
 def test_cli_help():
@@ -99,5 +101,57 @@ def test_cli_tui_once():
     assert res.returncode == 0
     assert "SpecOps TUI" in res.stdout
     assert "Backlog Management" in res.stdout
+
+
+def test_cli_init_with_agent_flags(tmp_path: Path):
+    target = tmp_path / "cli_agents"
+    res = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "spec_ops.cli.main",
+            "init",
+            "--name",
+            "AgentCliApp",
+            "--dir",
+            str(target),
+            "--agent",
+            "antigravity,claude,cursor",
+        ],
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 0
+    assert "Configured Agent Adapters: antigravity, claude, cursor" in res.stdout
+    assert (target / "CLAUDE.md").is_file()
+    assert (target / ".cursorrules").is_file()
+    assert (target / "GEMINI.md").is_file()
+    assert (target / ".agents" / "skills" / "curate" / "SKILL.md").is_file()
+    assert (target / ".agents" / "skills" / "health" / "SKILL.md").is_file()
+    assert (target / ".agents" / "skills" / "worker" / "SKILL.md").is_file()
+
+
+def test_cli_init_with_invalid_agent(tmp_path: Path):
+    target = tmp_path / "cli_invalid"
+    res = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "spec_ops.cli.main",
+            "init",
+            "--name",
+            "InvalidAgentApp",
+            "--dir",
+            str(target),
+            "--agent",
+            "unknown_agent",
+        ],
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 1
+    assert "Unsupported agent platform: 'unknown_agent'" in res.stderr
 
 

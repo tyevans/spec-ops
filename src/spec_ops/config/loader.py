@@ -120,6 +120,7 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
         agent_max_attempts=exec_data.get("agent_max_attempts", 3),
         git_branch_prefix=exec_data.get("git_branch_prefix", "feat/"),
         backlog_isolation=exec_data.get("backlog_isolation", True),
+        target_agents=list(exec_data.get("target_agents", [])),
     )
 
     return SpecOpsConfig(

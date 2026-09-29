@@ -8,7 +8,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 
 | Command | Arguments | Description |
 |---|---|---|
-| `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--diataxis/--no-diataxis]` | Bootstrap a new PMaC project |
+| `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--agent AGENTS] [--diataxis/--no-diataxis]` | Bootstrap a new PMaC project with profile ADRs and multi-agent platform adapters |
 | `spec-ops profiles list` | None | List available architectural profiles |
 | `spec-ops health` | None | Verify file length limits and PRIORITY sync |
 | `spec-ops stats` | None | Report project statistics and entity counts |

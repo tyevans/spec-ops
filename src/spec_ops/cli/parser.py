@@ -23,6 +23,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_init.add_argument("--no-github-pages", dest="github_pages", action="store_false", help="Skip GitHub Pages deployment workflow scaffolding")
     p_init.add_argument("--pre-commit", action="store_true", default=True, help="Scaffold .pre-commit-config.yaml hook configuration (default: True)")
     p_init.add_argument("--no-pre-commit", dest="pre_commit", action="store_false", help="Skip .pre-commit-config.yaml scaffolding")
+    p_init.add_argument(
+        "--agent",
+        "--agents",
+        dest="agent",
+        action="append",
+        default=None,
+        help="Target agent platform adapters to configure (antigravity, claude, cursor). Comma-separated or repeatable.",
+    )
 
     # docs
     p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")

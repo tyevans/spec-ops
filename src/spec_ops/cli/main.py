@@ -45,16 +45,27 @@ def main() -> int:
     if args.command == "init":
         target = Path(args.dir).resolve()
         profile_list = [p.strip() for p in args.profile.split(",") if p.strip()]
-        created = init_project(
-            target,
-            name=args.name,
-            profiles=profile_list,
-            diataxis=args.diataxis,
-            github_pages=args.github_pages,
-            pre_commit=args.pre_commit,
-        )
+        try:
+            created = init_project(
+                target,
+                name=args.name,
+                profiles=profile_list,
+                diataxis=args.diataxis,
+                github_pages=args.github_pages,
+                pre_commit=args.pre_commit,
+                agents=args.agent,
+            )
+        except ValueError as err:
+            print(f"❌ Initialization error: {err}", file=sys.stderr)
+            return 1
         print(f"✨ Initialized SpecOps in {target}")
         print(f"📋 Installed Profiles: {', '.join(profile_list)}")
+        if args.agent:
+            from ..scaffold.adapters import parse_target_agents
+
+            configured_agents = parse_target_agents(args.agent)
+            if configured_agents:
+                print(f"🤖 Configured Agent Adapters: {', '.join(configured_agents)}")
         print(f"📁 Created {len(created)} file(s) and directory structures.")
         print("👉 Run 'spec-ops health' to verify repository invariants.")
         return 0

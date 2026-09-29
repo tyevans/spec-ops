@@ -77,3 +77,23 @@ def test_init_project_no_pre_commit(tmp_path: Path):
     target = tmp_path / "no_pre_commit"
     init_project(target, name="NoPreCommit", pre_commit=False)
     assert not (target / ".pre-commit-config.yaml").exists()
+
+
+def test_init_project_with_agent_adapters(tmp_path: Path):
+    from spec_ops.config.loader import load_config
+
+    target = tmp_path / "multi_agent"
+    created = init_project(target, name="MultiAgentApp", agents=["antigravity", "claude", "cursor"])
+
+    assert (target / "CLAUDE.md").is_file()
+    assert (target / ".cursorrules").is_file()
+    assert (target / "GEMINI.md").is_file()
+    assert (target / ".agents" / "skills" / "curate" / "SKILL.md").is_file()
+    assert (target / ".agents" / "skills" / "health" / "SKILL.md").is_file()
+    assert (target / ".agents" / "skills" / "worker" / "SKILL.md").is_file()
+
+    toml_content = (target / "specops.toml").read_text(encoding="utf-8")
+    assert 'target_agents = ["antigravity", "claude", "cursor"]' in toml_content
+
+    cfg = load_config(root_dir=target)
+    assert cfg.execution.target_agents == ["antigravity", "claude", "cursor"]

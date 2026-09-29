@@ -1,7 +1,7 @@
 ---
 id: '0014'
 title: Multi-Agent Platform Adapters (Claude, Cursor, Antigravity)
-status: Refined
+status: Complete
 dependencies:
 - TASK-0010
 - TASK-0011

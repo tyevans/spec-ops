@@ -2,15 +2,23 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+CLI_ENV = {**os.environ, "PYTHONPATH": f"{SRC_DIR}:{os.environ.get('PYTHONPATH', '')}".rstrip(":")}
+
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
-scenarios("features/us_0001_project_init.feature", "features/us_0002_health_check.feature")
+scenarios(
+    "features/us_0001_project_init.feature",
+    "features/us_0002_health_check.feature",
+    "features/us_0007_multi_agent_adapters.feature",
+)
 
 
 @pytest.fixture
@@ -162,3 +170,70 @@ def verify_violation_diagnostics(bdd_context: dict[str, Any]):
     assert "monolith.py" in stdout
     assert "550 lines" in stdout
     assert "limit: 500" in stdout
+
+
+# --- US-0007 Steps ---
+
+
+@when('the engineer executes "spec-ops init --name PlatformApp --agent antigravity,claude,cursor"')
+def execute_init_platform_command(bdd_context: dict[str, Any]):
+    target_dir = bdd_context["dir"]
+    res = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "spec_ops.cli.main",
+            "init",
+            "--name",
+            "PlatformApp",
+            "--dir",
+            str(target_dir),
+            "--agent",
+            "antigravity,claude,cursor",
+        ],
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_context["res"] = res
+    assert res.returncode == 0
+
+
+@then('"CLAUDE.md" is generated for Claude Code')
+def verify_claude_md(bdd_context: dict[str, Any]):
+    root = bdd_context["dir"]
+    claude_file = root / "CLAUDE.md"
+    assert claude_file.is_file()
+    content = claude_file.read_text(encoding="utf-8")
+    assert "Claude Code Operating Guidelines" in content
+
+
+@then('".cursorrules" is generated for Cursor')
+def verify_cursorrules(bdd_context: dict[str, Any]):
+    root = bdd_context["dir"]
+    cursor_file = root / ".cursorrules"
+    assert cursor_file.is_file()
+    content = cursor_file.read_text(encoding="utf-8")
+    assert "Cursor Rules" in content
+
+
+@then('"GEMINI.md" and slash command skills are generated for Antigravity')
+def verify_antigravity(bdd_context: dict[str, Any]):
+    root = bdd_context["dir"]
+    gemini_file = root / "GEMINI.md"
+    assert gemini_file.is_file()
+    content = gemini_file.read_text(encoding="utf-8")
+    assert "Antigravity Operating Rules" in content
+
+    skills_dir = root / ".agents" / "skills"
+    assert (skills_dir / "curate" / "SKILL.md").is_file()
+    assert (skills_dir / "health" / "SKILL.md").is_file()
+    assert (skills_dir / "worker" / "SKILL.md").is_file()
+
+
+@then("all generated files contain the hard invariant file limit under 500 lines")
+def verify_hard_invariants(bdd_context: dict[str, Any]):
+    root = bdd_context["dir"]
+    for path in [root / "CLAUDE.md", root / ".cursorrules", root / "GEMINI.md"]:
+        content = path.read_text(encoding="utf-8")
+        assert "500 lines" in content

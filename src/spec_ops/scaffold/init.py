@@ -149,6 +149,7 @@ Establish initial system architecture, core domain models, and blackbox test har
 
 
 from ..profiles.registry import resolve_adrs_for_profiles
+from .adapters import parse_target_agents, scaffold_agent_adapters
 from .agents_md import generate_agents_md
 from .ci_workflow import generate_ci_workflow
 from .diataxis import scaffold_diataxis_docs
@@ -163,11 +164,13 @@ def init_project(
     diataxis: bool = True,
     github_pages: bool = True,
     pre_commit: bool = True,
+    agents: list[str] | str | None = None,
 ) -> list[Path]:
     """Scaffolds the full SpecOps directory structure and starter files with baseline ADRs."""
     root = target_dir.resolve()
     project_name = name or root.name
     selected_profiles = profiles or ["core", "bdd", "ddd"]
+    parsed_agents = parse_target_agents(agents)
 
     docs_project = root / "docs" / "project"
     created_files: list[Path] = []
@@ -180,7 +183,11 @@ def init_project(
             created_files.append(full_path)
 
     # 1. specops.toml
-    _write(Path("specops.toml"), DEFAULT_SPECOPS_TOML.format(name=project_name))
+    toml_content = DEFAULT_SPECOPS_TOML.format(name=project_name)
+    if parsed_agents:
+        formatted_agents = ", ".join(f'"{a}"' for a in parsed_agents)
+        toml_content += f"\ntarget_agents = [{formatted_agents}]\n"
+    _write(Path("specops.toml"), toml_content)
 
     # 2. docs/project directories
     for folder in [
@@ -277,5 +284,16 @@ Establish initial system architecture, core domain models, and blackbox test har
     if diataxis:
         diataxis_files = scaffold_diataxis_docs(root, project_name, agents_md_content=agents_md)
         created_files.extend(diataxis_files)
+
+    # 9. Multi-agent platform adapters (Claude, Cursor, Antigravity)
+    if parsed_agents:
+        adapter_files = scaffold_agent_adapters(
+            root,
+            project_name=project_name,
+            agents=parsed_agents,
+            profiles=selected_profiles,
+            adrs=resolved_adrs,
+        )
+        created_files.extend(adapter_files)
 
     return created_files
