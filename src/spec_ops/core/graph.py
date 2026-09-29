@@ -172,6 +172,20 @@ def build_graph_data(data: ProjectData) -> GraphData:
             )
         )
 
+    seen_bcs = set()
+    for t in data.tasks:
+        if t.target_bc and t.target_bc not in seen_bcs:
+            seen_bcs.add(t.target_bc)
+            nodes.append(
+                GraphNode(
+                    t.target_bc,
+                    f"BC: {t.target_bc}",
+                    "bc",
+                    "#EC4899",
+                    bc=t.target_bc,
+                )
+            )
+
     for a in data.adrs:
         nodes.append(GraphNode(a.id, a.title, "adr", "#6366F1", domain=a.domain))
 
