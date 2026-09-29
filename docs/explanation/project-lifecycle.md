@@ -132,8 +132,8 @@ The lifecycle spans 8 operational dimensions, each containing specific activitie
 - **Core Activities**:
   - *Worktree Isolation*: Spawning dedicated git worktrees (`.worktrees/task-XXXX`) on branch `feat/<task-slug>`.
   - *Frontdoor Blackbox TDD*: Writing tests that interact strictly through public interfaces (ADR-0003); zero private backdoors.
-  - *Concurrent CI Preflight & Architectural Review*: Running automated CI test/lint gates in parallel with an autonomous architectural reviewer evaluating completeness and ADR compliance (ADR-0012).
-  - *Self-Healing Feedback Loops*: Re-prompting the implementation agent with combined preflight diagnostics and architectural review feedback up to 3 repair attempts (ADR-0004, ADR-0012).
+  - *Concurrent CI Preflight & Architectural Review*: Running automated CI test/lint gates in parallel with an autonomous architectural reviewer evaluating completeness and ADR compliance.
+  - *Self-Healing Feedback Loops*: Re-prompting the implementation agent with combined preflight diagnostics and architectural review feedback up to 3 repair attempts (ADR-0004).
   - *Human Worktree Rescue*: Riley taking over stalled worktrees when agent attempts exhaust.
 - **System Impact**: Eliminates git merge lockups; ensures both functional correctness and architectural alignment; broken or incomplete code never leaves the worktree.
 
