@@ -13,7 +13,7 @@ This documentation follows the Diataxis framework:
 - **Tutorials**: Hands-on guides to learn SpecOps step-by-step. Start with [Getting Started](/spec-ops/tutorials/01-getting-started.html).
 - **How-To Guides**: Practical recipes for everyday development tasks like [Bootstrapping Projects](/spec-ops/how-to/bootstrap-project.html) and [Verifying Health](/spec-ops/how-to/check-health.html).
 - **Technical Reference**: Authoritative documentation of the [CLI Reference](/spec-ops/reference/cli.html) and [Baseline ADRs](/spec-ops/reference/baseline-adrs.html).
-- **Architecture Explanation**: In-depth design philosophy exploring [Project Management as Code](/spec-ops/explanation/project-management-as-code.html), [Hard Invariants](/spec-ops/explanation/hard-invariants.html), and [Delivering Integrated Value](/spec-ops/explanation/delivering-integrated-value.html).
+- **Architecture Explanation**: In-depth design philosophy exploring [Project Management as Code](/spec-ops/explanation/project-management-as-code.html), [Hard Invariants](/spec-ops/explanation/hard-invariants.html), [Delivering Integrated Value](/spec-ops/explanation/delivering-integrated-value.html), and [End-to-End Project Lifecycle](/spec-ops/explanation/project-lifecycle.html).
 
 ---
 

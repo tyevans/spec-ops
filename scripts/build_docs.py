@@ -213,6 +213,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <ul>
       <li><a href="/spec-ops/explanation/project-management-as-code.html">Project Management as Code</a></li>
       <li><a href="/spec-ops/explanation/hard-invariants.html">Hard Invariants & Anti-Rot</a></li>
+      <li><a href="/spec-ops/explanation/project-lifecycle.html">Project & Product Lifecycle</a></li>
       <li><a href="/spec-ops/explanation/delivering-integrated-value.html">Delivering Integrated Value</a></li>
     </ul>
   </nav>
@@ -262,6 +263,7 @@ def build_docs_site() -> None:
         (DOCS_DIR / "reference" / "baseline-adrs.md", SITE_DIR / "reference" / "baseline-adrs.html", "Baseline ADRs"),
         (DOCS_DIR / "explanation" / "project-management-as-code.md", SITE_DIR / "explanation" / "project-management-as-code.html", "Project Management as Code"),
         (DOCS_DIR / "explanation" / "hard-invariants.md", SITE_DIR / "explanation" / "hard-invariants.html", "Hard Invariants"),
+        (DOCS_DIR / "explanation" / "project-lifecycle.md", SITE_DIR / "explanation" / "project-lifecycle.html", "Project & Product Lifecycle"),
         (DOCS_DIR / "explanation" / "delivering-integrated-value.md", SITE_DIR / "explanation" / "delivering-integrated-value.html", "Delivering Integrated Value"),
     ]
 

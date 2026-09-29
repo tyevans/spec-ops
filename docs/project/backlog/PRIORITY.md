@@ -10,6 +10,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0006 (Complete)**: [`0006-prd-decomposition-engine`](complete/0006-prd-decomposition-engine.md)
 - **TASK-0007 (Complete)**: [`0007-jit-backlog-curation-and-queue`](complete/0007-jit-backlog-curation-and-queue.md)
 - **TASK-0008 (Complete)**: [`0008-zero-dependency-2d-graph-visualizer`](complete/0008-zero-dependency-2d-graph-visualizer.md)
+- **TASK-0017 (Complete)**: [`0017-multi-view-visualizer-dashboard`](complete/0017-multi-view-visualizer-dashboard.md)
 - **TASK-0009 (Refined)**: [`0009-audit-and-extract-runefoble-system-patterns`](refined/0009-audit-and-extract-runefoble-system-patterns.md)
 - **TASK-0010 (Refined)**: [`0010-profile-driven-agents-md-scaffolding`](refined/0010-profile-driven-agents-md-scaffolding.md)
 - **TASK-0011 (Refined)**: [`0011-autonomous-git-worktree-worker-engine`](refined/0011-autonomous-git-worktree-worker-engine.md)

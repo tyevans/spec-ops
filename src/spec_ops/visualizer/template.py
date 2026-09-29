@@ -32,7 +32,7 @@ _BASE_SHELL = """<!DOCTYPE html>
       <a href="../index.html" class="nav-back-btn">← Back to Docs</a>
       <h1>⚡ {title} <span class="badge">Visualizer</span></h1>
     </div>
-    <div class="header-center">
+    <div class="header-center" id="graph-controls">
       <div class="layout-group">
         <button class="layout-btn active" id="btn-layout-network" onclick="switchLayout('network')">🪐 Force</button>
         <button class="layout-btn" id="btn-layout-flow" onclick="switchLayout('flow')">🌊 Flow DAG</button>
@@ -52,26 +52,43 @@ _BASE_SHELL = """<!DOCTYPE html>
       <span>Edges: <b id="stat-edges">0</b></span>
     </div>
   </header>
+
+  <nav class="nav-tabs-bar" id="tab-nav">
+    <button class="tab-btn active" data-tab="graph" onclick="switchTab('graph')">🌐 Relationship Graph</button>
+    <button class="tab-btn" data-tab="gantt" onclick="switchTab('gantt')">📊 Gantt & Timeline</button>
+    <button class="tab-btn" data-tab="kanban" onclick="switchTab('kanban')">📋 Kanban Board</button>
+    <button class="tab-btn" data-tab="prds" onclick="switchTab('prds')">🎯 PRDs & Features</button>
+    <button class="tab-btn" data-tab="adrs" onclick="switchTab('adrs')">🏛️ ADR Architecture</button>
+    <button class="tab-btn" data-tab="personas" onclick="switchTab('personas')">👥 Personas & Stories</button>
+  </nav>
+
   <main>
-    <div class="legend">
-      <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Persona</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#06B6D4"></span> Story</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#F43F5E"></span> PRD</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#10B981"></span> Complete Task</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Refined Task</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#8B5CF6"></span> Proposed Task</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#6366F1"></span> ADR</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#EC4899"></span> Bounded Context</div>
+    <div id="canvas-view">
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Persona</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#06B6D4"></span> Story</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#F43F5E"></span> PRD</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#10B981"></span> Complete Task</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Refined Task</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#8B5CF6"></span> Proposed Task</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#6366F1"></span> ADR</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#EC4899"></span> Bounded Context</div>
+      </div>
+      <div class="hint-bar">
+        Scroll to Zoom · Drag canvas to Pan · Drag nodes to move · Click to inspect
+      </div>
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Camera">⟲</button>
+      </div>
+      <canvas id="network-canvas"></canvas>
     </div>
-    <div class="hint-bar">
-      Scroll to Zoom · Drag canvas to Pan · Drag nodes to move · Click to inspect
+
+    <div id="dashboard-view">
+      <div id="dashboard-content"></div>
     </div>
-    <div class="zoom-controls">
-      <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
-      <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
-      <button class="zoom-btn" onclick="resetZoom()" title="Reset Camera">⟲</button>
-    </div>
-    <canvas id="network-canvas"></canvas>
+
     <div id="drawer-backdrop" onclick="closeDrawer()"></div>
     <div id="drawer">
       <div class="drawer-header">

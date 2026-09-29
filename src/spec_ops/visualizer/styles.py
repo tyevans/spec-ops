@@ -67,9 +67,9 @@ header h1 { font-size: 1.05rem; display: flex; align-items: center; gap: 8px; wh
   padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
   cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; gap: 5px;
 }
-.ctrl-btn:hover { color: #fff; border-color: rgba(255, 255, 255, 0.25); }
+.ctrl-btn:hover, .ctrl-btn.active { color: #fff; border-color: var(--primary); background: rgba(59, 130, 246, 0.15); }
 
-.search-box { position: relative; width: 240px; }
+.search-box { position: relative; width: 220px; }
 .search-box input {
   width: 100%; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border);
   border-radius: 6px; padding: 6px 12px; color: #fff; font-size: 0.82rem; outline: none; transition: border-color 0.15s;
@@ -79,7 +79,33 @@ header h1 { font-size: 1.05rem; display: flex; align-items: center; gap: 8px; wh
 .stats-bar { display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-muted); align-items: center; white-space: nowrap; flex-shrink: 0; }
 .stats-bar span b { color: var(--text); }
 
+/* Navigation Tabs Bar */
+.nav-tabs-bar {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 15;
+  overflow-x: auto;
+}
+.tab-btn {
+  background: transparent; border: 1px solid transparent; color: var(--text-muted);
+  padding: 5px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+.tab-btn.active {
+  background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.4);
+}
+
 main { flex: 1; display: flex; position: relative; overflow: hidden; }
+
+/* 2D Canvas View */
+#canvas-view { flex: 1; width: 100%; height: 100%; position: relative; display: flex; }
 #network-canvas { flex: 1; width: 100%; height: 100%; background: radial-gradient(circle at center, #111827 0%, #030712 100%); cursor: grab; }
 #network-canvas:active { cursor: grabbing; }
 
@@ -104,6 +130,92 @@ main { flex: 1; display: flex; position: relative; overflow: hidden; }
 }
 .zoom-btn:hover { background: rgba(255, 255, 255, 0.15); }
 
+/* Dashboard Multi-Tab View */
+#dashboard-view {
+  flex: 1; width: 100%; height: 100%; overflow-y: auto; padding: 20px 24px;
+  display: none; flex-direction: column; gap: 16px;
+}
+#dashboard-content { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+
+/* Faceted Filter Bar */
+.view-filter-bar {
+  background: var(--elevated); border: 1px solid var(--border-subtle); border-radius: 8px;
+  padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; flex-wrap: wrap;
+}
+.filter-input {
+  background: rgba(11, 15, 25, 0.8); border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 10px; color: #fff; font-size: 0.78rem; outline: none; width: 220px;
+}
+.filter-input:focus { border-color: var(--primary); }
+.filter-select {
+  background: rgba(11, 15, 25, 0.8); border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 8px; color: var(--text); font-size: 0.78rem; outline: none; cursor: pointer;
+}
+.filter-checkbox-label {
+  display: flex; align-items: center; gap: 6px; font-size: 0.76rem; color: var(--text-muted); cursor: pointer;
+}
+.active-filter-chip {
+  display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 9999px; padding: 3px 10px;
+  font-size: 0.74rem; color: #93c5fd;
+}
+.active-filter-chip button {
+  background: transparent; border: none; color: #93c5fd; cursor: pointer; font-size: 1rem; line-height: 1;
+}
+
+/* Gantt Styles */
+.gantt-group-card {
+  background: var(--elevated); border: 1px solid var(--border-subtle); border-radius: 10px;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.gantt-group-header {
+  display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;
+}
+.gantt-items-list { display: flex; flex-direction: column; gap: 8px; }
+.gantt-item-row {
+  display: flex; align-items: center; padding: 8px 12px; background: rgba(11, 15, 25, 0.5);
+  border: 1px solid var(--border-subtle); border-radius: 6px; cursor: pointer; transition: background 0.15s;
+}
+.gantt-item-row:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.15); }
+.gantt-bar-container {
+  width: 100%; height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden;
+}
+.gantt-bar { height: 100%; border-radius: 9999px; }
+.status-complete { background: #10b981; }
+.status-refined { background: #f59e0b; }
+.status-proposed { background: #8b5cf6; }
+
+/* Kanban Styles */
+.kanban-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; width: 100%;
+}
+.kanban-col {
+  background: var(--elevated); border: 1px solid var(--border-subtle); border-radius: 10px;
+  display: flex; flex-direction: column; max-height: calc(100vh - 180px);
+}
+.kanban-col-header {
+  padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); display: flex;
+  justify-content: space-between; align-items: center; font-size: 0.85rem;
+}
+.count-badge { padding: 2px 7px; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; }
+.kanban-cards-area {
+  padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; flex: 1;
+}
+.kanban-card {
+  background: rgba(11, 15, 25, 0.75); border: 1px solid var(--border-subtle); border-radius: 8px;
+  padding: 12px; cursor: pointer; transition: all 0.15s ease;
+}
+.kanban-card:hover {
+  border-color: rgba(255, 255, 255, 0.2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.empty-state {
+  padding: 30px; text-align: center; color: var(--text-muted); font-size: 0.85rem;
+  background: var(--elevated); border: 1px dashed var(--border); border-radius: 10px;
+}
+
+/* Backdrop & Drawer */
 #drawer-backdrop {
   position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(2px);
   z-index: 25; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;

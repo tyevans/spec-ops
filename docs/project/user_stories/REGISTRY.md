@@ -10,3 +10,4 @@
 | `US-0006` | Living 2D Graph Visualizer and Zero-Dependency Standalone Export | Accepted | Jordan | FEAT-VIS-01 | `PRD-0001` |
 | `US-0007` | Agent Constitution and Invariant Instructions Scaffolding (AGENTS.md) | Accepted | Alex | FEAT-AGT-01 | `PRD-0001` |
 | `US-0008` | Diataxis Documentation System and GitHub Pages Publishing Pipeline | Accepted | Jordan | FEAT-DOC-01 | `PRD-0001` |
+| `US-0009` | Multi-View Project Matrix Dashboard with Gantt, Kanban, PRD & ADR Exploration | Accepted | Jordan | FEAT-VIS-02 | `PRD-0001` |

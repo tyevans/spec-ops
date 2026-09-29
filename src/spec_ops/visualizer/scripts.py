@@ -2,10 +2,12 @@
 
 from .drawer_script import DRAWER_JS
 from .graph_script import GRAPH_JS
+from .views_script import VIEWS_JS
 
 VISUALIZER_JS = f"""
 (function() {{
 {GRAPH_JS}
 {DRAWER_JS}
+{VIEWS_JS}
 }})();
 """
