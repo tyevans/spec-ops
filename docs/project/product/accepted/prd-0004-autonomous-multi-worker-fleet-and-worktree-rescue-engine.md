@@ -83,5 +83,15 @@ component: worker
 
 ## Implementing Backlog Tasks
 
-- `TASK-0005`
-- `TASK-0009`
+- `TASK-0044`
+- `TASK-0045`
+- `TASK-0046`
+- `TASK-0047`
+- `TASK-0048`
+- `TASK-0049`
+- `TASK-0050`
+- `TASK-0051`
+- `TASK-0052`
+- `TASK-0053`
+- `TASK-0054`
+- `TASK-0055`
