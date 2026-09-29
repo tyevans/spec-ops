@@ -1,6 +1,33 @@
 """Client-side multi-view dashboard: Gantt, Kanban, PRDs, ADRs, Personas, and Faceted Filtering."""
+from __future__ import annotations
 
 VIEWS_JS = r"""
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function cleanSnippet(str, maxLen = 140) {
+    if (!str) return "";
+    let clean = String(str)
+      .replace(/^#+\s+/gm, "")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      .replace(/^\s*[-*]\s+/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (clean.length > maxLen) {
+      clean = clean.substring(0, maxLen).trim() + "...";
+    }
+    return escapeHtml(clean);
+  }
+
   let activeTab = "graph";
   const filterState = {
     query: "",
@@ -89,7 +116,7 @@ VIEWS_JS = r"""
     return `
       <div class="view-filter-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex:1;">
-          <input type="text" class="filter-input" placeholder="Filter by name, ID, or text..." value="${filterState.query}" oninput="window.setFilter('query', this.value)">
+          <input type="text" class="filter-input" placeholder="Filter by name, ID, or text..." value="${escapeHtml(filterState.query)}" oninput="window.setFilter('query', this.value)">
           
           <select class="filter-select" onchange="window.setFilter('status', this.value)">
             <option value="all" ${filterState.status === 'all' ? 'selected' : ''}>All Statuses</option>
@@ -100,7 +127,7 @@ VIEWS_JS = r"""
 
           <select class="filter-select" onchange="window.setFilter('bc', this.value)">
             <option value="all" ${filterState.bc === 'all' ? 'selected' : ''}>All Bounded Contexts</option>
-            ${bcs.map(bc => `<option value="${bc}" ${filterState.bc === bc ? 'selected' : ''}>${bc}</option>`).join("")}
+            ${bcs.map(bc => `<option value="${escapeHtml(bc)}" ${filterState.bc === bc ? 'selected' : ''}>${escapeHtml(bc)}</option>`).join("")}
           </select>
 
           <label class="filter-checkbox-label">
@@ -118,7 +145,7 @@ VIEWS_JS = r"""
 
         ${filterState.linked ? `
           <div class="active-filter-chip">
-            <span>Linked to: <b>${filterState.linked}</b></span>
+            <span>Linked to: <b>${escapeHtml(filterState.linked)}</b></span>
             <button onclick="window.clearLinkedFilter()" title="Clear filter">&times;</button>
           </div>` : ""}
       </div>
@@ -183,16 +210,16 @@ VIEWS_JS = r"""
                   const progress = t.status === "Complete" ? 100 : (t.status === "Refined" ? 60 : 20);
 
                   return `
-                    <div class="gantt-item-row" onclick="openDrawer('${t.id}')">
+                    <div class="gantt-item-row" onclick="openDrawer('${escapeHtml(t.id)}')">
                       <div style="display:flex; align-items:center; gap:10px; width:220px; flex-shrink:0;">
-                        <span class="entity-pill ${statusCls}">${t.id}</span>
-                        <span style="font-size:0.75rem; color:var(--text-muted); font-mono">${t.status}</span>
+                        <span class="entity-pill ${statusCls}">${escapeHtml(t.id)}</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-mono">${escapeHtml(t.status)}</span>
                       </div>
                       <div style="flex:1; min-width:0; padding-right:15px;">
-                        <div style="font-size:0.84rem; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.title}</div>
+                        <div style="font-size:0.84rem; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(t.title)}</div>
                         <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">
-                          ${t.target_bc ? `<span style="color:#67e8f9; margin-right:8px;">BC: ${t.target_bc}</span>` : ""}
-                          ${t.governing_prds && t.governing_prds.length ? `<span>PRD: ${t.governing_prds.join(", ")}</span>` : ""}
+                          ${t.target_bc ? `<span style="color:#67e8f9; margin-right:8px;">BC: ${escapeHtml(t.target_bc)}</span>` : ""}
+                          ${t.governing_prds && t.governing_prds.length ? `<span>PRD: ${t.governing_prds.map(escapeHtml).join(", ")}</span>` : ""}
                         </div>
                       </div>
                       <div style="width:180px; flex-shrink:0;">
@@ -232,12 +259,12 @@ VIEWS_JS = r"""
               </div>
               <div class="kanban-cards-area">
                 ${items.map(t => `
-                  <div class="kanban-card" onclick="openDrawer('${t.id}')">
+                  <div class="kanban-card" onclick="openDrawer('${escapeHtml(t.id)}')">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
-                      <span class="entity-pill pill-task" style="font-size:0.72rem;">${t.id}</span>
-                      ${t.target_bc ? `<span style="font-size:0.7rem; color:#67e8f9; font-mono">BC: ${t.target_bc}</span>` : ""}
+                      <span class="entity-pill pill-task" style="font-size:0.72rem;">${escapeHtml(t.id)}</span>
+                      ${t.target_bc ? `<span style="font-size:0.7rem; color:#67e8f9; font-mono">BC: ${escapeHtml(t.target_bc)}</span>` : ""}
                     </div>
-                    <h4 style="font-size:0.83rem; font-weight:600; color:#fff; line-height:1.35; margin-bottom:8px;">${t.title}</h4>
+                    <h4 style="font-size:0.83rem; font-weight:600; color:#fff; line-height:1.35; margin-bottom:8px;">${escapeHtml(t.title)}</h4>
                     <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; color:var(--text-muted); border-top:1px solid var(--border-subtle); padding-top:6px;">
                       <span>${(t.prs || []).length} PRs · ${(t.commits || []).length} commits</span>
                       ${t.dependencies && t.dependencies.length ? `<span title="Dependencies">⛓️ ${t.dependencies.length}</span>` : ""}
@@ -269,19 +296,19 @@ VIEWS_JS = r"""
             <div class="card-box" style="cursor:default;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
-                  <span class="entity-pill pill-prd" style="margin-bottom:4px;" onclick="openDrawer('${p.id}')">${p.id}</span>
-                  <h3 style="font-size:0.95rem; font-weight:700; color:#fff; cursor:pointer;" onclick="openDrawer('${p.id}')">${p.title}</h3>
+                  <span class="entity-pill pill-prd" style="margin-bottom:4px;" onclick="openDrawer('${escapeHtml(p.id)}')">${escapeHtml(p.id)}</span>
+                  <h3 style="font-size:0.95rem; font-weight:700; color:#fff; cursor:pointer;" onclick="openDrawer('${escapeHtml(p.id)}')">${escapeHtml(p.title)}</h3>
                 </div>
-                <span style="padding:2px 8px; border-radius:9999px; font-size:0.72rem; font-weight:700; background:rgba(244,63,94,0.2); color:#fda4af;">${p.status}</span>
+                <span style="padding:2px 8px; border-radius:9999px; font-size:0.72rem; font-weight:700; background:rgba(244,63,94,0.2); color:#fda4af;">${escapeHtml(p.status)}</span>
               </div>
 
-              ${p.problem_statement ? `<p style="font-size:0.78rem; color:#cbd5e1; line-height:1.5; margin:6px 0; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;">${p.problem_statement}</p>` : ""}
+              ${p.problem_statement ? `<p style="font-size:0.78rem; color:#cbd5e1; line-height:1.5; margin:6px 0; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;">${cleanSnippet(p.problem_statement, 240)}</p>` : ""}
 
               <div style="margin-top:auto; padding-top:10px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.74rem; color:var(--text-muted);">${(p.tasks || []).length} implementing tasks</span>
                 <div style="display:flex; gap:6px;">
-                  <button class="ctrl-btn" onclick="window.filterByLinked('${p.id}', 'kanban')" title="Filter Kanban board by this PRD">📋 View Tasks</button>
-                  <button class="ctrl-btn" onclick="openDrawer('${p.id}')">Inspect</button>
+                  <button class="ctrl-btn" onclick="window.filterByLinked('${escapeHtml(p.id)}', 'kanban')" title="Filter Kanban board by this PRD">📋 View Tasks</button>
+                  <button class="ctrl-btn" onclick="openDrawer('${escapeHtml(p.id)}')">Inspect</button>
                 </div>
               </div>
             </div>`).join("")}
@@ -308,22 +335,22 @@ VIEWS_JS = r"""
             <div class="card-box">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
-                  <span class="entity-pill pill-adr" style="margin-bottom:4px;" onclick="openDrawer('${a.id}')">${a.id}</span>
-                  <h3 style="font-size:0.95rem; font-weight:700; color:#fff; cursor:pointer;" onclick="openDrawer('${a.id}')">${a.title}</h3>
+                  <span class="entity-pill pill-adr" style="margin-bottom:4px;" onclick="openDrawer('${escapeHtml(a.id)}')">${escapeHtml(a.id)}</span>
+                  <h3 style="font-size:0.95rem; font-weight:700; color:#fff; cursor:pointer;" onclick="openDrawer('${escapeHtml(a.id)}')">${escapeHtml(a.title)}</h3>
                 </div>
-                <span class="entity-pill" style="font-size:0.7rem; color:#a5b4fc;">${a.domain || 'Architecture'}</span>
+                <span class="entity-pill" style="font-size:0.7rem; color:#a5b4fc;">${escapeHtml(a.domain || 'Architecture')}</span>
               </div>
 
               ${a.decision ? `
                 <div style="font-size:0.78rem; color:#cbd5e1; line-height:1.5; margin:6px 0;">
-                  <strong style="color:#c4b5fd;">Decision:</strong> ${a.decision.substring(0, 140)}...
+                  <strong style="color:#c4b5fd;">Decision:</strong> ${cleanSnippet(a.decision, 140)}
                 </div>` : ""}
 
               <div style="margin-top:auto; padding-top:10px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.74rem; color:var(--text-muted);">${(a.implementing_tasks || []).length} implementing tasks</span>
                 <div style="display:flex; gap:6px;">
-                  <button class="ctrl-btn" onclick="window.filterByLinked('${a.id}', 'kanban')" title="Filter Kanban board by this ADR">📋 View Tasks</button>
-                  <button class="ctrl-btn" onclick="openDrawer('${a.id}')">Inspect</button>
+                  <button class="ctrl-btn" onclick="window.filterByLinked('${escapeHtml(a.id)}', 'kanban')" title="Filter Kanban board by this ADR">📋 View Tasks</button>
+                  <button class="ctrl-btn" onclick="openDrawer('${escapeHtml(a.id)}')">Inspect</button>
                 </div>
               </div>
             </div>`).join("")}
@@ -341,14 +368,14 @@ VIEWS_JS = r"""
       <div style="display:flex; flex-direction:column; gap:20px;">
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
           ${personas.map(p => `
-            <div class="card-box" onclick="openDrawer('${p.id}')" style="cursor:pointer;">
+            <div class="card-box" onclick="openDrawer('${escapeHtml(p.id)}')" style="cursor:pointer;">
               <div style="display:flex; align-items:center; gap:12px;">
                 <div style="width:40px; height:40px; border-radius:10px; background:#f59e0b; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; color:#fff;">
-                  ${(p.name || 'P')[0]}
+                  ${escapeHtml((p.name || 'P')[0])}
                 </div>
                 <div>
-                  <h3 style="font-size:0.95rem; font-weight:700; color:#fff;">${p.name}</h3>
-                  <p style="font-size:0.74rem; color:var(--text-muted);">${p.role || ''}</p>
+                  <h3 style="font-size:0.95rem; font-weight:700; color:#fff;">${escapeHtml(p.name)}</h3>
+                  <p style="font-size:0.74rem; color:var(--text-muted);">${escapeHtml(p.role || '')}</p>
                 </div>
               </div>
               <div style="margin-top:8px; font-size:0.76rem; color:#94a3b8;">
@@ -361,13 +388,13 @@ VIEWS_JS = r"""
           <h3 style="font-size:0.95rem; font-weight:700; color:#fff;">User Stories Catalog</h3>
           <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:14px;">
             ${stories.map(s => `
-              <div class="card-box" onclick="openDrawer('${s.id}')" style="cursor:pointer;">
+              <div class="card-box" onclick="openDrawer('${escapeHtml(s.id)}')" style="cursor:pointer;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
-                  <span class="entity-pill pill-story" style="font-size:0.72rem;">${s.id}</span>
-                  <span style="font-size:0.7rem; color:#67e8f9;">${s.persona || 'Alex'}</span>
+                  <span class="entity-pill pill-story" style="font-size:0.72rem;">${escapeHtml(s.id)}</span>
+                  <span style="font-size:0.7rem; color:#67e8f9;">${escapeHtml(s.persona || 'Alex')}</span>
                 </div>
-                <h4 style="font-size:0.85rem; font-weight:600; color:#fff; line-height:1.35; margin-bottom:6px;">${s.title}</h4>
-                ${s.i_want ? `<p style="font-size:0.76rem; color:#cbd5e1; line-height:1.4;">${s.i_want}</p>` : ""}
+                <h4 style="font-size:0.85rem; font-weight:600; color:#fff; line-height:1.35; margin-bottom:6px;">${escapeHtml(s.title)}</h4>
+                ${s.i_want ? `<p style="font-size:0.76rem; color:#cbd5e1; line-height:1.4;">${cleanSnippet(s.i_want, 160)}</p>` : ""}
               </div>`).join("")}
           </div>
         </div>

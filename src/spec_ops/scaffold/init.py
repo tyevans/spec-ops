@@ -149,6 +149,7 @@ Establish initial system architecture, core domain models, and blackbox test har
 
 
 from ..profiles.registry import resolve_adrs_for_profiles
+from .agents_md import generate_agents_md
 
 
 def init_project(
@@ -205,7 +206,11 @@ def init_project(
         f"# ADR Registry\n\n| ID | Title | Status | Date |\n|---|---|---|---|\n{registry_table}\n",
     )
 
-    # 4. Starter documents
+    # 4. Agent Constitution (AGENTS.md)
+    agents_md = generate_agents_md(project_name, selected_profiles, resolved_adrs)
+    _write(Path("AGENTS.md"), agents_md)
+
+    # 5. Starter documents
     _write(docs_project / "user_stories" / "PERSONAS.md", DEFAULT_PERSONAS)
     _write(docs_project / "product" / "REGISTRY.md", "# PRD Registry\n\n| ID | Title | Status |\n|---|---|---|\n")
     _write(docs_project / "user_stories" / "REGISTRY.md", "# User Stories Registry\n\n| ID | Title | Status | Persona |\n|---|---|---|---|\n")

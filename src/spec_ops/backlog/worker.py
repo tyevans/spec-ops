@@ -144,6 +144,7 @@ class BacklogWorkerEngine:
         """Executes a task in an isolated worktree with preflight verification."""
         branch = f"{self.config.execution.git_branch_prefix}{task.slug}"
         worktree_dir = self.repo_root / ".worktrees" / f"task-{task.id}"
+        success = False
 
         print(f"🚀 Starting worker for {task.canonical_id}: '{task.title}'")
         try:
@@ -159,6 +160,7 @@ class BacklogWorkerEngine:
                 return WorkerResult(task.canonical_id, False, f"Agent execution failed: {agent_log}")
 
             if dry_run:
+                success = True
                 return WorkerResult(task.canonical_id, True, "Dry-run successful.")
 
             if self.config.execution.backlog_isolation:
@@ -195,10 +197,15 @@ class BacklogWorkerEngine:
                         cwd=self.repo_root,
                         capture_output=True,
                     )
+                success = True
                 return WorkerResult(task.canonical_id, True, "Completed and integrated cleanly.")
+            success = True
             return WorkerResult(task.canonical_id, True, "Task verified in worktree.")
 
         except Exception as e:
             return WorkerResult(task.canonical_id, False, f"Worker error: {e}")
         finally:
-            self.cleanup_worktree(worktree_dir, branch, delete_branch=dry_run or local_merge)
+            if not success and not dry_run:
+                print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
+            else:
+                self.cleanup_worktree(worktree_dir, branch, delete_branch=dry_run or local_merge)
