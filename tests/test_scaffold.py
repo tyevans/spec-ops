@@ -44,6 +44,12 @@ def test_init_project_creates_structure(tmp_path: Path):
     assert "id-token: write" in pages_content
     assert "pages: write" in pages_content
 
+    pre_commit_file = tmp_path / ".pre-commit-config.yaml"
+    assert pre_commit_file.is_file()
+    pre_commit_content = pre_commit_file.read_text(encoding="utf-8")
+    assert "uv run spec-ops health" in pre_commit_content
+    assert "ruff" in pre_commit_content
+
 
 def test_init_project_core_only_profiles(tmp_path: Path):
     target = tmp_path / "core_only"
@@ -61,3 +67,9 @@ def test_init_project_no_github_pages(tmp_path: Path):
     init_project(target, name="NoPages", github_pages=False)
     assert not (target / ".github" / "workflows" / "deploy-pages.yml").exists()
     assert (target / ".github" / "workflows" / "ci.yml").is_file()
+
+
+def test_init_project_no_pre_commit(tmp_path: Path):
+    target = tmp_path / "no_pre_commit"
+    init_project(target, name="NoPreCommit", pre_commit=False)
+    assert not (target / ".pre-commit-config.yaml").exists()

@@ -153,6 +153,7 @@ from .agents_md import generate_agents_md
 from .ci_workflow import generate_ci_workflow
 from .diataxis import scaffold_diataxis_docs
 from .pages_workflow import generate_pages_workflow
+from .pre_commit import generate_pre_commit_config
 
 
 def init_project(
@@ -161,6 +162,7 @@ def init_project(
     profiles: list[str] | None = None,
     diataxis: bool = True,
     github_pages: bool = True,
+    pre_commit: bool = True,
 ) -> list[Path]:
     """Scaffolds the full SpecOps directory structure and starter files with baseline ADRs."""
     root = target_dir.resolve()
@@ -254,6 +256,11 @@ Establish initial system architecture, core domain models, and blackbox test har
     if github_pages:
         pages_workflow = generate_pages_workflow(project_name)
         _write(Path(".github") / "workflows" / "deploy-pages.yml", pages_workflow)
+
+    # 6c. Git pre-commit configuration
+    if pre_commit:
+        pre_commit_cfg = generate_pre_commit_config()
+        _write(Path(".pre-commit-config.yaml"), pre_commit_cfg)
 
     # 7. .gitignore additions
     gitignore = root / ".gitignore"

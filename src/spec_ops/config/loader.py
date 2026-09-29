@@ -85,6 +85,7 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
     ]
     architecture = ArchitectureSettings(
         file_length_limit=arch_data.get("file_length_limit", 500),
+        file_warning_threshold=arch_data.get("file_warning_threshold", 400),
         buffer_target=arch_data.get("buffer_target", 10),
         buffer_warning_threshold=arch_data.get("buffer_warning_threshold", 6),
         components=components,

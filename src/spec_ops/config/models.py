@@ -35,6 +35,7 @@ class ProjectSettings:
 @dataclass
 class ArchitectureSettings:
     file_length_limit: int = 500
+    file_warning_threshold: int = 400
     buffer_target: int = 10
     buffer_warning_threshold: int = 6
     components: list[ComponentConfig] = field(default_factory=list)

@@ -37,6 +37,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_init.add_argument("--no-diataxis", dest="diataxis", action="store_false", help="Skip Diataxis documentation scaffolding")
     p_init.add_argument("--github-pages", action="store_true", default=True, help="Scaffold GitHub Pages deployment workflow (default: True)")
     p_init.add_argument("--no-github-pages", dest="github_pages", action="store_false", help="Skip GitHub Pages deployment workflow scaffolding")
+    p_init.add_argument("--pre-commit", action="store_true", default=True, help="Scaffold .pre-commit-config.yaml hook configuration (default: True)")
+    p_init.add_argument("--no-pre-commit", dest="pre_commit", action="store_false", help="Skip .pre-commit-config.yaml scaffolding")
 
     # docs
     p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")
@@ -126,7 +128,14 @@ def main() -> int:
     if args.command == "init":
         target = Path(args.dir).resolve()
         profile_list = [p.strip() for p in args.profile.split(",") if p.strip()]
-        created = init_project(target, name=args.name, profiles=profile_list, diataxis=args.diataxis, github_pages=args.github_pages)
+        created = init_project(
+            target,
+            name=args.name,
+            profiles=profile_list,
+            diataxis=args.diataxis,
+            github_pages=args.github_pages,
+            pre_commit=args.pre_commit,
+        )
         print(f"✨ Initialized SpecOps in {target}")
         print(f"📋 Installed Profiles: {', '.join(profile_list)}")
         print(f"📁 Created {len(created)} file(s) and directory structures.")
@@ -158,6 +167,11 @@ def main() -> int:
                 print(f"   {v.path}: {v.lines} lines (limit: {v.limit})")
         else:
             print("✅ Invariant Met: Zero source files exceed length limit.")
+
+        if report.warnings:
+            print(f"\n⚠️ {len(report.warnings)} Proactive Refactoring Warning(s) (approaching limit):")
+            for w in report.warnings:
+                print(f"   {w.path}: {w.lines} lines (warning threshold: {w.threshold}, limit: {w.limit})")
 
         print(f"\nBacklog State:")
         print(f"   Complete Tasks: {report.completed_tasks}")

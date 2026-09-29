@@ -19,10 +19,22 @@ def test_health_check_file_length_limits(tmp_path: Path):
     report = checker.run_check()
     assert report.is_healthy
     assert len(report.violations) == 0
+    assert len(report.warnings) == 0
+
+    # Create a file approaching the limit (420 lines)
+    warning_file = tmp_path / "src" / "approaching.py"
+    warning_file.parent.mkdir(parents=True, exist_ok=True)
+    warning_file.write_text("\n".join(f"# line {i}" for i in range(420)), encoding="utf-8")
+
+    report_warn = checker.run_check()
+    assert report_warn.is_healthy  # Still healthy! Not a hard violation
+    assert len(report_warn.violations) == 0
+    assert len(report_warn.warnings) == 1
+    assert report_warn.warnings[0].lines == 420
+    assert report_warn.warnings[0].threshold == 400
 
     # Create an oversized file exceeding 500 lines
     oversized = tmp_path / "src" / "bloated.py"
-    oversized.parent.mkdir(parents=True, exist_ok=True)
     oversized.write_text("\n".join(f"# line {i}" for i in range(550)), encoding="utf-8")
 
     report2 = checker.run_check()

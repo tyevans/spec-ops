@@ -45,8 +45,17 @@ class FileLengthViolation:
 
 
 @dataclass
+class FileLengthWarning:
+    path: Path
+    lines: int
+    threshold: int
+    limit: int
+
+
+@dataclass
 class HealthCheckReport:
     violations: list[FileLengthViolation] = field(default_factory=list)
+    warnings: list[FileLengthWarning] = field(default_factory=list)
     top_largest_files: list[tuple[int, Path]] = field(default_factory=list)
     completed_tasks: int = 0
     refined_tasks: int = 0
@@ -67,10 +76,12 @@ class HealthChecker:
         self.config = config
         self.root_dir = config.root_dir
         self.limit = config.architecture.file_length_limit
+        self.warning_threshold = config.architecture.file_warning_threshold
         self.backlog_dir = config.backlog_dir
 
-    def scan_file_lengths(self) -> tuple[list[FileLengthViolation], list[tuple[int, Path]]]:
+    def scan_file_lengths(self) -> tuple[list[FileLengthViolation], list[FileLengthWarning], list[tuple[int, Path]]]:
         violations: list[FileLengthViolation] = []
+        warnings: list[FileLengthWarning] = []
         all_files: list[tuple[int, Path]] = []
 
         for p in self.root_dir.rglob("*"):
@@ -87,11 +98,13 @@ class HealthChecker:
                 all_files.append((line_count, rel_path))
                 if line_count > self.limit:
                     violations.append(FileLengthViolation(rel_path, line_count, self.limit))
+                elif line_count >= self.warning_threshold:
+                    warnings.append(FileLengthWarning(rel_path, line_count, self.warning_threshold, self.limit))
             except (OSError, UnicodeDecodeError):
                 continue
 
         all_files.sort(key=lambda x: x[0], reverse=True)
-        return violations, all_files[:10]
+        return violations, warnings, all_files[:10]
 
     def check_priority_sync(self) -> tuple[bool, list[str]]:
         priority_file = self.backlog_dir / "PRIORITY.md"
@@ -125,7 +138,7 @@ class HealthChecker:
         return len(errors) == 0, errors
 
     def run_check(self) -> HealthCheckReport:
-        violations, top_files = self.scan_file_lengths()
+        violations, warnings, top_files = self.scan_file_lengths()
         sync_ok, sync_errors = self.check_priority_sync()
 
         complete_count = 0
@@ -154,6 +167,7 @@ class HealthChecker:
 
         return HealthCheckReport(
             violations=violations,
+            warnings=warnings,
             top_largest_files=top_files,
             completed_tasks=complete_count,
             refined_tasks=refined_count,
