@@ -1,7 +1,7 @@
 ---
 id: '0013'
 title: Interactive Terminal UI (TUI) Dashboard
-status: Refined
+status: Complete
 dependencies:
 - TASK-0004
 - TASK-0005
