@@ -2,7 +2,7 @@
 id: '0071'
 title: Inference-Driven Backlog Refinement, Architectural Drift Reconciliation, and
   Scope Slicing
-status: Refined
+status: Complete
 dependencies:
 - TASK-0007
 - TASK-0004
@@ -21,8 +21,6 @@ governing_prds:
 governing_stories:
 - US-0116
 target_bc: backlog
-claimed_by: worker-1
-branch: feat/0071-inference-driven-backlog-refinement--arc
 ---
 
 # TASK-0071: Inference-Driven Backlog Refinement, Architectural Drift Reconciliation, and Scope Slicing

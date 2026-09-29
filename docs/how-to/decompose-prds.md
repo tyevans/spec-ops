@@ -28,4 +28,15 @@ To promote unblocked proposed tasks and maintain an optimal ready buffer:
 spec-ops curate
 ```
 
-The curator promotes eligible tasks to `docs/project/backlog/refined/` and atomically synchronizes `PRIORITY.md`.
+### Cognitive Inference-Driven Refinement
+
+To critically audit candidate tasks against living repository reality, reconcile architectural drift across superseded ADRs and refactored modules, slice oversized tasks (>500 lines) into thin vertical slices, and synthesize Definition of Ready (DoR) acceptance criteria:
+
+```bash
+# Preview proposed reconciliations and decompositions without modifying disk state
+spec-ops curate --infer --dry-run
+
+# Execute cognitive curation and replenishment
+spec-ops curate --infer
+```
+

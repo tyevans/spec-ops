@@ -171,6 +171,35 @@ def main() -> int:
         return handle_prd_command(args, config, parser)
 
     if args.command == "curate":
+        if getattr(args, "infer", False):
+            from ..backlog.inference_curator import InferenceCurator
+
+            inf_curator = InferenceCurator(config, model=getattr(args, "model", None))
+            inf_res = inf_curator.curate(dry_run=getattr(args, "dry_run", False))
+            if getattr(args, "dry_run", False):
+                print(inf_res.diff_output)
+                print(f"\n{inf_res.message}")
+            else:
+                print(f"=== Backlog Curation (Inference-Driven) ===")
+                print(inf_res.message)
+                if inf_res.tasks_sliced:
+                    print("Decomposed oversized tasks:")
+                    for tid in inf_res.tasks_sliced:
+                        print(f"   ✂ {tid}")
+                if inf_res.tasks_reconciled:
+                    print("Reconciled architectural drift:")
+                    for tid in inf_res.tasks_reconciled:
+                        print(f"   ⟳ {tid}")
+                if inf_res.tasks_refined:
+                    print("Refined tasks:")
+                    for tid in inf_res.tasks_refined:
+                        print(f"   ✓ {tid}")
+                if inf_res.audit_trail:
+                    print("\nCuration Audit Trail:")
+                    for entry in inf_res.audit_trail:
+                        print(f"   • {entry}")
+            return 0
+
         curator = BacklogCurator(config)
         res = curator.curate()
         print(f"=== Backlog Curation ===")

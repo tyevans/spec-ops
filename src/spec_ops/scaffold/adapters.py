@@ -196,34 +196,39 @@ Consult `AGENTS.md` for the full system constitution and definition of done.
 
 CURATE_SKILL_MD = """---
 name: curate
-description: Audit backlog health and perform Just-In-Time (JIT) refinement to maintain the ready buffer in docs/project/backlog/refined/. Triggered by /curate.
+description: Audit backlog health and perform cognitive, inference-driven refinement to maintain the ready buffer in docs/project/backlog/refined/. Triggered by /curate.
 ---
 
-# Backlog Curation & JIT Buffer Refinement
+# Backlog Curation & Cognitive Refinement
 
-Maintain repository backlog health and align engineering tasks with the roadmap. Follow lean software engineering principles: maintain a lean buffer of ready tasks in `refined/` (~10 tasks), prioritize foundational enablers before dependent milestone features, and continuously surface refactoring opportunities before hard invariants are breached.
+Perform interactive, inference-driven backlog curation and buffer replenishment. Maintain repository backlog health by auditing candidate tasks against living repository reality, reconciling architectural drift across superseded ADRs and refactored modules, autonomously decomposing oversized monolithic tasks (>500 lines) into INVEST-compliant thin vertical slices and spikes, and synthesizing missing Definition of Ready (DoR) criteria.
 
-## Execution Procedure
+## Cognitive Refinement Procedure
 
-### Step 1: Run SpecOps Curation
-Execute the automated backlog curator command:
+### Step 1: Audit Candidates with Inference Dry-Run
+Run the SpecOps cognitive curation engine in dry-run mode to inspect candidate tasks, architectural drift, and scope slicing without modifying disk state:
 ```bash
-uv run spec-ops curate
+uv run spec-ops curate --infer --dry-run
 ```
 
-### Step 2: Audit Invariant Health & Buffer
-Run the SpecOps health checker to inspect buffer readiness and file length limits:
+### Step 2: Interactive Architectural Review & Scope Slicing
+Review proposed reconciliations and decompositions with the developer or lead:
+1. **Audit Under-Buffered Queue**: Check `docs/project/backlog/refined/` and `docs/project/backlog/proposed/` to determine ready buffer deficit.
+2. **Reconcile Architectural Drift**: Verify that candidate tasks referencing refactored modules or superseded ADRs are updated to active domain models and active ADR citations.
+3. **Decompose Oversized Monolithic Tasks**: Review proposed vertical slices (<400 lines) and exploratory architectural spikes for tasks touching multiple bounded contexts or exceeding modular thresholds.
+4. **Synthesize Missing DoR Contracts**: Review generated executable Gherkin scenarios (`Given ... When ... Then`) and Hypothesis property invariants synthesized from PRD checkable outcomes.
+
+### Step 3: Human-in-the-Loop Review & Promotion
+Present the architectural diff and decomposition plan for confirmation, then execute live cognitive curation:
+```bash
+uv run spec-ops curate --infer
+```
+
+### Step 4: Verify Invariant Health & PRIORITY.md Sync
+Run the SpecOps health checker to verify 0 file limit violations (<500 lines) and strict `PRIORITY.md` index synchronization:
 ```bash
 uv run spec-ops health
 ```
-
-### Step 3: Inspect Backlog & Priority Sync
-1. Check `docs/project/backlog/refined/` and `docs/project/backlog/proposed/`.
-2. Ensure `docs/project/backlog/PRIORITY.md` reflects strict sequential priority order:
-   - Enablers / Foundation -> Current Milestone Epics -> Identified Refactorings -> Future Milestones.
-3. Validate candidate tasks meet the Definition of Ready (DoR):
-   - Frontmatter complete (`id`, `title`, `status: Refined`, `target_bc`, `governing_adrs`, `governing_stories`).
-   - Acceptance criteria executable through public frontdoors.
 """
 
 HEALTH_SKILL_MD = """---

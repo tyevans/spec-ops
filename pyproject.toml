@@ -37,6 +37,8 @@ testpaths = ["tests"]
 source_paths = ["src/spec_ops"]
 only_mutate = [
     "src/spec_ops/backlog/health.py*",
+    "src/spec_ops/backlog/reconciler.py*",
+    "src/spec_ops/backlog/slicer.py*",
     "src/spec_ops/prd/linter.py*",
     "src/spec_ops/prd/lifecycle.py*",
     "src/spec_ops/security/secrets/entropy.py*",
@@ -45,6 +47,9 @@ only_mutate = [
 ]
 pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
+    "tests/test_reconciler_and_slicer.py",
+    "tests/test_curation_properties.py",
+    "tests/test_bdd_us0116.py",
     "tests/test_hypothesis_properties.py",
     "tests/test_bdd_scenarios.py",
     "tests/test_task_decider.py",

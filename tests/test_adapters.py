@@ -101,6 +101,8 @@ def test_get_antigravity_slash_commands():
     curate_content = cmds[".agents/skills/curate/SKILL.md"]
     assert "name: curate" in curate_content
     assert "uv run spec-ops curate" in curate_content
+    assert "--infer" in curate_content
+    assert "Cognitive Refinement" in curate_content
     assert "PRIORITY.md" in curate_content
 
     health_content = cmds[".agents/skills/health/SKILL.md"]

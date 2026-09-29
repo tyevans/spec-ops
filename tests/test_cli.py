@@ -166,16 +166,38 @@ def test_cli_worker_flags():
     assert "--skip-review" in res.stdout
 
 
-def test_cli_cycle_flags():
+def test_cli_curate_flags():
     res = subprocess.run(
-        [sys.executable, "-m", "spec_ops.cli.main", "cycle", "--help"],
+        [sys.executable, "-m", "spec_ops.cli.main", "curate", "--help"],
         capture_output=True,
         text=True,
         env=CLI_ENV,
     )
     assert res.returncode == 0
-    assert "--no-review" in res.stdout
-    assert "--skip-review" in res.stdout
+    assert "--infer" in res.stdout
+    assert "--dry-run" in res.stdout
+    assert "--model" in res.stdout
+
+
+def test_cli_curate_infer_dry_run(tmp_path: Path):
+    subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "init", "--name", "CurateTest", "--dir", str(tmp_path)],
+        capture_output=True,
+        text=True,
+        check=True,
+        env=CLI_ENV,
+    )
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "curate", "--infer", "--dry-run"],
+        cwd=str(tmp_path),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 0
+    assert "SpecOps Inference Curation Audit (DRY RUN)" in res.stdout
+    assert "Inference curation dry-run complete" in res.stdout
+
 
 
 def test_cli_worker_execute_syntax(tmp_path: Path):

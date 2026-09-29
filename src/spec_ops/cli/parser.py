@@ -101,7 +101,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_decompose.add_argument("--no-spike", action="store_true", help="Omit initial architectural spike")
 
     # curate
-    subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
+    p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
+    p_curate.add_argument("--infer", action="store_true", help="Enable cognitive inference-driven curation, architectural drift reconciliation, and scope slicing")
+    p_curate.add_argument("--dry-run", action="store_true", help="Audit candidate tasks and display proposed reconciliations without modifying disk state")
+    p_curate.add_argument("--model", default=None, help="LLM model name to use for inference")
 
     # visualizer
     p_viz = subparsers.add_parser("visualizer", help="Living 2D graph visualizer")
