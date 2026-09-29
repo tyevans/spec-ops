@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from rich.console import Console
 
+from spec_ops.config.loader import load_config
 from spec_ops.core.models import Task
 from spec_ops.scaffold.init import init_project
 from spec_ops.tui import TUIDashboard
@@ -23,7 +24,8 @@ from spec_ops.tui.views import (
 
 def test_tui_views_rendering(tmp_path: Path):
     init_project(tmp_path, name="TuiTest")
-    dashboard = TUIDashboard()
+    config = load_config(root_dir=tmp_path)
+    dashboard = TUIDashboard(config)
     # Test individual view renders
     header = render_header("TuiTest", "overview")
     assert header is not None
@@ -61,7 +63,8 @@ def test_tui_views_rendering(tmp_path: Path):
 
 def test_tui_dashboard_snapshots(tmp_path: Path):
     init_project(tmp_path, name="TuiSnapTest")
-    dashboard = TUIDashboard()
+    config = load_config(root_dir=tmp_path)
+    dashboard = TUIDashboard(config)
 
     console = Console(file=io.StringIO(), record=True, width=100)
     for view in ["overview", "backlog", "tree", "health"]:
@@ -74,13 +77,16 @@ def test_tui_dashboard_snapshots(tmp_path: Path):
 
 def test_tui_dashboard_curate(tmp_path: Path):
     init_project(tmp_path, name="TuiCurateTest")
-    dashboard = TUIDashboard()
+    config = load_config(root_dir=tmp_path)
+    dashboard = TUIDashboard(config)
     msg = dashboard.curate_backlog()
     assert "Curated" in msg
 
 
-def test_tui_dashboard_run_non_tty():
-    dashboard = TUIDashboard()
+def test_tui_dashboard_run_non_tty(tmp_path: Path):
+    init_project(tmp_path, name="TuiRunTest")
+    config = load_config(root_dir=tmp_path)
+    dashboard = TUIDashboard(config)
     # With non-tty stdin, run() should render a snapshot and return 0
     with patch("sys.stdin.isatty", return_value=False):
         ret = dashboard.run("overview")
