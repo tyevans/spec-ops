@@ -35,6 +35,15 @@ def test_init_project_creates_structure(tmp_path: Path):
     assert "Domain-Driven Design (DDD)" in agents_md
     assert "Diataxis Standards" in agents_md
 
+    pages_file = tmp_path / ".github" / "workflows" / "deploy-pages.yml"
+    assert pages_file.is_file()
+    pages_content = pages_file.read_text(encoding="utf-8")
+    assert "actions/deploy-pages@v4" in pages_content
+    assert "actions/upload-pages-artifact@v3" in pages_content
+    assert "uv run spec-ops docs build" in pages_content
+    assert "id-token: write" in pages_content
+    assert "pages: write" in pages_content
+
 
 def test_init_project_core_only_profiles(tmp_path: Path):
     target = tmp_path / "core_only"
@@ -45,3 +54,10 @@ def test_init_project_core_only_profiles(tmp_path: Path):
     assert "File Length Limit (<500 lines)" in agents_md
     assert "Executable BDD User Stories" not in agents_md
     assert "Domain-Driven Design (DDD)" not in agents_md
+
+
+def test_init_project_no_github_pages(tmp_path: Path):
+    target = tmp_path / "no_pages"
+    init_project(target, name="NoPages", github_pages=False)
+    assert not (target / ".github" / "workflows" / "deploy-pages.yml").exists()
+    assert (target / ".github" / "workflows" / "ci.yml").is_file()

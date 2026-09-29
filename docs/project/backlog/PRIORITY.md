@@ -16,7 +16,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0011 (Complete)**: [`0011-autonomous-git-worktree-worker-engine`](complete/0011-autonomous-git-worktree-worker-engine.md)
 - **TASK-0012 (Complete)**: [`0012-github-actions-ci-preflight-template`](complete/0012-github-actions-ci-preflight-template.md)
 - **TASK-0015 (Complete)**: [`0015-diataxis-documentation-framework-and-builder`](complete/0015-diataxis-documentation-framework-and-builder.md)
-- **TASK-0016 (Refined)**: [`0016-github-pages-automated-publishing-pipeline`](refined/0016-github-pages-automated-publishing-pipeline.md)
+- **TASK-0016 (Complete)**: [`0016-github-pages-automated-publishing-pipeline`](complete/0016-github-pages-automated-publishing-pipeline.md)
 - **TASK-0013 (Refined)**: [`0013-interactive-terminal-ui-dashboard`](refined/0013-interactive-terminal-ui-dashboard.md)
 - **TASK-0014 (Refined)**: [`0014-multi-agent-platform-adapters`](refined/0014-multi-agent-platform-adapters.md)
 - **TASK-0018 (Complete)**: [`0018-git-worktree-rescue-and-takeover-tooling`](complete/0018-git-worktree-rescue-and-takeover-tooling.md)

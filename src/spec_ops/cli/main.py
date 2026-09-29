@@ -35,6 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_init.add_argument("--profile", default="core,bdd,ddd", help="Comma-separated architectural profiles to install (default: core,bdd,ddd)")
     p_init.add_argument("--diataxis", action="store_true", default=True, help="Scaffold Diataxis documentation structure (default: True)")
     p_init.add_argument("--no-diataxis", dest="diataxis", action="store_false", help="Skip Diataxis documentation scaffolding")
+    p_init.add_argument("--github-pages", action="store_true", default=True, help="Scaffold GitHub Pages deployment workflow (default: True)")
+    p_init.add_argument("--no-github-pages", dest="github_pages", action="store_false", help="Skip GitHub Pages deployment workflow scaffolding")
 
     # docs
     p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")
@@ -124,7 +126,7 @@ def main() -> int:
     if args.command == "init":
         target = Path(args.dir).resolve()
         profile_list = [p.strip() for p in args.profile.split(",") if p.strip()]
-        created = init_project(target, name=args.name, profiles=profile_list, diataxis=args.diataxis)
+        created = init_project(target, name=args.name, profiles=profile_list, diataxis=args.diataxis, github_pages=args.github_pages)
         print(f"✨ Initialized SpecOps in {target}")
         print(f"📋 Installed Profiles: {', '.join(profile_list)}")
         print(f"📁 Created {len(created)} file(s) and directory structures.")

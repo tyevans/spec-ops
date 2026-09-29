@@ -152,6 +152,7 @@ from ..profiles.registry import resolve_adrs_for_profiles
 from .agents_md import generate_agents_md
 from .ci_workflow import generate_ci_workflow
 from .diataxis import scaffold_diataxis_docs
+from .pages_workflow import generate_pages_workflow
 
 
 def init_project(
@@ -159,6 +160,7 @@ def init_project(
     name: str | None = None,
     profiles: list[str] | None = None,
     diataxis: bool = True,
+    github_pages: bool = True,
 ) -> list[Path]:
     """Scaffolds the full SpecOps directory structure and starter files with baseline ADRs."""
     root = target_dir.resolve()
@@ -247,6 +249,11 @@ Establish initial system architecture, core domain models, and blackbox test har
     # 6. GitHub Actions CI workflow
     ci_workflow = generate_ci_workflow(project_name)
     _write(Path(".github") / "workflows" / "ci.yml", ci_workflow)
+
+    # 6b. GitHub Pages deployment workflow
+    if github_pages:
+        pages_workflow = generate_pages_workflow(project_name)
+        _write(Path(".github") / "workflows" / "deploy-pages.yml", pages_workflow)
 
     # 7. .gitignore additions
     gitignore = root / ".gitignore"

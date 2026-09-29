@@ -1,4 +1,13 @@
-name: Deploy Documentation & Living Visualizer to GitHub Pages (SpecOps)
+"""GitHub Pages deployment workflow scaffolding for SpecOps."""
+
+from __future__ import annotations
+
+
+def generate_pages_workflow(project_name: str = "SpecOps", base_url: str | None = None) -> str:
+    """Generates an opinionated GitHub Actions workflow to compile and deploy documentation to GitHub Pages."""
+    base_url_flag = f"--base-url {base_url}" if base_url else "--base-url /${{ github.event.repository.name }}/"
+
+    return f"""name: Deploy Documentation & Living Visualizer to GitHub Pages ({project_name})
 
 on:
   push:
@@ -18,7 +27,7 @@ jobs:
   deploy-pages:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{{{ steps.deployment.outputs.page_url }}}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,7 +50,7 @@ jobs:
         run: uv sync
 
       - name: Build Diataxis Documentation and Living Visualizer
-        run: uv run spec-ops docs build --base-url /${{ github.event.repository.name }}/
+        run: uv run spec-ops docs build {base_url_flag}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -54,3 +63,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+"""
