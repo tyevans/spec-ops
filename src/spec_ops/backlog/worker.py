@@ -12,9 +12,25 @@ from typing import Any
 
 from ..config.models import SpecOpsConfig
 from ..core.models import Task
+from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
 from ..worker.merge_lock import MergeLockManager, _THREAD_LOCK as MERGE_LOCK
+from ..worker.worktree import cleanup_worktree as _cleanup_worktree, create_worktree as _create_worktree
 from .queue import BacklogQueue
 from .reviewer import TaskReviewEngine
+
+
+_GLOBAL_SHUTDOWN: bool = False
+
+
+def request_global_shutdown() -> None:
+    """Signals all worker retry loops to halt gracefully."""
+    global _GLOBAL_SHUTDOWN
+    _GLOBAL_SHUTDOWN = True
+
+
+def is_shutdown_requested() -> bool:
+    """Returns True if a shutdown has been requested via signal."""
+    return _GLOBAL_SHUTDOWN
 
 
 @dataclass
@@ -88,68 +104,11 @@ class BacklogWorkerEngine:
 
     def create_worktree(self, branch: str, worktree_dir: Path) -> None:
         """Robustly creates or resets an isolated git worktree branch."""
-        # 1. Force remove worktree from git tracking if already registered
-        subprocess.run(
-            ["git", "worktree", "remove", "--force", str(worktree_dir)],
-            cwd=self.repo_root,
-            capture_output=True,
-        )
-        # 2. Prune any stale administrative records in .git/worktrees/
-        subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
-
-        # 3. Clean up leftover directory if git worktree remove left anything behind
-        if worktree_dir.exists():
-            shutil.rmtree(worktree_dir, ignore_errors=True)
-
-        # 4. Prune again to ensure git recognizes the directory is gone
-        subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
-
-        # 5. Delete existing branch if it exists so we can start clean from HEAD
-        chk = subprocess.run(["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"], cwd=self.repo_root)
-        if chk.returncode == 0:
-            subprocess.run(["git", "branch", "-D", branch], cwd=self.repo_root, capture_output=True)
-
-        # 6. Add worktree with -B to create or reset branch cleanly from HEAD
-        add_res = subprocess.run(
-            ["git", "worktree", "add", "-B", branch, str(worktree_dir), "HEAD"],
-            cwd=self.repo_root,
-            capture_output=True,
-            text=True,
-        )
-        if add_res.returncode != 0:
-            # Fallback retry with prune in case of transient record lock
-            subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
-            retry_res = subprocess.run(
-                ["git", "worktree", "add", "-B", branch, str(worktree_dir), "HEAD"],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True,
-            )
-            if retry_res.returncode != 0:
-                raise RuntimeError(
-                    f"Failed to create worktree: {retry_res.stderr.strip() or add_res.stderr.strip()}"
-                )
+        _create_worktree(self.repo_root, branch, worktree_dir)
 
     def cleanup_worktree(self, worktree_dir: Path, branch: str, delete_branch: bool = False) -> None:
         """Removes a worktree and optionally deletes its associated branch."""
-        subprocess.run(
-            ["git", "worktree", "remove", "--force", str(worktree_dir)],
-            cwd=self.repo_root,
-            capture_output=True,
-        )
-        if worktree_dir.exists():
-            shutil.rmtree(worktree_dir, ignore_errors=True)
-        subprocess.run(
-            ["git", "worktree", "prune"],
-            cwd=self.repo_root,
-            capture_output=True,
-        )
-        if delete_branch:
-            subprocess.run(
-                ["git", "branch", "-D", branch],
-                cwd=self.repo_root,
-                capture_output=True,
-            )
+        _cleanup_worktree(self.repo_root, worktree_dir, branch, delete_branch=delete_branch)
 
     def invoke_agent(
         self,
@@ -177,6 +136,10 @@ class BacklogWorkerEngine:
         current_prompt = prompt
 
         for attempt in range(1, max_attempts + 1):
+            if is_shutdown_requested():
+                print(f"⚠️ Shutdown requested. Halting worker attempts for {task.canonical_id}.")
+                return False, "Interrupted by shutdown signal."
+
             print(f"🤖 Agent attempt {attempt}/{max_attempts} for {task.canonical_id}...")
             env = os.environ.copy()
             env["SPEC_OPS_WORKTREE"] = str(worktree_dir.resolve())
@@ -209,6 +172,14 @@ class BacklogWorkerEngine:
                 if res.returncode == 126:
                     print(f"❌ Security violation: {err_msg[:300]}")
                     return False, f"Command Prohibited (exit code 126): {err_msg}"
+                if (
+                    res.returncode in (130, -2, -15)
+                    or "interrupted" in err_msg.lower()
+                    or "context canceled" in err_msg.lower()
+                    or is_shutdown_requested()
+                ):
+                    print(f"⚠️ Agent execution interrupted by signal. Aborting attempts for {task.canonical_id}.")
+                    return False, f"Interrupted by signal: {err_msg}"
                 print(f"❌ Agent command returned code {res.returncode}: {err_msg[:300]}")
                 feedback = f"\n\n## Agent Execution Failure (Attempt {attempt})\n{err_msg}\nPlease resolve this failure."
                 current_prompt = prompt + feedback
@@ -357,7 +328,11 @@ class BacklogWorkerEngine:
                 with lock_mgr.acquire():
                     if lock_mgr.is_branch_behind_main(branch):
                         print(f"🔄 Task branch '{branch}' is behind main. Auto-rebasing onto latest main...")
-                        rebase_ok, rebase_msg = lock_mgr.rebase_branch(worktree_dir)
+                        rebase_ok, rebase_msg = rebase_with_inference_healing(
+                            worktree_dir,
+                            task,
+                            self.config,
+                        )
                         if not rebase_ok:
                             print(
                                 f"⚠️ Rebase conflict on {task.canonical_id}. Aborting rebase and preserving worktree with status 'Conflict'."
@@ -378,16 +353,14 @@ class BacklogWorkerEngine:
                                 f"Post-rebase preflight failed: {post_rebase_log}",
                             )
 
-                    subprocess.run(["git", "checkout", "main"], cwd=self.repo_root, check=True, capture_output=True)
-                    subprocess.run(["git", "merge", "--squash", branch], cwd=self.repo_root, check=True, capture_output=True)
-                    self.queue.complete_task(task)
-                    subprocess.run(["git", "add", "-A"], cwd=self.repo_root, check=True, capture_output=True)
-                    subprocess.run(
-                        ["git", "commit", "-m", commit_msg],
-                        cwd=self.repo_root,
-                        check=True,
-                        capture_output=True,
+                    merge_ok, merge_msg = squash_merge_and_commit(
+                        self.repo_root,
+                        branch,
+                        commit_msg,
+                        on_staged=lambda: self.queue.complete_task(task),
                     )
+                    if not merge_ok:
+                        return WorkerResult(task.canonical_id, False, f"Integration failed: {merge_msg}")
                 success = True
                 return WorkerResult(task.canonical_id, True, "Completed and integrated cleanly.")
             success = True

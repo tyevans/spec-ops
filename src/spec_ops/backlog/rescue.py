@@ -10,6 +10,7 @@ from typing import Any
 
 from ..config.models import SpecOpsConfig
 from ..core.models import Task
+from ..worker.integration import squash_merge_and_commit
 from .queue import BacklogQueue
 from .worker import MERGE_LOCK, BacklogWorkerEngine
 
@@ -187,15 +188,14 @@ class WorktreeRescueManager:
         # 5. Merge under MERGE_LOCK
         try:
             with MERGE_LOCK:
-                subprocess.run(["git", "checkout", "main"], cwd=self.repo_root, check=True, capture_output=True)
-                subprocess.run(["git", "merge", "--squash", info.branch], cwd=self.repo_root, check=True, capture_output=True)
-                self.queue.complete_task(target_task)
-                subprocess.run(["git", "add", "-A"], cwd=self.repo_root, check=True, capture_output=True)
-                subprocess.run(
-                    ["git", "commit", "-m", f"feat({clean_id.lower()}): {target_task.title} (rescued)"],
-                    cwd=self.repo_root,
-                    capture_output=True,
+                merge_ok, merge_msg = squash_merge_and_commit(
+                    self.repo_root,
+                    info.branch,
+                    f"feat({clean_id.lower()}): {target_task.title} (rescued)",
+                    on_staged=lambda: self.queue.complete_task(target_task),
                 )
+                if not merge_ok:
+                    return False, f"Merge failed: {merge_msg}"
 
             # 6. Cleanup
             worker_engine.cleanup_worktree(info.worktree_dir, info.branch, delete_branch=True)

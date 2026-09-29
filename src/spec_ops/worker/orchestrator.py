@@ -70,6 +70,11 @@ class BatchCycleOrchestrator:
             def _handle_signal(sig: int, _frame: Any) -> None:
                 print("\n⚠️ Graceful shutdown requested. Allowing active worktrees to checkpoint...")
                 self._shutdown_requested = True
+                try:
+                    from ..backlog.worker import request_global_shutdown
+                    request_global_shutdown()
+                except Exception:
+                    pass
 
             signal.signal(signal.SIGINT, _handle_signal)
             signal.signal(signal.SIGTERM, _handle_signal)
