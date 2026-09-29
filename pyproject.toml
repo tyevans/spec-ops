@@ -6,9 +6,11 @@ readme = "README.md"
 authors = [
     { name = "Ty Evans", email = "tyler@poorlythoughtout.com" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = [
+    "eventsource-py>=0.8.1",
     "pyyaml>=6.0.1",
+    "redstring>=0.11.0",
     "rich>=15.0.0",
 ]
 
@@ -38,6 +40,7 @@ pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
     "tests/test_hypothesis_properties.py",
     "tests/test_bdd_scenarios.py",
+    "tests/test_task_decider.py",
 ]
 runner = "pytest"
 
