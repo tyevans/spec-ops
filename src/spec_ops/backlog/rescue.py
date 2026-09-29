@@ -77,8 +77,12 @@ class WorktreeRescueManager:
             feedback = ""
             if prompt_file.exists():
                 text = prompt_file.read_text(encoding="utf-8", errors="ignore")
-                if "## Preflight Failure Feedback" in text:
+                if "## Preflight Failure Feedback" in text and "## Architectural Review Feedback" in text:
                     feedback = text.split("## Preflight Failure Feedback")[-1].strip()
+                elif "## Preflight Failure Feedback" in text:
+                    feedback = text.split("## Preflight Failure Feedback")[-1].strip()
+                elif "## Architectural Review Feedback" in text:
+                    feedback = text.split("## Architectural Review Feedback")[-1].strip()
 
             results.append(
                 RescueInfo(

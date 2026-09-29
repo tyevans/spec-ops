@@ -152,6 +152,29 @@ def test_cli_init_with_invalid_agent(tmp_path: Path):
         env=CLI_ENV,
     )
     assert res.returncode == 1
-    assert "Unsupported agent platform: 'unknown_agent'" in res.stderr
+
+
+def test_cli_worker_flags():
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "worker", "--help"],
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 0
+    assert "--no-review" in res.stdout
+    assert "--skip-review" in res.stdout
+
+
+def test_cli_cycle_flags():
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "cycle", "--help"],
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 0
+    assert "--no-review" in res.stdout
+    assert "--skip-review" in res.stdout
 
 

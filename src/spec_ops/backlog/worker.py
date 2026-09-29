@@ -1,7 +1,6 @@
-"""Autonomous multi-worker engine with git worktree backlog isolation."""
-
 from __future__ import annotations
 
+import concurrent.futures
 import os
 import shutil
 import subprocess
@@ -13,6 +12,7 @@ from typing import Any
 from ..config.models import SpecOpsConfig
 from ..core.models import Task
 from .queue import BacklogQueue
+from .reviewer import TaskReviewEngine
 
 MERGE_LOCK = threading.Lock()
 
@@ -84,6 +84,7 @@ class BacklogWorkerEngine:
         self.config = config
         self.repo_root = config.root_dir
         self.queue = BacklogQueue(config.backlog_dir)
+        self.reviewer = TaskReviewEngine(config)
 
     def run_preflight(self, cwd: Path) -> tuple[bool, str]:
         """Runs configured preflight verification commands with supply-chain lockfile checks."""
@@ -167,19 +168,29 @@ class BacklogWorkerEngine:
                 capture_output=True,
             )
 
-    def invoke_agent(self, task: Task, worktree_dir: Path, dry_run: bool = False) -> tuple[bool, str]:
-        """Invokes configured agent command with self-healing feedback loop."""
+    def invoke_agent(
+        self,
+        task: Task,
+        worktree_dir: Path,
+        dry_run: bool = False,
+        skip_review: bool = False,
+    ) -> tuple[bool, str]:
+        """Invokes configured agent command with self-healing feedback loop and concurrent review."""
         prompt = build_task_prompt(task, self.config)
         prompt_file = worktree_dir / ".task-prompt.md"
         prompt_file.write_text(prompt, encoding="utf-8")
 
+        run_review_enabled = not skip_review and getattr(self.config.execution, "enable_review", True)
+
         if dry_run or not self.config.execution.agent_command:
             print(f"📋 Task prompt generated at {prompt_file}")
+            if run_review_enabled:
+                self.reviewer.run_review(task, worktree_dir, dry_run=True, attempt=1)
             return True, "Dry-run: Prompt generated successfully."
 
         cmd_template = self.config.execution.agent_command
         max_attempts = self.config.execution.agent_max_attempts
-        preflight_log = ""
+        last_failure_log = ""
         current_prompt = prompt
 
         for attempt in range(1, max_attempts + 1):
@@ -203,33 +214,82 @@ class BacklogWorkerEngine:
                 feedback = f"\n\n## Agent Execution Failure (Attempt {attempt})\n{err_msg}\nPlease resolve this failure."
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
+                last_failure_log = err_msg
                 continue
 
-            # Verify that real code modifications were produced (excluding .task-prompt.md)
+            # Verify that real code modifications were produced (excluding prompt files)
             diff_check = subprocess.run(["git", "status", "--porcelain"], cwd=worktree_dir, capture_output=True, text=True)
             modified_lines = [
                 line for line in diff_check.stdout.splitlines()
-                if not line.strip().endswith(".task-prompt.md")
+                if not any(line.strip().endswith(p) for p in [".task-prompt.md", ".task-review-prompt.md"])
             ]
             if not modified_lines:
                 print(f"⚠️ Agent attempt {attempt} succeeded without producing code modifications. Retrying...")
                 feedback = f"\n\n## Failure Feedback (Attempt {attempt})\nNo code modifications were produced in the worktree. You must implement the requested feature."
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
+                last_failure_log = "No modifications produced."
                 continue
 
-            preflight_ok, preflight_log = self.run_preflight(worktree_dir)
-            if preflight_ok:
-                return True, f"Preflight passed on attempt {attempt}."
+            if run_review_enabled:
+                print(f"🔍 Running CI preflight and architectural review concurrently (Attempt {attempt})...")
+                with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+                    ci_future = executor.submit(self.run_preflight, worktree_dir)
+                    review_future = executor.submit(
+                        self.reviewer.run_review,
+                        task,
+                        worktree_dir,
+                        dry_run=dry_run,
+                        attempt=attempt,
+                    )
+                    preflight_ok, preflight_log = ci_future.result()
+                    review_res = review_future.result()
 
-            print(f"❌ Preflight failed on attempt {attempt}. Retrying with feedback...")
-            feedback = f"\n\n## Preflight Failure Feedback (Attempt {attempt})\n{preflight_log}\nPlease fix the issues above."
-            current_prompt = prompt + feedback
-            prompt_file.write_text(current_prompt, encoding="utf-8")
+                if preflight_ok and review_res.approved:
+                    print(f"✅ Preflight passed and architectural review approved on attempt {attempt}.")
+                    return True, f"Preflight and architectural review passed on attempt {attempt}."
 
-        return False, f"Agent failed after {max_attempts} attempts. Last log:\n{preflight_log or 'No modifications produced.'}"
+                feedback_sections: list[str] = []
+                if not preflight_ok:
+                    print(f"❌ CI preflight failed on attempt {attempt}.")
+                    feedback_sections.append(
+                        f"## Preflight Failure Feedback (Attempt {attempt})\n{preflight_log}\nPlease fix the preflight issues above."
+                    )
+                else:
+                    print(f"✓ CI preflight passed on attempt {attempt}.")
 
-    def execute_task(self, task: Task, local_merge: bool = True, dry_run: bool = False) -> WorkerResult:
+                if not review_res.approved:
+                    print(f"⚠️ Architectural review requested changes on attempt {attempt}.")
+                    feedback_sections.append(
+                        f"## Architectural Review Feedback (Attempt {attempt})\n{review_res.feedback}\nPlease address all architectural review feedback above."
+                    )
+                else:
+                    print(f"✓ Architectural review approved on attempt {attempt}.")
+
+                feedback = "\n\n".join(feedback_sections)
+                current_prompt = prompt + "\n\n" + feedback
+                prompt_file.write_text(current_prompt, encoding="utf-8")
+                last_failure_log = feedback
+            else:
+                preflight_ok, preflight_log = self.run_preflight(worktree_dir)
+                if preflight_ok:
+                    return True, f"Preflight passed on attempt {attempt}."
+
+                print(f"❌ Preflight failed on attempt {attempt}. Retrying with feedback...")
+                feedback = f"\n\n## Preflight Failure Feedback (Attempt {attempt})\n{preflight_log}\nPlease fix the issues above."
+                current_prompt = prompt + feedback
+                prompt_file.write_text(current_prompt, encoding="utf-8")
+                last_failure_log = preflight_log
+
+        return False, f"Agent failed after {max_attempts} attempts. Last feedback:\n{last_failure_log}"
+
+    def execute_task(
+        self,
+        task: Task,
+        local_merge: bool = True,
+        dry_run: bool = False,
+        skip_review: bool = False,
+    ) -> WorkerResult:
         """Executes a task in an isolated worktree with preflight verification."""
         branch = f"{self.config.execution.git_branch_prefix}{task.slug}"
         worktree_dir = self.repo_root / ".worktrees" / f"task-{task.id}"
@@ -246,7 +306,7 @@ class BacklogWorkerEngine:
             if not preflight_ok:
                 return WorkerResult(task.canonical_id, False, f"Initial preflight failed: {preflight_log}")
 
-            agent_ok, agent_log = self.invoke_agent(task, worktree_dir, dry_run=dry_run)
+            agent_ok, agent_log = self.invoke_agent(task, worktree_dir, dry_run=dry_run, skip_review=skip_review)
             if not agent_ok:
                 return WorkerResult(task.canonical_id, False, f"Agent execution failed: {agent_log}")
 
@@ -267,14 +327,18 @@ class BacklogWorkerEngine:
                         cwd=worktree_dir,
                     )
 
-            # Clean up task prompt file before checking status and committing
+            # Clean up task prompt files before checking status and committing
             prompt_file = worktree_dir / ".task-prompt.md"
             if prompt_file.exists():
                 prompt_file.unlink()
+            review_prompt_file = worktree_dir / ".task-review-prompt.md"
+            if review_prompt_file.exists():
+                review_prompt_file.unlink()
 
             diff_res = subprocess.run(["git", "status", "--porcelain"], cwd=worktree_dir, capture_output=True, text=True)
             if not diff_res.stdout.strip():
                 return WorkerResult(task.canonical_id, False, "No modifications produced by worker.")
+
 
             commit_msg = (
                 f"feat({task.canonical_id.lower()}): {task.title}\n\n"
