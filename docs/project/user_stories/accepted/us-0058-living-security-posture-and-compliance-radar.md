@@ -5,13 +5,13 @@ status: Accepted
 created: 2026-09-29
 persona: Sasha (The Trust & Security Officer)
 feature: FEAT-SEC-08
-governing_prd: PRD-0001
+governing_prd: PRD-0002
 ---
 
 # US-0058 — Living Security Posture and Compliance Radar in Project Visualizer
 
 ## Governing PRD
-- [`PRD-0001: SpecOps Autonomous Project Management Engine`](../../product/accepted/prd-0001-spec-ops-autonomous-project-management-engine.md)
+- [`PRD-0002: Enterprise Security, Supply-Chain & Compliance Engine`](../../product/accepted/prd-0002-enterprise-security-supply-chain-and-compliance-engine.md)
 
 ## User Story
 

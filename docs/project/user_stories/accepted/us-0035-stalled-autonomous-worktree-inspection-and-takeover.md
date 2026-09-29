@@ -5,13 +5,13 @@ status: Accepted
 created: 2026-09-29
 persona: Riley (The Human IC Developer)
 feature: FEAT-RSC-01
-governing_prd: PRD-0001
+governing_prd: PRD-0004
 ---
 
 # US-0035 — Stalled Autonomous Worktree Inspection and Diagnostic Takeover
 
 ## Governing PRD
-- [`PRD-0001: SpecOps Autonomous Project Management Engine`](../../product/accepted/prd-0001-spec-ops-autonomous-project-management-engine.md)
+- [`PRD-0004: Autonomous Multi-Worker Fleet & Preserved Worktree Rescue Engine`](../../product/accepted/prd-0004-autonomous-multi-worker-fleet-and-worktree-rescue-engine.md)
 
 ## User Story
 

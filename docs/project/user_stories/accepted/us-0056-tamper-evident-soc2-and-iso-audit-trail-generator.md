@@ -5,13 +5,13 @@ status: Accepted
 created: 2026-09-29
 persona: Sasha (The Trust & Security Officer)
 feature: FEAT-SEC-06
-governing_prd: PRD-0001
+governing_prd: PRD-0002
 ---
 
 # US-0056 — Tamper-Evident SOC2 and ISO 27001 Compliance Audit Trail Generator
 
 ## Governing PRD
-- [`PRD-0001: SpecOps Autonomous Project Management Engine`](../../product/accepted/prd-0001-spec-ops-autonomous-project-management-engine.md)
+- [`PRD-0002: Enterprise Security, Supply-Chain & Compliance Engine`](../../product/accepted/prd-0002-enterprise-security-supply-chain-and-compliance-engine.md)
 
 ## User Story
 
