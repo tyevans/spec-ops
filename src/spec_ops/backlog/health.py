@@ -20,6 +20,9 @@ EXCLUDE_DIRS = {
     "__pycache__",
     ".pytest_cache",
     ".ruff_cache",
+    "mutants",
+    ".mutmut-cache",
+    ".worktrees",
 }
 
 SOURCE_EXTENSIONS = {

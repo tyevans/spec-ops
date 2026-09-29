@@ -38,6 +38,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_build = docs_subs.add_parser("build", help="Compile static HTML documentation site and living 2D visualizer")
     p_build.add_argument("--out", help="Output directory for static site (default: site/)")
     p_build.add_argument("--base-url", default="/spec-ops/", help="Base URL path for links (default: /spec-ops/)")
+    p_audit = docs_subs.add_parser("audit", help="Audit Diataxis documentation structure, CLI drift, and code snippets")
+    p_audit.add_argument("--dir", help="Documentation directory (default: docs/)")
+    p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
 
     # profiles
     p_prof = subparsers.add_parser("profiles", help="Inspect and list architectural profiles and baseline ADRs")
@@ -87,6 +90,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_cycle.add_argument("--max-tasks", type=int, default=1, help="Maximum number of ready tasks to execute (default: 1)")
     p_cycle.add_argument("--dry-run", action="store_true", help="Run without invoking agents")
     p_cycle.add_argument("--no-merge", action="store_true", help="Do not squash-merge branches to main")
+    p_cycle.add_argument("--build-docs", action="store_true", help="Compile documentation static site after cycle")
 
     # rescue
     p_rescue = subparsers.add_parser("rescue", help="Inspect and recover stalled or failed autonomous worktrees")

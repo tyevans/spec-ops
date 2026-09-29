@@ -170,3 +170,95 @@ def test_property_target_agents_parsing(agents: list[str]):
     # Output must be sorted in canonical order
     indices = [SUPPORTED_AGENTS.index(a) for a in parsed]
     assert indices == sorted(indices)
+
+
+@given(
+    quadrant=st.sampled_from(["tutorials", "how-to", "reference", "explanation", "project", "misc", "random", "internal", "specs"]),
+    filename=st.text(alphabet="abcdefghijklmnopqrstuvwxyz0123456789_-", min_size=1, max_size=15),
+)
+def test_property_diataxis_quadrant_classification(quadrant: str, filename: str):
+    """Diataxis Quadrant Invariant: Files outside the 5 approved quadrants are deterministically flagged."""
+    from spec_ops.docs.auditor import check_diataxis_structure
+    from spec_ops.docs.models import APPROVED_QUADRANTS
+
+    with tempfile.TemporaryDirectory() as tmp_dir_str:
+        docs = Path(tmp_dir_str) / "docs"
+        # Scaffold all 5 required quadrants with valid files
+        for q in APPROVED_QUADRANTS:
+            (docs / q).mkdir(parents=True, exist_ok=True)
+            (docs / q / "base.md").write_text("# Base\n", encoding="utf-8")
+
+        # Now place test file in target quadrant
+        target_dir = docs / quadrant
+        target_dir.mkdir(parents=True, exist_ok=True)
+        (target_dir / f"{filename}.md").write_text("# Doc\n", encoding="utf-8")
+
+        violations, checked = check_diataxis_structure(docs)
+        is_approved = quadrant in APPROVED_QUADRANTS
+
+        unapproved_violations = [v for v in violations if f"unapproved quadrant '{quadrant}'" in v.message]
+        if is_approved:
+            assert len(unapproved_violations) == 0
+        else:
+            assert len(unapproved_violations) == 1
+            assert unapproved_violations[0].category == "structure"
+
+
+@given(
+    parser_flags=st.sets(
+        st.sampled_from(["--verbose", "--dry-run", "--json", "--output", "--format", "--force"]),
+        min_size=0,
+        max_size=6,
+    ),
+    doc_flags=st.sets(
+        st.sampled_from(["--verbose", "--dry-run", "--json", "--output", "--format", "--force"]),
+        min_size=0,
+        max_size=6,
+    ),
+)
+def test_property_cli_doc_option_drift_roundtrip(parser_flags: set[str], doc_flags: set[str]):
+    """CLI Drift Invariant: Option drift strictly detects the exact set difference between parser and docs."""
+    import argparse
+    from spec_ops.docs.cli_inspector import check_cli_drift
+
+    with tempfile.TemporaryDirectory() as tmp_dir_str:
+        docs = Path(tmp_dir_str) / "docs"
+        (docs / "reference").mkdir(parents=True, exist_ok=True)
+
+        args_str = " ".join(f"[{f}]" for f in sorted(doc_flags)) if doc_flags else "None"
+        cli_content = f"""# CLI Reference
+
+| Command | Arguments | Description |
+|---|---|---|
+| `spec-ops testcmd` | `{args_str}` | Test command |
+"""
+        (docs / "reference" / "cli.md").write_text(cli_content, encoding="utf-8")
+
+        parser = argparse.ArgumentParser(prog="spec-ops")
+        subs = parser.add_subparsers(dest="command")
+        p_cmd = subs.add_parser("testcmd")
+        for flag in parser_flags:
+            p_cmd.add_argument(flag, action="store_true")
+
+        violations, _ = check_cli_drift(docs, parser)
+
+        expected_missing = parser_flags - doc_flags
+        expected_extra = doc_flags - parser_flags
+
+        missing_violations = [v for v in violations if "missing option(s)" in v.message]
+        extra_violations = [v for v in violations if "documents non-existent option(s)" in v.message]
+
+        if expected_missing:
+            assert len(missing_violations) == 1
+            for f in expected_missing:
+                assert f in missing_violations[0].message
+        else:
+            assert len(missing_violations) == 0
+
+        if expected_extra:
+            assert len(extra_violations) == 1
+            for f in expected_extra:
+                assert f in extra_violations[0].message
+        else:
+            assert len(extra_violations) == 0
+

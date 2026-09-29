@@ -73,7 +73,14 @@ def main() -> int:
     config = load_config()
 
     if args.command == "docs":
-        if args.docs_action == "build" or not args.docs_action:
+        if args.docs_action == "audit":
+            from ..docs.auditor import DocsAuditor
+            docs_dir = Path(args.dir).resolve() if getattr(args, "dir", None) else config.docs_dir
+            auditor = DocsAuditor(docs_dir, parser=parser)
+            report = auditor.run_audit()
+            auditor.print_report(report)
+            return 0 if report.is_clean else 1
+        elif args.docs_action == "build" or not args.docs_action:
             from ..docs.builder import build_docs_site
             out_dir = Path(args.out).resolve() if getattr(args, "out", None) else None
             base_url = getattr(args, "base_url", "/spec-ops/")

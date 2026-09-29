@@ -18,6 +18,7 @@ scenarios(
     "features/us_0001_project_init.feature",
     "features/us_0002_health_check.feature",
     "features/us_0007_multi_agent_adapters.feature",
+    "features/us_0008_diataxis_audit.feature",
 )
 
 
@@ -237,3 +238,80 @@ def verify_hard_invariants(bdd_context: dict[str, Any]):
     for path in [root / "CLAUDE.md", root / ".cursorrules", root / "GEMINI.md"]:
         content = path.read_text(encoding="utf-8")
         assert "500 lines" in content
+
+
+# --- US-0008 Steps ---
+
+
+@given("a project initialized with SpecOps and Diataxis documentation")
+def project_init_diataxis(bdd_context: dict[str, Any]):
+    target_dir = bdd_context["dir"]
+    res = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "spec_ops.cli.main",
+            "init",
+            "--name",
+            "DocAuditApp",
+            "--dir",
+            str(target_dir),
+            "--diataxis",
+        ],
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    assert res.returncode == 0
+
+
+@given('an unapproved documentation file is added to "docs/misc/random.md"')
+def add_unapproved_doc(bdd_context: dict[str, Any]):
+    target_dir = bdd_context["dir"]
+    unapproved_file = target_dir / "docs" / "misc" / "random.md"
+    unapproved_file.parent.mkdir(parents=True, exist_ok=True)
+    unapproved_file.write_text("# Random Unapproved Doc\n", encoding="utf-8")
+
+
+@when('the developer executes "spec-ops docs audit"')
+def execute_docs_audit(bdd_context: dict[str, Any]):
+    target_dir = bdd_context["dir"]
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "docs", "audit"],
+        cwd=str(target_dir),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_context["res"] = res
+
+
+@then("the audit command exits with code 0")
+def audit_exit_code_zero(bdd_context: dict[str, Any]):
+    assert bdd_context["res"].returncode == 0
+
+
+@then("reports that all 5 approved quadrants are verified")
+def audit_verified_quadrants(bdd_context: dict[str, Any]):
+    assert "All 5 approved quadrants verified" in bdd_context["res"].stdout
+
+
+@then("reports status CLEAN with 0 errors")
+def audit_status_clean(bdd_context: dict[str, Any]):
+    assert "Status: ✅ CLEAN" in bdd_context["res"].stdout
+
+
+@then("the audit command exits with code 1")
+def audit_exit_code_one(bdd_context: dict[str, Any]):
+    assert bdd_context["res"].returncode == 1
+
+
+@then("reports status DRIFT DETECTED")
+def audit_status_drift(bdd_context: dict[str, Any]):
+    assert "Status: ❌ DRIFT DETECTED" in bdd_context["res"].stdout
+
+
+@then('identifies the unapproved quadrant "misc"')
+def audit_identifies_unapproved(bdd_context: dict[str, Any]):
+    assert "misc" in bdd_context["res"].stdout
+

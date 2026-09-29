@@ -9,7 +9,7 @@ This guide explains how to break high-level PRD documents into thin vertical sli
 When a PRD is approved in `docs/project/product/accepted/`, decompose it into vertical slices:
 
 ```bash
-spec-ops prd decompose PRD-0001 --spikes
+spec-ops prd decompose PRD-0001
 ```
 
 This:

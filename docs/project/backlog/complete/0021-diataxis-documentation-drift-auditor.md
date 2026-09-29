@@ -1,7 +1,7 @@
 ---
 id: '0021'
 title: Diataxis Documentation Drift Auditor and Validator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0015
 governing_adrs:

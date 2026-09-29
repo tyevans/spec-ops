@@ -8,10 +8,11 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 
 | Command | Arguments | Description |
 |---|---|---|
-| `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--agent AGENTS] [--diataxis/--no-diataxis]` | Bootstrap a new PMaC project with profile ADRs and multi-agent platform adapters |
+| `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--agent AGENTS] [--diataxis/--no-diataxis] [--github-pages/--no-github-pages] [--pre-commit/--no-pre-commit]` | Bootstrap a new PMaC project with profile ADRs and multi-agent platform adapters |
 | `spec-ops profiles list` | None | List available architectural profiles |
 | `spec-ops health` | None | Verify file length limits and PRIORITY sync |
 | `spec-ops stats` | None | Report project statistics and entity counts |
+| `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
 | `spec-ops prd audit` | None | Audit PRD lifecycle statuses |
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike]` | Decompose PRD into vertical slices |
 | `spec-ops curate` | None | Promote unblocked tasks to refined buffer |
@@ -21,3 +22,4 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops rescue` | `[TASK_ID] [--list] [--complete] [--discard] [--prune]` | Inspect and recover stalled or failed autonomous worktrees |
 | `spec-ops tui` | `[--once] [--view {overview,backlog,tree,health}]` | Launch interactive Terminal UI (TUI) dashboard |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL]` | Compile Diataxis documentation static site and embedded 2D visualizer |
+| `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
