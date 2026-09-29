@@ -20,5 +20,24 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "hypothesis>=6.168.3",
+    "mutmut>=3.8.0",
     "pytest>=8.0.0",
+    "pytest-bdd>=8.1.0",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+
+[tool.mutmut]
+source_paths = ["src/spec_ops"]
+only_mutate = ["src/spec_ops/backlog/health.py*"]
+pytest_add_cli_args_test_selection = [
+    "tests/test_backlog_health_and_curator.py",
+    "tests/test_hypothesis_properties.py",
+    "tests/test_bdd_scenarios.py",
+]
+runner = "pytest"
+
+

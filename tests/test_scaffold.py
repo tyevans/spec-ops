@@ -33,7 +33,11 @@ def test_init_project_creates_structure(tmp_path: Path):
     assert "Strict Backlog Isolation" in agents_md
     assert "Executable BDD User Stories" in agents_md
     assert "Domain-Driven Design (DDD)" in agents_md
+    assert "Property-Based Testing (Hypothesis)" in agents_md
     assert "Diataxis Standards" in agents_md
+    assert "Definition of Ready (DoR)" in agents_md
+    assert "Definition of Done (DoD)" in agents_md
+
 
     pages_file = tmp_path / ".github" / "workflows" / "deploy-pages.yml"
     assert pages_file.is_file()

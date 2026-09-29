@@ -47,6 +47,7 @@ component: core
 3. Running `spec-ops prd decompose PRD-0001` generates vertical slices and user stories.
 4. Running `spec-ops curate` refines unblocked proposed tasks JIT to reach the buffer target.
 5. Running `spec-ops visualizer --build dist/visualizer.html` generates a self-contained interactive 2D graph bundle.
+6. Navigating visualizer deep links (`#tab=...`, `#entity=...`) activates target views and detail drawers with URL state synchronization.
 
 ## Linked User Stories
 
@@ -59,6 +60,7 @@ component: core
 - `US-0007`
 - `US-0008`
 - `US-0009`
+- `US-0010`
 
 ## Implementing Backlog Tasks
 
@@ -79,3 +81,9 @@ component: core
 - `TASK-0015`
 - `TASK-0016`
 - `TASK-0017`
+- `TASK-0018`
+- `TASK-0019`
+- `TASK-0020`
+- `TASK-0021`
+- `TASK-0022`
+- `TASK-0023`

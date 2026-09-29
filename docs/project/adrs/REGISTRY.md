@@ -10,3 +10,4 @@
 | ADR-0006 | Behavior-Driven Development (BDD) with Gherkin User Stories and Playwright | Accepted | 2026-09-29 |
 | ADR-0007 | Domain-Driven Design (DDD) Layering and Explicit Bounded Contexts | Accepted | 2026-09-29 |
 | ADR-0008 | Agent Constitution (AGENTS.md) and Diataxis Documentation Standards | Accepted | 2026-09-29 |
+| ADR-0009 | Property-Based Testing with Hypothesis and Mutation Testing with Mutmut | Accepted | 2026-09-29 |

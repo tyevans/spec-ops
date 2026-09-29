@@ -18,6 +18,7 @@
 - Diataxis documentation framework and static builder (`TASK-0015`).
 - GitHub Pages automated publishing pipeline (`TASK-0016`).
 
-## Milestone 3: Extensibility & Multi-Agent Integrations (Upcoming)
 - Rich Terminal UI (TUI) dashboard (`TASK-0013`).
 - Multi-agent platform adapters (Claude, Cursor, Antigravity) (`TASK-0014`).
+- Visualizer tab and filter URL state synchronization (`TASK-0022`).
+- Entity permalinks, canvas focal targeting, and shareable URL actions (`TASK-0023`).

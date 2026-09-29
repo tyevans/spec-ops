@@ -23,3 +23,6 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0013 (Refined)**: [`0013-interactive-terminal-ui-dashboard`](refined/0013-interactive-terminal-ui-dashboard.md)
 - **TASK-0014 (Refined)**: [`0014-multi-agent-platform-adapters`](refined/0014-multi-agent-platform-adapters.md)
 - **TASK-0021 (Proposed)**: [`0021-diataxis-documentation-drift-auditor`](proposed/0021-diataxis-documentation-drift-auditor.md)
+- **TASK-0022 (Proposed)**: [`0022-visualizer-tab-and-filter-url-state-synchronization`](proposed/0022-visualizer-tab-and-filter-url-state-synchronization.md)
+- **TASK-0023 (Proposed)**: [`0023-entity-permalinks-and-canvas-focal-targeting`](proposed/0023-entity-permalinks-and-canvas-focal-targeting.md)
+
