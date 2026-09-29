@@ -262,3 +262,77 @@ def test_property_cli_doc_option_drift_roundtrip(parser_flags: set[str], doc_fla
         else:
             assert len(extra_violations) == 0
 
+
+@given(
+    selected_profiles=st.sets(
+        st.sampled_from(["core", "bdd", "ddd", "security"]),
+        min_size=1,
+        max_size=4,
+    ).map(list)
+)
+def test_property_profile_permutations_generation(selected_profiles: list[str]):
+    """Profile Composition Invariant: Arbitrary profile permutations generate valid, non-overlapping sections without syntax corruption."""
+    import sys
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        import tomli as tomllib  # type: ignore
+
+    from spec_ops.scaffold.init import init_project
+
+    with tempfile.TemporaryDirectory() as tmp_dir_str:
+        tmp_dir = Path(tmp_dir_str)
+        init_project(
+            tmp_dir,
+            name="PermutationTest",
+            profiles=selected_profiles,
+            diataxis=False,
+            github_pages=False,
+            pre_commit=False,
+        )
+
+        toml_path = tmp_dir / "specops.toml"
+        assert toml_path.is_file()
+        toml_content = toml_path.read_text(encoding="utf-8")
+        parsed_toml = tomllib.loads(toml_content)
+        assert "project" in parsed_toml
+        assert "architecture" in parsed_toml
+
+        if "security" in selected_profiles:
+            assert "security" in parsed_toml
+            assert parsed_toml["security"]["secret_scanning"] is True
+            assert parsed_toml["security"]["lockfile_immutability"] is True
+            sec_md = tmp_dir / "docs" / "project" / "SECURITY.md"
+            assert sec_md.is_file()
+
+        agents_path = tmp_dir / "AGENTS.md"
+        assert agents_path.is_file()
+        agents_content = agents_path.read_text(encoding="utf-8")
+        assert "# PermutationTest Agent Operating Manual" in agents_content
+        assert "## Hard Invariants" in agents_content
+
+        assert agents_content.count("## Hard Invariants") == 1
+        assert agents_content.count("## Design Principles") == 1
+        assert agents_content.count("## Project Structure & Navigation") == 1
+        assert agents_content.count("## Definition of Ready (DoR)") == 1
+        assert agents_content.count("## Definition of Done (DoD)") == 1
+
+        if "security" in selected_profiles:
+            assert agents_content.count("## Security & Supply-Chain Hard Invariants") == 1
+            assert "hardcoding credentials" in agents_content
+            assert "unapproved lockfiles" in agents_content
+            assert "non-allowlisted shell commands" in agents_content
+        else:
+            assert "## Security & Supply-Chain Hard Invariants" not in agents_content
+
+        if "bdd" in selected_profiles:
+            assert "Executable BDD User Stories" in agents_content
+        else:
+            assert "Executable BDD User Stories" not in agents_content
+
+        if "ddd" in selected_profiles:
+            assert "Domain-Driven Design (DDD)" in agents_content
+        else:
+            assert "Domain-Driven Design (DDD)" not in agents_content
+
+

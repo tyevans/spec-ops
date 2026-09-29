@@ -172,6 +172,8 @@ We enforce **Domain-Driven Design (DDD) and Bounded Contexts**:
 """,
 )
 
+from .security import SECURITY_PROFILE
+
 PROFILES: dict[str, Profile] = {
     "core": Profile(
         id="core",
@@ -191,6 +193,7 @@ PROFILES: dict[str, Profile] = {
         description="Explicit bounded contexts, ubiquitous language, and declarative aggregate state boundaries.",
         adrs=[DDD_ADR_0007],
     ),
+    "security": SECURITY_PROFILE,
 }
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -36,6 +37,7 @@ def generate_agents_md(
 
     has_bdd = "bdd" in profiles_lower
     has_ddd = "ddd" in profiles_lower
+    has_security = "security" in profiles_lower
 
     if has_bdd:
         invariants.append(
@@ -58,6 +60,13 @@ def generate_agents_md(
             "   - Domain models, state machines, parsers, and health algorithms must maintain generative property tests (`@given(...)`).\n"
             "   - Core domain modules must maintain a minimum 80% mutation kill score under `mutmut`.\n"
             "   - Governed by ADR-0009."
+        )
+
+    if has_security:
+        invariants.append(
+            "9. **Security & Supply-Chain Hard Invariants**:\n"
+            "   - Autonomous agents are strictly forbidden from hardcoding credentials, modifying unapproved lockfiles, or executing non-allowlisted shell commands.\n"
+            "   - Enforced by `uv run spec-ops health --security` and preflight secret scanners. Governed by ADR-0010, ADR-0011, and ADR-0012."
         )
 
     invariants_text = "\n".join(invariants)
@@ -99,6 +108,17 @@ def generate_agents_md(
     ])
     dod_text = "\n".join(dod_items)
 
+    security_section = ""
+    if has_security:
+        security_section = """\n\n---
+
+## Security & Supply-Chain Hard Invariants
+
+These security and supply-chain guardrails are non-negotiable across all autonomous worker streams:
+1. **No Hardcoded Credentials**: Autonomous agents are strictly forbidden from hardcoding credentials, API keys, tokens, or high-entropy secrets in source code, tests, or git commits.
+2. **Lockfile Immutability**: Autonomous agents are strictly forbidden from modifying unapproved lockfiles (`uv.lock`, `package-lock.json`) without explicit human architectural approval.
+3. **Allowlisted Command Execution**: Autonomous agents are strictly forbidden from executing non-allowlisted shell commands outside approved development toolchains."""
+
     content = f"""# {project_name} Agent Operating Manual
 
 Welcome to **{project_name}**, managed via **SpecOps**—the opinionated, autonomous Project Management as Code (PMaC) engine for human architects and AI coding assistants.
@@ -111,7 +131,7 @@ All specifications, user stories, tasks, and architectural decisions are version
 
 These rules are non-negotiable. Autonomous agents and human contributors must follow them without exception:
 
-{invariants_text}
+{invariants_text}{security_section}
 
 ---
 
@@ -181,3 +201,29 @@ When picking up engineering work:
 5. **Complete**: Verify all Definition of Done (DoD) criteria; move task to `complete/` or use `spec-ops queue complete <task-id>`, update `PRIORITY.md`, and link commit or PR.
 """
     return content.strip() + "\n"
+
+
+def scaffold_agents_command(root_dir: Path) -> str:
+    """Scaffolds or regenerates AGENTS.md constitution tailored to installed profiles."""
+    from ..config.loader import load_config
+    from ..profiles.registry import resolve_adrs_for_profiles
+
+    cfg = load_config(root_dir=root_dir)
+    profiles = ["core", "bdd", "ddd"]
+
+    if cfg.security is not None:
+        if "security" not in profiles:
+            profiles.append("security")
+    else:
+        sec_md = root_dir / "docs" / "project" / "SECURITY.md"
+        toml_path = root_dir / "specops.toml"
+        if sec_md.exists() or (toml_path.exists() and "[security]" in toml_path.read_text(encoding="utf-8")):
+            if "security" not in profiles:
+                profiles.append("security")
+
+    adrs = resolve_adrs_for_profiles(profiles)
+    content = generate_agents_md(cfg.project.name, profiles, adrs)
+    agents_path = root_dir / "AGENTS.md"
+    agents_path.write_text(content, encoding="utf-8")
+    return "AGENTS.md updated successfully with active profile invariants."
+

@@ -10,7 +10,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 |---|---|---|
 | `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--agent AGENTS] [--diataxis/--no-diataxis] [--github-pages/--no-github-pages] [--pre-commit/--no-pre-commit]` | Bootstrap a new PMaC project with profile ADRs and multi-agent platform adapters |
 | `spec-ops profiles list` | None | List available architectural profiles |
-| `spec-ops health` | None | Verify file length limits and PRIORITY sync |
+| `spec-ops profiles apply` | `<PROFILE_NAME>` | Apply architectural profile to current repository |
+| `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
+| `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
+| `spec-ops health` | `[--security]` | Verify file length limits, PRIORITY sync, and security profile guardrails |
 | `spec-ops stats` | None | Report project statistics and entity counts |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
 | `spec-ops prd audit` | None | Audit PRD lifecycle statuses |

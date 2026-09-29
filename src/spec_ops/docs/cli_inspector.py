@@ -30,8 +30,12 @@ def extract_parser_commands(
         commands[prefix] = ParsedCLICommand(command=prefix, options=options, positionals=positionals)
         return commands
 
+    seen_subparsers: set[Any] = set()
     for subact in subactions:
         for name, subp in subact.choices.items():
+            if subp in seen_subparsers:
+                continue
+            seen_subparsers.add(subp)
             full_name = f"{prefix} {name}"
             commands.update(extract_parser_commands(subp, full_name))
 

@@ -1,7 +1,7 @@
 ---
 id: '0024'
 title: Security Profile Scaffolding and Living Constitution Guardrails
-status: Refined
+status: Complete
 dependencies:
 - TASK-0003
 - TASK-0010

@@ -17,6 +17,7 @@ from .models import (
     ExecutionSettings,
     ProjectSettings,
     QualitySettings,
+    SecuritySettings,
     SliceConfig,
     SpecOpsConfig,
 )
@@ -123,11 +124,26 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
         target_agents=list(exec_data.get("target_agents", [])),
     )
 
+    # Parse security
+    sec_data = data.get("security")
+    security = None
+    if sec_data is not None and isinstance(sec_data, dict):
+        security = SecuritySettings(
+            secret_scanning=sec_data.get("secret_scanning", True),
+            lockfile_immutability=sec_data.get("lockfile_immutability", True),
+            enforce_lockfile=sec_data.get("enforce_lockfile", True),
+            sandbox_enabled=sec_data.get("sandbox_enabled", True),
+            allowed_commands=list(sec_data.get("allowed_commands", ["pytest", "git", "uv"])),
+            reporting_contact=sec_data.get("reporting_contact", "security@example.com"),
+            pgp_fingerprint=sec_data.get("pgp_fingerprint", "ABCD 1234 EF56 7890 ABCD 1234 EF56 7890 SPEC OPS1"),
+        )
+
     return SpecOpsConfig(
         project=project,
         architecture=architecture,
         vertical_slices=slices,
         quality=quality,
         execution=execution,
+        security=security,
         root_dir=root,
     )

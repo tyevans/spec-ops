@@ -43,12 +43,22 @@ def build_parser() -> argparse.ArgumentParser:
     p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
 
     # profiles
-    p_prof = subparsers.add_parser("profiles", help="Inspect and list architectural profiles and baseline ADRs")
+    p_prof = subparsers.add_parser("profiles", aliases=["profile"], help="Inspect and list architectural profiles and baseline ADRs")
     prof_subs = p_prof.add_subparsers(dest="profile_action", help="Profile action")
     prof_subs.add_parser("list", help="List all available profiles and their baseline ADRs")
+    p_prof_apply = prof_subs.add_parser("apply", help="Apply architectural profile to current repository")
+    p_prof_apply.add_argument("profile_name", help="Profile name (e.g. security)")
+    p_prof_sync = prof_subs.add_parser("sync", help="Synchronize or restore architectural profile artifacts")
+    p_prof_sync.add_argument("profile_name", help="Profile name (e.g. security)")
+
+    # scaffold
+    p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
+    scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
+    scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
 
     # health
-    subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
+    p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
+    p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")
 
     # stats
     subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")

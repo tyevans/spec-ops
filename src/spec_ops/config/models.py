@@ -61,12 +61,24 @@ class ExecutionSettings:
 
 
 @dataclass
+class SecuritySettings:
+    secret_scanning: bool = True
+    lockfile_immutability: bool = True
+    enforce_lockfile: bool = True
+    sandbox_enabled: bool = True
+    allowed_commands: list[str] = field(default_factory=lambda: ["pytest", "git", "uv"])
+    reporting_contact: str = "security@example.com"
+    pgp_fingerprint: str = "ABCD 1234 EF56 7890 ABCD 1234 EF56 7890 SPEC OPS1"
+
+
+@dataclass
 class SpecOpsConfig:
     project: ProjectSettings = field(default_factory=ProjectSettings)
     architecture: ArchitectureSettings = field(default_factory=ArchitectureSettings)
     vertical_slices: list[SliceConfig] = field(default_factory=list)
     quality: QualitySettings = field(default_factory=QualitySettings)
     execution: ExecutionSettings = field(default_factory=ExecutionSettings)
+    security: SecuritySettings | None = None
     root_dir: Path = field(default_factory=Path.cwd)
 
     @property

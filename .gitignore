@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .hypothesis/
+.mutmut-cache
 .mutmut-cache/
 mutants/
 .task-prompt.md

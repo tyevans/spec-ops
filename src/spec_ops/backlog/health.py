@@ -66,10 +66,11 @@ class HealthCheckReport:
     buffer_status: str = "OPTIMAL"
     priority_sync_ok: bool = True
     sync_errors: list[str] = field(default_factory=list)
+    constitution_drift_warnings: list[str] = field(default_factory=list)
 
     @property
     def is_healthy(self) -> bool:
-        return len(self.violations) == 0 and self.priority_sync_ok
+        return len(self.violations) == 0 and self.priority_sync_ok and len(self.constitution_drift_warnings) == 0
 
 
 class HealthChecker:
@@ -140,9 +141,38 @@ class HealthChecker:
 
         return len(errors) == 0, errors
 
+    def check_constitution(self) -> list[str]:
+        agents_md = self.root_dir / "AGENTS.md"
+        if not agents_md.exists():
+            return ["AGENTS.md is missing. Run 'spec-ops scaffold agents' to restore."]
+
+        warnings: list[str] = []
+        content = agents_md.read_text(encoding="utf-8")
+
+        has_security = (
+            self.config.security is not None
+            or (self.root_dir / "docs" / "project" / "SECURITY.md").exists()
+        )
+        if not has_security:
+            toml_path = self.root_dir / "specops.toml"
+            if toml_path.exists() and "[security]" in toml_path.read_text(encoding="utf-8"):
+                has_security = True
+
+        if has_security:
+            if "Security & Supply-Chain Hard Invariants" not in content and "Security & Supply-Chain Invariants" not in content:
+                warnings.append("AGENTS.md is missing Security & Supply-Chain Hard Invariants. Run 'spec-ops scaffold agents' to update.")
+
+        return warnings
+
+    def check_security_policy(self) -> tuple[bool, str]:
+        from ..profiles.security import validate_security_policy
+
+        return validate_security_policy(self.root_dir)
+
     def run_check(self) -> HealthCheckReport:
         violations, warnings, top_files = self.scan_file_lengths()
         sync_ok, sync_errors = self.check_priority_sync()
+        constitution_warnings = self.check_constitution()
 
         complete_count = 0
         refined_count = 0
@@ -178,4 +208,5 @@ class HealthChecker:
             buffer_status=buffer_status,
             priority_sync_ok=sync_ok,
             sync_errors=sync_errors,
+            constitution_drift_warnings=constitution_warnings,
         )

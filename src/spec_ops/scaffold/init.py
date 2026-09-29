@@ -184,6 +184,9 @@ def init_project(
 
     # 1. specops.toml
     toml_content = DEFAULT_SPECOPS_TOML.format(name=project_name)
+    if "security" in [p.lower() for p in selected_profiles]:
+        from ..profiles.security import DEFAULT_SECURITY_TOML
+        toml_content += f"\n{DEFAULT_SECURITY_TOML.strip()}\n"
     if parsed_agents:
         formatted_agents = ", ".join(f'"{a}"' for a in parsed_agents)
         toml_content += f"\ntarget_agents = [{formatted_agents}]\n"
@@ -231,6 +234,9 @@ def init_project(
     _write(docs_project / "backlog" / "README.md", DEFAULT_BACKLOG_README)
     _write(docs_project / "backlog" / "PRIORITY.md", DEFAULT_PRIORITY)
     _write(docs_project / "backlog" / "ROADMAP.md", "# Delivery Roadmap\n\n## Milestone 1: Foundations\n- Core system architecture and blackbox harness.\n")
+    if "security" in [p.lower() for p in selected_profiles]:
+        from ..profiles.security import DEFAULT_SECURITY_MD
+        _write(docs_project / "SECURITY.md", DEFAULT_SECURITY_MD)
 
     task_adrs_yaml = "\n".join(f"  - {aid}" for aid in governing_adr_ids[:2])
     task_0001_content = f"""---

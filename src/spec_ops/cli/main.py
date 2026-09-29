@@ -30,17 +30,50 @@ def main() -> int:
         parser.print_help()
         return 0
 
-    if args.command == "profiles":
-        from ..profiles.registry import list_profiles
-        profiles = list_profiles()
-        print("=== SpecOps Architectural Profiles & Baseline ADRs ===")
-        for p in profiles:
-            print(f"\n📦 Profile: {p.id} — {p.name}")
-            print(f"   {p.description}")
-            print("   Baseline ADRs:")
-            for adr in p.adrs:
-                print(f"     • {adr.canonical_id}: {adr.title}")
-        return 0
+    config = load_config()
+
+    if args.command in ("profile", "profiles"):
+        if args.profile_action == "apply":
+            p_name = args.profile_name.lower()
+            if p_name == "security":
+                from ..profiles.security import apply_security_profile
+                apply_security_profile(config.root_dir)
+                print(f"✨ Applied '{p_name}' architectural profile to repository.")
+                return 0
+            else:
+                print(f"❌ Unknown profile: {p_name}", file=sys.stderr)
+                return 1
+        elif args.profile_action == "sync":
+            p_name = args.profile_name.lower()
+            if p_name == "security":
+                from ..profiles.security import sync_security_profile
+                sync_security_profile(config.root_dir)
+                print(f"✅ Synchronized '{p_name}' architectural profile.")
+                return 0
+            else:
+                print(f"❌ Unknown profile: {p_name}", file=sys.stderr)
+                return 1
+        else:
+            from ..profiles.registry import list_profiles
+            profiles = list_profiles()
+            print("=== SpecOps Architectural Profiles & Baseline ADRs ===")
+            for p in profiles:
+                print(f"\n📦 Profile: {p.id} — {p.name}")
+                print(f"   {p.description}")
+                print("   Baseline ADRs:")
+                for adr in p.adrs:
+                    print(f"     • {adr.canonical_id}: {adr.title}")
+            return 0
+
+    if args.command == "scaffold":
+        if args.scaffold_action == "agents":
+            from ..scaffold.agents_md import scaffold_agents_command
+            msg = scaffold_agents_command(config.root_dir)
+            print(f"✨ {msg}")
+            return 0
+        else:
+            parser.parse_args(["scaffold", "--help"])
+            return 0
 
     if args.command == "init":
         target = Path(args.dir).resolve()
@@ -69,8 +102,6 @@ def main() -> int:
         print(f"📁 Created {len(created)} file(s) and directory structures.")
         print("👉 Run 'spec-ops health' to verify repository invariants.")
         return 0
-
-    config = load_config()
 
     if args.command == "docs":
         if args.docs_action == "audit":
@@ -108,6 +139,13 @@ def main() -> int:
             for w in report.warnings:
                 print(f"   {w.path}: {w.lines} lines (warning threshold: {w.threshold}, limit: {w.limit})")
 
+        if report.constitution_drift_warnings:
+            print(f"\n⚠️ {len(report.constitution_drift_warnings)} Constitution Drift Warning(s):")
+            for cw in report.constitution_drift_warnings:
+                print(f"   - {cw}")
+        else:
+            print("✅ 0 file limit violations (<500 lines) and 0 constitution drift warnings.")
+
         print(f"\nBacklog State:")
         print(f"   Complete Tasks: {report.completed_tasks}")
         print(f"   Refined Buffer: {report.refined_tasks} ({report.buffer_status})")
@@ -119,6 +157,13 @@ def main() -> int:
                 print(f"   - {err}")
         else:
             print("✅ PRIORITY.md is synchronized with disk state.")
+
+        if getattr(args, "security", False):
+            sec_ok, sec_msg = checker.check_security_policy()
+            if not sec_ok:
+                print(f"❌ {sec_msg}")
+                return 1
+            print(f"✅ {sec_msg}")
 
         return 0 if report.is_healthy else 1
 
