@@ -188,6 +188,9 @@ def _run_node_test(html: str, test_script: str) -> None:
     assert res.returncode == 0, f"Node test failed:\nSTDOUT:\n{res.stdout}\nSTDERR:\n{res.stderr}"
 
 
+run_node_test = _run_node_test
+
+
 def test_node_deep_linking_initial_render(tmp_path: Path):
     """Verify deep-linking to view tabs and entities on initial load (US-0103 Scenario 1)."""
     init_project(tmp_path, name="TestDeepLink")

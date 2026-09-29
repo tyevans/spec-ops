@@ -53,6 +53,9 @@ VIEWS_JS = r"""
       if (canvasMain) canvasMain.style.display = "flex";
       if (dashboardMain) dashboardMain.style.display = "none";
       if (graphControls) graphControls.style.display = "flex";
+      if (typeof currentEntity !== "undefined" && currentEntity && window.focusNode) {
+        window.focusNode(currentEntity.id || currentEntity.name);
+      }
     } else {
       if (canvasMain) canvasMain.style.display = "none";
       if (dashboardMain) dashboardMain.style.display = "flex";
@@ -214,7 +217,10 @@ VIEWS_JS = r"""
                   <div class="kanban-card" onclick="openDrawer('${escapeHtml(t.id)}')">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
                       <span class="entity-pill pill-task" style="font-size:0.72rem;">${escapeHtml(t.id)}</span>
-                      ${t.target_bc ? `<span style="font-size:0.7rem; color:#67e8f9; font-mono">BC: ${escapeHtml(t.target_bc)}</span>` : ""}
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        ${t.target_bc ? `<span style="font-size:0.7rem; color:#67e8f9; font-mono">BC: ${escapeHtml(t.target_bc)}</span>` : ""}
+                        <button class="copy-btn copy-link-btn" onclick="event.stopPropagation(); window.copyDeepLink('${escapeHtml(t.id)}', this, event)" title="Copy deep link">🔗 Copy Link</button>
+                      </div>
                     </div>
                     <h4 style="font-size:0.83rem; font-weight:600; color:#fff; line-height:1.35; margin-bottom:8px;">${escapeHtml(t.title)}</h4>
                     <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; color:var(--text-muted); border-top:1px solid var(--border-subtle); padding-top:6px;">
@@ -301,6 +307,7 @@ VIEWS_JS = r"""
               <div style="margin-top:auto; padding-top:10px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.74rem; color:var(--text-muted);">${(a.implementing_tasks || []).length} implementing tasks</span>
                 <div style="display:flex; gap:6px;">
+                  <button class="ctrl-btn copy-link-btn" onclick="event.stopPropagation(); window.copyDeepLink('${escapeHtml(a.id)}', this, event)" title="Copy deep link">🔗 Copy Link</button>
                   <button class="ctrl-btn" onclick="window.filterByLinked('${escapeHtml(a.id)}', 'kanban')" title="Filter Kanban board by this ADR">📋 View Tasks</button>
                   <button class="ctrl-btn" onclick="openDrawer('${escapeHtml(a.id)}')">Inspect</button>
                 </div>

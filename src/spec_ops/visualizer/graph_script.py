@@ -27,10 +27,20 @@ GRAPH_JS = r"""
   let draggedNode = null;
   let searchQuery = "";
   let focusedNodeId = null;
-  let targetPanX = null;
-  let targetPanY = null;
+  function matchNode(n, cleanId) {
+    if (!n || !n.id) return false;
+    const nid = String(n.id).toUpperCase();
+    if (nid === cleanId) return true;
+    if (nid.replace("TASK-", "") === cleanId.replace("TASK-", "")) return true;
+    if (nid.replace("ADR-", "") === cleanId.replace("ADR-", "")) return true;
+    if (nid.replace("PRD-", "") === cleanId.replace("PRD-", "")) return true;
+    if (nid.replace("US-", "") === cleanId.replace("US-", "")) return true;
+    if (n.label && String(n.label).toUpperCase() === cleanId) return true;
+    if (n.name && String(n.name).toUpperCase() === cleanId) return true;
+    return false;
+  }
 
-  window.focusNode = function(nodeId) {
+  window.focusNode = function(nodeId, immediate = false) {
     if (!nodeId) {
       focusedNodeId = null;
       targetPanX = null;
@@ -38,12 +48,28 @@ GRAPH_JS = r"""
       return;
     }
     const cleanId = String(nodeId).toUpperCase();
-    const target = nodes.find(n => n.id.toUpperCase() === cleanId || n.id.replace("TASK-", "") === cleanId.replace("TASK-", ""));
+    const target = nodes.find(n => matchNode(n, cleanId));
     if (target) {
       focusedNodeId = target.id;
-      targetPanX = width / 2 - target.x * zoom;
-      targetPanY = height / 2 - target.y * zoom;
+      const cw = width || (canvas && canvas.clientWidth) || 1000;
+      const ch = height || (canvas && canvas.clientHeight) || 800;
+      targetPanX = cw / 2 - target.x * zoom;
+      targetPanY = ch / 2 - target.y * zoom;
+      if (immediate || (typeof isSyncingFromUrl !== "undefined" && isSyncingFromUrl)) {
+        panX = targetPanX;
+        panY = targetPanY;
+        targetPanX = null;
+        targetPanY = null;
+      }
     }
+  };
+
+  window.getFocusedNodeId = function() {
+    return focusedNodeId;
+  };
+
+  window.getCameraState = function() {
+    return { panX, panY, zoom, targetPanX, targetPanY, focusedNodeId };
   };
 
   function resize() {
@@ -205,15 +231,23 @@ GRAPH_JS = r"""
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      if (focusedNodeId && (n.id === focusedNodeId || n.id.toUpperCase() === focusedNodeId.toUpperCase())) {
-        const pulse = Math.sin(Date.now() / 200) * 4;
+      if (focusedNodeId && matchNode(n, String(focusedNodeId).toUpperCase())) {
+        const now = (typeof Date !== "undefined" && Date.now) ? Date.now() : 0;
+        const pulse = Math.sin(now / 220) * 3.5;
         ctx.save();
-        ctx.strokeStyle = "#38bdf8";
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.85)";
+        ctx.lineWidth = 2.5;
         ctx.shadowColor = "#38bdf8";
-        ctx.shadowBlur = 14;
+        ctx.shadowBlur = 16;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius + 8 + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(186, 230, 253, 0.95)";
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius + 3.5, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }

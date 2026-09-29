@@ -25,7 +25,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0056 (Complete)**: [`0056-flow-dag-imbalance-visualizer-fix`](complete/0056-flow-dag-imbalance-visualizer-fix.md)
 - **TASK-0021 (Complete)**: [`0021-diataxis-documentation-drift-auditor`](complete/0021-diataxis-documentation-drift-auditor.md)
 - **TASK-0022 (Complete)**: [`0022-visualizer-tab-and-filter-url-state-synchronization`](complete/0022-visualizer-tab-and-filter-url-state-synchronization.md)
-- **TASK-0023 (Proposed)**: [`0023-entity-permalinks-and-canvas-focal-targeting`](proposed/0023-entity-permalinks-and-canvas-focal-targeting.md)
+- **TASK-0023 (Complete)**: [`0023-entity-permalinks-and-canvas-focal-targeting`](complete/0023-entity-permalinks-and-canvas-focal-targeting.md)
 - **TASK-0024 (Refined)**: [`0024-security-profile-and-constitution-guardrails`](refined/0024-security-profile-and-constitution-guardrails.md)
 - **TASK-0025 (Proposed)**: [`0025-worker-process-sandboxing-architecture-spike`](proposed/0025-worker-process-sandboxing-architecture-spike.md)
 - **TASK-0026 (Proposed)**: [`0026-worker-process-sandboxing-and-execution-interceptors`](proposed/0026-worker-process-sandboxing-and-execution-interceptors.md)

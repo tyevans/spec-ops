@@ -21,24 +21,29 @@ DRAWER_JS = r"""
   }
 
   function findEntity(id) {
-    const rawId = id.toUpperCase();
-    let entity = (data.tasks || []).find(t => t.id === rawId || t.id.replace("TASK-", "") === id.replace("TASK-", ""));
+    if (!id) return null;
+    const rawId = String(id).toUpperCase();
+    let entity = (data.tasks || []).find(t => t.id && (t.id.toUpperCase() === rawId || t.id.toUpperCase().replace("TASK-", "") === rawId.replace("TASK-", "")));
     if (entity) return { entity, type: "TASK" };
 
-    entity = (data.stories || []).find(s => s.id === rawId || s.id.replace("US-", "") === id.replace("US-", ""));
+    entity = (data.stories || []).find(s => s.id && (s.id.toUpperCase() === rawId || s.id.toUpperCase().replace("US-", "") === rawId.replace("US-", "")));
     if (entity) return { entity, type: "STORY" };
 
-    entity = (data.prds || []).find(p => p.id === rawId || p.id.replace("PRD-", "") === id.replace("PRD-", ""));
+    entity = (data.prds || []).find(p => p.id && (p.id.toUpperCase() === rawId || p.id.toUpperCase().replace("PRD-", "") === rawId.replace("PRD-", "")));
     if (entity) return { entity, type: "PRD" };
 
-    entity = (data.adrs || []).find(a => a.id === rawId || a.id.replace("ADR-", "") === id.replace("ADR-", ""));
+    entity = (data.adrs || []).find(a => a.id && (a.id.toUpperCase() === rawId || a.id.toUpperCase().replace("ADR-", "") === rawId.replace("ADR-", "")));
     if (entity) return { entity, type: "ADR" };
 
-    entity = (data.personas || []).find(p => p.id.toLowerCase() === id.toLowerCase() || p.name.toLowerCase() === id.toLowerCase());
+    const lowerId = String(id).toLowerCase();
+    entity = (data.personas || []).find(p => (p.id && p.id.toLowerCase() === lowerId) || (p.name && p.name.toLowerCase() === lowerId));
     if (entity) return { entity, type: "PERSONA" };
 
-    entity = (data.bounded_contexts || []).find(b => b.id.toLowerCase() === id.toLowerCase());
+    entity = (data.bounded_contexts || []).find(b => (b.id && b.id.toLowerCase() === lowerId) || (b.name && b.name.toLowerCase() === lowerId));
     if (entity) return { entity, type: "BOUNDED CONTEXT" };
+
+    const node = (data.nodes || []).find(n => n.id && n.id.toUpperCase() === rawId);
+    if (node) return { entity: node, type: (node.type || "ENTITY").toUpperCase() };
 
     return null;
   }
@@ -258,27 +263,52 @@ DRAWER_JS = r"""
     const backdrop = document.getElementById("drawer-backdrop");
     if (backdrop) backdrop.classList.remove("open");
     currentEntity = null;
+    if (typeof activeTab !== "undefined" && activeTab === "graph" && window.focusNode) {
+      window.focusNode(null);
+    }
     if (typeof updateUrl === "function" && !isSyncingFromUrl) {
       updateUrl(false);
     }
   };
 
-  window.copyDeepLink = function() {
-    const url = (typeof window !== "undefined" && window.location) ? window.location.href : location.href;
-    const btn = document.getElementById("drawer-permalink-btn");
+  window.copyDeepLink = function(entityId, btnEl, event) {
+    if (event && event.stopPropagation) {
+      event.stopPropagation();
+    }
+    const targetId = entityId || (currentEntity ? (currentEntity.id || currentEntity.name) : null);
+    const base = (typeof window !== "undefined" && window.location && window.location.href)
+      ? window.location.href.split("#")[0]
+      : (typeof location !== "undefined" && location.href ? location.href.split("#")[0] : "");
+
+    let url = "";
+    if (!entityId && currentEntity && typeof serializeHash === "function") {
+      url = base + serializeHash();
+    } else if (targetId) {
+      const targetTab = (typeof activeTab !== "undefined" && activeTab) ? activeTab : "graph";
+      url = `${base}#tab=${encodeURIComponent(targetTab)}&entity=${encodeURIComponent(targetId)}`;
+    } else {
+      url = (typeof window !== "undefined" && window.location) ? window.location.href : (typeof location !== "undefined" ? location.href : "");
+    }
+
+    let btn = btnEl;
+    if (!btn && typeof document !== "undefined") {
+      btn = document.getElementById("drawer-permalink-btn");
+    }
+
     const showSuccess = () => {
       if (btn) {
         const prev = btn.textContent;
-        btn.textContent = "✓ Copied!";
+        btn.textContent = "✓ Copied URL!";
         setTimeout(() => { btn.textContent = prev; }, 1500);
       }
     };
+
+    showSuccess();
     const nav = (typeof window !== "undefined" && window.navigator) || (typeof navigator !== "undefined" ? navigator : null);
     if (nav && nav.clipboard && nav.clipboard.writeText) {
-      nav.clipboard.writeText(url).then(showSuccess).catch(showSuccess);
-    } else {
-      showSuccess();
+      nav.clipboard.writeText(url).catch(() => {});
     }
+    return url;
   };
 
   window.copyFilePath = function() {

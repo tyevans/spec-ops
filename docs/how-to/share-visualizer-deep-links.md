@@ -71,13 +71,22 @@ Supported filter parameters include:
 
 ---
 
-## Copying Permalinks
+## Copying Permalinks and Context Actions
 
 To copy a canonical permalink from the visualizer:
 
-1. Open any entity in the detail drawer (or click a node in the graph).
-2. Click the **🔗 Copy Deep Link** button in the drawer header.
-3. Paste the URL into pull request descriptions, architecture review notes, or agent prompt instructions.
+1. **Detail Drawer Header**: Click the **🔗 Copy Deep Link** button in the entity detail drawer header. Visual confirmation (`✓ Copied URL!`) confirms the canonical deep link has been copied to your clipboard.
+2. **Kanban Task Cards**: Click the **🔗 Copy Link** context action button directly on any Kanban card to copy its canonical URL.
+3. **ADR Governance Lists**: Click the **🔗 Copy Link** button on any ADR card in the ADR Architecture tab.
+
+---
+
+## 2D Canvas Focal Centering and Glowing Halo
+
+When deep linking to an entity on the relationship graph (`#tab=graph&entity=<ID>` or `#entity=<ID>`):
+- The 2D Canvas camera viewport automatically pans and centers directly on the target entity node.
+- A glowing dual-ring halo pulses around the target node to immediately distinguish it from neighboring nodes in the graph.
+- Opening or closing detail drawers synchronizes the URL hash (`entity=...`), smoothly centering the camera when inspected and clearing the focal halo when dismissed.
 
 ---
 

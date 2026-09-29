@@ -32,7 +32,12 @@ ROUTING_JS = r"""
     const groupBy = rawGroupBy === "bc" ? "bc" : "release";
 
     const linked = params.get("linked") || null;
-    const entity = params.get("entity") || null;
+    let entity = params.get("entity") || null;
+
+    if (!entity && hash && !hash.includes("=") && !hash.includes("&")) {
+      const trimmed = hash.trim();
+      if (trimmed) entity = trimmed;
+    }
 
     return { tab, q, status, bc, hideDone, groupBy, linked, entity };
   }

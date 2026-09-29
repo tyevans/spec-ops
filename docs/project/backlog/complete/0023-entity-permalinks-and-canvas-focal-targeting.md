@@ -1,19 +1,18 @@
 ---
 id: '0023'
 title: Entity Permalinks, Canvas Focal Targeting, and Shareable URL Actions
-status: Proposed
-created: 2026-09-29
+status: Complete
 dependencies:
-  - TASK-0022
+- TASK-0022
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0010
+- US-0010
 target_bc: visualizer
 ---
 
