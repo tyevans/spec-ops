@@ -34,14 +34,13 @@ pythonpath = ["src", "."]
 testpaths = ["tests"]
 
 [tool.mutmut]
-source_paths = ["src/spec_ops"]
-only_mutate = ["src/spec_ops/backlog/health.py*"]
+source_paths = ["src/spec_ops/security/secrets"]
+only_mutate = [
+    "src/spec_ops/security/secrets/entropy.py*",
+    "src/spec_ops/security/secrets/patterns.py*",
+]
 pytest_add_cli_args_test_selection = [
-    "tests/test_backlog_health_and_curator.py",
-    "tests/test_hypothesis_properties.py",
-    "tests/test_bdd_scenarios.py",
-    "tests/test_task_decider.py",
-    "tests/test_security_profile.py",
+    "tests/test_secrets_scanner.py",
 ]
 runner = "pytest"
 

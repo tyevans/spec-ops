@@ -4,6 +4,7 @@ import concurrent.futures
 import os
 import shutil
 import subprocess
+import sys
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -43,17 +44,44 @@ class BacklogWorkerEngine:
             if (cwd / "uv.lock").exists() and "uv lock --check" not in commands:
                 commands.insert(0, "uv lock --check")
 
+        # Secret scanning preflight check
+        sec_active = False
+        if self.config.security and self.config.security.secret_scanning:
+            sec_active = True
+        elif (cwd / "specops.toml").is_file() and "[security]" in (cwd / "specops.toml").read_text(encoding="utf-8"):
+            sec_active = True
+        elif (cwd / "docs" / "project" / "SECURITY.md").exists():
+            sec_active = True
+
+        if sec_active and not any("health" in c and "--security" in c for c in commands):
+            spec_ops_bin = Path(sys.executable).parent / "spec-ops"
+            if spec_ops_bin.is_file() or shutil.which("spec-ops"):
+                commands.insert(0, "spec-ops health --security")
+            else:
+                commands.insert(0, f"{sys.executable} -m spec_ops.cli.main health --security")
+
         sandbox_config = getattr(self.config.execution, "sandbox", None)
         if sandbox_config and getattr(sandbox_config, "isolate_network", False):
             from ..security.sandbox import ExecutionSandbox
             sandbox = ExecutionSandbox(worktree_dir=cwd, isolate_network=True)
             return sandbox.run_preflight_suite(commands, cwd=cwd)
 
+        src_dir = str(Path(__file__).resolve().parent.parent.parent)
+        curr_pythonpath = os.environ.get("PYTHONPATH", "")
+        new_pythonpath = f"{src_dir}:{curr_pythonpath}".rstrip(":")
+
+        env = {
+            **os.environ,
+            "PATH": f"{Path(sys.executable).parent}:{os.environ.get('PATH', '')}",
+            "PYTHONPATH": new_pythonpath,
+        }
+
         logs: list[str] = []
         for cmd in commands:
-            res = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
+            res = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, env=env)
             if res.returncode != 0:
-                logs.append(f"Command '{cmd}' failed (code {res.returncode}):\n{res.stderr or res.stdout}")
+                combined_output = (res.stdout + ("\n" + res.stderr if res.stderr else "")).strip()
+                logs.append(f"Command '{cmd}' failed (code {res.returncode}):\n{combined_output}")
                 return False, "\n".join(logs)
             logs.append(f"✓ '{cmd}' passed.")
         return True, "\n".join(logs)

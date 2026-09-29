@@ -1,0 +1,225 @@
+"""Executable BDD scenarios using pytest-bdd for credential detection stories (US-0052, US-0110)."""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+import pytest
+from pytest_bdd import given, parsers, scenarios, then, when
+
+from spec_ops.backlog.worker import BacklogWorkerEngine
+from spec_ops.config.loader import load_config
+from spec_ops.scaffold.init import init_project
+
+SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+CLI_ENV = {**os.environ, "PYTHONPATH": f"{SRC_DIR}:{os.environ.get('PYTHONPATH', '')}".rstrip(":")}
+
+scenarios(
+    "features/us_0052_credential_leak_detection.feature",
+    "features/us_0110_secret_detection_worktree_diffs.feature",
+)
+
+
+@pytest.fixture
+def bdd_secrets_context(tmp_path: Path) -> dict[str, Any]:
+    """Sets up an isolated git worktree environment for secret detection scenarios."""
+    init_project(tmp_path, name="SecretTestRepo", profiles=["core", "bdd", "ddd", "security"])
+
+    subprocess.run(["git", "init"], cwd=tmp_path, capture_output=True, check=True)
+    subprocess.run(["git", "config", "user.name", "Test Agent"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.email", "agent@specops.dev"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "chore: initial scaffold"], cwd=tmp_path, check=True)
+
+    return {"dir": tmp_path, "res": None, "feedback": "", "preflight_ok": None}
+
+
+# --- Given steps ---
+
+
+@given("an autonomous agent worktree where the agent has written an OpenAI API key or AWS secret access key into a source file")
+def agent_writes_openai_or_aws_secret(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    src_file = target / "src" / "app.py"
+    src_file.parent.mkdir(parents=True, exist_ok=True)
+    src_file.write_text('client = OpenAI(api_key="sk-proj-abc123def456ghi789jkl012mno345pqr4x9Z")\n', encoding="utf-8")
+
+
+@given("an autonomous agent worktree where an agent or developer has written an OpenAI API key, AWS secret access key, or RSA private key into a source file")
+def developer_writes_secrets_into_file(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    src_file = target / "src" / "app.py"
+    src_file.parent.mkdir(parents=True, exist_ok=True)
+    src_file.write_text(
+        "# Configuration\n"
+        "import os\n\n"
+        "def init():\n"
+        '    return "sk-proj-abc123def456ghi789jkl012mno345pqr4x9Z"\n',
+        encoding="utf-8",
+    )
+
+
+@given("an autonomous agent worktree with valid feature modifications containing zero credentials, private keys, or tracked .env files")
+def agent_worktree_with_clean_modifications(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    src_file = target / "src" / "feature.py"
+    src_file.parent.mkdir(parents=True, exist_ok=True)
+    src_file.write_text("def add(a: int, b: int) -> int:\n    return a + b\n", encoding="utf-8")
+
+
+@given("an autonomous agent worktree with feature modifications referencing credentials strictly through environment variables")
+def agent_worktree_with_env_var_credentials(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    src_file = target / "src" / "config.py"
+    src_file.parent.mkdir(parents=True, exist_ok=True)
+    src_file.write_text(
+        "import os\n\n"
+        'api_key = os.environ.get("OPENAI_API_KEY")\n'
+        'aws_key = os.getenv("AWS_SECRET_ACCESS_KEY")\n',
+        encoding="utf-8",
+    )
+
+
+@given('an autonomous worker session where the agent generates a ".env", ".env.production", or "id_rsa" file')
+def agent_generates_sensitive_dotfile(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    dotfile = target / ".env.production"
+    dotfile.write_text("DATABASE_PASSWORD=supersecretpassword123!\n", encoding="utf-8")
+
+
+# --- When steps ---
+
+
+@when("the worker engine executes preflight verification prior to git commit")
+def worker_executes_preflight(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    cfg = load_config(target)
+    engine = BacklogWorkerEngine(cfg)
+    ok, feedback = engine.run_preflight(target)
+    bdd_secrets_context["preflight_ok"] = ok
+    bdd_secrets_context["feedback"] = feedback
+
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "health", "--security"],
+        cwd=str(target),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_secrets_context["res"] = res
+
+
+@when('the worker engine executes "spec-ops health --security" prior to git commit')
+def worker_executes_health_security_cli(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "health", "--security"],
+        cwd=str(target),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_secrets_context["res"] = res
+    bdd_secrets_context["feedback"] = res.stdout
+
+
+@when('the preflight command "spec-ops health --security" executes')
+def preflight_command_health_security_executes(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "health", "--security"],
+        cwd=str(target),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_secrets_context["res"] = res
+
+
+@when("the worker engine executes preflight verification")
+def worker_engine_executes_preflight_for_dotfile(bdd_secrets_context: dict[str, Any]):
+    target = bdd_secrets_context["dir"]
+    cfg = load_config(target)
+    engine = BacklogWorkerEngine(cfg)
+    ok, feedback = engine.run_preflight(target)
+    bdd_secrets_context["preflight_ok"] = ok
+    bdd_secrets_context["feedback"] = feedback
+
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "health", "--security"],
+        cwd=str(target),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_secrets_context["res"] = res
+
+
+# --- Then steps ---
+
+
+@then('"spec-ops health --security" detects the high-entropy credential pattern')
+def verify_spec_ops_health_security_detects_secrets(bdd_secrets_context: dict[str, Any]):
+    output = bdd_secrets_context["res"].stdout
+    assert "High-entropy secret" in output or "sk-proj-****4x9Z" in output
+
+
+@then("the scanner detects the high-entropy credential pattern")
+def verify_scanner_detects_high_entropy_pattern(bdd_secrets_context: dict[str, Any]):
+    output = bdd_secrets_context["res"].stdout
+    assert "High-entropy secret" in output or "sk-proj-****4x9Z" in output
+
+
+@then("the preflight check exits with returncode 1, aborting the commit")
+def verify_preflight_aborts_commit(bdd_secrets_context: dict[str, Any]):
+    assert bdd_secrets_context["res"].returncode == 1
+    if bdd_secrets_context["preflight_ok"] is not None:
+        assert bdd_secrets_context["preflight_ok"] is False
+
+
+@then("diagnostic feedback listing the offending file path and masked token snippet is returned to the agent prompt for self-healing remediation.")
+def verify_diagnostic_feedback_path_and_snippet(bdd_secrets_context: dict[str, Any]):
+    combined = bdd_secrets_context["res"].stdout + "\n" + bdd_secrets_context["feedback"]
+    assert "app.py" in combined
+    assert "sk-proj-****4x9Z" in combined
+
+
+@then(parsers.parse('diagnostic feedback listing the offending file path, line number, and masked token snippet (e.g., "{example}") is returned to the agent prompt for self-healing remediation.'))
+def verify_diagnostic_feedback_full(bdd_secrets_context: dict[str, Any], example: str):
+    combined = bdd_secrets_context["res"].stdout + "\n" + bdd_secrets_context["feedback"]
+    assert "app.py" in combined
+    assert "sk-proj-****4x9Z" in combined
+
+
+@then('"spec-ops health --security" flags the presence of unignored sensitive files')
+def verify_flags_unignored_sensitive_files(bdd_secrets_context: dict[str, Any]):
+    output = bdd_secrets_context["res"].stdout
+    assert "Unignored sensitive file detected" in output or ".env.production" in output
+
+
+@then('the commit is aborted with actionable instructions to add the file to ".gitignore" and remove it from git staging.')
+def verify_commit_aborted_with_gitignore_staging_instructions(bdd_secrets_context: dict[str, Any]):
+    assert bdd_secrets_context["res"].returncode == 1
+    combined = bdd_secrets_context["res"].stdout + "\n" + bdd_secrets_context["feedback"]
+    assert ".gitignore" in combined
+    assert "staging" in combined
+
+
+@then("the check exits with returncode 0")
+def verify_check_exits_zero(bdd_secrets_context: dict[str, Any]):
+    assert bdd_secrets_context["res"].returncode == 0
+
+
+@then('reports "Security Invariant Met: 0 credential leaks detected".')
+def verify_security_invariant_met_short(bdd_secrets_context: dict[str, Any]):
+    assert "Security Invariant Met: 0 credential leaks detected" in bdd_secrets_context["res"].stdout
+
+
+@then('reports "Security Invariant Met: 0 credential leaks detected in working tree".')
+def verify_security_invariant_met_in_working_tree(bdd_secrets_context: dict[str, Any]):
+    assert "Security Invariant Met: 0 credential leaks detected in working tree" in bdd_secrets_context["res"].stdout
+

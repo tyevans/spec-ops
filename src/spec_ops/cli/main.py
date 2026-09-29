@@ -131,11 +131,28 @@ def main() -> int:
             print("✅ PRIORITY.md is synchronized with disk state.")
 
         if getattr(args, "security", False):
-            sec_ok, sec_msg = checker.check_security_policy()
-            if not sec_ok:
-                print(f"❌ {sec_msg}")
+            has_sec = (
+                config.security is not None
+                or (config.root_dir / "docs" / "project" / "SECURITY.md").exists()
+                or (
+                    (config.root_dir / "specops.toml").is_file()
+                    and "[security]" in (config.root_dir / "specops.toml").read_text(encoding="utf-8")
+                )
+            )
+            if has_sec:
+                sec_ok, sec_msg = checker.check_security_policy()
+                if not sec_ok:
+                    print(f"❌ {sec_msg}")
+                    return 1
+                print(f"✅ {sec_msg}")
+
+            from ..security.secrets.scanner import scan_worktree
+
+            scan_report = scan_worktree(config.root_dir)
+            if not scan_report.is_clean:
+                print(scan_report.format_diagnostics())
                 return 1
-            print(f"✅ {sec_msg}")
+            print("✅ Security Invariant Met: 0 credential leaks detected in working tree.")
 
         return 0 if report.is_healthy else 1
 

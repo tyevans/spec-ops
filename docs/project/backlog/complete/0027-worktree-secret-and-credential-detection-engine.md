@@ -1,7 +1,7 @@
 ---
 id: '0027'
 title: Worktree Diff Secret and High-Entropy Credential Detection Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0024
 governing_adrs:
@@ -15,8 +15,6 @@ governing_stories:
 - US-0052
 - US-0110
 target_bc: security
-claimed_by: worker-2
-branch: feat/0027-worktree-diff-secret-and-high-entropy-cr
 ---
 
 # TASK-0027: Worktree Diff Secret and High-Entropy Credential Detection Engine

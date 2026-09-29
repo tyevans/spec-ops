@@ -30,7 +30,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0025 (Complete)**: [`0025-worker-process-sandboxing-architecture-spike`](complete/0025-worker-process-sandboxing-architecture-spike.md)
 - **TASK-0071 (Refined)**: [`0071-inference-driven-backlog-refinement-and-architectural-reconciliation`](refined/0071-inference-driven-backlog-refinement-and-architectural-reconciliation.md)
 - **TASK-0026 (Proposed)**: [`0026-worker-process-sandboxing-and-execution-interceptors`](proposed/0026-worker-process-sandboxing-and-execution-interceptors.md)
-- **TASK-0027 (Refined)**: [`0027-worktree-secret-and-credential-detection-engine`](refined/0027-worktree-secret-and-credential-detection-engine.md)
+- **TASK-0027 (Complete)**: [`0027-worktree-secret-and-credential-detection-engine`](complete/0027-worktree-secret-and-credential-detection-engine.md)
 - **TASK-0028 (Proposed)**: [`0028-supply-chain-lockfile-verification-and-slopsquatting-defense`](proposed/0028-supply-chain-lockfile-verification-and-slopsquatting-defense.md)
 - **TASK-0029 (Proposed)**: [`0029-dependency-vulnerability-and-license-policy-gating`](proposed/0029-dependency-vulnerability-and-license-policy-gating.md)
 - **TASK-0030 (Proposed)**: [`0030-cryptographic-commit-verification-and-dual-custody-gate`](proposed/0030-cryptographic-commit-verification-and-dual-custody-gate.md)
