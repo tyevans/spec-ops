@@ -1,17 +1,16 @@
 ---
 id: '0013'
 title: Interactive Terminal UI (TUI) Dashboard
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0004
-  - TASK-0005
+- TASK-0004
+- TASK-0005
 governing_adrs:
-  - ADR-0001
+- ADR-0001
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0006
+- US-0006
 target_bc: visualizer
 ---
 

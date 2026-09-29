@@ -6,8 +6,11 @@ import argparse
 import sys
 from pathlib import Path
 
+import subprocess
 from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
+from ..backlog.queue import BacklogQueue
+from ..backlog.worker import BacklogWorkerEngine
 from ..config.loader import load_config
 from ..core.graph import process_project_graph
 from ..core.parser import SpecOpsParser
@@ -67,6 +70,19 @@ def build_parser() -> argparse.ArgumentParser:
     p_viz.add_argument("--serve", action="store_true", help="Run local interactive web server")
     p_viz.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
     p_viz.add_argument("--build", metavar="OUT_FILE", help="Generate standalone single-file HTML bundle")
+
+    # worker
+    p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
+    p_worker.add_argument("--task", help="Target task canonical ID (e.g. TASK-0009)")
+    p_worker.add_argument("--dry-run", action="store_true", help="Generate prompt without invoking agent")
+    p_worker.add_argument("--no-merge", action="store_true", help="Do not merge branch to main on completion")
+
+    # cycle
+    p_cycle = subparsers.add_parser("cycle", help="Execute end-to-end autonomous development cycle")
+    p_cycle.add_argument("--max-tasks", type=int, default=1, help="Maximum number of ready tasks to execute (default: 1)")
+    p_cycle.add_argument("--dry-run", action="store_true", help="Run without invoking agents")
+    p_cycle.add_argument("--no-merge", action="store_true", help="Do not squash-merge branches to main")
+    p_cycle.add_argument("--build-docs", action="store_true", help="Recompile documentation site and visualizer")
 
     return parser
 
@@ -198,6 +214,89 @@ def main() -> int:
         else:
             serve_visualizer(config, port=args.port)
             return 0
+
+    if args.command == "worker":
+        worker = BacklogWorkerEngine(config)
+        queue = BacklogQueue(config.backlog_dir)
+        target_task = None
+        if args.task:
+            clean_id = args.task.upper()
+            if not clean_id.startswith("TASK-") and clean_id.isdigit():
+                clean_id = f"TASK-{clean_id.zfill(4)}"
+            for t in queue.list_all_tasks():
+                if t.canonical_id == clean_id:
+                    target_task = t
+                    break
+            if not target_task:
+                print(f"❌ Task {args.task} not found in backlog.")
+                return 1
+        else:
+            ready = queue.get_ready_unblocked_tasks()
+            if not ready:
+                print("ℹ️ No ready, unblocked tasks in refined/ buffer. Run 'spec-ops curate' first.")
+                return 0
+            target_task = ready[0]
+
+        res = worker.execute_task(target_task, local_merge=not args.no_merge, dry_run=args.dry_run)
+        print(f"=== Worker Result ({target_task.canonical_id}) ===")
+        print(f"Status: {'✅ SUCCESS' if res.success else '❌ FAILED'}")
+        print(f"Message: {res.message}")
+        return 0 if res.success else 1
+
+    if args.command == "cycle":
+        print(f"🔄 Starting autonomous SpecOps development lifecycle ({config.project.name})...")
+        # Step 1: PRD Audit & Decompose
+        mgr = PRDManager(config)
+        audit_res = mgr.audit()
+        if audit_res.undecomposed_prds:
+            decomposer = PRDDecomposer(config)
+            for prd_id in audit_res.undecomposed_prds:
+                print(f"📄 Decomposing accepted PRD {prd_id}...")
+                decomposer.decompose(prd_id)
+
+        # Step 2: JIT Curate Backlog
+        curator = BacklogCurator(config)
+        cur_res = curator.curate()
+        print(f"📋 Backlog Curation: {cur_res.message}")
+
+        # Step 3: Health Check
+        checker = HealthChecker(config)
+        h_report = checker.run_check()
+        if not h_report.is_healthy:
+            print("❌ Invariant health check failed. Stopping cycle.")
+            for v in h_report.violations:
+                print(f"   Violation: {v.path} ({v.lines} lines > {v.limit})")
+            for err in h_report.sync_errors:
+                print(f"   Sync Error: {err}")
+            return 1
+        print("✅ Health invariants verified: 0 file violations, PRIORITY.md synchronized.")
+
+        # Step 4: Worker Execution
+        queue = BacklogQueue(config.backlog_dir)
+        ready_tasks = queue.get_ready_unblocked_tasks()
+        if not ready_tasks:
+            print("ℹ️ No ready unblocked tasks to execute.")
+        else:
+            limit = args.max_tasks if hasattr(args, "max_tasks") and args.max_tasks else 1
+            tasks_to_run = ready_tasks[:limit]
+            worker = BacklogWorkerEngine(config)
+            for task in tasks_to_run:
+                print(f"\n🚀 Executing next ready task: {task.canonical_id} — {task.title}")
+                res = worker.execute_task(task, local_merge=not args.no_merge, dry_run=args.dry_run)
+                if not res.success:
+                    print(f"❌ Worker failed on {task.canonical_id}: {res.message}")
+                    return 1
+                print(f"✅ Successfully integrated {task.canonical_id}.")
+
+        # Step 5: Visualizer & Docs build
+        if getattr(args, "build_docs", False):
+            print("📚 Compiling documentation and living 2D visualizer...")
+            build_script = config.root_dir / "scripts" / "build_docs.py"
+            if build_script.exists():
+                subprocess.run([sys.executable, str(build_script)], cwd=config.root_dir, check=False)
+
+        print("\n🎉 Autonomous cycle completed cleanly.")
+        return 0
 
     return 0
 
