@@ -14,7 +14,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0009 (Complete)**: [`0009-audit-and-extract-runefoble-system-patterns`](complete/0009-audit-and-extract-runefoble-system-patterns.md)
 - **TASK-0010 (Complete)**: [`0010-profile-driven-agents-md-scaffolding`](complete/0010-profile-driven-agents-md-scaffolding.md)
 - **TASK-0011 (Complete)**: [`0011-autonomous-git-worktree-worker-engine`](complete/0011-autonomous-git-worktree-worker-engine.md)
-- **TASK-0012 (Refined)**: [`0012-github-actions-ci-preflight-template`](refined/0012-github-actions-ci-preflight-template.md)
+- **TASK-0012 (Complete)**: [`0012-github-actions-ci-preflight-template`](complete/0012-github-actions-ci-preflight-template.md)
 - **TASK-0015 (Refined)**: [`0015-diataxis-documentation-framework-and-builder`](refined/0015-diataxis-documentation-framework-and-builder.md)
 - **TASK-0016 (Refined)**: [`0016-github-pages-automated-publishing-pipeline`](refined/0016-github-pages-automated-publishing-pipeline.md)
 - **TASK-0013 (Refined)**: [`0013-interactive-terminal-ui-dashboard`](refined/0013-interactive-terminal-ui-dashboard.md)

@@ -37,7 +37,7 @@ preflight = [
 ]
 
 [execution]
-agent_command = "agy -p '{{prompt}}'"
+agent_command = "agy --dangerously-skip-permissions -p {{prompt}}"
 agent_max_attempts = 3
 git_branch_prefix = "feat/"
 backlog_isolation = true
@@ -150,6 +150,7 @@ Establish initial system architecture, core domain models, and blackbox test har
 
 from ..profiles.registry import resolve_adrs_for_profiles
 from .agents_md import generate_agents_md
+from .ci_workflow import generate_ci_workflow
 
 
 def init_project(
@@ -241,9 +242,13 @@ Establish initial system architecture, core domain models, and blackbox test har
 """
     _write(docs_project / "backlog" / "refined" / "0001-initial-architecture-spike-and-setup.md", task_0001_content)
 
-    # 4. .gitignore additions
+    # 6. GitHub Actions CI workflow
+    ci_workflow = generate_ci_workflow(project_name)
+    _write(Path(".github") / "workflows" / "ci.yml", ci_workflow)
+
+    # 7. .gitignore additions
     gitignore = root / ".gitignore"
-    ignores = [".worktrees/", "dist/", "site/", "__pycache__/", "*.pyc", ".pytest_cache/"]
+    ignores = [".worktrees/", "dist/", "site/", "__pycache__/", "*.pyc", ".pytest_cache/", ".task-prompt.md"]
     if gitignore.exists():
         existing = gitignore.read_text(encoding="utf-8")
         to_add = [ig for ig in ignores if ig not in existing]

@@ -109,6 +109,21 @@ class BacklogWorkerEngine:
                 capture_output=True,
             )
 
+def build_agent_cmd(cmd_template: str, prompt: str, prompt_file: Path) -> list[str]:
+    """Safely builds argv list for agent command without shell quote-mangling."""
+    import shlex
+
+    if "{prompt_file}" in cmd_template:
+        formatted = cmd_template.format(prompt_file=str(prompt_file))
+        return shlex.split(formatted)
+    elif "{prompt}" in cmd_template:
+        placeholder = "__SPEC_OPS_PROMPT_PAYLOAD__"
+        parts = shlex.split(cmd_template.replace("{prompt}", placeholder))
+        return [prompt if p == placeholder else p for p in parts]
+    else:
+        return shlex.split(cmd_template) + [str(prompt_file)]
+
+
     def invoke_agent(self, task: Task, worktree_dir: Path, dry_run: bool = False) -> tuple[bool, str]:
         """Invokes configured agent command with self-healing feedback loop."""
         prompt = build_task_prompt(task, self.config)
@@ -120,24 +135,38 @@ class BacklogWorkerEngine:
             return True, "Dry-run: Prompt generated successfully."
 
         cmd_template = self.config.execution.agent_command
-        if "{prompt_file}" in cmd_template:
-            cmd = cmd_template.format(prompt_file=str(prompt_file))
-        elif "{prompt}" in cmd_template:
-            clean_prompt = prompt.replace('"', '\\"').replace("'", "\\'")
-            cmd = cmd_template.replace("{prompt}", clean_prompt)
-        else:
-            cmd = f"{cmd_template} {prompt_file}"
-
         max_attempts = self.config.execution.agent_max_attempts
         preflight_log = ""
+        current_prompt = prompt
+
         for attempt in range(1, max_attempts + 1):
             print(f"🤖 Agent attempt {attempt}/{max_attempts} for {task.canonical_id}...")
             env = os.environ.copy()
             env["SPEC_OPS_WORKTREE"] = str(worktree_dir.resolve())
             env["PWD"] = str(worktree_dir.resolve())
-            res = subprocess.run(cmd, shell=True, cwd=worktree_dir, env=env, capture_output=True, text=True)
+
+            cmd = build_agent_cmd(cmd_template, current_prompt, prompt_file)
+            res = subprocess.run(cmd, shell=False, cwd=worktree_dir, env=env, capture_output=True, text=True)
             if res.returncode != 0:
-                print(f"⚠️ Agent command returned code {res.returncode}: {res.stderr[:200]}")
+                err_msg = res.stderr.strip() or res.stdout.strip() or f"process returned code {res.returncode}"
+                print(f"❌ Agent command returned code {res.returncode}: {err_msg[:300]}")
+                feedback = f"\n\n## Agent Execution Failure (Attempt {attempt})\n{err_msg}\nPlease resolve this failure."
+                current_prompt = prompt + feedback
+                prompt_file.write_text(current_prompt, encoding="utf-8")
+                continue
+
+            # Verify that real code modifications were produced (excluding .task-prompt.md)
+            diff_check = subprocess.run(["git", "status", "--porcelain"], cwd=worktree_dir, capture_output=True, text=True)
+            modified_lines = [
+                line for line in diff_check.stdout.splitlines()
+                if not line.strip().endswith(".task-prompt.md")
+            ]
+            if not modified_lines:
+                print(f"⚠️ Agent attempt {attempt} succeeded without producing code modifications. Retrying...")
+                feedback = f"\n\n## Failure Feedback (Attempt {attempt})\nNo code modifications were produced in the worktree. You must implement the requested feature."
+                current_prompt = prompt + feedback
+                prompt_file.write_text(current_prompt, encoding="utf-8")
+                continue
 
             preflight_ok, preflight_log = self.run_preflight(worktree_dir)
             if preflight_ok:
@@ -145,9 +174,10 @@ class BacklogWorkerEngine:
 
             print(f"❌ Preflight failed on attempt {attempt}. Retrying with feedback...")
             feedback = f"\n\n## Preflight Failure Feedback (Attempt {attempt})\n{preflight_log}\nPlease fix the issues above."
-            prompt_file.write_text(prompt + feedback, encoding="utf-8")
+            current_prompt = prompt + feedback
+            prompt_file.write_text(current_prompt, encoding="utf-8")
 
-        return False, f"Agent failed after {max_attempts} attempts. Last log:\n{preflight_log}"
+        return False, f"Agent failed after {max_attempts} attempts. Last log:\n{preflight_log or 'No modifications produced.'}"
 
     def execute_task(self, task: Task, local_merge: bool = True, dry_run: bool = False) -> WorkerResult:
         """Executes a task in an isolated worktree with preflight verification."""
@@ -184,6 +214,11 @@ class BacklogWorkerEngine:
                         ["git", "checkout", "HEAD", "--", str(self.config.project.docs_dir)],
                         cwd=worktree_dir,
                     )
+
+            # Clean up task prompt file before checking status and committing
+            prompt_file = worktree_dir / ".task-prompt.md"
+            if prompt_file.exists():
+                prompt_file.unlink()
 
             diff_res = subprocess.run(["git", "status", "--porcelain"], cwd=worktree_dir, capture_output=True, text=True)
             if not diff_res.stdout.strip():

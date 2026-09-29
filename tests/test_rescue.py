@@ -49,3 +49,16 @@ def test_rescue_manager_discard(tmp_path: Path):
     ok, msg = mgr.discard_worktree("0018")
     assert ok
     assert not wt_dir.exists()
+
+
+def test_build_agent_cmd():
+    from spec_ops.backlog.worker import build_agent_cmd
+
+    cmd1 = build_agent_cmd("agy --dangerously-skip-permissions -p {prompt}", "My multi-line 'prompt' with \"quotes\"", Path("prompt.md"))
+    assert cmd1 == ["agy", "--dangerously-skip-permissions", "-p", "My multi-line 'prompt' with \"quotes\""]
+
+    cmd2 = build_agent_cmd("claude --file {prompt_file}", "prompt", Path("task.md"))
+    assert cmd2 == ["claude", "--file", "task.md"]
+
+    cmd3 = build_agent_cmd("aider --message", "prompt", Path("task.md"))
+    assert cmd3 == ["aider", "--message", "task.md"]

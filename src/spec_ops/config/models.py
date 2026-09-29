@@ -52,7 +52,7 @@ class QualitySettings:
 
 @dataclass
 class ExecutionSettings:
-    agent_command: str = "agy -p '{prompt}'"
+    agent_command: str = "agy --dangerously-skip-permissions -p {prompt}"
     agent_max_attempts: int = 3
     git_branch_prefix: str = "feat/"
     backlog_isolation: bool = True

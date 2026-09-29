@@ -19,6 +19,13 @@ def test_init_project_creates_structure(tmp_path: Path):
     toml_content = (tmp_path / "specops.toml").read_text(encoding="utf-8")
     assert 'name = "AcmeSystem"' in toml_content
 
+    ci_file = tmp_path / ".github" / "workflows" / "ci.yml"
+    assert ci_file.is_file()
+    ci_content = ci_file.read_text(encoding="utf-8")
+    assert "uv run spec-ops health" in ci_content
+    assert "uv run pytest" in ci_content
+    assert "uv lock --check" in ci_content
+
     agents_md = (tmp_path / "AGENTS.md").read_text(encoding="utf-8")
     assert "# AcmeSystem Agent Operating Manual" in agents_md
     assert "File Length Limit (<500 lines)" in agents_md
