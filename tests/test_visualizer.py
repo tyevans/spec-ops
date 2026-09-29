@@ -50,3 +50,19 @@ def test_visualizer_generation_on_scaffolded_project(tmp_path: Path):
     assert "function renderAdrsView(" in html
     assert "function renderPersonasView(" in html
     assert "window.openDrawer = function(" in html
+    assert "function computeFlowLayout(" in html
+    assert "function fitFlowView(" in html
+    assert "window.switchLayout = function(" in html
+
+
+def test_flow_dag_layout_script_present_and_balanced():
+    """Verify that flow DAG layout script contains multi-column balancing and relational sorting."""
+    from spec_ops.visualizer.layouts_script import LAYOUTS_JS
+
+    assert "computeFlowLayout" in LAYOUTS_JS
+    assert "fitFlowView" in LAYOUTS_JS
+    assert "targetMaxRows" in LAYOUTS_JS
+    assert "stageConfig" in LAYOUTS_JS
+    assert "nodePrdMap" in LAYOUTS_JS
+    assert "flowStages" in LAYOUTS_JS
+
