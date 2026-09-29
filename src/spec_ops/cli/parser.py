@@ -92,13 +92,18 @@ def build_parser() -> argparse.ArgumentParser:
     # worker
     p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
     p_worker.add_argument("--task", help="Target task canonical ID (e.g. TASK-0009)")
+    p_worker.add_argument("--drain", action="store_true", help="Continuously drain ready tasks until queue is empty")
+    p_worker.add_argument("--max-concurrency", "--max-workers", "--concurrency", dest="max_concurrency", type=int, default=1, help="Maximum number of concurrent workers (default: 1)")
+    p_worker.add_argument("--max-tasks", type=int, default=None, help="Maximum number of tasks to execute")
     p_worker.add_argument("--dry-run", action="store_true", help="Generate prompt without invoking agent")
     p_worker.add_argument("--no-merge", action="store_true", help="Do not merge branch to main on completion")
     p_worker.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
 
     # cycle
     p_cycle = subparsers.add_parser("cycle", help="Execute end-to-end autonomous development cycle")
-    p_cycle.add_argument("--max-tasks", type=int, default=1, help="Maximum number of ready tasks to execute (default: 1)")
+    p_cycle.add_argument("--max-tasks", type=int, default=None, help="Maximum number of ready tasks to execute (default: 1)")
+    p_cycle.add_argument("--max-concurrency", "--max-workers", "--concurrency", dest="max_concurrency", type=int, default=3, help="Maximum number of concurrent workers (default: 3)")
+    p_cycle.add_argument("--drain", action="store_true", help="Continuously drain ready tasks until queue is empty")
     p_cycle.add_argument("--dry-run", action="store_true", help="Run without invoking agents")
     p_cycle.add_argument("--no-merge", action="store_true", help="Do not squash-merge branches to main")
     p_cycle.add_argument("--build-docs", action="store_true", help="Compile documentation static site after cycle")

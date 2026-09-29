@@ -128,10 +128,14 @@ def check_cli_drift(
         missing_opts: set[str] = set()
         for opt in p_opts:
             if opt not in d_opts:
-                # Handle synonyms (e.g. --agent and --agents)
+                # Handle synonyms (e.g. --agent and --agents, concurrency aliases)
                 if opt == "--agents" and "--agent" in d_opts:
                     continue
                 if opt == "--agent" and "--agents" in d_opts:
+                    continue
+                if opt in ("--max-workers", "--concurrency", "--max-concurrency") and (
+                    {"--max-workers", "--concurrency", "--max-concurrency"} & d_opts
+                ):
                     continue
                 missing_opts.add(opt)
 

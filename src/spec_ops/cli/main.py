@@ -11,6 +11,7 @@ from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
 from ..backlog.queue import BacklogQueue
 from ..backlog.worker import BacklogWorkerEngine
+from ..worker import BatchCycleOrchestrator
 from ..config.loader import load_config
 from ..core.graph import process_project_graph
 from ..core.parser import SpecOpsParser
@@ -33,37 +34,8 @@ def main() -> int:
     config = load_config()
 
     if args.command in ("profile", "profiles"):
-        if args.profile_action == "apply":
-            p_name = args.profile_name.lower()
-            if p_name == "security":
-                from ..profiles.security import apply_security_profile
-                apply_security_profile(config.root_dir)
-                print(f"✨ Applied '{p_name}' architectural profile to repository.")
-                return 0
-            else:
-                print(f"❌ Unknown profile: {p_name}", file=sys.stderr)
-                return 1
-        elif args.profile_action == "sync":
-            p_name = args.profile_name.lower()
-            if p_name == "security":
-                from ..profiles.security import sync_security_profile
-                sync_security_profile(config.root_dir)
-                print(f"✅ Synchronized '{p_name}' architectural profile.")
-                return 0
-            else:
-                print(f"❌ Unknown profile: {p_name}", file=sys.stderr)
-                return 1
-        else:
-            from ..profiles.registry import list_profiles
-            profiles = list_profiles()
-            print("=== SpecOps Architectural Profiles & Baseline ADRs ===")
-            for p in profiles:
-                print(f"\n📦 Profile: {p.id} — {p.name}")
-                print(f"   {p.description}")
-                print("   Baseline ADRs:")
-                for adr in p.adrs:
-                    print(f"     • {adr.canonical_id}: {adr.title}")
-            return 0
+        from .profile_handler import handle_profile_command
+        return handle_profile_command(args, config)
 
     if args.command == "scaffold":
         if args.scaffold_action == "agents":
@@ -234,6 +206,18 @@ def main() -> int:
             return 0
 
     if args.command == "worker":
+        if getattr(args, "drain", False) or getattr(args, "max_tasks", None) is not None or getattr(args, "max_concurrency", 1) > 1:
+            orchestrator = BatchCycleOrchestrator(
+                config,
+                max_concurrency=getattr(args, "max_concurrency", 1),
+                max_tasks=getattr(args, "max_tasks", None),
+                drain=getattr(args, "drain", False),
+                dry_run=args.dry_run,
+                no_merge=args.no_merge,
+            )
+            report = orchestrator.run()
+            return 0 if not report.tasks_failed else 1
+
         worker = BacklogWorkerEngine(config)
         queue = BacklogQueue(config.backlog_dir)
         target_task = None
@@ -295,26 +279,25 @@ def main() -> int:
         print("✅ Health invariants verified: 0 file violations, PRIORITY.md synchronized.")
 
         # Step 4: Worker Execution
-        queue = BacklogQueue(config.backlog_dir)
-        ready_tasks = queue.get_ready_unblocked_tasks()
-        if not ready_tasks:
-            print("ℹ️ No ready unblocked tasks to execute.")
-        else:
-            limit = args.max_tasks if hasattr(args, "max_tasks") and args.max_tasks else 1
-            tasks_to_run = ready_tasks[:limit]
-            worker = BacklogWorkerEngine(config)
-            for task in tasks_to_run:
-                print(f"\n🚀 Executing next ready task: {task.canonical_id} — {task.title}")
-                res = worker.execute_task(
-                    task,
-                    local_merge=not args.no_merge,
-                    dry_run=args.dry_run,
-                    skip_review=getattr(args, "no_review", False),
-                )
-                if not res.success:
-                    print(f"❌ Worker failed on {task.canonical_id}: {res.message}")
-                    return 1
-                print(f"✅ Successfully integrated {task.canonical_id}.")
+        max_concurrency = getattr(args, "max_concurrency", 3)
+        drain = getattr(args, "drain", False)
+        max_tasks = getattr(args, "max_tasks", None)
+        if not drain and max_tasks is None:
+            max_tasks = 1
+
+        orchestrator = BatchCycleOrchestrator(
+            config,
+            max_concurrency=max_concurrency,
+            max_tasks=max_tasks,
+            drain=drain,
+            dry_run=args.dry_run,
+            no_merge=args.no_merge,
+            skip_review=getattr(args, "no_review", False),
+        )
+        report = orchestrator.run()
+        if report.tasks_failed:
+            print(f"❌ Cycle finished with {len(report.tasks_failed)} failure(s).")
+            return 1
 
         # Step 5: Visualizer & Docs build
         if getattr(args, "build_docs", False):
