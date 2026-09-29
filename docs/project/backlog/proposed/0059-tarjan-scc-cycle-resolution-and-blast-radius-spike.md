@@ -1,10 +1,10 @@
 ---
-id: '0058'
+id: '0059'
 title: 'Architectural Spike: Tarjan Strongly Connected Components (SCC) Cycle Resolution, Topological Sorting, and Blast-Radius Traversal'
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0057
+  - TASK-0059
 governing_adrs:
   - ADR-0001
   - ADR-0002
@@ -19,7 +19,7 @@ governing_stories:
 target_bc: core
 ---
 
-# TASK-0058: Architectural Spike: Tarjan Strongly Connected Components (SCC) Cycle Resolution, Topological Sorting, and Blast-Radius Traversal
+# TASK-0060: Architectural Spike: Tarjan Strongly Connected Components (SCC) Cycle Resolution, Topological Sorting, and Blast-Radius Traversal
 
 ## Summary
 Conduct a targeted architectural spike to evaluate, benchmark, and mathematically formalize cycle detection, topological sorting, and blast-radius traversal across cyclic directed multi-graphs. Evaluate Tarjan's Strongly Connected Components (SCC) algorithm versus Kahn's algorithm and Johnson's elementary cycle enumeration for dependency graphs up to 5,000 nodes. Establish algorithmic strategies to isolate strongly connected cyclic subgraphs, output exact node cycle paths with remediation suggestions, compute deterministic topological execution tiers for acyclic components, and calculate upstream/downstream blast radius transitive closures in under 10 milliseconds.

@@ -1,5 +1,5 @@
 ---
-id: '0056'
+id: '0057'
 title: 'Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing'
 status: Proposed
 created: 2026-09-29
@@ -20,7 +20,7 @@ governing_stories:
 target_bc: core
 ---
 
-# TASK-0056: Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing
+# TASK-0058: Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing
 
 ## Summary
 Conduct a focused architectural spike to prototype and benchmark content-addressed SHA-256 relational graph caching and resilient Markdown AST parsing with precise frontmatter diagnostic source mapping. Validate sub-50 millisecond warm-cache compilation times for large PMaC repositories (~1,000 entities), test downstream dependency invalidation semantics upon single-file edits, verify transparent recovery from corrupted cache payloads, and establish resilient parser error boundaries that report precise line and column diagnostics without throwing unhandled exceptions.

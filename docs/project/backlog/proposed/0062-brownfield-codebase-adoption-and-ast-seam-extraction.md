@@ -1,10 +1,10 @@
 ---
-id: '0061'
+id: '0062'
 title: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam Extraction
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0060
+  - TASK-0062
 governing_adrs:
   - ADR-0001
   - ADR-0002
@@ -21,7 +21,7 @@ governing_stories:
 target_bc: core
 ---
 
-# TASK-0061: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam Extraction
+# TASK-0063: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam Extraction
 
 ## Summary
 Implement tools for brownfield repository adoption and structural anti-rot governance: grandfathered file debt baselining (`spec-ops adopt [--grandfather-debt]`), proactive AST seam analysis with modular decomposition recommendations (`spec-ops decompose --suggest <file>`), automatic generation of backlog refactoring tasks for grandfathered oversized files (`spec-ops health --generate-refactor-tasks`), and static bounded context import boundary enforcement (`spec-ops health --architecture`).

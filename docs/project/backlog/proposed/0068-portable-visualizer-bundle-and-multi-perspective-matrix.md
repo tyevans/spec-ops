@@ -1,10 +1,10 @@
 ---
-id: '0067'
+id: '0068'
 title: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective Project Matrix
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0066
+  - TASK-0068
   - TASK-0008
   - TASK-0017
 governing_adrs:
@@ -21,7 +21,7 @@ governing_stories:
 target_bc: visualizer
 ---
 
-# TASK-0067: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective Project Matrix
+# TASK-0069: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective Project Matrix
 
 ## Summary
 Deliver an air-gapped, zero-dependency standalone HTML visualizer bundle export (`spec-ops visualizer export --output dist/index.html`) and a unified multi-perspective project matrix interface. In-line all CSS, SVG icons, and vanilla JavaScript into a single self-contained artifact runnable over local `file://` protocols in air-gapped environments. Implement a unified multi-tab dashboard shell featuring 2D force-directed canvas, Gantt delivery timelines, multi-dimensional relational matrix tables with instant cross-filtering (by status, persona, milestone, and bounded context), and an engineering lead console with live agent fleet telemetry.

@@ -1,10 +1,10 @@
 ---
-id: '0068'
+id: '0069'
 title: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Stakeholder Guided Tour
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0067
+  - TASK-0069
   - TASK-0022
 governing_adrs:
   - ADR-0001
@@ -19,10 +19,10 @@ governing_stories:
 target_bc: visualizer
 ---
 
-# TASK-0068: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Stakeholder Guided Tour
+# TASK-0070: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Stakeholder Guided Tour
 
 ## Summary
-Implement client-side reactive URL hash state synchronization, shareable permalinks with automated canvas camera focal targeting, and an interactive non-technical stakeholder guided tour modal. Synchronize active view tabs, filter queries, and selected entity drawers into browser URL hashes (`#tab=matrix&filter=bc:core&entity=TASK-0056`), support seamless browser forward/back history navigation (`popstate`), smooth-pan the 2D canvas camera directly to deep-linked entity nodes, and provide an interactive onboarding walkthrough guiding non-technical stakeholders through BDD acceptance matrices and executable UAT sign-off verification.
+Implement client-side reactive URL hash state synchronization, shareable permalinks with automated canvas camera focal targeting, and an interactive non-technical stakeholder guided tour modal. Synchronize active view tabs, filter queries, and selected entity drawers into browser URL hashes (`#tab=matrix&filter=bc:core&entity=TASK-0058`), support seamless browser forward/back history navigation (`popstate`), smooth-pan the 2D canvas camera directly to deep-linked entity nodes, and provide an interactive onboarding walkthrough guiding non-technical stakeholders through BDD acceptance matrices and executable UAT sign-off verification.
 
 ## Problem Statement & Context
 When team members share links to specific tasks or architectural decisions, recipient browsers often open to the default canvas view without context, forcing users to manually re-navigate tabs, type filters, and locate the node. Furthermore, non-technical product managers, designers, and business stakeholders struggle to navigate raw git specifications and complex graph networks. SpecOps requires URL hash state synchronization for effortless deep-linking and collaboration, paired with an interactive guided tour that surfaces executable BDD scenarios and formal UAT sign-off receipts.

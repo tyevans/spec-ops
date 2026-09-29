@@ -1,10 +1,10 @@
 ---
-id: '0069'
+id: '0070'
 title: Live Autonomous Worker Fleet Telemetry Console, Architectural Review Radar, and Milestone Burndown Exporter
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0068
+  - TASK-0070
   - TASK-0013
 governing_adrs:
   - ADR-0001
@@ -25,7 +25,7 @@ governing_stories:
 target_bc: visualizer
 ---
 
-# TASK-0069: Live Autonomous Worker Fleet Telemetry Console, Architectural Review Radar, and Milestone Burndown Exporter
+# TASK-0070: Live Autonomous Worker Fleet Telemetry Console, Architectural Review Radar, and Milestone Burndown Exporter
 
 ## Summary
 Implement live autonomous worker fleet telemetry, living architectural review radar, and multi-format executive presentation reporting: author a real-time worker fleet console monitoring active git worktrees, task allocations, and stalled worker exhaustion with one-click rescue launch; develop a living architectural review radar auditing bounded context couplings, ADR supersession lineage, and orphaned work items; provide a terminal backlog flow monitor (`spec-ops queue monitor`) visualizing JIT buffer waterlines with single-keystroke task promotion; govern architectural spike lifecycles (`spec-ops spike create/graduate`); verify unbroken commit provenance trailers; and generate executive milestone burndown slide decks (`spec-ops report burndown --format html|deck`).
