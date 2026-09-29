@@ -57,6 +57,7 @@ component: core
 - `US-0005`
 - `US-0006`
 - `US-0007`
+- `US-0008`
 
 ## Implementing Backlog Tasks
 
@@ -74,3 +75,5 @@ component: core
 - `TASK-0012`
 - `TASK-0013`
 - `TASK-0014`
+- `TASK-0015`
+- `TASK-0016`

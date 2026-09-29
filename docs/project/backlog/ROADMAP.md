@@ -10,11 +10,13 @@
 - JIT backlog queue and curation engine (`TASK-0007`).
 - Zero-dependency interactive 2D graph visualizer (`TASK-0008`).
 
-## Milestone 2: Agent Ecosystem & Operational Rigor (Active)
+## Milestone 2: Agent Ecosystem, Diataxis & Pages (Active)
 - Runefoble system extraction audit (`TASK-0009`).
 - Profile-driven `AGENTS.md` constitution scaffolding (`TASK-0010`).
 - Autonomous git worktree worker execution engine (`TASK-0011`).
 - GitHub Actions CI quality gate template (`TASK-0012`).
+- Diataxis documentation framework and static builder (`TASK-0015`).
+- GitHub Pages automated publishing pipeline (`TASK-0016`).
 
 ## Milestone 3: Extensibility & Multi-Agent Integrations (Upcoming)
 - Rich Terminal UI (TUI) dashboard (`TASK-0013`).
