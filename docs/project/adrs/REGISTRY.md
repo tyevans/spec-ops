@@ -11,3 +11,7 @@
 | ADR-0007 | Domain-Driven Design (DDD) Layering and Explicit Bounded Contexts | Accepted | 2026-09-29 |
 | ADR-0008 | Agent Constitution (AGENTS.md) and Diataxis Documentation Standards | Accepted | 2026-09-29 |
 | ADR-0009 | Property-Based Testing with Hypothesis and Mutation Testing with Mutmut | Accepted | 2026-09-29 |
+| ADR-0010 | Event-Sourced Core Substrate with eventsource-py | Accepted | 2026-09-29 |
+| ADR-0011 | Relational Knowledge Graph Substrate with redstring | Accepted | 2026-09-29 |
+| ADR-0012 | Concurrent Architectural Specification Review Step | Accepted | 2026-09-29 |
+

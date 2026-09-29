@@ -118,9 +118,11 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
     exec_data = data.get("execution", {})
     execution = ExecutionSettings(
         agent_command=exec_data.get("agent_command", "agy -p '{prompt}'"),
+        reviewer_command=exec_data.get("reviewer_command", ""),
         agent_max_attempts=exec_data.get("agent_max_attempts", 3),
         git_branch_prefix=exec_data.get("git_branch_prefix", "feat/"),
         backlog_isolation=exec_data.get("backlog_isolation", True),
+        enable_review=exec_data.get("enable_review", True),
         target_agents=list(exec_data.get("target_agents", [])),
     )
 

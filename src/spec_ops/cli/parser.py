@@ -94,6 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_worker.add_argument("--task", help="Target task canonical ID (e.g. TASK-0009)")
     p_worker.add_argument("--dry-run", action="store_true", help="Generate prompt without invoking agent")
     p_worker.add_argument("--no-merge", action="store_true", help="Do not merge branch to main on completion")
+    p_worker.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
 
     # cycle
     p_cycle = subparsers.add_parser("cycle", help="Execute end-to-end autonomous development cycle")
@@ -101,6 +102,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_cycle.add_argument("--dry-run", action="store_true", help="Run without invoking agents")
     p_cycle.add_argument("--no-merge", action="store_true", help="Do not squash-merge branches to main")
     p_cycle.add_argument("--build-docs", action="store_true", help="Compile documentation static site after cycle")
+    p_cycle.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
+
 
     # rescue
     p_rescue = subparsers.add_parser("rescue", help="Inspect and recover stalled or failed autonomous worktrees")

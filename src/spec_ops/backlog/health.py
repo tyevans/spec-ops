@@ -22,8 +22,10 @@ EXCLUDE_DIRS = {
     ".ruff_cache",
     "mutants",
     ".mutmut-cache",
+    ".hypothesis",
     ".worktrees",
 }
+
 
 SOURCE_EXTENSIONS = {
     ".py",

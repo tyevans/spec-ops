@@ -176,6 +176,7 @@ def test_property_target_agents_parsing(agents: list[str]):
     quadrant=st.sampled_from(["tutorials", "how-to", "reference", "explanation", "project", "misc", "random", "internal", "specs"]),
     filename=st.text(alphabet="abcdefghijklmnopqrstuvwxyz0123456789_-", min_size=1, max_size=15),
 )
+
 def test_property_diataxis_quadrant_classification(quadrant: str, filename: str):
     """Diataxis Quadrant Invariant: Files outside the 5 approved quadrants are deterministically flagged."""
     from spec_ops.docs.auditor import check_diataxis_structure
@@ -335,4 +336,47 @@ def test_property_profile_permutations_generation(selected_profiles: list[str]):
         else:
             assert "Domain-Driven Design (DDD)" not in agents_content
 
+
+@given(
+    summary=st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=0, max_size=100)
+)
+def test_property_review_output_approval_invariant(summary: str):
+    """Review Approval Invariant: Outputs containing STATUS: APPROVED without rejection markers evaluate to approved."""
+    from spec_ops.backlog.reviewer import parse_review_output
+
+    text = f"Summary: {summary}\nSTATUS: APPROVED\nAll good."
+    res = parse_review_output(text)
+    assert res.approved is True
+    assert res.feedback == ""
+
+
+@given(
+    feedback_items=st.lists(
+        st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=50),
+        min_size=1,
+        max_size=5,
+    )
+)
+def test_property_review_output_changes_requested_invariant(feedback_items: list[str]):
+    """Review Rejection Invariant: Outputs requesting changes extract feedback and evaluate to unapproved."""
+    from spec_ops.backlog.reviewer import parse_review_output
+
+    body = "\n".join(f"- {item.strip() or 'Issue'}" for item in feedback_items)
+    text = f"STATUS: CHANGES_REQUESTED\n\n## Review Feedback\n{body}"
+    res = parse_review_output(text)
+    assert res.approved is False
+    assert len(res.feedback) > 0
+
+
+@given(
+    arbitrary_text=st.text(min_size=0, max_size=500)
+)
+def test_property_review_output_robustness(arbitrary_text: str):
+    """Review Robustness Invariant: Any arbitrary input parses deterministically into a valid ReviewResult."""
+    from spec_ops.backlog.reviewer import parse_review_output
+
+    res = parse_review_output(arbitrary_text)
+    assert isinstance(res.approved, bool)
+    assert isinstance(res.feedback, str)
+    assert isinstance(res.raw_output, str)
 

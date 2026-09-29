@@ -255,7 +255,12 @@ def main() -> int:
                 return 0
             target_task = ready[0]
 
-        res = worker.execute_task(target_task, local_merge=not args.no_merge, dry_run=args.dry_run)
+        res = worker.execute_task(
+            target_task,
+            local_merge=not args.no_merge,
+            dry_run=args.dry_run,
+            skip_review=getattr(args, "no_review", False),
+        )
         print(f"=== Worker Result ({target_task.canonical_id}) ===")
         print(f"Status: {'✅ SUCCESS' if res.success else '❌ FAILED'}")
         print(f"Message: {res.message}")
@@ -300,7 +305,12 @@ def main() -> int:
             worker = BacklogWorkerEngine(config)
             for task in tasks_to_run:
                 print(f"\n🚀 Executing next ready task: {task.canonical_id} — {task.title}")
-                res = worker.execute_task(task, local_merge=not args.no_merge, dry_run=args.dry_run)
+                res = worker.execute_task(
+                    task,
+                    local_merge=not args.no_merge,
+                    dry_run=args.dry_run,
+                    skip_review=getattr(args, "no_review", False),
+                )
                 if not res.success:
                     print(f"❌ Worker failed on {task.canonical_id}: {res.message}")
                     return 1
