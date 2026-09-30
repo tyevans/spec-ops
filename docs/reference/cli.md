@@ -16,6 +16,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops health` | `[--security]` | Verify file length limits, PRIORITY sync, and security profile guardrails |
 | `spec-ops stats` | `[--cache]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
+| `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
 | `spec-ops prd new` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--friction FRICTION] [--good GOOD] [--anti-goals ANTI_GOALS] [--outcomes OUTCOMES] [--non-interactive]` | Interactively scaffold a new PRD specification in idea stage |
 | `spec-ops prd lint` | `[PATH]` | Lint PRD markdown files for mandatory sections and falsifiable outcomes |

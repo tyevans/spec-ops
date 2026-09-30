@@ -9,12 +9,14 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from spec_ops.core.spikes.cache_spike import (
+from spec_ops.core.ast_parser import (
     FrontmatterDiagnosticError,
+    parse_markdown_document,
+)
+from spec_ops.core.cache import (
     RelationalGraphCacheEngine,
     compute_cache_checksum,
     compute_content_sha256,
-    parse_markdown_document,
 )
 
 
@@ -101,3 +103,64 @@ def test_hypothesis_cache_corruption_recovery(tmp_path_factory, corrupt_data: st
     assert stats.total_indexed == 1
     assert len(data.tasks) == 1
     assert data.tasks[0].title == "Task One"
+
+
+@given(
+    perturbation=st.text(
+        alphabet=string.ascii_letters + string.digits + " \n",
+        min_size=1,
+        max_size=100,
+    )
+)
+@settings(max_examples=25)
+def test_hypothesis_subgraph_perturbation_isolation(tmp_path_factory, perturbation: str):
+    """Perturbation isolation invariant: arbitrary perturbations to non-dependent specification files
+    never alter the compiled graph edges of unrelated subgraphs."""
+    tmp_path = tmp_path_factory.mktemp("hyp_subgraph")
+    docs = tmp_path / "docs" / "project" / "backlog" / "refined"
+    docs.mkdir(parents=True, exist_ok=True)
+
+    # Subgraph A: Task 1 -> Task 2
+    (docs / "0001-task-a1.md").write_text(
+        "---\nid: '0001'\ntitle: Subgraph A1\nstatus: Refined\ndependencies: []\n---\n# A1\n",
+        encoding="utf-8",
+    )
+    (docs / "0002-task-a2.md").write_text(
+        "---\nid: '0002'\ntitle: Subgraph A2\nstatus: Refined\ndependencies: [TASK-0001]\n---\n# A2\n",
+        encoding="utf-8",
+    )
+
+    # Subgraph B: Task 3 -> Task 4 (completely independent of Subgraph A)
+    (docs / "0003-task-b1.md").write_text(
+        "---\nid: '0003'\ntitle: Subgraph B1\nstatus: Refined\ndependencies: []\n---\n# B1\n",
+        encoding="utf-8",
+    )
+    (docs / "0004-task-b2.md").write_text(
+        "---\nid: '0004'\ntitle: Subgraph B2\nstatus: Refined\ndependencies: [TASK-0003]\n---\n# B2\n",
+        encoding="utf-8",
+    )
+
+    engine = RelationalGraphCacheEngine(tmp_path)
+    base_data, _ = engine.compile_graph(force_cold=True)
+
+    subgraph_b_edges_before = [
+        (e.source_id, e.target_id, e.relation)
+        for e in base_data.edges
+        if "0003" in e.source_id or "0004" in e.source_id or "0003" in e.target_id or "0004" in e.target_id
+    ]
+
+    # Perturb Subgraph A (modify task A1 body/title)
+    (docs / "0001-task-a1.md").write_text(
+        f"---\nid: '0001'\ntitle: Subgraph A1 Perturbed\nstatus: Refined\ndependencies: []\n---\n# Body\n{perturbation}\n",
+        encoding="utf-8",
+    )
+
+    perturbed_data, _ = engine.compile_graph()
+    subgraph_b_edges_after = [
+        (e.source_id, e.target_id, e.relation)
+        for e in perturbed_data.edges
+        if "0003" in e.source_id or "0004" in e.source_id or "0003" in e.target_id or "0004" in e.target_id
+    ]
+
+    assert subgraph_b_edges_before == subgraph_b_edges_after
+

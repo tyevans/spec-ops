@@ -29,3 +29,23 @@ Feature: Incremental Relational Graph Caching and Content-Addressed Indexing
     And logs a warning "Graph cache invalid: rebuilding index from source markdown"
     And executes a clean full rebuild from disk
     And rewrites a healthy ".specops/cache/graph.json" with exit code 0.
+
+  Scenario: Compiling a 1,000-entity repository graph under 50 milliseconds using warm cache
+    Given a repository containing 1,000 markdown specifications and an initialized cache in ".specops/cache/graph.json"
+    When the developer executes "spec-ops graph compile --incremental"
+    Then the command compiles the complete graph in under 50 milliseconds
+    And outputs cache hit statistics indicating zero cache misses.
+
+  Scenario: Invalidating only modified files and their downstream dependents on file change
+    Given an existing valid graph cache
+    When a single task specification is modified on disk
+    And the developer executes "spec-ops graph compile --incremental"
+    Then only the modified file and its direct graph neighbors are re-parsed
+    And unchanged specifications are served from cache.
+
+  Scenario: Recovering transparently from a corrupted cache file
+    Given a corrupted or invalid JSON cache file in ".specops/cache/graph.json"
+    When the developer executes "spec-ops graph compile --incremental"
+    Then the system logs a warning indicating cache corruption
+    And transparently falls back to a cold compilation rebuild without failing.
+

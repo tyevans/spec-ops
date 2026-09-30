@@ -1,22 +1,21 @@
 ---
-id: '0058'
+id: 0058
 title: Content-Addressed Incremental Graph Caching Engine and Precision AST Parsing
-status: Refined
-created: 2026-09-29
+status: Complete
 dependencies:
-  - TASK-0057
+- TASK-0057
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
-  - ADR-0010
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
+- ADR-0010
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0059
-  - US-0061
+- US-0059
+- US-0061
 target_bc: core
 ---
 

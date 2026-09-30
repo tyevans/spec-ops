@@ -9,17 +9,19 @@ import pytest
 import yaml
 
 from spec_ops.core.models import ADR, PRD, Persona, Task, UserStory
-from spec_ops.core.spikes.cache_spike import (
+from spec_ops.core.ast_parser import (
+    FrontmatterDiagnosticError,
+    parse_markdown_document,
+)
+from spec_ops.core.cache import (
     BenchmarkResult,
     CompileStats,
-    FrontmatterDiagnosticError,
     RelationalGraphCacheEngine,
     _deserialize_entity,
     _serialize_entity,
     benchmark_graph_compilation,
     compute_cache_checksum,
     compute_content_sha256,
-    parse_markdown_document,
 )
 
 

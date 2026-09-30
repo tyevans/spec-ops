@@ -9,11 +9,8 @@ from pathlib import Path
 from ..config.models import SpecOpsConfig
 from ..core.graph import process_project_graph
 from ..core.parser import SpecOpsParser
-from ..core.spikes.cache_spike import (
-    FrontmatterDiagnosticError,
-    RelationalGraphCacheEngine,
-    parse_markdown_document,
-)
+from ..core.ast_parser import FrontmatterDiagnosticError, parse_markdown_document
+from ..core.cache import RelationalGraphCacheEngine
 
 
 def handle_parse_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:

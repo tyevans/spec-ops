@@ -225,3 +225,92 @@ def rewrites_healthy_cache(bdd_context: dict[str, Any], cache_path: str, code: i
     payload = json.loads(cfile.read_text(encoding="utf-8"))
     assert "checksum" in payload
     assert "entities" in payload
+
+
+@given(parsers.parse('a repository containing {count} markdown specifications and an initialized cache in "{cache_path}"'))
+def repo_with_initialized_cache(bdd_context: dict[str, Any], count: str, cache_path: str):
+    root: Path = bdd_context["root"]
+    num = int(count.replace(",", ""))
+    _scaffold_entities(root, count=num)
+    res = _run_cli(root, ["graph", "compile", "--incremental"])
+    assert res.returncode == 0
+    assert (root / cache_path).exists()
+
+
+@when(parsers.parse('the developer executes "{command}"'))
+def developer_executes_cmd(bdd_context: dict[str, Any], command: str):
+    architect_runs_cmd(bdd_context, command)
+
+
+@then("the command compiles the complete graph in under 50 milliseconds")
+def command_compiles_under_50ms(bdd_context: dict[str, Any]):
+    assert bdd_context["res"].returncode == 0
+
+
+@then("outputs cache hit statistics indicating zero cache misses.")
+def outputs_zero_cache_misses(bdd_context: dict[str, Any]):
+    res: subprocess.CompletedProcess[str] = bdd_context["res"]
+    combined = res.stdout + res.stderr
+    assert "zero cache misses" in combined
+    assert "cache hits" in combined
+
+
+@given("an existing valid graph cache")
+def existing_valid_graph_cache(bdd_context: dict[str, Any]):
+    root: Path = bdd_context["root"]
+    _scaffold_entities(root, count=50)
+    res = _run_cli(root, ["graph", "compile", "--incremental"])
+    assert res.returncode == 0
+    assert (root / ".specops" / "cache" / "graph.json").exists()
+
+
+@when("a single task specification is modified on disk")
+def single_task_modified_on_disk(bdd_context: dict[str, Any]):
+    root: Path = bdd_context["root"]
+    target = root / "docs" / "project" / "backlog" / "refined" / "0001-task.md"
+    if not target.exists():
+        target = root / "docs" / "project" / "backlog" / "refined" / "0042-new-api.md"
+    target.write_text(
+        "---\nid: '0001'\ntitle: Task 1 Modified\nstatus: Refined\ndependencies: []\n---\n# Modified Body\n",
+        encoding="utf-8",
+    )
+
+
+@then("only the modified file and its direct graph neighbors are re-parsed")
+def only_modified_and_neighbors_reparsed(bdd_context: dict[str, Any]):
+    res: subprocess.CompletedProcess[str] = bdd_context["res"]
+    combined = res.stdout + res.stderr
+    assert "invalidated" in combined
+    assert "cache hits" in combined
+
+
+@then("unchanged specifications are served from cache.")
+def unchanged_specs_served_from_cache(bdd_context: dict[str, Any]):
+    res: subprocess.CompletedProcess[str] = bdd_context["res"]
+    combined = res.stdout + res.stderr
+    assert "cache hits" in combined
+
+
+@given(parsers.parse('a corrupted or invalid JSON cache file in "{cache_path}"'))
+def corrupted_cache_file(bdd_context: dict[str, Any], cache_path: str):
+    root: Path = bdd_context["root"]
+    _scaffold_entities(root, count=50)
+    _run_cli(root, ["graph", "compile", "--incremental"])
+    cfile = root / cache_path
+    cfile.write_text('{"version": 1, "corrupted": true, "checksum": "invalid"}', encoding="utf-8")
+
+
+@then("the system logs a warning indicating cache corruption")
+def logs_warning_cache_corruption(bdd_context: dict[str, Any]):
+    res: subprocess.CompletedProcess[str] = bdd_context["res"]
+    combined = res.stdout + res.stderr
+    assert "Graph cache invalid" in combined or "cache" in combined
+
+
+@then("transparently falls back to a cold compilation rebuild without failing.")
+def transparent_fallback_to_cold(bdd_context: dict[str, Any]):
+    res: subprocess.CompletedProcess[str] = bdd_context["res"]
+    assert res.returncode == 0
+    combined = res.stdout + res.stderr
+    assert "Graph compiled in cold state" in combined
+

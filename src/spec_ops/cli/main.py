@@ -159,6 +159,10 @@ def main() -> int:
         from .parse_handler import handle_parse_command
         return handle_parse_command(args, config)
 
+    if args.command == "graph":
+        from .graph_handler import handle_graph_command
+        return handle_graph_command(args, config)
+
     if args.command == "prd":
         from .prd_handler import handle_prd_command
         return handle_prd_command(args, config, parser)

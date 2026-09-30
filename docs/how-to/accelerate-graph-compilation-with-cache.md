@@ -9,6 +9,18 @@ This guide demonstrates using content-addressed SHA-256 caching and resilient ma
 To compile the repository specification graph using content-addressed caching:
 
 ```bash
+spec-ops graph compile --incremental
+```
+
+You can also request JSON output for automation and machine-readable pipelines:
+
+```bash
+spec-ops graph compile --incremental --json
+```
+
+Or accelerate project statistics inspection:
+
+```bash
 spec-ops stats --cache
 ```
 

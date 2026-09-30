@@ -10,8 +10,8 @@ from typing import Any
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
+from spec_ops.core.ast_parser import parse_markdown_document
 from spec_ops.core.parser import parse_task
-from spec_ops.core.spikes.cache_spike import parse_markdown_document
 from spec_ops.scaffold.init import init_project
 
 scenarios("features/us_0061_resilient_parsing.feature")

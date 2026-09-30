@@ -75,6 +75,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_parse = subparsers.add_parser("parse", help="Parse specification file with resilient AST diagnostics")
     p_parse.add_argument("path", help="Path to markdown specification file to parse")
 
+    # graph
+    p_graph = subparsers.add_parser("graph", help="Relational graph operations and compilation")
+    graph_subs = p_graph.add_subparsers(dest="graph_action", help="Graph action")
+    p_g_comp = graph_subs.add_parser("compile", help="Compile repository relational knowledge graph")
+    p_g_comp.add_argument("--incremental", action="store_true", help="Perform incremental compilation backed by content-addressed cache")
+    p_g_comp.add_argument("--json", action="store_true", help="Output compilation result and graph statistics as JSON")
+    p_g_comp.add_argument("--force-cold", action="store_true", help="Force a cold compilation rebuild regardless of cache state")
+
     # prd
     p_prd = subparsers.add_parser("prd", help="PRD management commands")
     prd_subs = p_prd.add_subparsers(dest="prd_action", help="PRD action")
