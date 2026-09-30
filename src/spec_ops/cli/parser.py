@@ -57,6 +57,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_prof_apply.add_argument("profile_name", help="Profile name (e.g. security)")
     p_prof_sync = prof_subs.add_parser("sync", help="Synchronize or restore architectural profile artifacts")
     p_prof_sync.add_argument("profile_name", help="Profile name (e.g. security)")
+    p_prof_info = prof_subs.add_parser("info", help="Inspect active architectural profile rules and quality preflight commands")
+    p_prof_info.add_argument("--json", action="store_true", help="Output active profiles and invariants as structured JSON")
 
     # scaffold
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
@@ -66,6 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
     # health
     p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
     p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")
+    p_health.add_argument("--json", action="store_true", help="Output health inspection results as structured JSON")
 
     # stats
     p_stats = subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
@@ -129,6 +132,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
+    p_curate.add_argument("curate_action", nargs="?", default=None, help="Curation action ('next')")
+    p_curate.add_argument("--json", action="store_true", help="Output next task or curation results as structured JSON")
     p_curate.add_argument("--infer", action="store_true", help="Enable cognitive inference-driven curation, architectural drift reconciliation, and scope slicing")
     p_curate.add_argument("--dry-run", action="store_true", help="Audit candidate tasks and display proposed reconciliations without modifying disk state")
     p_curate.add_argument("--model", default=None, help="LLM model name to use for inference")
@@ -180,6 +185,9 @@ def build_parser() -> argparse.ArgumentParser:
     # queue
     p_queue = subparsers.add_parser("queue", help="Manage backlog queue and task integration gates")
     queue_subs = p_queue.add_subparsers(dest="queue_action", help="Queue action")
+
+    p_q_next = queue_subs.add_parser("next", help="Inspect next ready, unblocked backlog task")
+    p_q_next.add_argument("--json", action="store_true", help="Output next task as structured JSON")
 
     p_q_comp = queue_subs.add_parser("complete", help="Gate and complete task integration under merge lock")
     p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")

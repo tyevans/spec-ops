@@ -88,6 +88,11 @@ def main() -> int:
     if args.command == "health":
         checker = HealthChecker(config)
         report = checker.run_check()
+        if getattr(args, "json", False):
+            from .formatters import format_health_json
+            print(format_health_json(report, config))
+            return 0 if report.is_healthy else 1
+
         print(f"=== SpecOps Health Check ({config.project.name}) ===")
         print(f"Limit: <{config.architecture.file_length_limit} lines per file")
         if report.violations:
@@ -164,6 +169,30 @@ def main() -> int:
         return handle_prd_command(args, config, parser)
 
     if args.command == "curate":
+        if getattr(args, "curate_action", None) == "next":
+            from ..backlog.queue import BacklogQueue
+            queue = BacklogQueue(config.backlog_dir)
+            ready = queue.get_ready_unblocked_tasks()
+            target = ready[0] if ready else None
+            if not target:
+                for t in queue.list_all_tasks():
+                    if t.status == "Refined":
+                        target = t
+                        break
+            if getattr(args, "json", False):
+                from .formatters import format_task_json
+                print(format_task_json(target, config))
+                return 0
+            if not target:
+                print("ℹ️ No ready, unblocked tasks in refined/ buffer. Run 'spec-ops curate' first.")
+                return 0
+            clean_id = target.canonical_id.lower().replace("task-", "").replace("spike-", "")
+            branch = target.branch or f"{config.execution.git_branch_prefix}task-{clean_id}"
+            print(f"=== Next Backlog Task ({target.canonical_id}) ===")
+            print(f"Title:        {target.title}")
+            print(f"Branch:       {branch}")
+            return 0
+
         if getattr(args, "infer", False):
             from ..backlog.inference_curator import InferenceCurator
 

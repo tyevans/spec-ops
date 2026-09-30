@@ -70,8 +70,9 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles list` | None | List available architectural profiles |
 | `spec-ops profiles apply` | `<PROFILE_NAME>` | Apply architectural profile to current repository |
 | `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
+| `spec-ops profiles info` | `[--json]` | Inspect active architectural profile rules and quality preflight commands |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
-| `spec-ops health` | `[--security]` | Verify file length limits and PRIORITY sync |
+| `spec-ops health` | `[--security] [--json]` | Verify file length limits and PRIORITY sync |
 | `spec-ops stats` | `[--cache]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |
@@ -83,7 +84,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd audit` | None | Audit PRD lifecycle statuses |
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
 | `spec-ops prd studio` | `[--open] [--port PORT] [--host HOST]` | Run interactive Web PRD Studio and Low-Code Story Assistant |
-| `spec-ops curate` | `[--infer] [--dry-run] [--model MODEL]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
+| `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
@@ -94,6 +95,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops spike preflight` | `[SPIKE_ID]` | Enforce in-worktree write isolation preflight hook |
 | `spec-ops spike graduate` | `<SPIKE_ID> --result {{proven,disproven}} [--title TITLE] [--notes NOTES] [--findings FINDINGS] [--status STATUS]` | Graduate empirical spike findings into an Architectural Decision Record |
 | `spec-ops tui` | `[--once] [--view {{overview,backlog,tree,health}}]` | Launch interactive Terminal UI (TUI) dashboard |
+| `spec-ops queue next` | `[--json]` | Inspect next ready, unblocked backlog task |
 | `spec-ops queue complete` | `<TASK_ID> [--base BASE]` | Gate and complete task integration under merge lock |
 | `spec-ops queue tree` | `[--task TASK] [--direction {{blocks,blocked-by}}] [--reverse] [--waves] [--all] [--json]` | Display task dependency tree, execution waves, and blockers |
 | `spec-ops queue block` | `<TASK_ID> --question QUESTION [--type {{unknown,spike_needed,external,dependency}}] [--spike] [--timebox TIMEBOX] [--raised-by RAISED_BY]` | Mark a task as blocked by an unknown question or impediment |

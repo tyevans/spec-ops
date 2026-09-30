@@ -96,6 +96,15 @@ class BacklogWorkerEngine:
 
         if dry_run or not self.config.execution.agent_command:
             print(f"📋 Task prompt generated at {prompt_file}")
+            wt_res = str(worktree_dir.resolve())
+            print(f"🔧 Environment configured: SPEC_OPS_WORKTREE={wt_res}, PWD={wt_res}")
+            sim_cmd = build_agent_cmd(
+                self.config.execution.agent_command or "echo {prompt_file}",
+                prompt,
+                prompt_file,
+                worktree_dir=worktree_dir,
+            )
+            print(f"🔎 Simulated Agent Command: {sim_cmd}")
             if run_review_enabled:
                 self.reviewer.run_review(task, worktree_dir, dry_run=True, attempt=1)
             return True, "Dry-run: Prompt generated successfully."
@@ -239,8 +248,9 @@ class BacklogWorkerEngine:
         skip_review: bool = False,
     ) -> WorkerResult:
         """Executes a task in an isolated worktree with preflight verification."""
-        branch = f"{self.config.execution.git_branch_prefix}{task.slug}"
-        worktree_dir = self.repo_root / ".worktrees" / f"task-{task.id}"
+        clean_id = task.canonical_id.lower().replace("task-", "").replace("spike-", "")
+        branch = task.branch or f"{self.config.execution.git_branch_prefix}task-{clean_id}"
+        worktree_dir = self.repo_root / ".worktrees" / f"task-{clean_id}"
         success = False
         worktree_created = False
 
@@ -249,6 +259,7 @@ class BacklogWorkerEngine:
             worktree_dir.parent.mkdir(parents=True, exist_ok=True)
             self.create_worktree(branch, worktree_dir)
             worktree_created = True
+            print(f"✨ Created isolated worktree at .worktrees/task-{clean_id} on branch {branch}")
 
             preflight_ok, preflight_log = self.run_preflight(worktree_dir, task=task)
             if not preflight_ok:
@@ -260,7 +271,7 @@ class BacklogWorkerEngine:
 
             if dry_run:
                 success = True
-                return WorkerResult(task.canonical_id, True, "Dry-run successful.")
+                return WorkerResult(task.canonical_id, True, "Zero-cost dry-run simulation completed cleanly.")
 
             for p in (worktree_dir / ".task-prompt.md", worktree_dir / ".task-review-prompt.md"):
                 if p.exists():
@@ -347,3 +358,5 @@ class BacklogWorkerEngine:
                     print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
             else:
                 self.cleanup_worktree(worktree_dir, branch, delete_branch=dry_run or local_merge)
+                if dry_run:
+                    print(f"🧹 Cleaned up dry-run worktree at .worktrees/task-{clean_id}.")

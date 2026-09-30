@@ -45,7 +45,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0031 (Complete)**: [`0031-merkle-compliance-manifest-architecture-spike`](complete/0031-merkle-compliance-manifest-architecture-spike.md)
 - **TASK-0040 (Complete)**: [`0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike`](complete/0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike.md)
 - **TASK-0058 (Complete)**: [`0058-content-addressed-graph-caching-and-ast-parsing`](complete/0058-content-addressed-graph-caching-and-ast-parsing.md)
-- **TASK-0045 (Refined)**: [`0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation`](refined/0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation.md)
+- **TASK-0045 (Complete)**: [`0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation`](complete/0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation.md)
 - **TASK-0036 (Refined)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](refined/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
 - **TASK-0039 (Complete)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](complete/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
 - **TASK-0062 (Refined)**: [`0062-brownfield-codebase-adoption-and-ast-seam-extraction`](refined/0062-brownfield-codebase-adoption-and-ast-seam-extraction.md)

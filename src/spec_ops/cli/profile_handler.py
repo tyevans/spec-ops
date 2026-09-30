@@ -30,6 +30,16 @@ def handle_profile_command(args: Any, config: Any) -> int:
         else:
             print(f"❌ Unknown profile: {p_name}", file=sys.stderr)
             return 1
+    elif args.profile_action == "info":
+        if getattr(args, "json", False):
+            from .formatters import format_profiles_info_json
+            print(format_profiles_info_json(config))
+            return 0
+
+        print(f"=== SpecOps Profiles & Invariants ({config.project.name}) ===")
+        print("Active Profiles: core, bdd, ddd" + (", security" if config.security else ""))
+        print("Preflight Chain: " + " && ".join(config.quality.preflight or ["pytest"]))
+        return 0
     else:
         from ..profiles.registry import list_profiles
 

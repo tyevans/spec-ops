@@ -16,19 +16,29 @@ from .integration import rebase_with_inference_healing, squash_merge_and_commit
 from .merge_lock import MergeLockManager
 from .orchestrator import BatchCycleOrchestrator, BatchCycleReport
 from .preflight import run_worktree_preflight
+from .runners import (
+    AgentRunner,
+    build_agent_cmd,
+    interpolate_runner_template,
+    prepare_runner_environment,
+)
 from .worktree import cleanup_worktree, create_worktree
 
 __all__ = [
+    "AgentRunner",
     "BatchCycleOrchestrator",
     "BatchCycleReport",
     "MergeLockManager",
     "TaskClaimer",
+    "build_agent_cmd",
     "cleanup_worktree",
     "create_worktree",
     "detect_backlog_modifications",
     "hydrate_task_prompt",
     "initialize_worktree",
+    "interpolate_runner_template",
     "prepare_guardrailed_commit",
+    "prepare_runner_environment",
     "rebase_with_inference_healing",
     "run_worktree_preflight",
     "sanitize_backlog_modifications",
