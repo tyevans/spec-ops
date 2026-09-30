@@ -81,3 +81,42 @@ def test_rescue_manager_prune_all(tmp_path: Path):
     assert count == 2
     assert len(mgr.list_active_worktrees()) == 0
 
+
+def test_rescue_manager_syncs_security_profile_before_preflight(tmp_path: Path):
+    from spec_ops.profiles.security import apply_security_profile
+
+    # Initialize root with security profile
+    apply_security_profile(tmp_path)
+    (tmp_path / "specops.toml").write_text("[security]\nsecret_scanning = true\n", encoding="utf-8")
+
+    # Add a task in refined
+    backlog_dir = tmp_path / "docs" / "project" / "backlog" / "refined"
+    backlog_dir.mkdir(parents=True, exist_ok=True)
+    task_file = backlog_dir / "0099-test-task.md"
+    task_file.write_text(
+        "---\nid: '0099'\ntitle: Test Task\nstatus: Refined\n---\n# Task",
+        encoding="utf-8",
+    )
+
+    # Initialize git repo
+    subprocess.run(["git", "init", "-b", "main"], cwd=tmp_path, capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Test User"], cwd=tmp_path, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=tmp_path, capture_output=True)
+    subprocess.run(["git", "add", "."], cwd=tmp_path, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "init"], cwd=tmp_path, capture_output=True)
+
+    # Create worktree missing SECURITY.md
+    wt_dir = tmp_path / ".worktrees" / "task-0099"
+    subprocess.run(["git", "worktree", "add", "-b", "feat/task-0099", str(wt_dir), "HEAD"], cwd=tmp_path, capture_output=True)
+    sec_in_wt = wt_dir / "docs" / "project" / "SECURITY.md"
+    if sec_in_wt.exists():
+        sec_in_wt.unlink()
+    assert not sec_in_wt.exists()
+
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    mgr = WorktreeRescueManager(cfg)
+
+    mgr.complete_rescue("0099")
+    assert sec_in_wt.is_file()
+
+

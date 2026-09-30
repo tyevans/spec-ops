@@ -227,7 +227,7 @@ def install_security_adrs(root_dir: Path) -> list[Path]:
     return installed
 
 
-def apply_security_profile(root_dir: Path) -> None:
+def apply_security_profile(root_dir: Path, sync_worktrees: bool = True) -> None:
     """Applies the security profile to an existing or new repository."""
     scaffold_security_policy(root_dir, overwrite=False)
 
@@ -244,8 +244,15 @@ def apply_security_profile(root_dir: Path) -> None:
     from ..scaffold.agents_md import scaffold_agents_command
     scaffold_agents_command(root_dir)
 
+    if sync_worktrees:
+        worktrees_dir = root_dir / ".worktrees"
+        if worktrees_dir.is_dir():
+            for wt in worktrees_dir.iterdir():
+                if wt.is_dir() and (wt / ".git").exists():
+                    apply_security_profile(wt, sync_worktrees=False)
 
-def sync_security_profile(root_dir: Path) -> None:
+
+def sync_security_profile(root_dir: Path, sync_worktrees: bool = True) -> None:
     """Restores missing or degraded security artifacts."""
     scaffold_security_policy(root_dir, overwrite=True)
 
@@ -259,3 +266,11 @@ def sync_security_profile(root_dir: Path) -> None:
 
     from ..scaffold.agents_md import scaffold_agents_command
     scaffold_agents_command(root_dir)
+
+    if sync_worktrees:
+        worktrees_dir = root_dir / ".worktrees"
+        if worktrees_dir.is_dir():
+            for wt in worktrees_dir.iterdir():
+                if wt.is_dir() and (wt / ".git").exists():
+                    sync_security_profile(wt, sync_worktrees=False)
+

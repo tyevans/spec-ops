@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import string
 from pathlib import Path
 
 from hypothesis import given, settings
@@ -20,7 +21,7 @@ from spec_ops.visualizer.bundle import (
 
 @st.composite
 def project_and_links(draw):
-    name = draw(st.text(alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-", min_size=1, max_size=30))
+    name = draw(st.text(alphabet=string.ascii_letters + string.digits + "_-", min_size=1, max_size=30))
     back_link = draw(st.sampled_from(["../index.html", "/docs/", "index.html", "./overview.html", "https-fake-ref-not-tag"]))
     return name, back_link
 

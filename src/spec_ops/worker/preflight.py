@@ -49,6 +49,12 @@ def run_worktree_preflight(
         or (cwd / "docs" / "project" / "SECURITY.md").exists()
     )
 
+    if sec_active and not (cwd / "docs" / "project" / "SECURITY.md").exists() and (
+        (config.root_dir / "docs" / "project" / "SECURITY.md").exists() or config.security is not None
+    ):
+        from ..profiles.security import sync_security_profile
+        sync_security_profile(cwd, sync_worktrees=False)
+
     if sec_active and not any("health" in c and "--security" in c for c in commands):
         spec_ops_bin = Path(sys.executable).parent / "spec-ops"
         sec_cmd = (

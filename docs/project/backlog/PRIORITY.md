@@ -49,6 +49,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0036 (Refined)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](refined/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
 - **TASK-0039 (Complete)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](complete/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
 - **TASK-0062 (Refined)**: [`0062-brownfield-codebase-adoption-and-ast-seam-extraction`](refined/0062-brownfield-codebase-adoption-and-ast-seam-extraction.md)
+- **TASK-0082 (Complete)**: [`0082-resilient-worktree-profile-synchronization-and-rescue-guardrails`](complete/0082-resilient-worktree-profile-synchronization-and-rescue-guardrails.md)
 - **TASK-0068 (Complete)**: [`0068-portable-visualizer-bundle-and-multi-perspective-matrix`](complete/0068-portable-visualizer-bundle-and-multi-perspective-matrix.md)
 - **TASK-0059 (Complete)**: [`0059-tarjan-scc-cycle-resolution-and-blast-radius-spike`](complete/0059-tarjan-scc-cycle-resolution-and-blast-radius-spike.md)
 - **TASK-0032 (Complete)**: [`0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier`](complete/0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier.md)

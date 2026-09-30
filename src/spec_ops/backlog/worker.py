@@ -261,6 +261,17 @@ class BacklogWorkerEngine:
             worktree_created = True
             print(f"✨ Created isolated worktree at .worktrees/task-{clean_id} on branch {branch}")
 
+            # Ensure active repository profiles (e.g. security) are synchronized in worktree
+            if (
+                self.config.security is not None
+                or (self.repo_root / "docs" / "project" / "SECURITY.md").exists()
+            ):
+                from ..profiles.security import sync_security_profile, validate_security_policy
+
+                sec_ok, _ = validate_security_policy(worktree_dir)
+                if not sec_ok:
+                    sync_security_profile(worktree_dir, sync_worktrees=False)
+
             preflight_ok, preflight_log = self.run_preflight(worktree_dir, task=task)
             if not preflight_ok:
                 return WorkerResult(task.canonical_id, False, f"Initial preflight failed: {preflight_log}")
