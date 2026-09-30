@@ -270,6 +270,31 @@ def build_parser() -> argparse.ArgumentParser:
     p_q_blockers = queue_subs.add_parser("blockers", help="List all currently blocked tasks, open questions, and linked spikes")
     p_q_blockers.add_argument("--json", action="store_true", help="Output blockers summary as JSON")
 
+    p_q_mon = queue_subs.add_parser("monitor", help="Interactive terminal backlog flow monitor and JIT buffer telemetry")
+    p_q_mon.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
+
+    # backlog
+    p_backlog = subparsers.add_parser("backlog", help="Backlog flow monitor and buffer telemetry")
+    backlog_subs = p_backlog.add_subparsers(dest="backlog_action", help="Backlog action")
+    p_b_flow = backlog_subs.add_parser("flow", help="Interactive terminal backlog flow monitor and JIT buffer telemetry")
+    p_b_flow.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
+
+    # report
+    p_report = subparsers.add_parser("report", help="Executive milestone reports, burndown velocity, and presentation decks")
+    report_subs = p_report.add_subparsers(dest="report_action", help="Reporting action")
+
+    p_rep_bd = report_subs.add_parser("burndown", help="Milestone burndown velocity and presentation slide deck export")
+    p_rep_bd.add_argument("--milestone", default="M1-MVP", help="Target milestone name or ID (default: M1-MVP)")
+    p_rep_bd.add_argument("--format", choices=["deck", "html", "digest"], default="deck", help="Report export format (default: deck)")
+    p_rep_bd.add_argument("-o", "--output", help="Output file path (default: dist/<milestone>-executive-briefing.html)")
+    p_rep_bd.add_argument("--check-alignment", action="store_true", help="Audit completed tasks unanchored from ROADMAP.md")
+
+    p_rep_ms = report_subs.add_parser("milestone", help="Milestone executive briefing digest and scope alignment")
+    p_rep_ms.add_argument("--milestone", default="M1-MVP", help="Target milestone name or ID (default: M1-MVP)")
+    p_rep_ms.add_argument("--format", choices=["digest", "deck", "html"], default="digest", help="Report format (default: digest)")
+    p_rep_ms.add_argument("-o", "--output", help="Output file path")
+    p_rep_ms.add_argument("--check-alignment", action="store_true", help="Audit completed tasks unanchored from ROADMAP.md")
+
     # spike
     p_spike = subparsers.add_parser("spike", help="Governed architectural spike lifecycle, sandboxing, and empirical ADR synthesis")
     spike_subs = p_spike.add_subparsers(dest="spike_action", help="Spike action")

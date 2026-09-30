@@ -179,5 +179,14 @@ def handle_queue_command(
         console.print(table)
         return 0
 
+    if action == "monitor":
+        from ..tui.flow_monitor import FlowMonitor
+
+        monitor = FlowMonitor(config)
+        if getattr(args, "once", False):
+            monitor.render_snapshot()
+            return 0
+        return monitor.run()
+
     parser.parse_args(["queue", "--help"])
     return 0

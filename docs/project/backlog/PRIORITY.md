@@ -70,7 +70,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0075 (Refined)**: [`0075-bidirectional-traceability-and-contributor-provenance-engine`](refined/0075-bidirectional-traceability-and-contributor-provenance-engine.md)
 - **TASK-0076 (Refined)**: [`0076-specification-frontmatter-schema-validation-and-migration`](refined/0076-specification-frontmatter-schema-validation-and-migration.md)
 - **TASK-0051 (Refined)**: [`0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning`](refined/0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning.md)
-- **TASK-0074 (Refined)**: [`0074-executive-milestone-burndown-deck-and-terminal-flow-monitor`](refined/0074-executive-milestone-burndown-deck-and-terminal-flow-monitor.md)
+- **TASK-0074 (Complete)**: [`0074-executive-milestone-burndown-deck-and-terminal-flow-monitor`](complete/0074-executive-milestone-burndown-deck-and-terminal-flow-monitor.md)
 - **TASK-0083 (Proposed)**: [`0083-multi-platform-ci-pipeline-scaffolding-github-gitlab`](proposed/0083-multi-platform-ci-pipeline-scaffolding-github-gitlab.md)
 - **TASK-0084 (Proposed)**: [`0084-zero-dependency-native-git-hook-scaffolding`](proposed/0084-zero-dependency-native-git-hook-scaffolding.md)
 - **TASK-0085 (Proposed)**: [`0085-bounded-context-diataxis-documentation-scaffolding`](proposed/0085-bounded-context-diataxis-documentation-scaffolding.md)
