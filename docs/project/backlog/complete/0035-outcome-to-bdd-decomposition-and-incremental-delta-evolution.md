@@ -1,7 +1,7 @@
 ---
 id: '0035'
 title: Outcome-to-BDD Scenario Decomposition and Incremental Delta Scope Evolution
-status: Refined
+status: Complete
 dependencies:
 - TASK-0006
 - TASK-0034
@@ -20,8 +20,6 @@ governing_stories:
 - US-0094
 - US-0096
 target_bc: prd
-claimed_by: worker-3
-branch: feat/0035-outcome-to-bdd-scenario-decomposition-an
 ---
 
 # TASK-0035: Outcome-to-BDD Scenario Decomposition and Incremental Delta Scope Evolution

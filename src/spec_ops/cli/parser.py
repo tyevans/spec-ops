@@ -99,6 +99,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_decompose = prd_subs.add_parser("decompose", help="Decompose a PRD into vertical slices and stories")
     p_decompose.add_argument("prd_id", help="PRD canonical identifier (e.g. PRD-0001 or 0001)")
     p_decompose.add_argument("--no-spike", action="store_true", help="Omit initial architectural spike")
+    p_decompose.add_argument("--by-outcomes", action="store_true", help="Decompose each checkable outcome into a dedicated BDD user story and tasks")
+    p_decompose.add_argument("--diff", action="store_true", help="Perform non-destructive delta decomposition for new or modified outcomes")
 
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")

@@ -14,6 +14,7 @@ COMPOUND_PHRASES: list[str] = [
     r"\bsimple\s+and\s+intuitive\b",
     r"\bintuitive\s+and\s+easy\b",
     r"\beasy\s+to\s+use\b",
+    r"\bnoticeably\s+faster\b",
 ]
 
 SUBJECTIVE_WORDS: list[str] = [
@@ -21,6 +22,7 @@ SUBJECTIVE_WORDS: list[str] = [
     "modern",
     "intuitive",
     "fast",
+    "faster",
     "responsive",
     "simple",
     "easy",

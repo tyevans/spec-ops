@@ -8,7 +8,22 @@ from pathlib import Path
 from typing import Any
 
 from ..config.models import SpecOpsConfig
-from ..core.parser import SpecOpsParser, extract_frontmatter
+from ..core.parser import extract_frontmatter
+from .delta import (
+    CheckableOutcome,
+    FalsifiabilityError,
+    PRDDeltaResult,
+    calculate_prd_deltas,
+    find_existing_stories,
+    find_existing_tasks,
+    parse_checkable_outcomes,
+    validate_falsifiability,
+)
+from .synthesis import (
+    append_to_priority,
+    generate_outcome_stories_and_tasks,
+    update_prd_links,
+)
 
 
 class PRDDecomposer:
@@ -52,7 +67,7 @@ class PRDDecomposer:
         include_spike: bool = True,
         slices_override: list[str] | None = None,
     ) -> list[Path]:
-        """Decomposes a PRD into tasks and user stories."""
+        """Decomposes a PRD into tasks and user stories (legacy single-pass)."""
         prd_file = self.find_prd_file(prd_identifier)
         if not prd_file or not prd_file.exists():
             raise FileNotFoundError(f"PRD not found matching identifier: {prd_identifier}")
@@ -136,7 +151,7 @@ And no internal invariants are violated.
 
             task_content = f"""---
 id: '{task_num:04d}'
-title: {t_title}
+title: "{t_title.replace('"', '\\"')}"
 status: Proposed
 created: {today}
 dependencies: {deps}
@@ -168,47 +183,129 @@ Deliver focused slice satisfying INVEST criteria and Hard Invariant 6 (<500 line
                 spike_id = tid
 
         # 3. Update PRD with linked user stories and implementing tasks
-        self._update_prd_links(prd_file, created_story_ids, created_task_ids)
+        update_prd_links(prd_file, created_story_ids, created_task_ids)
 
         # 4. Append tasks to PRIORITY.md
-        self._append_to_priority(created_task_ids, generated_task_files)
+        append_to_priority(self.backlog_dir, created_task_ids, generated_task_files)
 
         return generated_task_files
 
-    def _update_prd_links(self, prd_file: Path, story_ids: list[str], task_ids: list[str]) -> None:
-        content = prd_file.read_text(encoding="utf-8")
-        stories_section = "\n".join(f"- `{sid}`" for sid in story_ids)
-        tasks_section = "\n".join(f"- `{tid}`" for tid in task_ids)
+    def decompose_by_outcomes(
+        self,
+        prd_identifier: str,
+        include_spike: bool = True,
+    ) -> tuple[list[Path], list[Path]]:
+        """Decomposes each checkable outcome in a PRD into dedicated BDD user stories and tasks."""
+        prd_file = self.find_prd_file(prd_identifier)
+        if not prd_file or not prd_file.exists():
+            raise FileNotFoundError(f"PRD not found matching identifier: {prd_identifier}")
 
-        if "## Linked User Stories" in content:
-            content = re.sub(
-                r"## Linked User Stories\s*\n.*?(?=\n##|$)",
-                f"## Linked User Stories\n\n{stories_section}\n",
-                content,
-                flags=re.DOTALL,
-            )
-        else:
-            content += f"\n## Linked User Stories\n\n{stories_section}\n"
+        prd_content = prd_file.read_text(encoding="utf-8")
+        meta, _ = extract_frontmatter(prd_content)
+        prd_title = str(meta.get("title", prd_file.stem))
+        persona = str(meta.get("target_persona", "User"))
+        component = str(meta.get("component", "core"))
 
-        if "## Implementing Backlog Tasks" in content:
-            content = re.sub(
-                r"## Implementing Backlog Tasks\s*\n.*?(?=\n##|$)",
-                f"## Implementing Backlog Tasks\n\n{tasks_section}\n",
-                content,
-                flags=re.DOTALL,
-            )
-        else:
-            content += f"\n## Implementing Backlog Tasks\n\n{tasks_section}\n"
+        clean_prd_num = str(meta.get("id", "0001")).zfill(4)
+        prd_canonical_id = f"PRD-{clean_prd_num}"
 
-        prd_file.write_text(content, encoding="utf-8")
+        outcomes = parse_checkable_outcomes(prd_content)
+        if not outcomes:
+            raise ValueError(f"No checkable outcomes found in {prd_canonical_id}")
 
-    def _append_to_priority(self, task_ids: list[str], task_files: list[Path]) -> None:
-        priority_file = self.backlog_dir / "PRIORITY.md"
-        if not priority_file.exists():
-            return
-        lines = priority_file.read_text(encoding="utf-8").splitlines()
-        for tid, tf in zip(task_ids, task_files):
-            entry = f"- **{tid} (Proposed)**: [`{tf.stem}`](proposed/{tf.name})"
-            if entry not in lines:
-                lines.append(entry)
-        priority_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        errors = validate_falsifiability(outcomes)
+        if errors:
+            raise FalsifiabilityError(errors)
+
+        return self._generate_outcome_stories_and_tasks(
+            prd_file=prd_file,
+            prd_canonical_id=prd_canonical_id,
+            prd_title=prd_title,
+            persona=persona,
+            component=component,
+            outcomes=outcomes,
+            include_spike=include_spike,
+        )
+
+    def decompose_diff(
+        self,
+        prd_identifier: str,
+        include_spike: bool = True,
+    ) -> tuple[PRDDeltaResult, list[Path], list[Path]]:
+        """Performs non-destructive delta scope evolution for newly added or modified outcomes."""
+        prd_file = self.find_prd_file(prd_identifier)
+        if not prd_file or not prd_file.exists():
+            raise FileNotFoundError(f"PRD not found matching identifier: {prd_identifier}")
+
+        prd_content = prd_file.read_text(encoding="utf-8")
+        meta, _ = extract_frontmatter(prd_content)
+        prd_title = str(meta.get("title", prd_file.stem))
+        persona = str(meta.get("target_persona", "User"))
+        component = str(meta.get("component", "core"))
+
+        clean_prd_num = str(meta.get("id", "0001")).zfill(4)
+        prd_canonical_id = f"PRD-{clean_prd_num}"
+
+        current_outcomes = parse_checkable_outcomes(prd_content)
+        existing_stories = find_existing_stories(self.stories_dir, prd_canonical_id)
+        stories_map = {
+            s["id"].upper().replace("US-", "").lstrip("0"): s["outcome_id"]
+            for s in existing_stories
+            if s.get("outcome_id") is not None
+        }
+        existing_tasks = find_existing_tasks(self.backlog_dir, prd_canonical_id, stories_map)
+
+        delta_res = calculate_prd_deltas(
+            prd_id=prd_canonical_id,
+            current_outcomes=current_outcomes,
+            existing_stories=existing_stories,
+            existing_tasks=existing_tasks,
+        )
+
+        if not delta_res.added_outcomes:
+            return delta_res, [], []
+
+        errors = validate_falsifiability(delta_res.added_outcomes)
+        if errors:
+            raise FalsifiabilityError(errors)
+
+        # Skip spike for delta runs if tasks already exist for this PRD
+        has_existing_tasks = len(existing_tasks) > 0
+        diff_include_spike = include_spike and not has_existing_tasks
+
+        task_files, story_files = self._generate_outcome_stories_and_tasks(
+            prd_file=prd_file,
+            prd_canonical_id=prd_canonical_id,
+            prd_title=prd_title,
+            persona=persona,
+            component=component,
+            outcomes=delta_res.added_outcomes,
+            include_spike=diff_include_spike,
+        )
+
+        return delta_res, task_files, story_files
+
+    def _generate_outcome_stories_and_tasks(
+        self,
+        prd_file: Path,
+        prd_canonical_id: str,
+        prd_title: str,
+        persona: str,
+        component: str,
+        outcomes: list[CheckableOutcome],
+        include_spike: bool,
+    ) -> tuple[list[Path], list[Path]]:
+        return generate_outcome_stories_and_tasks(
+            prd_file=prd_file,
+            prd_canonical_id=prd_canonical_id,
+            prd_title=prd_title,
+            persona=persona,
+            component=component,
+            outcomes=outcomes,
+            include_spike=include_spike,
+            config=self.config,
+            backlog_dir=self.backlog_dir,
+            stories_dir=self.stories_dir,
+            task_num_start=self.get_max_task_number(),
+            story_num_start=self.get_max_story_number(),
+        )

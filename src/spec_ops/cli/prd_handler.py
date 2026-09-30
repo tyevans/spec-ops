@@ -7,6 +7,7 @@ from pathlib import Path
 
 from ..config.models import SpecOpsConfig
 from ..prd.decomposer import PRDDecomposer
+from ..prd.delta import FalsifiabilityError
 from ..prd.discovery import interactive_new_prd
 from ..prd.lifecycle import PRDLifecycleManager
 from ..prd.linter import PRDLinter
@@ -87,11 +88,50 @@ def handle_prd_command(
 
     if action == "decompose":
         decomposer = PRDDecomposer(config)
-        tasks = decomposer.decompose(args.prd_id, include_spike=not args.no_spike)
-        print(f"✅ Decomposed {args.prd_id} into {len(tasks)} task(s):")
-        for t in tasks:
-            print(f"   - {t.name}")
-        return 0
+        by_outcomes = getattr(args, "by_outcomes", False)
+        diff = getattr(args, "diff", False)
+        include_spike = not getattr(args, "no_spike", False)
+
+        try:
+            if by_outcomes:
+                tasks, stories = decomposer.decompose_by_outcomes(args.prd_id, include_spike=include_spike)
+                print(f"✅ Decomposed {args.prd_id} into {len(stories)} story/stories and {len(tasks)} task(s):")
+                for s in stories:
+                    print(f"   - Story: {s.name}")
+                for t in tasks:
+                    print(f"   - Task: {t.name}")
+                return 0
+
+            if diff:
+                delta_res, tasks, stories = decomposer.decompose_diff(args.prd_id, include_spike=include_spike)
+                if delta_res.warnings:
+                    for w in delta_res.warnings:
+                        print(f"⚠️ {w}")
+                    for pt in delta_res.pending_tasks_for_removed:
+                        print(f"   Prompt: Please either archive {pt['id']} or re-link it to another outcome.")
+
+                if not delta_res.added_outcomes:
+                    print(f"ℹ️ No new scope deltas detected for {args.prd_id}. Backlog is up to date.")
+                else:
+                    print(f"✅ Decomposed {args.prd_id} delta into {len(stories)} story/stories and {len(tasks)} task(s):")
+                    for s in stories:
+                        print(f"   - Story: {s.name}")
+                    for t in tasks:
+                        print(f"   - Task: {t.name}")
+                return 0
+
+            tasks = decomposer.decompose(args.prd_id, include_spike=include_spike)
+            print(f"✅ Decomposed {args.prd_id} into {len(tasks)} task(s):")
+            for t in tasks:
+                print(f"   - {t.name}")
+            return 0
+        except FalsifiabilityError as exc:
+            for err in exc.errors:
+                print(f"❌ Falsifiability failure: {err}")
+            return 1
+        except Exception as exc:
+            print(f"❌ Error decomposing {args.prd_id}: {exc}")
+            return 1
 
     parser.parse_args(["prd", "--help"])
     return 0

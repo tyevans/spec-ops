@@ -21,7 +21,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd promote` | `<PRD_ID> --stage STAGE` | Advance PRD through lifecycle stage gates |
 | `spec-ops prd ship` | `<PRD_ID>` | Transition accepted PRD to shipped upon backlog completion |
 | `spec-ops prd audit` | None | Audit PRD lifecycle statuses |
-| `spec-ops prd decompose` | `<PRD_ID> [--no-spike]` | Decompose PRD into vertical slices |
+| `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
 | `spec-ops curate` | `[--infer] [--dry-run] [--model MODEL]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
 | `spec-ops worker` | `[--task TASK_ID] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
