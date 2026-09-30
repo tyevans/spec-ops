@@ -1,0 +1,10 @@
+Benchmark findings for SPIKE-0038:
+- Total operations: 50
+- Draft scaffolding avg latency: 0.74ms
+- Frontdoor step extraction avg latency: 0.90ms
+- Git commit writeback avg latency: 22.49ms
+- Combined p50 latency: 0.81ms
+- Combined p95 latency: 23.30ms
+- Combined p99 latency: 30.91ms
+- External CDN/npm dependencies: 0
+- Latency invariant (<100ms): PASSED

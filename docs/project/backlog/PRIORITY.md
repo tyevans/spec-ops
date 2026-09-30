@@ -43,7 +43,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0035 (Complete)**: [`0035-outcome-to-bdd-decomposition-and-incremental-delta-evolution`](complete/0035-outcome-to-bdd-decomposition-and-incremental-delta-evolution.md)
 - **TASK-0036 (Proposed)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](proposed/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
 - **TASK-0037 (Refined)**: [`0037-governed-worktree-spike-lifecycle-and-adr-synthesis`](refined/0037-governed-worktree-spike-lifecycle-and-adr-synthesis.md)
-- **TASK-0038 (Refined)**: [`0038-zero-dependency-web-prd-studio-architecture-spike`](refined/0038-zero-dependency-web-prd-studio-architecture-spike.md)
+- **TASK-0038 (Complete)**: [`0038-zero-dependency-web-prd-studio-architecture-spike`](complete/0038-zero-dependency-web-prd-studio-architecture-spike.md)
 - **TASK-0039 (Proposed)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](proposed/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
 - **TASK-0040 (Proposed)**: [`0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike`](proposed/0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike.md)
 - **TASK-0041 (Proposed)**: [`0041-customer-uat-verification-matrix-and-automated-shipping-gate`](proposed/0041-customer-uat-verification-matrix-and-automated-shipping-gate.md)

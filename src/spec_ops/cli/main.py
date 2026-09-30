@@ -357,6 +357,10 @@ def main() -> int:
         from .security_handler import handle_queue_command
         return handle_queue_command(args, config, parser)
 
+    if args.command == "spike":
+        from .spike_handler import handle_spike_command
+        return handle_spike_command(args, config)
+
     return 0
 
 

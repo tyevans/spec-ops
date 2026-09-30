@@ -157,6 +157,34 @@ def build_parser() -> argparse.ArgumentParser:
     p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")
     p_q_comp.add_argument("--base", default="main", help="Base branch for diff comparison (default: main)")
 
+    # spike
+    p_spike = subparsers.add_parser("spike", help="Governed architectural spike lifecycle, sandboxing, and empirical ADR synthesis")
+    spike_subs = p_spike.add_subparsers(dest="spike_action", help="Spike action")
+
+    # spike start
+    p_spk_start = spike_subs.add_parser("start", help="Instantiate disposable sandboxed spike worktree")
+    p_spk_start.add_argument("spike_id", help="Spike canonical identifier (e.g. SPIKE-0002 or 0002)")
+    p_spk_start.add_argument("--hypothesis", default=None, help="Hypothesis statement for empirical validation")
+    p_spk_start.add_argument("--timebox", default=None, help="Spike timebox duration (e.g. 2h, 4h)")
+
+    # spike check
+    p_spk_check = spike_subs.add_parser("check", help="Check spike timebox and write isolation")
+    p_spk_check.add_argument("spike_id", nargs="?", default=None, help="Spike identifier (optional if run inside worktree)")
+    p_spk_check.add_argument("--elapsed", type=float, default=None, help="Simulated elapsed seconds for testing")
+
+    # spike preflight
+    p_spk_preflight = spike_subs.add_parser("preflight", help="Enforce in-worktree write isolation preflight hook")
+    p_spk_preflight.add_argument("spike_id", nargs="?", default=None, help="Spike identifier")
+
+    # spike graduate
+    p_spk_grad = spike_subs.add_parser("graduate", help="Graduate empirical spike findings into an Architectural Decision Record")
+    p_spk_grad.add_argument("spike_id", help="Spike canonical identifier (e.g. SPIKE-0002 or 0002)")
+    p_spk_grad.add_argument("--result", required=True, choices=["proven", "disproven"], help="Empirical hypothesis validation result")
+    p_spk_grad.add_argument("--title", default=None, help="ADR Title")
+    p_spk_grad.add_argument("--notes", default=None, help="Empirical observations or rationale")
+    p_spk_grad.add_argument("--findings", default=None, help="Recorded benchmark output / findings")
+    p_spk_grad.add_argument("--status", default=None, help="ADR status (e.g. Accepted, Proposed)")
+
     # security
     p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")
     sec_subs = p_sec.add_subparsers(dest="security_action", help="Security action")
