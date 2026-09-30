@@ -24,6 +24,32 @@ from .models import (
 )
 from .parser import SpecOpsParser, extract_frontmatter
 
+from .event_bus import (
+    BATCHED_UPDATE,
+    GRAPH_CYCLE_INTRODUCED,
+    NODE_UPDATED,
+    TASK_PROMOTED,
+    UNANCHORED_REFERENCE_DETECTED,
+    Debouncer,
+    EventBus,
+    GraphEvent,
+    InMemoryGraphState,
+)
+from .graph_audit import audit_bottlenecks, audit_graph_all, audit_traceability
+from .pathfinder import find_shortest_traceability_path, format_traceability_path, inspect_entity
+from .topology import (
+    BlastRadiusResult,
+    CycleResult,
+    DirectedGraph,
+    TopologicalTierResult,
+    compute_blast_radius,
+    compute_execution_tiers,
+    detect_cycles,
+    kahns_topological_sort,
+    tarjan_scc,
+)
+from .watcher import WorkspaceWatcher
+
 __all__ = [
     "ADR",
     "CommitInfo",
@@ -62,18 +88,15 @@ __all__ = [
     "audit_traceability",
     "audit_bottlenecks",
     "audit_graph_all",
+    "EventBus",
+    "GraphEvent",
+    "Debouncer",
+    "InMemoryGraphState",
+    "WorkspaceWatcher",
+    "TASK_PROMOTED",
+    "UNANCHORED_REFERENCE_DETECTED",
+    "GRAPH_CYCLE_INTRODUCED",
+    "NODE_UPDATED",
+    "BATCHED_UPDATE",
 ]
 
-from .graph_audit import audit_bottlenecks, audit_graph_all, audit_traceability
-from .pathfinder import find_shortest_traceability_path, format_traceability_path, inspect_entity
-from .topology import (
-    BlastRadiusResult,
-    CycleResult,
-    DirectedGraph,
-    TopologicalTierResult,
-    compute_blast_radius,
-    compute_execution_tiers,
-    detect_cycles,
-    kahns_topological_sort,
-    tarjan_scc,
-)

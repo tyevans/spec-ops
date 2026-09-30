@@ -210,6 +210,10 @@ def main() -> int:
         from .prd_handler import handle_prd_command
         return handle_prd_command(args, config, parser)
 
+    if args.command == "export":
+        from .export_handler import handle_export_command
+        return handle_export_command(args, config, parser)
+
     if args.command == "curate":
         if getattr(args, "curate_action", None) == "next":
             from ..backlog.queue import BacklogQueue
@@ -365,6 +369,25 @@ def main() -> int:
     if args.command == "test":
         from .test_handler import handle_test_command
         return handle_test_command(args, config, parser)
+
+    if args.command == "schema":
+        from .schema_handler import handle_schema_command
+        return handle_schema_command(args, config)
+
+    if args.command == "verify":
+        from ..core.properties_runner import handle_properties_command
+        return handle_properties_command(args, config)
+
+    if args.command == "watch":
+        from .graph_handler import handle_watch_command
+        return handle_watch_command(args, config)
+
+    if args.command == "invariants":
+        from .test_handler import handle_mutation_command
+        if getattr(args, "invariants_action", None) == "verify-mutations":
+            return handle_mutation_command(args, config)
+        parser.parse_args(["invariants", "--help"])
+        return 0
 
     return 0
 

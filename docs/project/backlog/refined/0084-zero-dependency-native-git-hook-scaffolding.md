@@ -1,21 +1,22 @@
 ---
-id: '0084'
+id: 0084
 title: Zero-Dependency Native Git Hook Scaffolding and Autonomous Worktree Guardrails
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0064
+- TASK-0064
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0072
+- US-0072
 target_bc: scaffold
+claimed_by: worker-3
+branch: feat/0084-zero-dependency-native-git-hook-scaffold
 ---
 
 # TASK-0084: Zero-Dependency Native Git Hook Scaffolding and Autonomous Worktree Guardrails

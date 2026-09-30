@@ -1,7 +1,7 @@
 ---
 id: '0101'
 title: Fast Incremental In-Worktree Preflight Runner with Targeted Step Isolation
-status: Proposed
+status: Refined
 created: 2026-09-30
 dependencies:
   - TASK-0052

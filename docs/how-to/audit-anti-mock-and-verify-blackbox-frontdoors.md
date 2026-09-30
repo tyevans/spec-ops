@@ -61,6 +61,25 @@ uv run spec-ops test verify-frontdoors tests/ --strict-mutation --threshold 80
 
 If surviving mutants reduce the kill score below the configured threshold, the command exits with code `1` and outputs surviving mutant IDs and code branches requiring stronger assertions or property tests.
 
+### Running Core Domain Mutation Testing Quality Gate
+To directly run Mutmut mutation quality gating across target domain modules:
+
+```bash
+uv run spec-ops test mutation --threshold 80 --bc core
+```
+
+Or using the invariants quality gate alias:
+
+```bash
+uv run spec-ops invariants verify-mutations --threshold 80
+```
+
+When run with `--json`, the command emits structured telemetry including mutation scores, threshold evaluations, and surviving mutant locations:
+
+```bash
+uv run spec-ops test mutation --json
+```
+
 ---
 
 ## 4. Structured JSON Output for CI Integration

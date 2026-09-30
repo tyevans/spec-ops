@@ -1,7 +1,7 @@
 ---
 id: '0043'
 title: Non-Technical PMaC Onboarding Tutorial, Interactive Tour, and Discovery Sandbox
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0015

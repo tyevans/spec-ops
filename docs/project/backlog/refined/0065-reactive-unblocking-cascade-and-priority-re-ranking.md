@@ -16,8 +16,6 @@ governing_prds:
 governing_stories:
 - US-0073
 target_bc: backlog
-claimed_by: worker-3
-branch: feat/0065-automated-reactive-unblocking-cascade-an
 ---
 
 # TASK-0065: Automated Reactive Unblocking Cascade and JIT Buffer Replenishment

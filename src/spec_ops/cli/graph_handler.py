@@ -164,8 +164,36 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
             print(msg)
         return code
 
+    if action == "watch":
+        return handle_watch_command(args, config)
+
     print(f"❌ Unknown graph action: {action}", file=sys.stderr)
     return 1
+
+
+def handle_watch_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+    """Handles 'spec-ops watch' and 'spec-ops graph watch' commands."""
+    from pathlib import Path
+    from ..core.watcher import WorkspaceWatcher
+
+    target_dir = Path(getattr(args, "dir", "."))
+    if str(target_dir) == ".":
+        target_dir = config.root_dir
+    else:
+        target_dir = target_dir.resolve()
+
+    debounce_ms = getattr(args, "debounce_ms", 250.0)
+    event_stream = getattr(args, "event_stream", False)
+    once = getattr(args, "once", False)
+    max_iters = 1 if once else getattr(args, "max_iterations", None)
+
+    watcher = WorkspaceWatcher(
+        root_dir=target_dir,
+        debounce_ms=debounce_ms,
+        event_stream=event_stream,
+    )
+    return watcher.run(max_iterations=max_iters)
+
 
 
 def handle_trace_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:

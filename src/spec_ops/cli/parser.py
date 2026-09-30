@@ -7,10 +7,12 @@ import argparse
 from .parser_subcommands import (
     register_adr_subparsers,
     register_audit_subparsers,
+    register_export_subparsers,
     register_graph_subparsers,
     register_prd_subparsers,
     register_profile_subparsers,
     register_queue_subparsers,
+    register_schema_subparsers,
     register_spike_subparsers,
     register_test_subparsers,
 )
@@ -168,6 +170,9 @@ def build_parser() -> argparse.ArgumentParser:
     # prd
     register_prd_subparsers(subparsers)
 
+    # export
+    register_export_subparsers(subparsers)
+
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
     p_curate.add_argument("curate_action", nargs="?", default=None, help="Curation action ('next')")
@@ -301,5 +306,36 @@ def build_parser() -> argparse.ArgumentParser:
 
     # test
     register_test_subparsers(subparsers)
+
+    # schema
+    register_schema_subparsers(subparsers)
+
+    # verify
+    p_verify = subparsers.add_parser("verify", help="Execute verification suites and invariant checks")
+    p_verify.add_argument("--invariants", action="store_true", help="Execute Hypothesis generative property tests (ADR-0009)")
+    p_verify.add_argument("--max-examples", type=int, default=None, help="Maximum number of Hypothesis examples per property")
+    p_verify.add_argument("path", nargs="?", default=None, help="Target test file or directory")
+    p_verify.add_argument("--path", dest="opt_path", default=None, help="Target test file or directory")
+    p_verify.add_argument("-k", "--filter", dest="filter_expr", default=None, help="Filter property tests by name")
+    p_verify.add_argument("--json", action="store_true", help="Output verification results as structured JSON")
+
+    # invariants
+    p_invariants = subparsers.add_parser("invariants", help="Enforce architectural and quality invariants")
+    inv_subs = p_invariants.add_subparsers(dest="invariants_action", help="Invariants action")
+    p_inv_mut = inv_subs.add_parser("verify-mutations", help="Verify mutation testing kill score quality gate per ADR-0009")
+    p_inv_mut.add_argument("path", nargs="?", default=None, help="Target module or file to mutate")
+    p_inv_mut.add_argument("--path", dest="opt_path", default=None, help="Target module or file to mutate")
+    p_inv_mut.add_argument("--threshold", type=float, default=80.0, help="Mutation kill score threshold percentage (default: 80.0)")
+    p_inv_mut.add_argument("--bc", dest="target_bc", default="core", help="Target bounded context (default: core)")
+    p_inv_mut.add_argument("--json", action="store_true", help="Output mutation results as structured JSON")
+    p_inv_mut.add_argument("--force-run", action="store_true", help="Force re-running Mutmut even if previous results exist")
+
+    # watch
+    p_watch = subparsers.add_parser("watch", help="Real-time in-memory graph event bus and workspace change watcher")
+    p_watch.add_argument("--debounce-ms", type=float, default=250.0, help="Debounce window in milliseconds (default: 250)")
+    p_watch.add_argument("--event-stream", action="store_true", help="Emit raw JSON structured event stream")
+    p_watch.add_argument("--dir", default=".", help="Target repository directory (default: current directory)")
+    p_watch.add_argument("--once", action="store_true", help="Run single watcher scan iteration and exit")
+    p_watch.add_argument("--max-iterations", type=int, default=None, help="Maximum number of poll iterations before exit")
 
     return parser

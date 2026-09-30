@@ -95,6 +95,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops graph blast-radius` | `<ENTITY>` | Calculate downstream blast radius of entity |
 | `spec-ops graph inspect` | `<ENTITY>` | Inspect entity metadata, lineage card, and neighborhood |
 | `spec-ops graph audit` | None | Full bidirectional graph traceability and orphan work item audit |
+| `spec-ops graph watch` | `[--debounce-ms DEBOUNCE_MS] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
+| `spec-ops watch` | `[--debounce-ms DEBOUNCE_MS] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
 | `spec-ops trace` | `[--verify]` | Audit end-to-end bidirectional graph linkages and traceability |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
@@ -108,6 +110,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT] [--entity ENTITY]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
+| `spec-ops export roadmap` | `[--format {{svg,html}}] [-o OUTPUT] [--out OUTPUT] [--output OUTPUT] [--audience AUDIENCE] [--granularity GRANULARITY]` | Export executive roadmap vector visual or interactive presentation |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
 | `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run] [--action ACTION] [--file FILE]` | Inspect, triage, and recover stalled or failed autonomous worktrees |
@@ -145,6 +148,13 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops docs check` | `[--dir DIR]` | Living Diataxis documentation drift guard auditing CLI commands against docs |
 | `spec-ops test audit-anti-mock` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Audit test ASTs for prohibited mock backdoors and verify ADR-0003 frontdoor compliance |
 | `spec-ops test verify-frontdoors` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Verify blackbox frontdoors, audit anti-mock AST violations, and enforce mutation score invariants |
+| `spec-ops test properties` | `[PATH] [--path OPT_PATH] [--max-examples MAX_EXAMPLES] [-k/--filter FILTER_EXPR] [--json]` | Execute Hypothesis generative property invariant verification tests (ADR-0009) |
+| `spec-ops test mutation` | `[PATH] [--path OPT_PATH] [--threshold THRESHOLD] [--bc TARGET_BC] [--json] [--force-run]` | Run Mutmut mutation testing quality gate on core domain modules per ADR-0009 |
+| `spec-ops verify` | `[PATH] [--invariants] [--max-examples MAX_EXAMPLES] [--path OPT_PATH] [-k/--filter FILTER_EXPR] [--json]` | Execute verification suites and invariant checks |
+| `spec-ops invariants verify-mutations` | `[PATH] [--path OPT_PATH] [--threshold THRESHOLD] [--bc TARGET_BC] [--json] [--force-run]` | Verify mutation testing kill score quality gate per ADR-0009 |
+| `spec-ops schema check` | `[PATH] [--path OPT_PATH]` | Audit specification documents against schema v2.0 Pydantic models with compiler-grade diagnostic pointers |
+| `spec-ops schema validate` | `[PATH] [--path OPT_PATH]` | Alias for schema check auditing specification frontmatter against active Pydantic models |
+| `spec-ops schema migrate` | `[PATH] [--path OPT_PATH] [--dry-run] [--in-place]` | Safely migrate legacy specification frontmatter fields to schema v2.0 while preserving Markdown body byte-for-byte |
 """
 
 DEFAULT_EXPLANATION_PMAC = """# Project Management as Code (PMaC)

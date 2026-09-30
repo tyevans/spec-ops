@@ -10,7 +10,7 @@ import yaml
 
 from .models import ADR, PRD, BlockerInfo, Persona, ProjectData, Task, UserStory
 
-FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
+FRONTMATTER_PATTERN = re.compile(r"^---\s*(?:\r?\n)(.*?)\r?\n---\s*(?:\r?\n|\Z)", re.DOTALL)
 
 
 def extract_frontmatter(content: str) -> tuple[dict[str, Any], str]:
@@ -24,6 +24,17 @@ def extract_frontmatter(content: str) -> tuple[dict[str, Any], str]:
         return data, body
     except yaml.YAMLError:
         return {}, content
+
+
+def serialize_frontmatter(metadata: dict[str, Any], body: str = "") -> str:
+    """Serializes frontmatter dictionary and markdown body into canonical markdown."""
+    yaml_str = yaml.dump(
+        metadata,
+        default_flow_style=False,
+        sort_keys=False,
+        allow_unicode=True,
+    )
+    return f"---\n{yaml_str}---\n{body}"
 
 
 def parse_priority_ranks(backlog_dir: Path) -> dict[str, int]:

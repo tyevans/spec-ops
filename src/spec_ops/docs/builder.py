@@ -276,9 +276,14 @@ def build_docs_site(
         vis_dir.mkdir(parents=True, exist_ok=True)
         (vis_dir / "index.html").write_text(visualizer_html, encoding="utf-8")
 
-    # 3. Export project JSON data
+    # 3. Export project JSON data and roadmap SVG artifacts
     payload = serialize_project_data(config)
     (site_dir / "project-data.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    from ..prd.exporter import export_roadmap
+    assets_dir = site_dir / "assets"
+    assets_dir.mkdir(parents=True, exist_ok=True)
+    export_roadmap(config, format="svg", output_path=assets_dir / "roadmap.svg")
 
     # 4. Discover all Markdown docs in docs/ (excluding docs/project/)
     pages: list[DocPage] = []
