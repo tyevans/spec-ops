@@ -1,7 +1,7 @@
 ---
 id: '0050'
 title: Concurrent Multi-Worker Batch Orchestration, Auto-Rebase under MERGE_LOCK, and Signal-Safe Cycle
-status: Proposed
+status: Complete
 created: 2026-09-29
 dependencies:
   - TASK-0046

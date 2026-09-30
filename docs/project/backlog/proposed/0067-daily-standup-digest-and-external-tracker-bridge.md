@@ -4,7 +4,7 @@ title: Daily Curation Standup Digest, Stalled Claim Detection, and External Issu
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0067
+  - TASK-0066
 governing_adrs:
   - ADR-0001
   - ADR-0003
@@ -21,7 +21,7 @@ governing_stories:
 target_bc: backlog
 ---
 
-# TASK-0068: Daily Curation Standup Digest, Stalled Claim Detection, and External Issue Tracker Bridge
+# TASK-0067: Daily Curation Standup Digest, Stalled Claim Detection, and External Issue Tracker Bridge
 
 ## Summary
 Implement living backlog reporting, hybrid team telemetry, and external issue integration: author daily standup curation digest generation (`spec-ops queue digest [--format markdown|json]`), automatic stalled worker claim detection and lease reclamation (`spec-ops queue reclaim-stalled`), interactive milestone planning and workload simulation (`spec-ops milestone plan`), hybrid team velocity and autonomous worker rescue analytics (`spec-ops report velocity`), automated executive milestone briefings (`spec-ops report milestone`), and external issue tracker ingestion and bidirectional synchronization for GitHub Issues, Linear, and Jira (`spec-ops bridge import/export`).

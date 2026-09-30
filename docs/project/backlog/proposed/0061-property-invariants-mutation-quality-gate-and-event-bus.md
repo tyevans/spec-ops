@@ -4,7 +4,7 @@ title: Generative Hypothesis Property Invariants, Mutation Testing Quality Gate,
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0061
+  - TASK-0060
 governing_adrs:
   - ADR-0001
   - ADR-0002
@@ -21,7 +21,7 @@ governing_stories:
 target_bc: core
 ---
 
-# TASK-0062: Generative Hypothesis Property Invariants, Mutation Testing Quality Gate, and Real-Time Graph Event Bus
+# TASK-0061: Generative Hypothesis Property Invariants, Mutation Testing Quality Gate, and Real-Time Graph Event Bus
 
 ## Summary
 Implement automated quality verification gates and real-time reactive graph synchronization: author comprehensive generative property tests using Hypothesis (`@given`) for all core domain models and graph topology algorithms, enforce a strict Mutmut mutation kill score quality gate (`spec-ops test mutation --threshold 80`), establish a blackbox frontdoor test verification gate (`spec-ops test audit-anti-mock`) that rejects prohibited mock backdoors or private method tampering, and implement a real-time in-memory graph event bus with debounced file watching (`spec-ops watch`) emitting live graph delta events upon disk modifications.

@@ -162,7 +162,7 @@ def test_scan_line_github_and_slack():
     violations_gh = scan_line(line_gh, line_number=10, file_path="src/gh.py")
     assert any("GitHub" in v.secret_type for v in violations_gh)
 
-    line_slack = 'slack_token = "xoxb-123456789012-1234567890123-abcdefghijklmnopqrstuvwx"'
+    line_slack = 'slack_token = "xoxb-testdummytoken1234567890123456"'
     violations_slack = scan_line(line_slack, line_number=15, file_path="src/slack.py")
     assert any("Slack" in v.secret_type for v in violations_slack)
 

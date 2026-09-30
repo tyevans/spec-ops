@@ -4,7 +4,7 @@ title: Content-Addressed Incremental Graph Caching Engine, Precision AST Parsing
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0058
+  - TASK-0057
 governing_adrs:
   - ADR-0001
   - ADR-0002
@@ -20,7 +20,7 @@ governing_stories:
 target_bc: core
 ---
 
-# TASK-0059: Content-Addressed Incremental Graph Caching Engine, Precision AST Parsing, and Frontmatter Schema Migration
+# TASK-0058: Content-Addressed Incremental Graph Caching Engine, Precision AST Parsing, and Frontmatter Schema Migration
 
 ## Summary
 Implement production-grade content-addressed incremental graph compilation (`spec-ops graph compile [--incremental] [--json]`), resilient markdown AST parsing with precise diagnostic reporting, and automated in-place specification frontmatter schema validation and migration (`spec-ops schema validate`, `spec-ops schema migrate [--dry-run]`). Persist indexed entity nodes and dependency edges in `.specops/cache/graph.json` backed by file SHA-256 tree hashing, guarantee sub-50ms incremental graph resolution, and provide safe in-place YAML frontmatter normalization while preserving comments, markdown bodies, tables, and fenced blocks.

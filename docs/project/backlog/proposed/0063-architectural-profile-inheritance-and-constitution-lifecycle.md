@@ -4,7 +4,7 @@ title: Modular Architectural Profile Inheritance, Semantic Invariant Diffs, and 
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0063
+  - TASK-0062
   - TASK-0010
 governing_adrs:
   - ADR-0001
@@ -23,7 +23,7 @@ governing_stories:
 target_bc: scaffold
 ---
 
-# TASK-0064: Modular Architectural Profile Inheritance, Semantic Invariant Diffs, and Living Constitution Lifecycle
+# TASK-0063: Modular Architectural Profile Inheritance, Semantic Invariant Diffs, and Living Constitution Lifecycle
 
 ## Summary
 Implement hierarchical profile composition and inheritance (`extends = ["base", "security"]`), custom profile packaging and multi-repo distribution (`spec-ops profile export/install`), profile version upgrading with semantic diffing (`spec-ops profile diff`, `spec-ops profile upgrade`), automated ADR supersession with registry and AGENTS.md re-synchronization (`spec-ops adr supersede`), and a CI living constitution drift gate (`spec-ops constitution check`) that preserves human-authored custom extensions across syncs.
