@@ -175,13 +175,46 @@ def build_parser() -> argparse.ArgumentParser:
     # queue
     p_queue = subparsers.add_parser("queue", help="Manage backlog queue and task integration gates")
     queue_subs = p_queue.add_subparsers(dest="queue_action", help="Queue action")
+
     p_q_comp = queue_subs.add_parser("complete", help="Gate and complete task integration under merge lock")
     p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")
     p_q_comp.add_argument("--base", default="main", help="Base branch for diff comparison (default: main)")
 
+    p_q_tree = queue_subs.add_parser("tree", help="Display task dependency tree, execution waves, and blockers")
+    p_q_tree.add_argument("--task", default=None, help="Focus tree on a specific task canonical ID (e.g. TASK-0054)")
+    p_q_tree.add_argument("--direction", choices=["blocks", "blocked-by"], default="blocks", help="Tree orientation: 'blocks' (forward execution flow) or 'blocked-by' (prerequisites)")
+    p_q_tree.add_argument("--reverse", action="store_true", help="Alias for --direction blocked-by")
+    p_q_tree.add_argument("--waves", action="store_true", help="Display execution horizons / delivery waves breakdown")
+    p_q_tree.add_argument("--all", action="store_true", help="Include completed tasks in dependency tree output")
+    p_q_tree.add_argument("--json", action="store_true", help="Output dependency DAG and waves as structured JSON")
+
+    p_q_block = queue_subs.add_parser("block", help="Mark a task as blocked by an unknown question or impediment")
+    p_q_block.add_argument("task_id", help="Canonical task ID (e.g. TASK-0052 or 0052)")
+    p_q_block.add_argument("--question", required=True, help="The unanswered question or unknown needing resolution")
+    p_q_block.add_argument("--type", default="unknown", choices=["unknown", "spike_needed", "external", "dependency"], help="Type of blocker (default: unknown)")
+    p_q_block.add_argument("--spike", action="store_true", help="Automatically scaffold an isolated architectural spike and test harness")
+    p_q_block.add_argument("--timebox", default="2h", help="Timebox for the created spike (default: 2h)")
+    p_q_block.add_argument("--raised-by", default="", help="Identifier of person or agent raising the blocker")
+
+    p_q_unblock = queue_subs.add_parser("unblock", help="Resolve an unknown/blocker and restore ready/proposed state")
+    p_q_unblock.add_argument("task_id", help="Canonical task ID (e.g. TASK-0052 or 0052)")
+    p_q_unblock.add_argument("--resolution", required=True, help="Explanation or findings that resolved the blocker")
+    p_q_unblock.add_argument("--adr", default=None, help="Governing ADR canonical ID if resolved via ADR (e.g. ADR-0017)")
+
+    p_q_blockers = queue_subs.add_parser("blockers", help="List all currently blocked tasks, open questions, and linked spikes")
+    p_q_blockers.add_argument("--json", action="store_true", help="Output blockers summary as JSON")
+
     # spike
     p_spike = subparsers.add_parser("spike", help="Governed architectural spike lifecycle, sandboxing, and empirical ADR synthesis")
     spike_subs = p_spike.add_subparsers(dest="spike_action", help="Spike action")
+
+    # spike create
+    p_spk_create = spike_subs.add_parser("create", help="Author a new architectural spike task and isolated test harness")
+    p_spk_create.add_argument("--name", required=True, help="Spike descriptive name / topic")
+    p_spk_create.add_argument("--question", required=True, help="Unanswered question or hypothesis statement to validate")
+    p_spk_create.add_argument("--timebox", default="2h", help="Timebox duration (default: 2h)")
+    p_spk_create.add_argument("--task", default=None, help="Governing task canonical ID (e.g. TASK-0052)")
+    p_spk_create.add_argument("--prd", default=None, help="Governing PRD canonical ID (e.g. PRD-0002)")
 
     # spike start
     p_spk_start = spike_subs.add_parser("start", help="Instantiate disposable sandboxed spike worktree")

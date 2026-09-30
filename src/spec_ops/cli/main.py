@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-import argparse
 import sys
 from pathlib import Path
 
-import subprocess
 from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
 from ..config.loader import load_config
-from ..core.graph import process_project_graph
-from ..core.parser import SpecOpsParser
 from ..scaffold.init import init_project
 from ..visualizer.generator import generate_standalone_html
 from ..visualizer.server import serve_visualizer
@@ -113,7 +109,7 @@ def main() -> int:
         else:
             print("✅ 0 file limit violations (<500 lines) and 0 constitution drift warnings.")
 
-        print(f"\nBacklog State:")
+        print("\nBacklog State:")
         print(f"   Complete Tasks: {report.completed_tasks}")
         print(f"   Refined Buffer: {report.refined_tasks} ({report.buffer_status})")
         print(f"   Proposed Tasks: {report.proposed_tasks}")
@@ -177,7 +173,7 @@ def main() -> int:
                 print(inf_res.diff_output)
                 print(f"\n{inf_res.message}")
             else:
-                print(f"=== Backlog Curation (Inference-Driven) ===")
+                print("=== Backlog Curation (Inference-Driven) ===")
                 print(inf_res.message)
                 if inf_res.tasks_sliced:
                     print("Decomposed oversized tasks:")
@@ -199,7 +195,7 @@ def main() -> int:
 
         curator = BacklogCurator(config)
         res = curator.curate()
-        print(f"=== Backlog Curation ===")
+        print("=== Backlog Curation ===")
         print(res.message)
         if res.tasks_refined:
             print("Refined tasks:")
@@ -253,7 +249,7 @@ def main() -> int:
         return handle_security_command(args, config, parser)
 
     if args.command == "queue":
-        from .security_handler import handle_queue_command
+        from .queue_handler import handle_queue_command
         return handle_queue_command(args, config, parser)
 
     if args.command == "spike":

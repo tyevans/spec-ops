@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from .models import ADR, PRD, Persona, ProjectData, Task, UserStory
+from .models import ADR, PRD, BlockerInfo, Persona, ProjectData, Task, UserStory
 
 FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 
@@ -106,6 +106,20 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
     else:
         status = str(raw_status or "Proposed")
 
+    blocker_raw = meta.get("blocker")
+    blocker_info = None
+    if isinstance(blocker_raw, dict):
+        blocker_info = BlockerInfo(
+            type=str(blocker_raw.get("type", "unknown")),
+            question=str(blocker_raw.get("question", "")),
+            raised_by=str(blocker_raw.get("raised_by", "")),
+            raised_at=str(blocker_raw.get("raised_at", "")),
+            spike_id=str(blocker_raw.get("spike_id", "")),
+            resolution=str(blocker_raw.get("resolution", "")),
+            resolved_at=str(blocker_raw.get("resolved_at", "")),
+            adr_id=str(blocker_raw.get("adr_id", "")),
+        )
+
     return Task(
         id=raw_id,
         title=str(meta.get("title", file_path.stem)),
@@ -129,6 +143,7 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         timebox=str(meta.get("timebox", "")),
         signed_off_by=str(meta.get("signed_off_by", "")),
         signed_off_at=str(meta.get("signed_off_at", "")),
+        blocker=blocker_info,
     )
 
 

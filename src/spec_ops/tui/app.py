@@ -23,6 +23,7 @@ from .views import (
     render_footer,
     render_header,
     render_health_panel,
+    render_task_dependency_tree,
 )
 
 
@@ -55,7 +56,8 @@ class TUIDashboard:
     def __init__(self, config: SpecOpsConfig | None = None) -> None:
         self.config = config or load_config()
         self.active_view = "overview"
-        self.status_message = "Ready (Press 1-4 to navigate, c to curate, h to refresh, q to quit)"
+        self.tree_view_type = "dependency"
+        self.status_message = "Ready (Press 1-4 to navigate, t to toggle tree, c to curate, q to quit)"
         self.data: ProjectData | None = None
         self.report: HealthCheckReport | None = None
         self.queue: BacklogQueue | None = None
@@ -110,7 +112,15 @@ class TUIDashboard:
         elif current_view == "backlog":
             layout["body"].update(render_backlog_panel(self.report, self.queue))
         elif current_view == "tree":
-            layout["body"].update(render_entity_tree(self.data))
+            if self.tree_view_type == "dependency":
+                layout["body"].update(
+                    render_task_dependency_tree(
+                        self.queue.list_all_tasks(),
+                        self.queue.get_completed_task_ids(),
+                    )
+                )
+            else:
+                layout["body"].update(render_entity_tree(self.data))
         elif current_view == "health":
             layout["body"].update(render_health_panel(self.report))
         else:
@@ -155,10 +165,19 @@ class TUIDashboard:
                         self.status_message = "Switched to Backlog Queue"
                     elif key == "3":
                         self.active_view = "tree"
-                        self.status_message = "Switched to Entity Tree"
+                        self.status_message = f"Switched to Tree ({self.tree_view_type.capitalize()})"
                     elif key == "4":
                         self.active_view = "health"
                         self.status_message = "Switched to Health Invariants"
+                    elif key in ("t", "T"):
+                        if self.active_view != "tree":
+                            self.active_view = "tree"
+                        if self.tree_view_type == "dependency":
+                            self.tree_view_type = "entity"
+                            self.status_message = "Switched Tree to Entity Hierarchy"
+                        else:
+                            self.tree_view_type = "dependency"
+                            self.status_message = "Switched Tree to Task Dependency Flow"
                     elif key in ("c", "C"):
                         self.status_message = "Curating backlog..."
                         live.update(self.render_layout())

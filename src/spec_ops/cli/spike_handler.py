@@ -42,10 +42,29 @@ def handle_spike_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
     """Dispatches spike lifecycle subcommands."""
     action = getattr(args, "spike_action", None)
     if not action:
-        print("❌ Missing spike subcommand. Available: start, check, preflight, graduate")
+        print("❌ Missing spike subcommand. Available: create, start, check, preflight, graduate")
         return 1
 
     root = config.root_dir
+
+    if action == "create":
+        from ..spike.scaffold import create_spike
+
+        try:
+            task, task_path = create_spike(
+                root,
+                name=args.name,
+                question=args.question,
+                timebox=getattr(args, "timebox", "2h"),
+                prd_id=getattr(args, "prd", None),
+                task_id=getattr(args, "task", None),
+            )
+            print(f"✨ Scaffolded architectural spike {task.canonical_id} in {task_path}")
+            print(f"📁 Initialized test harness in spikes/spike_{task.id}/")
+            return 0
+        except Exception as err:
+            print(f"❌ Failed to create spike: {err}", file=sys.stderr)
+            return 1
 
     if action == "start":
         try:

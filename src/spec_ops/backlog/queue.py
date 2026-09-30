@@ -48,6 +48,22 @@ def write_task_file(task: Task) -> Path:
         meta["signed_off_by"] = task.signed_off_by
     if task.signed_off_at:
         meta["signed_off_at"] = task.signed_off_at
+    if getattr(task, "blocker", None):
+        b = task.blocker
+        b_dict: dict[str, Any] = {"type": b.type, "question": b.question}
+        if b.raised_by:
+            b_dict["raised_by"] = b.raised_by
+        if b.raised_at:
+            b_dict["raised_at"] = b.raised_at
+        if b.spike_id:
+            b_dict["spike_id"] = b.spike_id
+        if b.resolution:
+            b_dict["resolution"] = b.resolution
+        if b.resolved_at:
+            b_dict["resolved_at"] = b.resolved_at
+        if b.adr_id:
+            b_dict["adr_id"] = b.adr_id
+        meta["blocker"] = b_dict
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()

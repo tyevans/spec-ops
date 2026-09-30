@@ -53,10 +53,22 @@ class PRD:
 
 
 @dataclass
+class BlockerInfo:
+    type: str = "unknown"  # unknown, spike_needed, external, dependency
+    question: str = ""
+    raised_by: str = ""
+    raised_at: str = ""
+    spike_id: str = ""
+    resolution: str = ""
+    resolved_at: str = ""
+    adr_id: str = ""
+
+
+@dataclass
 class Task:
     id: str
     title: str
-    status: str = "Proposed"  # Proposed, Refined, Complete, In-Progress, Review
+    status: str = "Proposed"  # Proposed, Refined, Complete, In-Progress, Review, Blocked
     dependencies: list[str] = field(default_factory=list)
     governing_adrs: list[str] = field(default_factory=list)
     governing_prds: list[str] = field(default_factory=list)
@@ -77,6 +89,7 @@ class Task:
     timebox: str = ""
     signed_off_by: str = ""
     signed_off_at: str = ""
+    blocker: BlockerInfo | None = None
 
     @property
     def canonical_id(self) -> str:

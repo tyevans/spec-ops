@@ -90,6 +90,20 @@ def render_entity_tree(data: ProjectData) -> Panel:
     return Panel(root, title="🌳 Relational Entity Tree", border_style="yellow")
 
 
+def render_task_dependency_tree(tasks: list[Task], completed_ids: set[str], reverse: bool = False) -> Panel:
+    """Renders the live task dependency DAG tree for the TUI dashboard."""
+    from ..backlog.tree import TaskDependencyTreeEngine
+
+    engine = TaskDependencyTreeEngine(tasks, completed_ids=completed_ids)
+    if reverse:
+        tree = engine.build_prerequisite_tree(include_completed=False)
+        title = "🔍 Task Prerequisites Tree (Blocked By)"
+    else:
+        tree = engine.build_forward_tree(include_completed=False)
+        title = "🌳 Task Dependency Tree (Execution Flow)"
+    return Panel(tree, title=title, border_style="yellow")
+
+
 def render_health_panel(report: HealthCheckReport) -> Panel:
     """Renders codebase invariants and file length distributions."""
     table = Table(title="Largest Source Files (<500 lines limit)", expand=True, border_style="dim")
@@ -147,8 +161,9 @@ def render_footer(message: str = "") -> Panel:
     footer.append("[2] Backlog  ", style="bold cyan")
     footer.append("[3] Tree  ", style="bold cyan")
     footer.append("[4] Health  ", style="bold cyan")
-    footer.append("|  [c] Curate  ", style="bold yellow")
-    footer.append("[h] Health Check  ", style="bold green")
+    footer.append("|  [t] Toggle Tree  ", style="bold yellow")
+    footer.append("[c] Curate  ", style="bold yellow")
+    footer.append("[h] Health  ", style="bold green")
     footer.append("[q] Quit", style="bold red")
     if message:
         footer.append(f"  |  {message}", style="bold yellow")
