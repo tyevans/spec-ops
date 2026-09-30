@@ -78,7 +78,9 @@ def write_task_file(task: Task) -> Path:
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()
     full_content = f"---\n{yaml_block}\n---\n\n{clean_body}\n"
-    task.file_path.write_text(full_content, encoding="utf-8")
+    from .lock import atomic_write
+
+    atomic_write(task.file_path, full_content)
     return task.file_path
 
 
@@ -159,29 +161,33 @@ class BacklogQueue:
         repo_root: Path | None = None,
         target_buffer: int = 10,
     ) -> Path:
-        """Transitions a task from refined/ to complete/ and triggers unblocking cascade."""
-        dest = self.complete_dir / task.file_path.name
-        self.complete_dir.mkdir(parents=True, exist_ok=True)
-        task.status = "Complete"
-        task.claimed_by = ""
-        task.branch = ""
-        if task.file_path.exists() and task.file_path != dest:
-            task.file_path.rename(dest)
-        task.file_path = dest
-        write_task_file(task)
-        self._sync_priority_file(task, "Complete", "complete")
+        root = (repo_root or self.backlog_dir.parent.parent).resolve()
+        from .lock import BacklogLock, atomic_write, recover_transactions
 
-        if cascade:
-            from .unblocker import UnblockingCascadeEngine
+        with BacklogLock(root).acquire():
+            recover_transactions(root)
+            dest = self.complete_dir / task.file_path.name
+            self.complete_dir.mkdir(parents=True, exist_ok=True)
+            task.status = "Complete"
+            task.claimed_by = ""
+            task.branch = ""
+            if task.file_path.exists() and task.file_path != dest:
+                task.file_path.rename(dest)
+            task.file_path = dest
+            write_task_file(task)
+            self._sync_priority_file(task, "Complete", "complete")
 
-            engine = UnblockingCascadeEngine(
-                self.backlog_dir,
-                target_buffer=target_buffer,
-                repo_root=repo_root,
-            )
-            engine.cascade(completed_task_id=task.canonical_id)
+            if cascade:
+                from .unblocker import UnblockingCascadeEngine
 
-        return dest
+                engine = UnblockingCascadeEngine(
+                    self.backlog_dir,
+                    target_buffer=target_buffer,
+                    repo_root=root,
+                )
+                engine.cascade(completed_task_id=task.canonical_id)
+
+            return dest
 
     def _sync_priority_file(self, task: Task, new_status: str, new_folder: str) -> None:
         priority_file = self.backlog_dir / "PRIORITY.md"
@@ -196,7 +202,8 @@ class BacklogQueue:
         replacement = rf"\g<1>{new_status}\g<2>{new_folder}\g<3>"
         updated = pattern.sub(replacement, content)
         if updated != content:
-            priority_file.write_text(updated, encoding="utf-8")
+            from .lock import atomic_write
+            atomic_write(priority_file, updated, repo_root=self.backlog_dir.parent.parent)
 
     def complete_task_with_gate(
         self,

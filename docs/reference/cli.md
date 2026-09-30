@@ -57,7 +57,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
 | `spec-ops export roadmap` | `[--format {svg,html}] [-o OUTPUT] [--out OUTPUT] [--output OUTPUT] [--audience AUDIENCE] [--granularity GRANULARITY]` | Export executive roadmap vector visual or interactive presentation |
 | `spec-ops release notes` | `--milestone MILESTONE [--format {markdown,html}] [--branded] [-o OUTPUT] [--output OUTPUT]` | Generate customer-facing release notes from shipped PRD capabilities and passed user stories |
-| `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review] [--telemetry] [--json]` | Execute backlog task in isolated worktree with concurrent review, or monitor fleet telemetry |
+| `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review] [--worker-id WORKER_ID] [--claimant CLAIMANT] [--telemetry] [--json]` | Execute backlog task in isolated worktree with concurrent review, or monitor fleet telemetry |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
 | `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--reset] [--reason REASON] [--demote] [--prune] [--dry-run] [--action ACTION] [--file FILE] [--step STEP] [--only-failed]` | Inspect, triage, and recover stalled or failed autonomous worktrees, render quickstart cheatsheets, or reset worktree with failure memory |
 | `spec-ops worktree start` | `<TASK_ID>` | Spawn an isolated development worktree for a task |
@@ -69,6 +69,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops spike graduate` | `<SPIKE_ID> --result {proven,disproven} [--title TITLE] [--notes NOTES] [--findings FINDINGS] [--status STATUS]` | Graduate empirical spike findings into an Architectural Decision Record |
 | `spec-ops tui` | `[--once] [--view {overview,backlog,tree,health}]` | Launch interactive Terminal UI (TUI) dashboard |
 | `spec-ops queue next` | `[--json]` | Inspect next ready, unblocked backlog task |
+| `spec-ops queue claim` | `[TASK_ID] [--auto] [--worker-id WORKER_ID] [--claimant CLAIMANT] [--json]` | Claim next ready unblocked task or specific task under cross-process lock |
 | `spec-ops queue refine` | `<TASK_ID>` | Validate Definition of Ready and promote task to refined |
 | `spec-ops queue complete` | `<TASK_ID> [--base BASE]` | Gate and complete task integration under merge lock with automated unblocking cascade and JIT buffer replenishment |
 | `spec-ops queue tree` | `[--task TASK] [--direction {blocks,blocked-by}] [--reverse] [--waves] [--all] [--json]` | Display task dependency tree, execution waves, and blockers |

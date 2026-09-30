@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -97,7 +98,8 @@ def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         from ..worker.claimer import TaskClaimer
         claimer = TaskClaimer(config)
         target = task_pos or getattr(args, "task", None)
-        res = claimer.claim_auto() if (auto_flag or not target) else claimer.claim_task(target)
+        claimant = getattr(args, "worker_id", None) or os.environ.get("SPECOPS_WORKER_ID") or os.environ.get("SPECOPS_CLAIMANT") or "spec-ops-worker"
+        res = claimer.claim_auto(claimant=claimant) if (auto_flag or not target) else claimer.claim_task(target, claimant=claimant)
         if res:
             print(json.dumps(res, indent=2))
             return 0

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -170,34 +171,107 @@ class TaskClaimer:
         self.backlog_dir = config.backlog_dir.resolve()
         self.queue = BacklogQueue(self.backlog_dir)
 
-    def claim_auto(self) -> dict[str, Any] | None:
+    def claim_auto(self, claimant: str = "") -> dict[str, Any] | None:
         """Evaluates PRIORITY.md in strict priority order and claims first ready unblocked task."""
-        priority_file = self.backlog_dir / "PRIORITY.md"
-        if not priority_file.exists():
-            print("PRIORITY.md not found in backlog.", file=sys.stderr)
+        from ..backlog.lock import BacklogLock, recover_transactions
+
+        with BacklogLock(self.repo_root).acquire():
+            recover_transactions(self.repo_root)
+            priority_file = self.backlog_dir / "PRIORITY.md"
+            if not priority_file.exists():
+                print("PRIORITY.md not found in backlog.", file=sys.stderr)
+                return None
+
+            all_tasks = {t.canonical_id: t for t in self.queue.list_all_tasks()}
+            completed_ids = self.queue.get_completed_task_ids()
+
+            priority_lines = priority_file.read_text(encoding="utf-8").splitlines()
+            candidate_ids: list[str] = []
+            for line in priority_lines:
+                m = re.search(r"TASK-0*(\d+)", line, re.IGNORECASE)
+                if m:
+                    cid = f"TASK-{m.group(1).zfill(4)}"
+                    if cid not in candidate_ids:
+                        candidate_ids.append(cid)
+
+            for cid in candidate_ids:
+                task = all_tasks.get(cid)
+                if not task:
+                    continue
+                if task.status != "Refined":
+                    continue
+                if task.claimed_by:
+                    continue
+
+                unsatisfied = []
+                for dep in task.dependencies:
+                    dep_num = dep.split("-")[-1]
+                    dep_cid = f"TASK-{dep_num.zfill(4)}" if dep_num.isdigit() else dep
+                    if dep_cid not in completed_ids:
+                        unsatisfied.append(dep)
+
+                if unsatisfied:
+                    print(
+                        f"Task {task.canonical_id} skipped: unsatisfied dependencies ({', '.join(unsatisfied)})",
+                        file=sys.stderr,
+                    )
+                    continue
+
+                dor_ok, dor_errors = validate_definition_of_ready(task, self.config)
+                if not dor_ok:
+                    print(
+                        f"Task {task.canonical_id} skipped: failed Definition of Ready ({'; '.join(dor_errors)})",
+                        file=sys.stderr,
+                    )
+                    continue
+
+                # Selected task meets all gates
+                branch = f"task/{task.canonical_id}"
+                clean_id = task.canonical_id.lower().replace("task-", "")
+                worktree_dir = self.repo_root / ".worktrees" / f"task-{clean_id}"
+
+                initialize_worktree(self.repo_root, task, self.config, branch=branch)
+
+                worker_name = claimant or os.environ.get("SPECOPS_WORKER_ID") or os.environ.get("SPECOPS_CLAIMANT") or "spec-ops-worker"
+                task.claimed_by = worker_name
+                task.branch = branch
+                try:
+                    write_task_file(task)
+                except Exception:
+                    pass
+
+                metadata = {
+                    "task_id": task.canonical_id,
+                    "title": task.title,
+                    "status": task.status,
+                    "target_bc": task.target_bc or "core",
+                    "branch": branch,
+                    "worktree_dir": str(worktree_dir),
+                    "dependencies": task.dependencies,
+                    "governing_adrs": task.governing_adrs,
+                    "governing_prds": task.governing_prds,
+                    "governing_stories": task.governing_stories,
+                }
+                return metadata
+
             return None
 
-        all_tasks = {t.canonical_id: t for t in self.queue.list_all_tasks()}
-        completed_ids = self.queue.get_completed_task_ids()
+    def claim_task(self, task_id: str, claimant: str = "") -> dict[str, Any] | None:
+        """Claims a specific task by ID if dependencies and DoR are satisfied."""
+        from ..backlog.lock import BacklogLock, recover_transactions
 
-        priority_lines = priority_file.read_text(encoding="utf-8").splitlines()
-        candidate_ids: list[str] = []
-        for line in priority_lines:
-            m = re.search(r"TASK-0*(\d+)", line, re.IGNORECASE)
-            if m:
-                cid = f"TASK-{m.group(1).zfill(4)}"
-                if cid not in candidate_ids:
-                    candidate_ids.append(cid)
+        with BacklogLock(self.repo_root).acquire():
+            recover_transactions(self.repo_root)
+            clean_num = task_id.upper().replace("TASK-", "").lstrip("0")
+            cid = f"TASK-{clean_num.zfill(4)}" if clean_num.isdigit() else task_id.upper()
 
-        for cid in candidate_ids:
+            all_tasks = {t.canonical_id: t for t in self.queue.list_all_tasks()}
             task = all_tasks.get(cid)
             if not task:
-                continue
-            if task.status != "Refined":
-                continue
-            if task.claimed_by:
-                continue
+                print(f"Task {cid} not found in backlog.", file=sys.stderr)
+                return None
 
+            completed_ids = self.queue.get_completed_task_ids()
             unsatisfied = []
             for dep in task.dependencies:
                 dep_num = dep.split("-")[-1]
@@ -210,7 +284,7 @@ class TaskClaimer:
                     f"Task {task.canonical_id} skipped: unsatisfied dependencies ({', '.join(unsatisfied)})",
                     file=sys.stderr,
                 )
-                continue
+                return None
 
             dor_ok, dor_errors = validate_definition_of_ready(task, self.config)
             if not dor_ok:
@@ -218,23 +292,23 @@ class TaskClaimer:
                     f"Task {task.canonical_id} skipped: failed Definition of Ready ({'; '.join(dor_errors)})",
                     file=sys.stderr,
                 )
-                continue
+                return None
 
-            # Selected task meets all gates
             branch = f"task/{task.canonical_id}"
             clean_id = task.canonical_id.lower().replace("task-", "")
             worktree_dir = self.repo_root / ".worktrees" / f"task-{clean_id}"
 
             initialize_worktree(self.repo_root, task, self.config, branch=branch)
 
-            task.claimed_by = "spec-ops-worker"
+            worker_name = claimant or os.environ.get("SPECOPS_WORKER_ID") or os.environ.get("SPECOPS_CLAIMANT") or "spec-ops-worker"
+            task.claimed_by = worker_name
             task.branch = branch
             try:
                 write_task_file(task)
             except Exception:
                 pass
 
-            metadata = {
+            return {
                 "task_id": task.canonical_id,
                 "title": task.title,
                 "status": task.status,
@@ -246,66 +320,3 @@ class TaskClaimer:
                 "governing_prds": task.governing_prds,
                 "governing_stories": task.governing_stories,
             }
-            return metadata
-
-        return None
-
-    def claim_task(self, task_id: str) -> dict[str, Any] | None:
-        """Claims a specific task by ID if dependencies and DoR are satisfied."""
-        clean_num = task_id.upper().replace("TASK-", "").lstrip("0")
-        cid = f"TASK-{clean_num.zfill(4)}" if clean_num.isdigit() else task_id.upper()
-
-        all_tasks = {t.canonical_id: t for t in self.queue.list_all_tasks()}
-        task = all_tasks.get(cid)
-        if not task:
-            print(f"Task {cid} not found in backlog.", file=sys.stderr)
-            return None
-
-        completed_ids = self.queue.get_completed_task_ids()
-        unsatisfied = []
-        for dep in task.dependencies:
-            dep_num = dep.split("-")[-1]
-            dep_cid = f"TASK-{dep_num.zfill(4)}" if dep_num.isdigit() else dep
-            if dep_cid not in completed_ids:
-                unsatisfied.append(dep)
-
-        if unsatisfied:
-            print(
-                f"Task {task.canonical_id} skipped: unsatisfied dependencies ({', '.join(unsatisfied)})",
-                file=sys.stderr,
-            )
-            return None
-
-        dor_ok, dor_errors = validate_definition_of_ready(task, self.config)
-        if not dor_ok:
-            print(
-                f"Task {task.canonical_id} skipped: failed Definition of Ready ({'; '.join(dor_errors)})",
-                file=sys.stderr,
-            )
-            return None
-
-        branch = f"task/{task.canonical_id}"
-        clean_id = task.canonical_id.lower().replace("task-", "")
-        worktree_dir = self.repo_root / ".worktrees" / f"task-{clean_id}"
-
-        initialize_worktree(self.repo_root, task, self.config, branch=branch)
-
-        task.claimed_by = "spec-ops-worker"
-        task.branch = branch
-        try:
-            write_task_file(task)
-        except Exception:
-            pass
-
-        return {
-            "task_id": task.canonical_id,
-            "title": task.title,
-            "status": task.status,
-            "target_bc": task.target_bc or "core",
-            "branch": branch,
-            "worktree_dir": str(worktree_dir),
-            "dependencies": task.dependencies,
-            "governing_adrs": task.governing_adrs,
-            "governing_prds": task.governing_prds,
-            "governing_stories": task.governing_stories,
-        }

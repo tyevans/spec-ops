@@ -208,6 +208,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_worker.add_argument("--dry-run", action="store_true", help="Generate prompt without invoking agent")
     p_worker.add_argument("--no-merge", action="store_true", help="Do not merge branch to main on completion")
     p_worker.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
+    p_worker.add_argument("--worker-id", "--claimant", dest="worker_id", default=None, help="Worker or claimant identifier")
     p_worker.add_argument("--telemetry", action="store_true", help="Display live autonomous worker fleet telemetry and worktree operations")
     p_worker.add_argument("--json", action="store_true", help="Output telemetry as JSON")
 

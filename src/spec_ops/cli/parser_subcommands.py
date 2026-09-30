@@ -150,6 +150,12 @@ def register_queue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_q_next = queue_subs.add_parser("next", help="Inspect next ready, unblocked backlog task")
     p_q_next.add_argument("--json", action="store_true", help="Output next task as structured JSON")
 
+    p_q_claim = queue_subs.add_parser("claim", help="Claim next ready unblocked task or specific task under queue lock")
+    p_q_claim.add_argument("task_id", nargs="?", default=None, help="Target task canonical ID (auto-detected if omitted)")
+    p_q_claim.add_argument("--auto", action="store_true", help="Claim next ready unblocked task automatically in strict priority order")
+    p_q_claim.add_argument("--worker-id", "--claimant", dest="worker_id", default=None, help="Identifier of claiming worker")
+    p_q_claim.add_argument("--json", action="store_true", help="Output claimed task metadata as JSON")
+
     p_q_refine = queue_subs.add_parser("refine", help="Validate Definition of Ready and promote task to refined")
     p_q_refine.add_argument("task_id", help="Canonical task ID (e.g. TASK-0025 or 0025)")
 

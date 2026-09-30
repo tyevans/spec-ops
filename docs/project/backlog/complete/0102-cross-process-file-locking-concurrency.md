@@ -2,7 +2,7 @@
 id: '0102'
 title: Cross-Process File Locking and Transactional Concurrency Protection for Parallel
   Workers
-status: Refined
+status: Complete
 dependencies:
 - TASK-0065
 governing_adrs:
@@ -16,8 +16,6 @@ governing_prds:
 governing_stories:
 - US-0076
 target_bc: backlog
-claimed_by: worker-3
-branch: feat/0102-cross-process-file-locking-and-transacti
 ---
 
 # TASK-0102: Cross-Process File Locking and Transactional Concurrency Protection for Parallel Workers

@@ -56,6 +56,23 @@ def handle_queue_command(
         print(f"Governing ADRs: {', '.join(target_task.governing_adrs) or 'None'}")
         return 0
 
+    if action == "claim":
+        auto = getattr(args, "auto", False)
+        target = getattr(args, "task_id", None)
+        claimant = getattr(args, "worker_id", None) or os.environ.get("SPECOPS_WORKER_ID") or os.environ.get("SPECOPS_CLAIMANT") or "spec-ops-worker"
+        from ..worker.claimer import TaskClaimer
+
+        claimer = TaskClaimer(config)
+        res = claimer.claim_auto(claimant=claimant) if (auto or not target) else claimer.claim_task(target, claimant=claimant)
+        if res:
+            if getattr(args, "json", False):
+                print(json.dumps(res, indent=2))
+            else:
+                print(f"✅ Claimed {res['task_id']} for {claimant} on {res['branch']}")
+            return 0
+        print("❌ No ready, unblocked tasks available to claim.", file=sys.stderr)
+        return 1
+
     if action == "refine":
         clean_id = args.task_id.upper()
         if not clean_id.startswith("TASK-") and clean_id.isdigit():
