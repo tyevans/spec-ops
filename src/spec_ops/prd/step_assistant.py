@@ -151,3 +151,160 @@ def extract_frontdoor_steps(
         return filtered
 
     return steps
+
+
+def find_next_story_id(user_stories_dir: Path) -> tuple[str, int]:
+    """Finds next sequential User Story ID across user story markdown files."""
+    max_num = 0
+    if user_stories_dir.exists():
+        for p in user_stories_dir.rglob("*.md"):
+            m = re.search(r"us-(\d+)", p.stem, re.IGNORECASE)
+            if m:
+                val = int(m.group(1))
+                if val > max_num:
+                    max_num = val
+    next_num = max_num + 1
+    return f"US-{next_num:04d}", next_num
+
+
+def accept_user_story(
+    repo_root: Path,
+    data: dict[str, Any],
+) -> dict[str, Any]:
+    """Accepts a completed user story, validating INVEST criteria, no backdoors, and links to PRD."""
+    title = str(data.get("title", "")).strip()
+    if not title:
+        return {
+            "success": False,
+            "error": "Validation Error",
+            "message": "User story title is required.",
+        }
+
+    scenario = str(data.get("scenario") or data.get("content") or "").strip()
+    if not scenario:
+        return {
+            "success": False,
+            "error": "Validation Error",
+            "message": "Gherkin scenario content is required.",
+        }
+
+    # ADR-0003: Check for backdoors in scenario
+    for line in scenario.splitlines():
+        line_clean = line.strip()
+        if not line_clean:
+            continue
+        is_bd, warn, alt = detect_backdoors(line_clean)
+        if is_bd:
+            return {
+                "success": False,
+                "error": "Backdoor violation (ADR-0003)",
+                "message": warn,
+                "suggested_alt": alt,
+                "offending_line": line_clean,
+            }
+
+    # ADR-0006: INVEST & Gherkin structure validation
+    has_scenario = bool(re.search(r"\bScenario\s*:", scenario, re.IGNORECASE))
+    has_steps = any(
+        re.search(rf"\b{kw}\b", scenario, re.IGNORECASE)
+        for kw in ("Given", "When", "Then")
+    )
+    if not (has_scenario and has_steps):
+        return {
+            "success": False,
+            "error": "INVEST Criteria Failure (ADR-0006)",
+            "message": (
+                "Story scenario must satisfy INVEST criteria with explicit Gherkin "
+                "scenarios ('Scenario: ... Given ... When ... Then')."
+            ),
+        }
+
+    root = Path(repo_root).resolve()
+    stories_dir = root / "docs" / "project" / "user_stories" / "accepted"
+    stories_dir.mkdir(parents=True, exist_ok=True)
+
+    explicit_id = data.get("story_id") or data.get("id")
+    if explicit_id:
+        digits = re.findall(r"\d+", str(explicit_id))
+        num = int(digits[-1]) if digits else 1
+        num_str = f"{num:04d}"
+        canonical_id = f"US-{num_str}"
+    else:
+        canonical_id, num = find_next_story_id(root / "docs" / "project" / "user_stories")
+        num_str = f"{num:04d}"
+
+    from .studio import serialize_prd_document, slugify
+
+    slug = slugify(title)
+    filename = f"us-{num_str}-{slug}.md"
+    target_path = stories_dir / filename
+
+    persona = str(data.get("persona", "Taylor")).strip() or "Taylor"
+    feature = str(data.get("feature", "FEAT-BDD-02")).strip() or "FEAT-BDD-02"
+    governing_prd = str(data.get("governing_prd", "PRD-0003")).strip() or "PRD-0003"
+    i_want = str(data.get("i_want", f"implement {title.lower()}")).strip()
+    so_that = str(data.get("so_that", "deliver verifiable customer value")).strip()
+    created_date = str(data.get("created", "2026-09-29")).strip()
+
+    frontmatter = {
+        "id": num_str,
+        "title": title,
+        "status": "Accepted",
+        "created": created_date,
+        "persona": persona,
+        "feature": feature,
+        "governing_prd": governing_prd,
+    }
+
+    body = (
+        f"# {canonical_id} — {title}\n\n"
+        f"## Governing PRD\n"
+        f"- [`{governing_prd}`](../../product/accepted/{slugify(governing_prd)}.md)\n\n"
+        f"## User Story\n\n"
+        f"**As an** {persona},\n"
+        f"**I want** {i_want},\n"
+        f"**So that** {so_that}.\n\n"
+        f"## Acceptance Criteria\n\n"
+        f"```gherkin\n"
+        f"{scenario}\n"
+        f"```\n\n"
+        f"## Rationale & Compelling Value\n"
+        f"Enforces ADR-0003 (Blackbox Frontdoor Verification) and ADR-0006 (BDD User Stories) "
+        f"upstream during specification time.\n"
+    )
+
+    full_content = serialize_prd_document(frontmatter, body)
+    target_path.write_text(full_content, encoding="utf-8")
+
+    # Link story to governing PRD if found
+    linked_prd_path = None
+    product_dir = root / "docs" / "project" / "product"
+    if product_dir.exists():
+        clean_prd = governing_prd.upper().strip()
+        for prd_file in product_dir.rglob("*.md"):
+            m = re.search(r"prd-(\d+)", prd_file.stem, re.IGNORECASE)
+            if m and (clean_prd in prd_file.name.upper() or f"PRD-{int(m.group(1)):04d}" == clean_prd):
+                content = prd_file.read_text(encoding="utf-8")
+                story_ref = f"- `{canonical_id}`"
+                if story_ref not in content and canonical_id not in content:
+                    if "## Linked User Stories" in content:
+                        parts = content.split("## Linked User Stories", 1)
+                        content = f"{parts[0]}## Linked User Stories\n\n{story_ref}\n{parts[1].lstrip()}"
+                    else:
+                        content += f"\n\n## Linked User Stories\n\n{story_ref}\n"
+                    prd_file.write_text(content, encoding="utf-8")
+                linked_prd_path = str(prd_file.relative_to(root))
+                break
+
+    rel_path = str(target_path.relative_to(root))
+    return {
+        "success": True,
+        "story_id": canonical_id,
+        "title": title,
+        "file_path": rel_path,
+        "absolute_path": str(target_path),
+        "governing_prd": governing_prd,
+        "linked_prd_file": linked_prd_path,
+        "message": f"Accepted user story {canonical_id} at {rel_path}",
+    }
+

@@ -47,7 +47,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0058 (Complete)**: [`0058-content-addressed-graph-caching-and-ast-parsing`](complete/0058-content-addressed-graph-caching-and-ast-parsing.md)
 - **TASK-0045 (Refined)**: [`0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation`](refined/0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation.md)
 - **TASK-0036 (Refined)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](refined/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
-- **TASK-0039 (Refined)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](refined/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
+- **TASK-0039 (Complete)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](complete/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
 - **TASK-0062 (Refined)**: [`0062-brownfield-codebase-adoption-and-ast-seam-extraction`](refined/0062-brownfield-codebase-adoption-and-ast-seam-extraction.md)
 - **TASK-0068 (Refined)**: [`0068-portable-visualizer-bundle-and-multi-perspective-matrix`](refined/0068-portable-visualizer-bundle-and-multi-perspective-matrix.md)
 - **TASK-0059 (Refined)**: [`0059-tarjan-scc-cycle-resolution-and-blast-radius-spike`](refined/0059-tarjan-scc-cycle-resolution-and-blast-radius-spike.md)

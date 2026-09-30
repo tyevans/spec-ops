@@ -1,23 +1,25 @@
 ---
-id: '0068'
-title: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective Project Matrix
+id: 0068
+title: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective
+  Project Matrix
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0008
-  - TASK-0017
+- TASK-0008
+- TASK-0017
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0006
+- ADR-0007
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0101
-  - US-0102
-  - US-0026
+- US-0101
+- US-0102
+- US-0026
 target_bc: visualizer
+claimed_by: worker-3
+branch: feat/0068-portable-standalone-visualizer-bundle-ex
 ---
 
 # TASK-0068: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective Project Matrix

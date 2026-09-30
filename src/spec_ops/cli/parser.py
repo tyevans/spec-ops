@@ -122,6 +122,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_decompose.add_argument("--by-outcomes", action="store_true", help="Decompose each checkable outcome into a dedicated BDD user story and tasks")
     p_decompose.add_argument("--diff", action="store_true", help="Perform non-destructive delta decomposition for new or modified outcomes")
 
+    p_studio = prd_subs.add_parser("studio", help="Run interactive Web PRD Studio and Low-Code Story Assistant")
+    p_studio.add_argument("--open", action="store_true", help="Automatically open browser")
+    p_studio.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
+    p_studio.add_argument("--host", default="127.0.0.1", help="Server host (default: 127.0.0.1)")
+
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
     p_curate.add_argument("--infer", action="store_true", help="Enable cognitive inference-driven curation, architectural drift reconciliation, and scope slicing")

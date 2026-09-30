@@ -9,21 +9,25 @@ from pathlib import Path
 from typing import Any
 
 from ..config.models import SpecOpsConfig
-from ..prd.step_assistant import extract_frontdoor_steps
-from ..prd.studio import commit_prd_specification, create_prd_draft
 from .generator import generate_standalone_html, serialize_project_data
+from .prd_studio import commit_prd_specification, create_prd_draft
+from .story_assistant import accept_user_story, extract_frontdoor_steps
 from .studio_view import render_studio_html
 
 
 class VisualizerHandler(BaseHTTPRequestHandler):
     config: SpecOpsConfig
+    default_view: str = "visualizer"
 
     def do_GET(self) -> None:
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
 
         if path in ("/", "/index.html"):
-            html = generate_standalone_html(self.config)
+            if getattr(self, "default_view", "visualizer") == "studio":
+                html = render_studio_html()
+            else:
+                html = generate_standalone_html(self.config)
             self._send_response_bytes(200, "text/html; charset=utf-8", html.encode("utf-8"))
         elif path in ("/prd-studio", "/studio"):
             html = render_studio_html()
@@ -85,6 +89,10 @@ class VisualizerHandler(BaseHTTPRequestHandler):
             )
             code = 200 if res.get("success") else 400
             self._send_json(code, res)
+        elif path == "/api/story/accept":
+            res = accept_user_story(root, payload)
+            code = 201 if res.get("success") else 400
+            self._send_json(code, res)
         else:
             self.send_response(404)
             self.end_headers()
@@ -106,13 +114,21 @@ class VisualizerHandler(BaseHTTPRequestHandler):
         pass
 
 
-def serve_visualizer(config: SpecOpsConfig, host: str = "127.0.0.1", port: int = 8787) -> None:
+def serve_visualizer(
+    config: SpecOpsConfig,
+    host: str = "127.0.0.1",
+    port: int = 8787,
+    default_view: str = "visualizer",
+) -> None:
     handler = VisualizerHandler
     handler.config = config
+    handler.default_view = default_view
     server = HTTPServer((host, port), handler)
-    print(f"⚡ SpecOps Visualizer running at http://{host}:{port}/ (Ctrl+C to stop)")
+    label = "SpecOps PRD Studio" if default_view == "studio" else "SpecOps Visualizer"
+    print(f"⚡ {label} running at http://{host}:{port}/ (Ctrl+C to stop)")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\n🛑 SpecOps Visualizer stopped.")
+        print(f"\n🛑 {label} stopped.")
         server.server_close()
+

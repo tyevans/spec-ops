@@ -1,24 +1,24 @@
 ---
 id: '0062'
-title: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam Extraction
+title: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam
+  Extraction
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0005
-  - TASK-0010
+- TASK-0005
+- TASK-0010
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0011
-  - US-0013
-  - US-0015
+- US-0011
+- US-0013
+- US-0015
 target_bc: core
 ---
 

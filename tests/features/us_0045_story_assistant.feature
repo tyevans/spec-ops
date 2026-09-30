@@ -18,3 +18,11 @@ Feature: Low-Code Gherkin BDD Story Authoring and Frontdoor Step Assistant
       Backdoor violation (ADR-0003): Tests must exercise public frontdoors. Direct state manipulation is prohibited.
       """
     And suggests the compliant frontdoor alternative.
+
+  Scenario: Saving and Linking Generated User Story
+    Given a completed Gherkin scenario meeting INVEST criteria
+    When Taylor clicks "Accept User Story"
+    Then a specification file is written to "docs/project/user_stories/accepted/us-0045-*.md"
+    And the story is linked to the governing PRD in "docs/project/product/"
+    And the story becomes immediately available for engineering vertical slice decomposition.
+

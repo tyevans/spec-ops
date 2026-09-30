@@ -2,23 +2,22 @@
 id: '0036'
 title: Continuous PRD Outcome Coverage Audit and Persona-to-Commit Traceability Engine
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0004
-  - TASK-0035
+- TASK-0004
+- TASK-0035
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0003
+- PRD-0003
 governing_stories:
-  - US-0048
-  - US-0095
+- US-0048
+- US-0095
 target_bc: prd
 ---
 

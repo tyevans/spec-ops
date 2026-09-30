@@ -92,3 +92,97 @@ def test_extract_frontdoor_steps_filter():
 
     empty_steps = extract_frontdoor_steps(query="NonExistentPatternXYZ123")
     assert len(empty_steps) == 0
+
+
+def test_accept_user_story_success(tmp_path: Path):
+    """Verifies that accept_user_story writes valid markdown and links to governing PRD."""
+    from spec_ops.visualizer.story_assistant import accept_user_story
+
+    prd_dir = tmp_path / "docs" / "project" / "product" / "accepted"
+    prd_dir.mkdir(parents=True, exist_ok=True)
+    prd_file = prd_dir / "prd-0003-test.md"
+    prd_file.write_text(
+        "---\nid: PRD-0003\ntitle: Test PRD\n---\n# PRD-0003\n\n## Linked User Stories\n",
+        encoding="utf-8",
+    )
+
+    story_data = {
+        "title": "Low-Code Assistant",
+        "story_id": "0045",
+        "persona": "Taylor",
+        "governing_prd": "PRD-0003",
+        "scenario": (
+            "Scenario: Autocomplete steps\n"
+            "  Given a project initialized with SpecOps\n"
+            "  When Taylor types Given\n"
+            "  Then autocomplete is shown\n"
+        ),
+    }
+
+    res = accept_user_story(tmp_path, story_data)
+    assert res["success"] is True
+    assert res["story_id"] == "US-0045"
+    assert (tmp_path / res["file_path"]).exists()
+
+    # Verify link in PRD
+    updated_prd = prd_file.read_text(encoding="utf-8")
+    assert "- `US-0045`" in updated_prd
+
+
+def test_accept_user_story_backdoor_rejection(tmp_path: Path):
+    """Verifies that scenarios with private backdoors are rejected citing ADR-0003."""
+    from spec_ops.visualizer.story_assistant import accept_user_story
+
+    story_data = {
+        "title": "Backdoor Story",
+        "scenario": (
+            "Scenario: Backdoor access\n"
+            "  Given the database table users has record 'admin'\n"
+            "  When something happens\n"
+            "  Then something succeeds\n"
+        ),
+    }
+
+    res = accept_user_story(tmp_path, story_data)
+    assert res["success"] is False
+    assert "ADR-0003" in res["error"] or "Backdoor violation" in res["error"]
+    assert "offending_line" in res
+
+
+def test_accept_user_story_invest_rejection(tmp_path: Path):
+    """Verifies that scenarios without proper Gherkin INVEST criteria are rejected citing ADR-0006."""
+    from spec_ops.visualizer.story_assistant import accept_user_story
+
+    story_data = {
+        "title": "Unstructured Story",
+        "scenario": "Just some plain text without Given When Then",
+    }
+
+    res = accept_user_story(tmp_path, story_data)
+    assert res["success"] is False
+    assert "ADR-0006" in res["error"] or "INVEST" in res["error"]
+
+
+def test_accept_user_story_validation_errors(tmp_path: Path):
+    """Verifies error handling for missing title or scenario."""
+    from spec_ops.visualizer.story_assistant import accept_user_story
+
+    res1 = accept_user_story(tmp_path, {"title": "", "scenario": "Scenario:\n  Given x\n  When y\n  Then z"})
+    assert res1["success"] is False
+    assert "title" in res1["message"].lower()
+
+    res2 = accept_user_story(tmp_path, {"title": "Title", "scenario": ""})
+    assert res2["success"] is False
+    assert "scenario" in res2["message"].lower()
+
+
+def test_visualizer_extensions_reexport():
+    """Verifies visualizer extensions decomposed into prd_studio.py and story_assistant.py."""
+    from spec_ops.visualizer.prd_studio import create_prd_draft, validate_prd_schema
+    from spec_ops.visualizer.story_assistant import accept_user_story, detect_backdoors
+
+    assert callable(create_prd_draft)
+    assert callable(validate_prd_schema)
+    assert callable(accept_user_story)
+    assert callable(detect_backdoors)
+
