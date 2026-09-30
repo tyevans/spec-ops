@@ -94,7 +94,8 @@ CLUSTER_JS = r"""
   }
 
   function drawBcHulls(ctx) {
-    if (filterState.groupBy !== "bc" || currentLayout !== "network") return;
+    const shouldDrawHulls = (filterState.groupBy === "bc") || (currentLayout === "radial" || currentLayout === "flow") || (typeof activeTab !== "undefined" && (activeTab === "adrs" || activeTab === "radar"));
+    if (!shouldDrawHulls) return;
 
     const bcGroups = {};
     nodes.forEach(n => {
@@ -186,4 +187,7 @@ CLUSTER_JS = r"""
     }
     return bcCentroids;
   };
+
+  window.drawBcHulls = drawBcHulls;
+  window.getBcColor = getBcColor;
 """

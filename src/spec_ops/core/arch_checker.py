@@ -59,7 +59,7 @@ class ArchitectureReport:
 
     def format_output(self) -> str:
         if self.is_valid:
-            return "Invariant Met: Bounded context boundary rules validated with 0 violations."
+            return "Invariant Met: Bounded context boundary rules validated with 0 violations. Clean boundary separation verified with 0 illegal cross-context imports."
 
         lines: list[str] = []
         for v in self.violations:

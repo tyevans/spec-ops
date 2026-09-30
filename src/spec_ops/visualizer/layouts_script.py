@@ -171,7 +171,7 @@ LAYOUTS_JS = r"""
   }
 
   window.switchLayout = function(layout) {
-    currentLayout = layout;
+    currentLayout = window.currentLayout = layout;
     ["network", "flow", "radial"].forEach(l => {
       const btn = document.getElementById("btn-layout-" + l);
       if (btn) {

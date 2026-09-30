@@ -4,45 +4,23 @@ from __future__ import annotations
 VIEWS_JS = r"""
   function escapeHtml(str) {
     if (!str) return "";
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
 
   function cleanSnippet(str, maxLen = 140) {
     if (!str) return "";
-    let clean = String(str)
-      .replace(/^#+\s+/gm, "")
-      .replace(/\*\*([^*]+)\*\*/g, "$1")
-      .replace(/`([^`]+)`/g, "$1")
-      .replace(/\*([^*]+)\*/g, "$1")
-      .replace(/^\s*[-*]\s+/gm, "")
-      .replace(/\s+/g, " ")
-      .trim();
-    if (clean.length > maxLen) {
-      clean = clean.substring(0, maxLen).trim() + "...";
-    }
-    return escapeHtml(clean);
+    let clean = String(str).replace(/^#+\s+/gm, "").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1").replace(/\*([^*]+)\*/g, "$1").replace(/^\s*[-*]\s+/gm, "").replace(/\s+/g, " ").trim();
+    return escapeHtml(clean.length > maxLen ? clean.substring(0, maxLen).trim() + "..." : clean);
   }
 
   let activeTab = "graph";
-  var filterState = window.filterState = window.filterState || {
-    query: "",
-    status: "all",
-    bc: "all",
-    linked: null,
-    hideDone: false,
-    groupBy: "release",
-  };
+  var filterState = window.filterState = window.filterState || { query: "", status: "all", bc: "all", linked: null, hideDone: false, groupBy: "release" };
 
   function internalSwitchTab(tabName) {
     if (tabName === "fleet" || tabName === "telemetry") {
       tabName = "lead";
     }
-    activeTab = tabName;
+    activeTab = window.activeTab = tabName;
     document.querySelectorAll(".tab-btn").forEach(btn => {
       if (btn.dataset.tab === tabName || (tabName === "lead" && (btn.dataset.tab === "fleet" || btn.dataset.tab === "telemetry"))) btn.classList.add("active");
       else btn.classList.remove("active");
@@ -199,6 +177,8 @@ VIEWS_JS = r"""
       html = typeof window.renderSecurityRadarView === "function" ? window.renderSecurityRadarView() : "";
     } else if (activeTab === "uat") {
       html = typeof window.renderUatView === "function" ? window.renderUatView() : "";
+    } else if (activeTab === "radar") {
+      html = typeof window.renderArchitectureRadarView === "function" ? window.renderArchitectureRadarView() : "";
     } else if (activeTab === "sandbox") {
       html = typeof window.renderSandboxView === "function" ? window.renderSandboxView() : "";
     } else {
@@ -305,20 +285,32 @@ VIEWS_JS = r"""
 
     return `
       <div style="display:flex; flex-direction:column; gap:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h2 style="font-size:1.05rem; font-weight:700; color:#fff;">Architectural Decision Records (ADRs)</h2>
-          <span style="font-size:0.78rem; color:var(--text-muted);">${filtered.length} governance records</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <h2 style="font-size:1.05rem; font-weight:700; color:#fff;">Architectural Decision Records (ADRs)</h2>
+            <span style="font-size:0.78rem; color:var(--text-muted);">${filtered.length} governance records</span>
+          </div>
+          <div class="layout-group" style="display:flex; gap:6px;">
+            <button class="ctrl-btn" onclick="window.switchTab('radar');" title="Living Architectural Review Radar">📡 Review Radar</button>
+            <button class="ctrl-btn" onclick="window.switchTab('graph'); if(window.switchLayout) window.switchLayout('radial');" title="Radar Layout">🎯 Radar</button>
+            <button class="ctrl-btn" onclick="window.switchTab('graph'); if(window.switchLayout) window.switchLayout('flow');" title="Flow DAG Layout">🌊 Flow DAG</button>
+          </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:16px;">
-          ${filtered.map(a => `
-            <div class="card-box">
+        <div class="adr-matrix-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:16px;">
+          ${filtered.map(a => {
+            const isSup = (a.status === "Superseded") || Boolean(a.superseded_by);
+            return `
+            <div class="card-box adr-matrix-card">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
                   <span class="entity-pill pill-adr" style="margin-bottom:4px;" onclick="openDrawer('${escapeHtml(a.id)}')">${escapeHtml(a.id)}</span>
                   <h3 style="font-size:0.95rem; font-weight:700; color:#fff; cursor:pointer;" onclick="openDrawer('${escapeHtml(a.id)}')">${escapeHtml(a.title)}</h3>
                 </div>
-                <span class="entity-pill" style="font-size:0.7rem; color:#a5b4fc;">${escapeHtml(a.domain || 'Architecture')}</span>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <span class="entity-pill" style="font-size:0.7rem; color:#a5b4fc;">${escapeHtml(a.domain || 'Architecture')}</span>
+                  <span class="matrix-badge ${isSup ? 'matrix-badge-superseded strikethrough-badge' : 'matrix-badge-complete'}" style="${isSup ? 'text-decoration:line-through; background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid rgba(239,68,68,0.4);' : ''}">${isSup ? 'Superseded' : escapeHtml(a.status || 'Accepted')}</span>
+                </div>
               </div>
 
               ${a.decision ? `
@@ -334,11 +326,13 @@ VIEWS_JS = r"""
                   <button class="ctrl-btn" onclick="openDrawer('${escapeHtml(a.id)}')">Inspect</button>
                 </div>
               </div>
-            </div>`).join("")}
+            </div>`;
+          }).join("")}
         </div>
       </div>
     `;
   }
+  window.renderAdrsView = renderAdrsView;
 
   // --- 5. Personas & Stories Studio View ---
   function renderPersonasView() {

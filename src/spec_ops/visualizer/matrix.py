@@ -336,7 +336,13 @@ MATRIX_JS = r"""
                       const hlClass = isLinked ? "highlighted-story" : "";
                       return `<span class="matrix-badge matrix-badge-story ${hlClass}" onclick="openDrawer('${escapeHtml(sid)}')">${escapeHtml(sid)}</span>`;
                     }).join(" ") || '<span style="color:#64748b">—</span>'}</td>
-                    <td>${(t.governing_adrs || []).map(aid => `<span class="matrix-badge matrix-badge-adr" onclick="openDrawer('${escapeHtml(aid)}')">${escapeHtml(aid)}</span>`).join(" ") || '<span style="color:#64748b">—</span>'}</td>
+                    <td>${(t.governing_adrs || []).map(aid => {
+                      const adrObj = adrs.find(a => a.id === aid || a.id.replace("ADR-", "") === aid.replace("ADR-", ""));
+                      const isSup = adrObj && ((adrObj.status === "Superseded") || Boolean(adrObj.superseded_by));
+                      const badgeClass = isSup ? "matrix-badge-superseded strikethrough-badge" : "matrix-badge-adr";
+                      const styleAttr = isSup ? 'style="text-decoration:line-through; background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid rgba(239,68,68,0.4);"' : '';
+                      return `<span class="matrix-badge ${badgeClass}" ${styleAttr} onclick="openDrawer('${escapeHtml(aid)}')">${escapeHtml(aid)}</span>`;
+                    }).join(" ") || '<span style="color:#64748b">—</span>'}</td>
                   </tr>
                 `;
               }).join("")}

@@ -36,6 +36,7 @@ _BASE_SHELL = """<!DOCTYPE html>
       <a href="{back_link}" class="nav-back-btn">← Back to Docs</a>
       <h1>⚡ {title} <span class="badge">Visualizer</span></h1>
       <button class="tour-btn" id="btn-guided-tour" onclick="startGuidedTour()" title="Interactive walkthrough of SpecOps visualizer">🧭 Take Guided Tour</button>
+      <button class="ctrl-btn" id="btn-audit-drift" onclick="window.openDriftAuditModal()" title="Audit Specification Drift">🔍 Audit Specification Drift</button>
     </div>
     <div class="header-center" id="graph-controls">
       <div class="layout-group">
@@ -65,6 +66,7 @@ _BASE_SHELL = """<!DOCTYPE html>
     <button class="tab-btn" id="tab-kanban" data-tab="kanban" onclick="switchTab('kanban')">📋 Kanban Board</button>
     <button class="tab-btn" id="tab-prds" data-tab="prds" onclick="switchTab('prds')">🎯 PRDs & Features</button>
     <button class="tab-btn" id="tab-adrs" data-tab="adrs" onclick="switchTab('adrs')">🏛️ ADR Architecture</button>
+    <button class="tab-btn" id="tab-radar" data-tab="radar" onclick="switchTab('radar')" title="Living Architectural Review Radar">📡 Architectural Review Radar</button>
     <button class="tab-btn" id="tab-personas" data-tab="personas" onclick="switchTab('personas')">👥 Personas & Stories</button>
     <button class="tab-btn" id="tab-lead" data-tab="lead" onclick="switchTab('lead')" title="Live Autonomous Worker Fleet Telemetry and Lead Operations Console">⚡ Lead Console / Fleet Telemetry</button>
     <button class="tab-btn" id="tab-security" data-tab="security" onclick="switchTab('security')">🛡️ Security &amp; Compliance</button>
@@ -199,6 +201,18 @@ _BASE_SHELL = """<!DOCTYPE html>
           <button class="ctrl-btn" id="tour-prev-btn" onclick="prevTourStep()" style="visibility:hidden;">← Back</button>
           <button class="ctrl-btn" id="tour-skip-btn" onclick="closeTour()">Skip Tour</button>
           <button class="ctrl-btn active" id="tour-next-btn" onclick="nextTourStep()">Next →</button>
+        </div>
+    <div id="drift-audit-modal" class="tour-overlay" style="display:none;">
+      <div id="drift-audit-modal-content" class="tour-modal" style="max-width:760px; width:92%; max-height:86vh; overflow-y:auto;">
+        <div class="tour-header">
+          <span class="tour-step-badge" style="background:#6366f1;">Architectural Review</span>
+          <button class="tour-close-btn" onclick="window.closeDriftAuditModal()">&times;</button>
+        </div>
+        <h3 style="color:#fff; margin-bottom:4px;">Specification Drift &amp; Orphan Entities Audit</h3>
+        <div id="drift-audit-modal-body"></div>
+        <div class="tour-footer" style="margin-top:16px;">
+          <button class="ctrl-btn" onclick="window.closeDriftAuditModal()">Close</button>
+          <button class="ctrl-btn active" id="btn-modal-export-drift" onclick="window.exportDriftAuditReport()">📄 Export Audit Report (dist/spec-drift-audit.json)</button>
         </div>
       </div>
     </div>

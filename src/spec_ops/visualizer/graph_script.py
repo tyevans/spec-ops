@@ -241,16 +241,34 @@ GRAPH_JS = r"""
 
     if (typeof drawBcHulls === "function") drawBcHulls(ctx);
 
+    function drawArrow(ctx, x1, y1, x2, y2, color) {
+      const a = Math.atan2(y2 - y1, x2 - x1), mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.beginPath();
+      ctx.moveTo(mx, my); ctx.lineTo(mx - 8 * Math.cos(a - 0.5), my - 8 * Math.sin(a - 0.5));
+      ctx.lineTo(mx - 8 * Math.cos(a + 0.5), my - 8 * Math.sin(a + 0.5)); ctx.closePath();
+      ctx.fill(); ctx.stroke(); ctx.restore();
+    }
+
     links.forEach(l => {
       const sVis = typeof isNodeVisible === "function" ? isNodeVisible(l.source) : (!searchQuery || matchesSearch(l.source));
       const tVis = typeof isNodeVisible === "function" ? isNodeVisible(l.target) : (!searchQuery || matchesSearch(l.target));
       const isConnected = focusedNodeId && (matchNode(l.source, String(focusedNodeId).toUpperCase()) || matchNode(l.target, String(focusedNodeId).toUpperCase()));
-      ctx.strokeStyle = isConnected ? "rgba(56, 189, 248, 0.85)" : ((sVis && tVis) ? "rgba(255, 255, 255, 0.22)" : ((sVis || tVis) ? "rgba(56, 189, 248, 0.08)" : "rgba(255, 255, 255, 0.015)"));
-      ctx.lineWidth = isConnected ? 2.4 : ((sVis && tVis) ? 1.4 : 0.6);
-      ctx.beginPath();
-      ctx.moveTo(l.source.x, l.source.y);
-      ctx.lineTo(l.target.x, l.target.y);
-      ctx.stroke();
+      const sBc = l.source.resolvedBc || l.source.bc, tBc = l.target.resolvedBc || l.target.bc;
+      const isCrossBc = sBc && tBc && sBc !== tBc;
+      const isIllegal = l.isIllegal || l.isViolation || (l.relation === "violates" || l.relation === "illegal_dependency") || (data.architecture && data.architecture.violations && data.architecture.violations.some(v => (v.source === sBc && v.target === tBc) || (v.source === l.source.id && v.target === l.target.id)));
+
+      if (isIllegal) {
+        const now = (typeof Date !== "undefined" && Date.now) ? Date.now() : 0;
+        const pulse = Math.sin(now / 180) * 0.35 + 0.65;
+        ctx.save(); ctx.strokeStyle = `rgba(239, 68, 68, ${pulse})`; ctx.lineWidth = 3.2;
+        ctx.beginPath(); ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); ctx.stroke(); ctx.restore();
+        drawArrow(ctx, l.source.x, l.source.y, l.target.x, l.target.y, `rgba(239, 68, 68, ${pulse})`);
+      } else {
+        ctx.strokeStyle = isConnected ? "rgba(56, 189, 248, 0.85)" : ((sVis && tVis) ? "rgba(255, 255, 255, 0.22)" : ((sVis || tVis) ? "rgba(56, 189, 248, 0.08)" : "rgba(255, 255, 255, 0.015)"));
+        ctx.lineWidth = isConnected ? 2.4 : ((sVis && tVis) ? 1.4 : 0.6);
+        ctx.beginPath(); ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); ctx.stroke();
+        if (isCrossBc && sVis && tVis) drawArrow(ctx, l.source.x, l.source.y, l.target.x, l.target.y, "rgba(56, 189, 248, 0.6)");
+      }
     });
 
     nodes.forEach(n => {
@@ -361,32 +379,18 @@ GRAPH_JS = r"""
   if (searchInputEl) {
     searchInputEl.addEventListener("input", e => {
       searchQuery = e.target.value.trim();
-      if (typeof filterState !== "undefined") {
-        filterState.query = searchQuery;
-      }
+      if (typeof filterState !== "undefined") filterState.query = searchQuery;
       if (typeof wakePhysics === "function") wakePhysics();
       if (typeof updateGraphToolbarUI === "function") updateGraphToolbarUI();
-      if (typeof updateUrl === "function" && !isSyncingFromUrl) {
-        updateUrl(false);
-      }
+      if (typeof updateUrl === "function" && !isSyncingFromUrl) updateUrl(false);
     });
   }
 
   (function initBcOptions() {
     const bcSelect = document.getElementById("graph-bc-select");
     if (!bcSelect) return;
-    const bcs = Array.from(new Set(nodes.map(n => n.resolvedBc || n.bc).filter(Boolean))).sort();
-    if (typeof document.createElement === "function" && typeof bcSelect.appendChild === "function") {
-      bcs.forEach(bc => {
-        const opt = document.createElement("option");
-        opt.value = bc;
-        opt.textContent = bc;
-        bcSelect.appendChild(opt);
-      });
-    } else {
-      bcs.forEach(bc => {
-        bcSelect.innerHTML = (bcSelect.innerHTML || "") + `<option value="${bc}">${bc}</option>`;
-      });
-    }
+    Array.from(new Set(nodes.map(n => n.resolvedBc || n.bc).filter(Boolean))).sort().forEach(bc => {
+      bcSelect.innerHTML = (bcSelect.innerHTML || "") + `<option value="${bc}">${bc}</option>`;
+    });
   })();
 """

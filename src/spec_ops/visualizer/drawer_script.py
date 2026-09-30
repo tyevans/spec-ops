@@ -170,18 +170,23 @@ DRAWER_JS = r"""
   }
 
   function renderAdrCard(a) {
+    const supBy = a.superseded_by || (a.raw_markdown && (a.raw_markdown.match(/superseded[_-]?by[:\s]+[`"]?(ADR-\d+)[`"]?/i) || a.raw_markdown.match(/Superseded\s+by\s+(?:\[`?)?(ADR-\d+)/i)) ? RegExp.$1.toUpperCase() : "");
+    const isSup = (a.status === "Superseded") || Boolean(supBy);
+    const statusText = isSup ? "Superseded" : (a.status || "Accepted");
+    const statusBg = isSup ? "rgba(239,68,68,0.2); color:#fca5a5; border-color:rgba(239,68,68,0.4); text-decoration:line-through;" : "rgba(99,102,241,0.2); color:#a5b4fc; border-color:rgba(99,102,241,0.4);";
+    let supNotice = "";
+    if (supBy) {
+      const tAdr = (data.adrs || []).find(x => x.id === supBy || x.id.replace("ADR-", "") === supBy.replace("ADR-", ""));
+      const tTitle = (tAdr && tAdr.title) ? `: ${tAdr.title}` : (a.superseded_by_title ? `: ${a.superseded_by_title}` : "");
+      supNotice = `<div class="card-box superseded-notification" style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; border-radius:8px; padding:12px; margin-bottom:12px;"><div style="font-weight:700; color:#fca5a5; font-size:0.88rem; display:flex; align-items:center; gap:8px;"><span>⚠️</span><span>Superseded by <a href="#tab=adrs&entity=${escapeHtml(supBy)}" class="supersession-link" onclick="openDrawer('${escapeHtml(supBy)}')" style="color:#67e8f9; text-decoration:underline; font-weight:700;">${escapeHtml(supBy)}${escapeHtml(tTitle)}</a></span></div></div>`;
+    }
     return `
-      <div class="card-box">
-        <div style="display:flex; gap:8px; align-items:center;">
-          <span style="padding:3px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background:rgba(99,102,241,0.2); color:#a5b4fc; border:1px solid rgba(99,102,241,0.4)">${a.status}</span>
-          <span class="entity-pill pill-adr">${a.domain || 'Architecture'}</span>
-        </div>
-      </div>
+      ${supNotice}
+      <div class="card-box"><div style="display:flex; gap:8px; align-items:center;"><span class="adr-status-badge ${isSup ? 'strikethrough-badge' : ''}" style="padding:3px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; border:1px solid; background:${statusBg}">${statusText}</span><span class="entity-pill pill-adr">${a.domain || 'Architecture'}</span></div></div>
       ${a.context ? `<div class="card-box"><div class="card-box-title" style="color:#a5b4fc">Context</div><div class="markdown-box">${renderMarkdown(a.context)}</div></div>` : ""}
       ${a.decision ? `<div class="card-box"><div class="card-box-title" style="color:#c4b5fd">Decision</div><div class="markdown-box">${renderMarkdown(a.decision)}</div></div>` : ""}
       ${a.consequences ? `<div class="card-box"><div class="card-box-title" style="color:#94a3b8">Consequences</div><div class="markdown-box">${renderMarkdown(a.consequences)}</div></div>` : ""}
-      ${(a.implementing_tasks && a.implementing_tasks.length > 0) ? `
-        <div class="card-box"><div class="card-box-title">Implementing Tasks (${a.implementing_tasks.length})</div><div class="pills-container">${a.implementing_tasks.map(t => pill(t, "task")).join("")}</div></div>` : ""}
+      ${(a.implementing_tasks && a.implementing_tasks.length > 0) ? `<div class="card-box"><div class="card-box-title">Implementing Tasks (${a.implementing_tasks.length})</div><div class="pills-container">${a.implementing_tasks.map(t => pill(t, "task")).join("")}</div></div>` : ""}
       <div class="card-box"><div class="card-box-title">Full ADR Markdown</div><div class="markdown-box">${renderMarkdown(a.raw_markdown)}</div></div>
     `;
   }
