@@ -1,7 +1,7 @@
 ---
 id: '0076'
 title: Specification Frontmatter Schema Validation and Automated In-Place Migration
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0058

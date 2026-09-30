@@ -72,9 +72,10 @@ class BacklogWorkerEngine:
         commit_msg: str = "",
     ) -> tuple[bool, str]:
         """Initiates commit preparation with backlog guardrails and staging."""
+        from ..worker.commits import format_task_commit_message
         from ..worker.guardrails import prepare_guardrailed_commit
         msg = commit_msg or (
-            f"feat({task.canonical_id.lower()}): {task.title}\n\nTask-ID: {task.canonical_id}"
+            format_task_commit_message(task)
             if task else "feat: worker commit"
         )
         allows_dep = getattr(task, "allows_dependencies", False) if task else False
@@ -253,6 +254,7 @@ class BacklogWorkerEngine:
         worktree_dir = self.repo_root / ".worktrees" / f"task-{clean_id}"
         success = False
         worktree_created = False
+        agent_log = ""
 
         print(f"🚀 Starting worker for {task.canonical_id}: '{task.title}'")
         try:
@@ -288,14 +290,8 @@ class BacklogWorkerEngine:
                 if p.exists():
                     p.unlink()
 
-            trailers = (
-                f"Task-ID: {task.canonical_id}\n"
-                f"Governing-ADRs: {', '.join(task.governing_adrs) or 'None'}\n"
-                f"Provenance: spec-ops autonomous worker"
-            )
-            if task.signed_off_by:
-                trailers += f"\nSpecOps-Signed-By: {task.signed_off_by}"
-            commit_msg = f"feat({task.canonical_id.lower()}): {task.title}\n\n{trailers}"
+            from ..worker.commits import format_task_commit_message
+            commit_msg = format_task_commit_message(task)
             commit_ok, commit_log = self.prepare_commit(worktree_dir, task=task, commit_msg=commit_msg)
             if not commit_ok:
                 return WorkerResult(task.canonical_id, False, f"Commit preparation failed: {commit_log}")
@@ -366,7 +362,13 @@ class BacklogWorkerEngine:
         finally:
             if not success and not dry_run:
                 if worktree_created and worktree_dir.exists() and any(worktree_dir.iterdir()):
+                    diag_file = worktree_dir / ".failure.log"
+                    diag_file.write_text(
+                        f"Autonomous Worker Execution Failure Report\nTask: {task.canonical_id}\n\nLast Failure Log:\n{agent_log or 'Preflight verification failed'}\n",
+                        encoding="utf-8",
+                    )
                     print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
+                    print(f"spec-ops rescue {task.canonical_id}")
             else:
                 self.cleanup_worktree(worktree_dir, branch, delete_branch=dry_run or local_merge)
                 if dry_run:

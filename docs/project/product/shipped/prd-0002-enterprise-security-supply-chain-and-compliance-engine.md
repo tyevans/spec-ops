@@ -1,7 +1,7 @@
 ---
 id: '0002'
 title: Enterprise Security, Supply-Chain & Compliance Engine
-status: Accepted
+status: Shipped
 created: 2026-09-29
 target_persona: Sasha (The Trust & Security Officer)
 component: security

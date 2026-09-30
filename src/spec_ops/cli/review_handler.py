@@ -7,6 +7,7 @@ import sys
 
 from ..config.models import SpecOpsConfig
 from ..security.dual_custody import sign_task_review
+from ..worker.review import generate_review_brief, render_review_brief
 
 
 def handle_review_command(
@@ -14,9 +15,10 @@ def handle_review_command(
     config: SpecOpsConfig,
     parser: argparse.ArgumentParser,
 ) -> int:
-    """Executes review subcommands including task sign-off."""
-    if getattr(args, "review_action", None) == "sign":
-        task_id = getattr(args, "task_id", "")
+    """Executes review subcommands including task sign-off and architectural review briefs."""
+    action = getattr(args, "task_or_action", None) or getattr(args, "review_action", None)
+    if action == "sign":
+        task_id = getattr(args, "sign_task_id", None) or getattr(args, "task_id", "")
         identity = getattr(args, "identity", "")
         if not task_id or not identity:
             print("❌ Both task_id and --identity are required.", file=sys.stderr)
@@ -29,5 +31,12 @@ def handle_review_command(
         print(f"✅ {msg}")
         return 0
 
-    parser.parse_args(["review", "--help"])
+    target_task = action or getattr(args, "task_id", "")
+    if not target_task:
+        parser.parse_args(["review", "--help"])
+        return 0
+
+    provenance = getattr(args, "provenance", False)
+    brief = generate_review_brief(target_task, config, provenance=provenance)
+    print(render_review_brief(brief, provenance=provenance))
     return 0

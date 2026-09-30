@@ -1,7 +1,7 @@
 ---
 id: '0075'
 title: Bidirectional End-to-End Traceability and Contributor Provenance Audit Engine
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0004

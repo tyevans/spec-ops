@@ -90,6 +90,7 @@ class Task:
     signed_off_by: str = ""
     signed_off_at: str = ""
     blocker: BlockerInfo | None = None
+    slice_type: str = "feat"
 
     @property
     def canonical_id(self) -> str:

@@ -38,6 +38,14 @@ def main() -> int:
             parser.parse_args(["scaffold", "--help"])
             return 0
 
+    if args.command == "adopt":
+        from .adopt_handler import handle_adopt_command
+        return handle_adopt_command(args)
+
+    if args.command == "decompose":
+        from .decompose_handler import handle_decompose_command
+        return handle_decompose_command(args)
+
     if args.command == "init":
         target = Path(args.dir).resolve()
         profile_list = [p.strip() for p in args.profile.split(",") if p.strip()]
@@ -87,6 +95,18 @@ def main() -> int:
             return 0
 
     if args.command == "health":
+        if getattr(args, "architecture", False):
+            from .health_handler import handle_health_architecture
+            return handle_health_architecture(config)
+
+        if getattr(args, "suggest_splits", False):
+            from .health_handler import handle_health_suggest_splits
+            return handle_health_suggest_splits(config, emit_task=getattr(args, "emit_task", False))
+
+        if getattr(args, "generate_refactor_tasks", False):
+            from .health_handler import handle_health_generate_refactor_tasks
+            return handle_health_generate_refactor_tasks(config)
+
         checker = HealthChecker(config)
         report = checker.run_check()
         if getattr(args, "json", False):
@@ -99,13 +119,21 @@ def main() -> int:
         if report.violations:
             print(f"❌ {len(report.violations)} File Length Violation(s):")
             for v in report.violations:
-                print(f"   {v.path}: {v.lines} lines (limit: {v.limit})")
+                print(f"File Length Violation: {v.path} ({v.lines} lines > {v.limit} line limit)")
+                if getattr(v, "is_expanded", False):
+                    print(f"   {v.path}: {v.lines} lines (expanded beyond recorded baseline {v.limit} lines)")
+                else:
+                    print(f"   {v.path}: {v.lines} lines (limit: {v.limit}) - unexempt file limit violation (>500 lines)")
         else:
             print("✅ Invariant Met: Zero source files exceed length limit.")
+
+        if getattr(report, "grandfathered_debt", None):
+            print(f"ℹ️ {len(report.grandfathered_debt)} grandfathered files remain tracked debt items.")
 
         if report.warnings:
             print(f"\n⚠️ {len(report.warnings)} Proactive Refactoring Warning(s) (approaching limit):")
             for w in report.warnings:
+                print(f"⚠️ Proactive Refactoring Warning: {w.path} ({w.lines} lines >= {w.threshold} line warning threshold)")
                 print(f"   {w.path}: {w.lines} lines (warning threshold: {w.threshold}, limit: {w.limit})")
 
         if report.constitution_drift_warnings:

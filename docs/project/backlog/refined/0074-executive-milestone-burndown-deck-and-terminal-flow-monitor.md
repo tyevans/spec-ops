@@ -1,7 +1,7 @@
 ---
 id: '0074'
 title: Executive Milestone Burndown Deck Exporter and Interactive Terminal Flow Monitor
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0013

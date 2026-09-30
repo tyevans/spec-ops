@@ -144,6 +144,7 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         signed_off_by=str(meta.get("signed_off_by", "")),
         signed_off_at=str(meta.get("signed_off_at", "")),
         blocker=blocker_info,
+        slice_type=str(meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat").lower(),
     )
 
 

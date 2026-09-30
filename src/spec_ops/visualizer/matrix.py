@@ -102,6 +102,9 @@ MATRIX_JS = r"""
     const bcFilter = matrixFilterState.bc;
 
     // Filter items
+    const isLineage = personaFilter !== "all" || matrixFilterState.view === "lineage";
+    const cleanPersonaFilter = personaFilter !== "all" ? personaFilter.replace(/^Persona:\s*/i, "").trim().toLowerCase() : "";
+
     const rows = tasks.filter(t => {
       if (stFilter !== "all" && t.status !== stFilter) return false;
       if (bcFilter !== "all" && t.target_bc !== bcFilter) return false;
@@ -117,7 +120,7 @@ MATRIX_JS = r"""
         const p = prdMap.get(t.governing_prds[0]);
         if (p && p.target_persona) linkedPersona = p.target_persona;
       }
-      if (personaFilter !== "all" && linkedPersona !== personaFilter) return false;
+      if (cleanPersonaFilter && (!linkedPersona || !linkedPersona.toLowerCase().includes(cleanPersonaFilter))) return false;
 
       if (q) {
         const searchCorpus = [
@@ -143,6 +146,40 @@ MATRIX_JS = r"""
     const allMilestones = Array.from(new Set(tasks.map(t => t.target_release || "Unscheduled"))).sort();
     const allBcs = Array.from(new Set(tasks.map(t => t.target_bc).filter(Boolean))).sort();
 
+    window.copyMatrixShareableLink = function() {
+      const queryStr = (matrixFilterState.query || "").trim();
+      let targetPrd = "PRD-0001";
+      if (queryStr) {
+        const qLow = queryStr.toLowerCase();
+        const sMatch = stories.find(st => (st.feature && st.feature.toLowerCase() === qLow) || (st.id && st.id.toLowerCase() === qLow));
+        if (sMatch && sMatch.governing_prd) {
+          targetPrd = sMatch.governing_prd;
+        } else {
+          const pMatch = prds.find(pr => (pr.id && pr.id.toLowerCase() === qLow) || (pr.title && pr.title.toLowerCase().includes(qLow)));
+          if (pMatch) targetPrd = pMatch.id;
+        }
+      }
+      const permalink = `#tab=prds&entity=${encodeURIComponent(targetPrd)}${queryStr ? '&filter=' + encodeURIComponent(queryStr) : ''}`;
+      const base = (typeof window !== "undefined" && window.location && window.location.href)
+        ? window.location.href.split("#")[0]
+        : (typeof location !== "undefined" && location.href ? location.href.split("#")[0] : "");
+      const fullUrl = base + permalink;
+      const nav = (typeof window !== "undefined" && window.navigator) || (typeof navigator !== "undefined" ? navigator : null);
+      if (nav && nav.clipboard && nav.clipboard.writeText) {
+        nav.clipboard.writeText(fullUrl).catch(() => {});
+      }
+      if (typeof clipboardContent !== "undefined") {
+        clipboardContent = fullUrl;
+      }
+      const btn = typeof document !== "undefined" ? document.getElementById("matrix-copy-link-btn") : null;
+      if (btn) {
+        const prev = btn.textContent;
+        btn.textContent = "✓ Copied Link!";
+        setTimeout(() => { btn.textContent = prev; }, 1500);
+      }
+      return fullUrl;
+    };
+
     return `
       <div class="matrix-container">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -165,7 +202,7 @@ MATRIX_JS = r"""
 
           <select class="filter-select" onchange="window.setMatrixFilter('persona', this.value)">
             <option value="all" ${personaFilter === 'all' ? 'selected' : ''}>All Personas</option>
-            ${allPersonas.map(p => `<option value="${escapeHtml(p)}" ${personaFilter === p ? 'selected' : ''}>${escapeHtml(p)}</option>`).join("")}
+            ${allPersonas.map(p => `<option value="${escapeHtml(p)}" ${cleanPersonaFilter && p.toLowerCase().includes(cleanPersonaFilter) ? 'selected' : ''}>${escapeHtml(p)}</option>`).join("")}
           </select>
 
           <select class="filter-select" onchange="window.setMatrixFilter('milestone', this.value)">
@@ -177,11 +214,26 @@ MATRIX_JS = r"""
             <option value="all" ${bcFilter === 'all' ? 'selected' : ''}>All Bounded Contexts</option>
             ${allBcs.map(bc => `<option value="${escapeHtml(bc)}" ${bcFilter === bc ? 'selected' : ''}>${escapeHtml(bc)}</option>`).join("")}
           </select>
+
+          <button type="button" class="filter-btn" id="matrix-copy-link-btn" onclick="window.copyMatrixShareableLink()"
+            style="background:#334155; color:#f8fafc; border:1px solid #475569; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer;">
+            🔗 Copy Shareable Link
+          </button>
         </div>
 
         <div class="matrix-table-wrap">
           <table class="matrix-table">
             <thead>
+              ${isLineage ? `
+              <tr>
+                <th>Persona</th>
+                <th>PRD</th>
+                <th>User Story</th>
+                <th>Backlog Task</th>
+                <th>Git Commit</th>
+                <th>Status</th>
+              </tr>
+              ` : `
               <tr>
                 <th>Deliverable Task</th>
                 <th>Status</th>
@@ -192,6 +244,7 @@ MATRIX_JS = r"""
                 <th>Governing Story</th>
                 <th>Governing ADRs</th>
               </tr>
+              `}
             </thead>
             <tbody>
               ${rows.map(t => {
@@ -199,21 +252,45 @@ MATRIX_JS = r"""
 
                 let personaName = "";
                 let personaId = "";
+                let storyId = "";
                 if (t.governing_stories && t.governing_stories.length > 0) {
-                  const s = storyMap.get(t.governing_stories[0]);
+                  storyId = t.governing_stories[0];
+                  const s = storyMap.get(storyId);
                   if (s && s.persona) {
                     personaName = s.persona;
                     const p = personaMap.get(s.persona);
                     if (p) personaId = p.id;
                   }
                 }
-                if (!personaName && t.governing_prds && t.governing_prds.length > 0) {
-                  const p = prdMap.get(t.governing_prds[0]);
+                let prdId = (t.governing_prds && t.governing_prds.length > 0) ? t.governing_prds[0] : "";
+                if (!personaName && prdId) {
+                  const p = prdMap.get(prdId);
                   if (p && p.target_persona) {
                     personaName = p.target_persona;
                     const per = personaMap.get(p.target_persona);
                     if (per) personaId = per.id;
                   }
+                }
+                if (!prdId && storyId) {
+                  const s = storyMap.get(storyId);
+                  if (s && s.governing_prd) prdId = s.governing_prd;
+                }
+                const commitHash = (t.commits && t.commits.length > 0 && t.commits[0].hash) ? t.commits[0].hash.substring(0, 7) : "—";
+
+                if (isLineage) {
+                  return `
+                    <tr>
+                      <td>${personaName ? `<span class="matrix-badge matrix-badge-persona" onclick="openDrawer('${escapeHtml(personaId || personaName)}')">${escapeHtml(personaName)}</span>` : '<span style="color:#64748b">—</span>'}</td>
+                      <td>${prdId ? `<span class="matrix-badge matrix-badge-prd" onclick="openDrawer('${escapeHtml(prdId)}')">${escapeHtml(prdId)}</span>` : '<span style="color:#64748b">—</span>'}</td>
+                      <td>${storyId ? `<span class="matrix-badge matrix-badge-story" onclick="openDrawer('${escapeHtml(storyId)}')">${escapeHtml(storyId)}</span>` : '<span style="color:#64748b">—</span>'}</td>
+                      <td>
+                        <span class="matrix-badge ${stClass}" onclick="openDrawer('${escapeHtml(t.id)}')">${escapeHtml(t.id)}</span>
+                        <strong style="cursor:pointer; color:#f8fafc;" onclick="openDrawer('${escapeHtml(t.id)}')">${escapeHtml(t.title)}</strong>
+                      </td>
+                      <td><code class="matrix-commit-hash" onclick="openDrawer('${escapeHtml(t.id)}')" style="cursor:pointer; font-family:monospace; background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-size:0.75rem; color:#38bdf8;">${escapeHtml(commitHash)}</code></td>
+                      <td><span class="matrix-badge ${stClass}">${escapeHtml(t.status)}</span></td>
+                    </tr>
+                  `;
                 }
 
                 return `
@@ -232,7 +309,7 @@ MATRIX_JS = r"""
                   </tr>
                 `;
               }).join("")}
-              ${rows.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding:30px; color:#64748b;">No matching items found for active matrix filter.</td></tr>' : ''}
+              ${rows.length === 0 ? `<tr><td colspan="${isLineage ? 6 : 8}" style="text-align:center; padding:30px; color:#64748b;">No matching items found for active matrix filter.</td></tr>` : ''}
             </tbody>
           </table>
         </div>

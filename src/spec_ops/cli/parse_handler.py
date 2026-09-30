@@ -42,6 +42,13 @@ def handle_parse_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
 
 def handle_stats_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Inspects entity counts, graph metrics, and buffer state with optional cache acceleration."""
+    if getattr(args, "persona_coverage", False):
+        from ..prd.traceability import PersonaTraceabilityEngine
+        engine = PersonaTraceabilityEngine(config)
+        report = engine.audit_persona_coverage()
+        print(engine.format_persona_coverage(report))
+        return 0
+
     use_cache = getattr(args, "cache", False)
     if use_cache:
         engine = RelationalGraphCacheEngine(config.root_dir)

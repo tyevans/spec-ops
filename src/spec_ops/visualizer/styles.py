@@ -1,6 +1,7 @@
 """CSS styles for the SpecOps Visualizer."""
 
 from .lead_console import LEAD_CONSOLE_CSS
+from .security_metrics import SECURITY_RADAR_CSS
 from .matrix import MATRIX_CSS
 
 _BASE_CSS = """
@@ -339,4 +340,4 @@ main { flex: 1; display: flex; position: relative; overflow: hidden; }
 .markdown-box blockquote { border-left: 3px solid #6366f1; padding-left: 12px; color: #94a3b8; font-style: italic; margin-bottom: 8px; }
 """
 
-VISUALIZER_CSS = _BASE_CSS + "\n" + MATRIX_CSS + "\n" + LEAD_CONSOLE_CSS
+VISUALIZER_CSS = _BASE_CSS + "\n" + MATRIX_CSS + "\n" + LEAD_CONSOLE_CSS + "\n" + SECURITY_RADAR_CSS

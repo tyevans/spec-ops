@@ -2,7 +2,7 @@
 id: '0062'
 title: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam
   Extraction
-status: Refined
+status: Complete
 dependencies:
 - TASK-0005
 - TASK-0010

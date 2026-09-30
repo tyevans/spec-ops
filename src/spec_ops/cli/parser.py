@@ -32,6 +32,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Target agent platform adapters to configure (antigravity, claude, cursor). Comma-separated or repeatable.",
     )
 
+    # adopt
+    p_adopt = subparsers.add_parser("adopt", help="Adopt SpecOps into an existing brownfield codebase with debt baseline")
+    p_adopt.add_argument("--name", help="Project name (defaults to directory name)")
+    p_adopt.add_argument("--dir", default=".", help="Target directory (default: current directory)")
+    p_adopt.add_argument("--profile", default="core,bdd,ddd", help="Comma-separated architectural profiles to install (default: core,bdd,ddd)")
+    p_adopt.add_argument("--grandfather-debt", action="store_true", default=True, help="Baseline existing files exceeding file limits into debt tracker (default: True)")
+    p_adopt.add_argument("--no-grandfather-debt", dest="grandfather_debt", action="store_false", help="Do not grandfather existing debt")
+
     # docs
     p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")
     docs_subs = p_docs.add_subparsers(dest="docs_action", help="Documentation action")
@@ -77,11 +85,21 @@ def build_parser() -> argparse.ArgumentParser:
     # health
     p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
     p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")
+    p_health.add_argument("--architecture", action="store_true", help="Statically verify bounded context boundaries and dependency directions")
+    p_health.add_argument("--suggest-splits", action="store_true", help="Analyze files in warning threshold and suggest AST submodule splits")
+    p_health.add_argument("--emit-task", action="store_true", help="Emit proposed refactoring task into backlog for split suggestions")
+    p_health.add_argument("--generate-refactor-tasks", action="store_true", help="Generate backlog refactoring tasks for all grandfathered debt files")
     p_health.add_argument("--json", action="store_true", help="Output health inspection results as structured JSON")
+
+    # decompose
+    p_decomp = subparsers.add_parser("decompose", help="Analyze AST seams and recommend modular file decomposition")
+    p_decomp.add_argument("--suggest", metavar="PATH", help="Analyze target source file AST and suggest cohesive submodule splits")
+    p_decomp.add_argument("path", nargs="?", default=None, help="Target file path")
 
     # stats
     p_stats = subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
     p_stats.add_argument("--cache", action="store_true", help="Accelerate graph compilation with content-addressed cache")
+    p_stats.add_argument("--persona-coverage", action="store_true", help="Audit task and story distribution across customer personas")
 
     # parse
     p_parse = subparsers.add_parser("parse", help="Parse specification file with resilient AST diagnostics")
@@ -126,7 +144,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_ship = prd_subs.add_parser("ship", help="Archive accepted PRD to shipped upon backlog completion")
     p_ship.add_argument("prd_id", help="PRD canonical ID (e.g. PRD-0001)")
 
-    prd_subs.add_parser("audit", help="Audit PRD decomposition state and buffer readiness")
+    p_audit_prd = prd_subs.add_parser("audit", help="Audit PRD decomposition state and buffer readiness")
+    p_audit_prd.add_argument("prd_id", nargs="?", default=None, help="PRD canonical identifier (e.g. PRD-0001)")
+    p_audit_prd.add_argument("--deep", action="store_true", help="Perform continuous deep outcome coverage audit")
 
     p_decompose = prd_subs.add_parser("decompose", help="Decompose a PRD into vertical slices and stories")
     p_decompose.add_argument("prd_id", help="PRD canonical identifier (e.g. PRD-0001 or 0001)")
@@ -274,9 +294,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     # review
     p_rev = subparsers.add_parser("review", help="Architectural review and dual-custody human sign-offs")
-    rev_subs = p_rev.add_subparsers(dest="review_action", help="Review action")
-    p_r_sign = rev_subs.add_parser("sign", help="Cryptographically sign off on task review")
-    p_r_sign.add_argument("task_id", help="Canonical task ID (e.g. TASK-0042 or 0042)")
-    p_r_sign.add_argument("--identity", required=True, help="Authorized reviewer identity or key ID (e.g. 'Riley <riley@example.com>')")
+    p_rev.add_argument("task_or_action", nargs="?", default=None, help="Target task canonical ID (e.g. TASK-0015) or 'sign'")
+    p_rev.add_argument("sign_task_id", nargs="?", default=None, help="Target task ID when using 'sign'")
+    p_rev.add_argument("--identity", default=None, help="Authorized reviewer identity or key ID (e.g. 'Riley <riley@example.com>')")
+    p_rev.add_argument("--provenance", action="store_true", help="Audit commit provenance trailers and author distinction")
 
     return parser
