@@ -165,3 +165,20 @@ def test_batch_cycle_orchestrator_dynamic_unblock_and_drain(initialized_repo: Pa
     assert "TASK-0101" in report.tasks_succeeded
     assert "TASK-0102" in report.tasks_succeeded
     assert len(report.tasks_failed) == 0
+
+
+def test_merge_lock_in_worktree_with_gitdir_file(tmp_path: Path):
+    repo_root = tmp_path / "worktree_repo"
+    repo_root.mkdir()
+    actual_gitdir = tmp_path / "main_repo_git" / "worktrees" / "wt1"
+    actual_gitdir.mkdir(parents=True)
+    git_file = repo_root / ".git"
+    git_file.write_text(f"gitdir: {actual_gitdir}\n", encoding="utf-8")
+
+    mgr = MergeLockManager(repo_root)
+    assert mgr.lock_file.parent == actual_gitdir
+
+    assert not mgr.lock_file.exists()
+    with mgr.acquire(timeout=5.0):
+        assert mgr.lock_file.exists()
+    assert not mgr.lock_file.exists()

@@ -50,6 +50,10 @@ These security and supply-chain guardrails are non-negotiable across all autonom
 3. **Allowlisted Command Execution**: Autonomous agents are strictly forbidden from executing non-allowlisted shell commands outside approved development toolchains.
 
 <!-- BEGIN CUSTOM INVARIANTS -->
+### Orchestration Failure Protocol (Dogfooding SpecOps)
+When using the SpecOps orchestrator skill on this project, any orchestration failure is an actionable task:
+- **Immediate Bug Documentation**: Orchestrators must document all failures as high-priority bugs/tasks in the backlog (`docs/project/backlog/proposed/` or active queue).
+- **Dispatch Remediation**: Orchestrators must dispatch through them to resolve root causes and improve the life of all future maintainers.
 <!-- END CUSTOM INVARIANTS -->
 
 ---

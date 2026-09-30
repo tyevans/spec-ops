@@ -211,6 +211,7 @@ def plan_initialization(config: WizardConfig) -> InitializationPlan:
             planned.extend([
                 "GEMINI.md", ".agents/skills/curate/SKILL.md",
                 ".agents/skills/health/SKILL.md", ".agents/skills/worker/SKILL.md",
+                ".agents/skills/spec-ops/SKILL.md",
             ])
         if "claude" in parsed_agents:
             planned.append("CLAUDE.md")

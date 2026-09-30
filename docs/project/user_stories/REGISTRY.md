@@ -118,4 +118,5 @@
 | `US-0114` | Tamper-Evident Merkle Tree Compliance Audit Manifests and Living Security Radar | Accepted | Sasha | FEAT-SEC-07 | `PRD-0002` |
 | `US-0115` | Concurrent Architectural Task Review and Feedback Loop | Accepted | Morgan & Jordan | FEAT-REV-01 | `PRD-0004` |
 | `US-0116` | Inference-Driven Backlog Refinement, Architectural Drift Reconciliation, and Scope Slicing | Accepted | Jordan & Alex | FEAT-CUR-01 | `PRD-0005` |
+| `US-0117` | Autonomous Full-Lifecycle SDLC Orchestrator Skill & Multi-Agent Coordination | Accepted | Alex & Jordan | FEAT-ORCH-01 | `PRD-0006` |
 

@@ -14,12 +14,36 @@ from typing import Generator
 _THREAD_LOCK = threading.RLock()
 
 
+def _resolve_git_dir(repo_root: Path) -> Path:
+    """Resolves actual .git directory, supporting git worktrees where .git is a file."""
+    git_path = repo_root / ".git"
+    if git_path.is_file():
+        with contextlib.suppress(Exception):
+            content = git_path.read_text(encoding="utf-8").strip()
+            if content.startswith("gitdir:"):
+                target = content.split("gitdir:", 1)[1].strip()
+                target_path = Path(target)
+                if not target_path.is_absolute():
+                    target_path = (repo_root / target_path).resolve()
+                if target_path.exists():
+                    return target_path
+    elif git_path.is_dir():
+        return git_path
+    fallback = repo_root / ".spec-ops"
+    fallback.mkdir(parents=True, exist_ok=True)
+    return fallback
+
+
 class MergeLockManager:
     """Coordinates thread-safe and process-safe git integration under MERGE_LOCK."""
 
     def __init__(self, repo_root: Path, lock_file: Path | None = None):
         self.repo_root = repo_root.resolve()
-        self.lock_file = lock_file or (self.repo_root / ".git" / "spec_ops_merge.lock")
+        if lock_file:
+            self.lock_file = lock_file
+        else:
+            git_dir = _resolve_git_dir(self.repo_root)
+            self.lock_file = git_dir / "spec_ops_merge.lock"
         self._fd: int | None = None
 
     @contextlib.contextmanager
