@@ -17,6 +17,17 @@ from .prune import (
     prune_worktrees,
     scan_worktree_candidates,
 )
+from .memory_spike import (
+    FailureHistoryEntry,
+    append_failure_record,
+    benchmark_frontmatter_update,
+    demote_task_to_proposed,
+    extract_failed_invariants,
+    parse_task_memory,
+    reset_worktree_with_memory,
+    serialize_task_with_memory,
+    synthesize_negative_constraints,
+)
 from .sandbox import finish_human_worktree, start_human_worktree
 
 __all__ = [
@@ -35,6 +46,15 @@ __all__ = [
     "scan_worktree_candidates",
     "start_human_worktree",
     "finish_human_worktree",
+    "FailureHistoryEntry",
+    "extract_failed_invariants",
+    "parse_task_memory",
+    "serialize_task_with_memory",
+    "append_failure_record",
+    "demote_task_to_proposed",
+    "synthesize_negative_constraints",
+    "reset_worktree_with_memory",
+    "benchmark_frontmatter_update",
     "TriageFinding",
     "FileDiffMetric",
     "classify_log_snippet",

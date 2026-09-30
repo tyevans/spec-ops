@@ -94,6 +94,7 @@ class Task:
     blocker: BlockerInfo | None = None
     slice_type: str = "feat"
     unblocked: bool = False
+    failure_history: list[dict[str, Any]] = field(default_factory=list)
 
     @property
     def canonical_id(self) -> str:

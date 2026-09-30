@@ -2,7 +2,7 @@
 id: '0053'
 title: 'Architectural Spike: Anti-Loop Worktree Failure Memory Schema and Negative
   Prompt Synthesis'
-status: Refined
+status: Complete
 dependencies:
 - TASK-0052
 governing_adrs:

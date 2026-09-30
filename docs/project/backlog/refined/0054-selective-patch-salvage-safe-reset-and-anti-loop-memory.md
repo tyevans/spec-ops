@@ -1,22 +1,21 @@
 ---
 id: '0054'
 title: Selective Patch Takeover and Partial File Salvage from Stalled Worktrees
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0048
-  - TASK-0053
+- TASK-0048
+- TASK-0053
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0088
+- US-0088
 target_bc: rescue
 ---
 

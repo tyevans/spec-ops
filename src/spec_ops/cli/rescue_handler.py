@@ -47,7 +47,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     action: str | None = None
     task_id: str | None = None
 
-    known_actions = {"triage", "takeover", "inspect", "shell", "test"}
+    known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset"}
     if raw_task_id in known_actions:
         action = raw_task_id
         task_id = target
@@ -59,7 +59,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         task_id = raw_task_id
     else:
         task_id = raw_task_id
-        if task_id and not args.complete and not args.discard and not args.list:
+        if task_id and not args.complete and not args.discard and not getattr(args, "reset", False) and not args.list:
             action = "inspect"
 
     if action == "test":
@@ -95,6 +95,21 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
     if args.discard:
         ok, msg = mgr.discard_worktree(task_id)
+        print(msg)
+        return 0 if ok else 1
+
+    if getattr(args, "reset", False) or action == "reset":
+        from ..rescue.memory_spike import reset_worktree_with_memory
+
+        reason = getattr(args, "reason", "") or ""
+        demote = getattr(args, "demote", False)
+        ok, msg = reset_worktree_with_memory(
+            config.root_dir,
+            config.backlog_dir,
+            task_id,
+            reason=reason,
+            demote=demote,
+        )
         print(msg)
         return 0 if ok else 1
 

@@ -54,6 +54,7 @@ class TaskFrontmatter(BaseModel):
     commit_signature_status: Optional[str] = None
     blocker: Any = None
     slice_type: Optional[str] = None
+    failure_history: list[Any] = Field(default_factory=list)
 
 
 class UserStoryFrontmatter(BaseModel):
