@@ -4,15 +4,20 @@ title: Codebase Health Checker and File Invariant Verifier
 status: Complete
 created: 2026-09-29
 dependencies:
-  - TASK-0001
+- TASK-0001
 governing_adrs:
-  - ADR-0002
+- ADR-0002
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0002
+- US-0002
 target_bc: backlog
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0005: Codebase Health Checker and File Invariant Verifier
 

@@ -27,6 +27,7 @@ def test_verify_worker_integration_gates(tmp_path: Path):
     subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
     subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True)
     (repo / "f.txt").write_text("base", encoding="utf-8")
     subprocess.run(["git", "add", "f.txt"], cwd=repo, check=True)
     subprocess.run(["git", "commit", "-m", "main"], cwd=repo, check=True)

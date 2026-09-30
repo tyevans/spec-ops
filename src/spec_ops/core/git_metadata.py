@@ -31,7 +31,7 @@ class GitMetadataHarvester:
             cmd = [
                 "git",
                 "log",
-                "--pretty=format:%h%x09%an%x09%ad%x09%s",
+                "--pretty=format:%h%x09%an%x09%ad%x09%s%x09%G?",
                 "--date=short",
                 "-n",
                 "600",
@@ -55,6 +55,8 @@ class GitMetadataHarvester:
                 continue
 
             chash, author, date, subject = parts[0], parts[1], parts[2], parts[3]
+            sig_status = parts[4].strip() if len(parts) > 4 else ""
+            is_signed = sig_status in ("G", "U")
 
             pr_numbers = re.findall(r"(?:pull request\s*#|PR\s*#|#)(\d+)", subject, re.IGNORECASE)
             formatted_prs = [f"#{pr}" for pr in set(pr_numbers)]
@@ -68,6 +70,8 @@ class GitMetadataHarvester:
                     date=date,
                     subject=subject,
                     prs=formatted_prs,
+                    signature_status=sig_status,
+                    is_signed=is_signed,
                 )
 
                 if task_id not in result:

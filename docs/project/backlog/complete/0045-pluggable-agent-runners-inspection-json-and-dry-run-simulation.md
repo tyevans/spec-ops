@@ -19,7 +19,12 @@ governing_stories:
 - US-0029
 - US-0034
 target_bc: worker
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0045: Pluggable Agent Runners, CLI Inspection JSON Output, and Worktree Dry-Run Simulation
 

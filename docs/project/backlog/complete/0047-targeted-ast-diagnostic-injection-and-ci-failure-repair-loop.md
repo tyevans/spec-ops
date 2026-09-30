@@ -20,7 +20,12 @@ governing_stories:
 target_bc: worker
 claimed_by: worker-3
 branch: feat/0047-targeted-ast-diagnostic-hint-injection--
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0047: Targeted AST Diagnostic Hint Injection, Empty-Diff Guardrails, and Remote CI Repair Loop
 

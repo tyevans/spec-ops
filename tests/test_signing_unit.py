@@ -189,6 +189,7 @@ def test_verify_branch_commit_signatures_cases(tmp_path: Path):
     subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
     subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True)
 
     (repo / "f1.txt").write_text("main", encoding="utf-8")
     subprocess.run(["git", "add", "f1.txt"], cwd=repo, check=True)

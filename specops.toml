@@ -59,3 +59,13 @@ enforce_lockfile = true
 sandbox_enabled = true
 allowed_commands = ["pytest", "git", "uv"]
 reporting_contact = "security@example.com"
+
+[security.compliance]
+require_signed_commits = true
+dual_custody = true
+allowed_signers_file = ".ssh/allowed_signers"
+authorized_signers = [
+  "Ty Evans <tyler@poorlythoughtout.com>",
+  "Tyler Evans <tyevans@gmail.com>",
+]
+
