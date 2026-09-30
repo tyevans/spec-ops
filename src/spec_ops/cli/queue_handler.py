@@ -27,6 +27,34 @@ def handle_queue_command(
     queue = BacklogQueue(config.backlog_dir)
     console = Console()
 
+    if action == "next":
+        ready = queue.get_ready_unblocked_tasks()
+        target_task = ready[0] if ready else None
+        if not target_task:
+            for t in queue.list_all_tasks():
+                if t.status == "Refined":
+                    target_task = t
+                    break
+
+        if getattr(args, "json", False):
+            from .formatters import format_task_json
+            print(format_task_json(target_task, config))
+            return 0
+
+        if not target_task:
+            print("ℹ️ No ready, unblocked tasks in refined/ buffer. Run 'spec-ops curate' first.")
+            return 0
+
+        clean_id = target_task.canonical_id.lower().replace("task-", "").replace("spike-", "")
+        branch = target_task.branch or f"{config.execution.git_branch_prefix}task-{clean_id}"
+        print(f"=== Next Backlog Task ({target_task.canonical_id}) ===")
+        print(f"Title:        {target_task.title}")
+        print(f"Branch:       {branch}")
+        print(f"Target BC:    {target_task.target_bc or 'None'}")
+        print(f"Dependencies: {', '.join(target_task.dependencies) or 'None'}")
+        print(f"Governing ADRs: {', '.join(target_task.governing_adrs) or 'None'}")
+        return 0
+
     if action == "complete":
         clean_id = args.task_id.upper()
         if not clean_id.startswith("TASK-") and clean_id.isdigit():

@@ -25,6 +25,24 @@ def handle_prd_command(
         parser.parse_args(["prd", "--help"])
         return 0
 
+    if action == "studio":
+        open_browser = getattr(args, "open", False)
+        port = getattr(args, "port", 8787)
+        host = getattr(args, "host", "127.0.0.1")
+        if open_browser:
+            import threading
+            import webbrowser
+
+            def _open() -> None:
+                import time
+                time.sleep(0.5)
+                webbrowser.open(f"http://{host}:{port}/studio")
+
+            threading.Thread(target=_open, daemon=True).start()
+        from ..visualizer.server import serve_visualizer
+        serve_visualizer(config, host=host, port=port, default_view="studio")
+        return 0
+
     if action == "new":
         p = interactive_new_prd(
             config,

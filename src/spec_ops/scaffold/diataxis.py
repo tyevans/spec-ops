@@ -70,8 +70,9 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles list` | None | List available architectural profiles |
 | `spec-ops profiles apply` | `<PROFILE_NAME>` | Apply architectural profile to current repository |
 | `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
+| `spec-ops profiles info` | `[--json]` | Inspect active architectural profile rules and quality preflight commands |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
-| `spec-ops health` | `[--security]` | Verify file length limits and PRIORITY sync |
+| `spec-ops health` | `[--security] [--json]` | Verify file length limits and PRIORITY sync |
 | `spec-ops stats` | `[--cache]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |
@@ -82,8 +83,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd ship` | `<PRD_ID>` | Transition accepted PRD to shipped upon backlog completion |
 | `spec-ops prd audit` | None | Audit PRD lifecycle statuses |
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
-| `spec-ops curate` | `[--infer] [--dry-run] [--model MODEL]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
+| `spec-ops prd studio` | `[--open] [--port PORT] [--host HOST]` | Run interactive Web PRD Studio and Low-Code Story Assistant |
+| `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
+| `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
 | `spec-ops rescue` | `[TASK_ID] [--list] [--complete] [--discard] [--prune]` | Inspect and recover stalled or failed autonomous worktrees |
@@ -93,6 +96,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops spike preflight` | `[SPIKE_ID]` | Enforce in-worktree write isolation preflight hook |
 | `spec-ops spike graduate` | `<SPIKE_ID> --result {{proven,disproven}} [--title TITLE] [--notes NOTES] [--findings FINDINGS] [--status STATUS]` | Graduate empirical spike findings into an Architectural Decision Record |
 | `spec-ops tui` | `[--once] [--view {{overview,backlog,tree,health}}]` | Launch interactive Terminal UI (TUI) dashboard |
+| `spec-ops queue next` | `[--json]` | Inspect next ready, unblocked backlog task |
 | `spec-ops queue complete` | `<TASK_ID> [--base BASE]` | Gate and complete task integration under merge lock |
 | `spec-ops queue tree` | `[--task TASK] [--direction {{blocks,blocked-by}}] [--reverse] [--waves] [--all] [--json]` | Display task dependency tree, execution waves, and blockers |
 | `spec-ops queue block` | `<TASK_ID> --question QUESTION [--type {{unknown,spike_needed,external,dependency}}] [--spike] [--timebox TIMEBOX] [--raised-by RAISED_BY]` | Mark a task as blocked by an unknown question or impediment |
@@ -100,8 +104,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops queue blockers` | `[--json]` | List all currently blocked tasks, open questions, and linked spikes |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
+| `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
+| `spec-ops audit verify` | `[--manifest MANIFEST] [--repo REPO]` | Verify cryptographic compliance manifest integrity and SDLC traceability |
 | `spec-ops review sign` | `<TASK_ID> --identity IDENTITY` | Cryptographically verify reviewer identity against keyring and record dual-custody review sign-off |
-| `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL]` | Compile Diataxis documentation static site and embedded 2D visualizer |
+| `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL] [--include-visualizer]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
 """
 

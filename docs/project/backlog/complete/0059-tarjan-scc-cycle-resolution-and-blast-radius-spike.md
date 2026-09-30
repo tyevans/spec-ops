@@ -2,7 +2,7 @@
 id: 0059
 title: 'Architectural Spike: Tarjan Strongly Connected Components (SCC) Cycle Resolution,
   Topological Sorting, and Blast-Radius Traversal'
-status: Refined
+status: Complete
 dependencies:
 - TASK-0058
 governing_adrs:

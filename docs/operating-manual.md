@@ -1,14 +1,14 @@
 # SpecOps Agent Operating Manual
 
-Welcome to **SpecOps**, the opinionated, autonomous Project Management as Code (PMaC) engine for human architects and AI coding assistants.
+Welcome to **SpecOps**, managed via **SpecOps**—the opinionated, autonomous Project Management as Code (PMaC) engine for human architects and AI coding assistants.
 
-SpecOps version-locks specifications directly in git alongside source code—eliminating context drift, multi-agent merge conflicts, and monolithic file rot.
+All specifications, user stories, tasks, and architectural decisions are version-locked directly in git alongside implementation code.
 
 ---
 
 ## Hard Invariants
 
-These rules are non-negotiable. Autonomous agents and human contributors must follow them without exception.
+These rules are non-negotiable. Autonomous agents and human contributors must follow them without exception:
 
 1. **File Length Limit (<500 lines)**:
    - Source files over ~500 lines are strictly forbidden. Decompose large files into focused, single-responsibility modules.
@@ -18,7 +18,7 @@ These rules are non-negotiable. Autonomous agents and human contributors must fo
    - Governed by ADR-0003.
 3. **Strict Backlog Isolation**:
    - Multi-agent workers execute in isolated git worktrees (`.worktrees/<task-id>`) on dedicated task branches (`task/<task-id>` or `feat/<task-id>`).
-   - Shared backlog index files (`docs/project/backlog/PRIORITY.md`) must never be modified directly on feature branches; transitions are synchronized upon integration.
+   - Shared backlog files (`docs/project/backlog/`) must never be modified directly on feature branches; transitions are synchronized upon integration.
    - Governed by ADR-0005.
 4. **UV Workspace Package Management**:
    - All Python tools and dependencies are managed through root UV workspace (`uv run pytest`, `uv run spec-ops ...`). Never invoke bare `pip` or create ad-hoc virtual environments.
@@ -26,25 +26,37 @@ These rules are non-negotiable. Autonomous agents and human contributors must fo
    - Every requirement, persona, architectural decision, and work item lives under `docs/project/` as Markdown with YAML frontmatter.
    - Governed by ADR-0001.
 6. **Executable BDD User Stories & Frontdoor Testing**:
-   - User stories in `docs/project/user_stories/accepted/` must provide executable Gherkin scenarios (`Given ... When ... Then`).
-   - All acceptance tests are executed via `pytest-bdd` against public frontdoors with zero private mock backdoors.
+   - User stories in `docs/project/user_stories/accepted/` must provide executable Gherkin scenarios.
+   - All acceptance tests must verify observable outcomes without private mock backdoors.
    - Governed by ADR-0006.
 7. **Domain-Driven Design (DDD) & Bounded Contexts**:
    - Code is segmented into explicit bounded contexts with pure domain models isolated from infrastructure.
    - Governed by ADR-0007.
 8. **Property-Based Testing (Hypothesis) & Mutation Testing (Mutmut)**:
-   - Domain models, state machines, parsers, and health evaluators must maintain generative property tests using `@given(...)`.
+   - Domain models, state machines, parsers, and health algorithms must maintain generative property tests (`@given(...)`).
    - Core domain modules must maintain a minimum 80% mutation kill score under `mutmut`.
    - Governed by ADR-0009.
+9. **Security & Supply-Chain Hard Invariants**:
+   - Autonomous agents are strictly forbidden from hardcoding credentials, modifying unapproved lockfiles, or executing non-allowlisted shell commands.
+   - Enforced by `uv run spec-ops health --security` and preflight secret scanners. Governed by ADR-0010, ADR-0011, and ADR-0012.
+
+---
+
+## Security & Supply-Chain Hard Invariants
+
+These security and supply-chain guardrails are non-negotiable across all autonomous worker streams:
+1. **No Hardcoded Credentials**: Autonomous agents are strictly forbidden from hardcoding credentials, API keys, tokens, or high-entropy secrets in source code, tests, or git commits.
+2. **Lockfile Immutability**: Autonomous agents are strictly forbidden from modifying unapproved lockfiles (`uv.lock`, `package-lock.json`) without explicit human architectural approval.
+3. **Allowlisted Command Execution**: Autonomous agents are strictly forbidden from executing non-allowlisted shell commands outside approved development toolchains.
 
 ---
 
 ## Design Principles
 
-- **Version-Locked Specifications**: Specifications, user stories, and tasks live in the exact same git commit history as the implementation code.
-- **Thin Vertical Slicing**: Decompose PRDs into thin, single-pass vertical slices and architectural spikes rather than horizontal speculative layers.
+- **Version-Locked Specifications**: Requirements, user stories, and tasks live in the exact same git commit history as implementation code.
+- **Thin Vertical Slicing**: Decompose PRDs into thin, single-pass vertical slices and architectural spikes rather than speculative horizontal layers.
 - **Just-In-Time (JIT) Refinement**: Maintain a lean buffer of ~10 ready tasks in `refined/` to prevent specification rot before work begins.
-- **Living Relational Graph**: Maintain full bidirectional traceability from Personas -> PRDs -> Stories -> Tasks -> ADRs -> Commits.
+- **Living Relational Graph**: Maintain bidirectional traceability from Personas -> PRDs -> Stories -> Tasks -> ADRs -> Commits.
 
 ---
 
@@ -54,12 +66,12 @@ All project management specifications live under `docs/project/`:
 
 | Directory | Purpose |
 |---|---|
-| `docs/project/user_stories/PERSONAS.md` | Core user personas (Alex, Jordan, Morgan, Riley, Taylor, Sasha) |
-| `docs/project/product/` | PRDs progressing from `idea/` to `accepted/` and `shipped/` |
-| `docs/project/user_stories/` | Gherkin user stories defining end-to-end user value |
+| `docs/project/user_stories/PERSONAS.md` | Core user personas defining user needs and pain points |
+| `docs/project/product/` | PRDs progressing from `idea/` to `shaped/`, `accepted/`, and `shipped/` |
+| `docs/project/user_stories/` | Gherkin user stories defining end-to-end user journeys |
 | `docs/project/adrs/` | Architectural Decision Records organized with `REGISTRY.md` |
 | `docs/project/backlog/` | Work items in `complete/`, `refined/`, and `proposed/` |
-| `docs/project/backlog/PRIORITY.md` | Strict sequential priority queue for backlog tasks |
+| `docs/project/backlog/PRIORITY.md` | Strict sequential priority queue for engineering tasks |
 | `docs/project/backlog/ROADMAP.md` | High-level delivery milestones |
 
 ---

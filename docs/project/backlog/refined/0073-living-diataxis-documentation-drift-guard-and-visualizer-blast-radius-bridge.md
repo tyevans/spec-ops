@@ -1,23 +1,22 @@
 ---
 id: '0073'
 title: Living Diataxis Documentation Drift Guard and Visualizer Blast Radius CLI Bridge
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0015
-  - TASK-0023
+- TASK-0015
+- TASK-0023
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0040
-  - US-0041
+- US-0040
+- US-0041
 target_bc: visualizer
 ---
 

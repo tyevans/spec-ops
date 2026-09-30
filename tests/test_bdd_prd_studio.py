@@ -247,3 +247,75 @@ def verify_backdoor_warning(studio_context: dict[str, Any]):
 def verify_frontdoor_alternative(studio_context: dict[str, Any]):
     assert len(studio_context["suggested_alt"]) > 0
     assert "CLI" in studio_context["suggested_alt"] or "public" in studio_context["suggested_alt"]
+
+
+@given("a completed Gherkin scenario meeting INVEST criteria")
+def completed_gherkin_scenario(studio_context: dict[str, Any]):
+    studio_context["story_data"] = {
+        "title": "Low-Code Gherkin BDD Story Authoring Assistant",
+        "story_id": "0045",
+        "persona": "Taylor",
+        "governing_prd": "PRD-0003",
+        "scenario": (
+            "Scenario: Autocompleting Established Frontdoor Steps during Story Creation\n"
+            "  Given Taylor is authoring a new user story for 'PRD-0001' in the visualizer Story Studio\n"
+            "  When Taylor types 'Given ' into the scenario editor\n"
+            "  Then the step assistant displays an autocomplete dropdown of registered frontdoor fixtures\n"
+        ),
+    }
+    root = studio_context["root"]
+    prd_dir = root / "docs" / "project" / "product" / "accepted"
+    prd_dir.mkdir(parents=True, exist_ok=True)
+    prd_file = prd_dir / "prd-0003-product-discovery-web-prd-studio-and-living-uat-verification.md"
+    prd_file.write_text(
+        "---\n"
+        "id: PRD-0003\n"
+        "title: Product Discovery, Web PRD Studio & Living UAT Verification\n"
+        "status: Accepted\n"
+        "---\n\n"
+        "# PRD-0003: Product Discovery\n\n"
+        "## Linked User Stories\n\n"
+        "- `US-0043`\n",
+        encoding="utf-8",
+    )
+
+
+@when('Taylor clicks "Accept User Story"')
+def click_accept_user_story(studio_context: dict[str, Any]):
+    from spec_ops.visualizer.story_assistant import accept_user_story
+
+    root = studio_context["root"]
+    res = accept_user_story(root, studio_context["story_data"])
+    studio_context["story_result"] = res
+
+
+@then(parsers.parse('a specification file is written to "{pattern}"'))
+def verify_story_specification_written(studio_context: dict[str, Any], pattern: str):
+    res = studio_context["story_result"]
+    assert res is not None
+    assert res["success"] is True
+    file_path = res["file_path"]
+    assert "user_stories/accepted/us-0045-" in file_path
+    root = studio_context["root"]
+    target = root / file_path
+    assert target.exists()
+    content = target.read_text(encoding="utf-8")
+    assert "status: Accepted" in content
+    assert "US-0045" in content
+
+
+@then(parsers.parse('the story is linked to the governing PRD in "{prd_path}"'))
+def verify_story_linked_to_prd(studio_context: dict[str, Any], prd_path: str):
+    root = studio_context["root"]
+    prd_file = root / "docs" / "project" / "product" / "accepted" / "prd-0003-product-discovery-web-prd-studio-and-living-uat-verification.md"
+    assert prd_file.exists()
+    content = prd_file.read_text(encoding="utf-8")
+    assert "US-0045" in content
+
+
+@then("the story becomes immediately available for engineering vertical slice decomposition.")
+def verify_story_available_for_decomposition(studio_context: dict[str, Any]):
+    res = studio_context["story_result"]
+    assert res["success"] is True
+    assert "US-0045" in res["story_id"]
+

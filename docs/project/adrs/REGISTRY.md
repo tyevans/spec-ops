@@ -18,5 +18,6 @@
 | ADR-0014 | Tamper-Evident Customer UAT Receipts and Cryptographic Release Manifests | Accepted | 2026-09-29 |
 | ADR-0015 | Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing | Accepted | 2026-09-29 |
 | ADR-0016 | Tamper-Evident Merkle Tree Compliance Manifests | Accepted | 2026-09-29 |
-| ADR-0017 | Deterministic DAG Topology and Tarjan SCC Cycle Resolution | Proposed | 2026-09-29 |
-
+| ADR-0017 | Deterministic DAG Topology and Tarjan SCC Cycle Resolution | Accepted | 2026-09-29 |
+| ADR-0018 | Immutable Supply-Chain Lockfile Enforcement | Accepted | 2026-09-29 |
+| ADR-0019 | Real-Time Secret Scanning and Credential Leak Defense | Accepted | 2026-09-29 |

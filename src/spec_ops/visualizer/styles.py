@@ -1,6 +1,9 @@
 """CSS styles for the SpecOps Visualizer."""
 
-VISUALIZER_CSS = """
+from .lead_console import LEAD_CONSOLE_CSS
+from .matrix import MATRIX_CSS
+
+_BASE_CSS = """
 :root {
   --bg: #0b0f19;
   --card-bg: rgba(19, 26, 42, 0.95);
@@ -335,3 +338,5 @@ main { flex: 1; display: flex; position: relative; overflow: hidden; }
 .markdown-box pre code { background: transparent; padding: 0; color: #a5b4fc; }
 .markdown-box blockquote { border-left: 3px solid #6366f1; padding-left: 12px; color: #94a3b8; font-style: italic; margin-bottom: 8px; }
 """
+
+VISUALIZER_CSS = _BASE_CSS + "\n" + MATRIX_CSS + "\n" + LEAD_CONSOLE_CSS

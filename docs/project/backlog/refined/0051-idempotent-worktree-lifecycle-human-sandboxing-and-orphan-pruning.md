@@ -19,6 +19,8 @@ governing_stories:
 - US-0092
 - US-0038
 target_bc: rescue
+claimed_by: worker-3
+branch: feat/0051-idempotent-worktree-lifecycle-management
 ---
 
 # TASK-0051: Idempotent Worktree Lifecycle Management, Human Sandboxing, and Zero-Pollution Pruning

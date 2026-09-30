@@ -1,24 +1,23 @@
 ---
 id: '0045'
 title: Pluggable Agent Runners, CLI Inspection JSON Output, and Worktree Dry-Run Simulation
-status: Refined
-created: 2026-09-29
+status: Complete
 dependencies:
-  - TASK-0014
-  - TASK-0044
+- TASK-0014
+- TASK-0044
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0080
-  - US-0029
-  - US-0034
+- US-0080
+- US-0029
+- US-0034
 target_bc: worker
 ---
 

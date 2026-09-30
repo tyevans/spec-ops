@@ -1,7 +1,7 @@
 ---
 id: '0032'
 title: Tamper-Evident Merkle Compliance Manifest Generator and Verifier Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0031
 governing_adrs:

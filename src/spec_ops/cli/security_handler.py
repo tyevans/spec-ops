@@ -13,8 +13,67 @@ from ..security.lockfile import verify_lockfile
 
 
 def handle_audit_command(args: argparse.Namespace, config: SpecOpsConfig, parser: argparse.ArgumentParser) -> int:
-    """Executes 'spec-ops audit dependencies' to scan CVEs and enforce license allowlists."""
+    """Executes 'spec-ops audit' commands (export, verify, dependencies)."""
     action = getattr(args, "audit_action", None)
+
+    if action == "export":
+        from ..security.audit.exporter import export_compliance_manifest
+
+        standard = getattr(args, "standard", "soc2")
+        out_dir = getattr(args, "output", "dist/compliance/")
+        manifest_file, root_file, manifest = export_compliance_manifest(
+            repo_dir=config.root_dir,
+            standard=standard,
+            output_dir=out_dir,
+        )
+        print(f"✨ Compiled compliance audit manifest: {manifest_file}")
+        print(f"✨ Generated top-level Merkle root: {root_file}")
+        print(f"   Standard:     {manifest.standard.upper()}")
+        print(f"   Deliverables: {manifest.tree_size}")
+        print(f"   Merkle Root:  {manifest.root_hash}")
+        return 0
+
+    if action == "verify":
+        from ..security.audit.verifier import verify_audit_trail
+
+        manifest_arg = getattr(args, "manifest", "dist/compliance/soc2-audit-manifest.json")
+        repo_arg = getattr(args, "repo", ".")
+        manifest_path = Path(manifest_arg)
+        if not manifest_path.is_absolute():
+            manifest_path = config.root_dir / manifest_path
+
+        repo_path = Path(repo_arg)
+        if not repo_path.is_absolute():
+            repo_path = config.root_dir / repo_path
+
+        if not manifest_path.is_file():
+            print(f"❌ Manifest file not found: {manifest_path}", file=sys.stderr)
+            print(f"❌ Manifest file not found: {manifest_path}")
+            return 1
+
+        result = verify_audit_trail(manifest_path=manifest_path, repo_dir=repo_path)
+        if not result.ok:
+            error_output = [
+                "❌ Compliance Verification Failed: Deliverable integrity violation detected."
+            ]
+            if result.corrupted_entity_id:
+                error_output.append(f"   Corrupted Task ID: {result.corrupted_entity_id}")
+                error_output.append(f"   Expected SHA-256:  {result.expected_hash}")
+                error_output.append(f"   Computed SHA-256:  {result.computed_hash}")
+            for err in result.errors:
+                error_output.append(f"   - {err}")
+
+            full_msg = "\n".join(error_output)
+            print(full_msg, file=sys.stderr)
+            print(full_msg)
+            return 1
+
+        print("✅ Compliance Audit Verification PASSED:")
+        print(f"   Manifest:     {manifest_path}")
+        print(f"   Deliverables: {result.deliverables_checked}")
+        print(f"   Merkle Root:  {result.root_hash}")
+        return 0
+
     if action in ("dependencies", None):
         target = Path(getattr(args, "path", ".")).resolve()
         offline = getattr(args, "offline", False)

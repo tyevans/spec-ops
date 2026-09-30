@@ -37,13 +37,17 @@ def test_visualizer_generation_on_scaffolded_project(tmp_path: Path):
     assert "TestVisProject — SpecOps Visualizer" in html
     # Check tab buttons
     assert 'data-tab="graph"' in html
+    assert 'data-tab="matrix"' in html
     assert 'data-tab="gantt"' in html
     assert 'data-tab="kanban"' in html
     assert 'data-tab="prds"' in html
     assert 'data-tab="adrs"' in html
     assert 'data-tab="personas"' in html
+    assert 'data-tab="lead"' in html
     # Check scripts embedded
     assert "window.switchTab = function(" in html
+    assert "window.renderMatrixView = function(" in html
+    assert "window.renderLeadConsoleView = function(" in html
     assert "function renderGanttView(" in html
     assert "function renderKanbanView(" in html
     assert "function renderPrdsView(" in html
@@ -151,7 +155,7 @@ def _run_node_test(html: str, test_script: str) -> None:
       }};
     }}
 
-    const tabBtns = ["graph", "gantt", "kanban", "prds", "adrs", "personas"].map(t => {{
+    const tabBtns = ["graph", "matrix", "gantt", "kanban", "prds", "adrs", "personas", "lead"].map(t => {{
       const btn = makeElement("tab-" + t);
       btn.dataset.tab = t;
       return btn;

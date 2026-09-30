@@ -11,7 +11,7 @@ ROUTING_JS = r"""
 
     const params = new URLSearchParams(hash);
 
-    const validTabs = ["graph", "gantt", "kanban", "prds", "adrs", "personas"];
+    const validTabs = ["graph", "matrix", "gantt", "kanban", "prds", "adrs", "personas", "lead"];
     let tab = (params.get("tab") || "graph").toLowerCase();
     if (!validTabs.includes(tab)) tab = "graph";
 

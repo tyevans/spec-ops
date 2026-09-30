@@ -11,6 +11,8 @@ class SafeTemplate(str):
 
     def format(self, *args: Any, **kwargs: Any) -> str:
         res = str(self)
+        if "back_link" not in kwargs:
+            kwargs["back_link"] = "../index.html"
         for k, v in kwargs.items():
             res = res.replace(f"{{{k}}}", str(v))
         return res
@@ -29,7 +31,7 @@ _BASE_SHELL = """<!DOCTYPE html>
 <body>
   <header>
     <div class="header-left">
-      <a href="../index.html" class="nav-back-btn">← Back to Docs</a>
+      <a href="{back_link}" class="nav-back-btn">← Back to Docs</a>
       <h1>⚡ {title} <span class="badge">Visualizer</span></h1>
     </div>
     <div class="header-center" id="graph-controls">
@@ -55,11 +57,13 @@ _BASE_SHELL = """<!DOCTYPE html>
 
   <nav class="nav-tabs-bar" id="tab-nav">
     <button class="tab-btn active" data-tab="graph" onclick="switchTab('graph')">🌐 Relationship Graph</button>
+    <button class="tab-btn" data-tab="matrix" onclick="switchTab('matrix')">🗂️ Project Matrix</button>
     <button class="tab-btn" data-tab="gantt" onclick="switchTab('gantt')">📊 Gantt & Timeline</button>
     <button class="tab-btn" data-tab="kanban" onclick="switchTab('kanban')">📋 Kanban Board</button>
     <button class="tab-btn" data-tab="prds" onclick="switchTab('prds')">🎯 PRDs & Features</button>
     <button class="tab-btn" data-tab="adrs" onclick="switchTab('adrs')">🏛️ ADR Architecture</button>
     <button class="tab-btn" data-tab="personas" onclick="switchTab('personas')">👥 Personas & Stories</button>
+    <button class="tab-btn" data-tab="lead" onclick="switchTab('lead')">⚡ Lead Console</button>
   </nav>
 
   <main>

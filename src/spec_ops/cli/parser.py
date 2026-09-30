@@ -38,16 +38,25 @@ def build_parser() -> argparse.ArgumentParser:
     p_build = docs_subs.add_parser("build", help="Compile static HTML documentation site and living 2D visualizer")
     p_build.add_argument("--out", help="Output directory for static site (default: site/)")
     p_build.add_argument("--base-url", default="/spec-ops/", help="Base URL path for links (default: /spec-ops/)")
+    p_build.add_argument("--include-visualizer", action="store_true", default=True, help="Compile living visualizer bundle into site (default: True)")
     p_audit = docs_subs.add_parser("audit", help="Audit Diataxis documentation structure, CLI drift, and code snippets")
     p_audit.add_argument("--dir", help="Documentation directory (default: docs/)")
     p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
 
     # audit
-    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies and security policies")
+    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies, compliance manifests, and security policies")
     audit_subs = p_audit_cmd.add_subparsers(dest="audit_action", help="Audit action")
     p_audit_deps = audit_subs.add_parser("dependencies", help="Scan dependencies for CVEs and license allowlist compliance")
     p_audit_deps.add_argument("--path", default=".", help="Directory containing dependencies (default: current directory)")
     p_audit_deps.add_argument("--offline", action="store_true", help="Run in air-gapped/offline mode with local cache")
+
+    p_audit_export = audit_subs.add_parser("export", help="Compile and export tamper-evident Merkle compliance audit manifest")
+    p_audit_export.add_argument("--standard", default="soc2", help="Compliance standard profile (e.g. soc2, iso27001, hipaa)")
+    p_audit_export.add_argument("--output", default="dist/compliance/", help="Output directory for compliance manifest and root hash")
+
+    p_audit_verify = audit_subs.add_parser("verify", help="Verify cryptographic compliance manifest integrity and SDLC traceability")
+    p_audit_verify.add_argument("--manifest", default="dist/compliance/soc2-audit-manifest.json", help="Path to compliance manifest JSON")
+    p_audit_verify.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
 
     # profiles
     p_prof = subparsers.add_parser("profiles", aliases=["profile"], help="Inspect and list architectural profiles and baseline ADRs")
@@ -57,6 +66,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_prof_apply.add_argument("profile_name", help="Profile name (e.g. security)")
     p_prof_sync = prof_subs.add_parser("sync", help="Synchronize or restore architectural profile artifacts")
     p_prof_sync.add_argument("profile_name", help="Profile name (e.g. security)")
+    p_prof_info = prof_subs.add_parser("info", help="Inspect active architectural profile rules and quality preflight commands")
+    p_prof_info.add_argument("--json", action="store_true", help="Output active profiles and invariants as structured JSON")
 
     # scaffold
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
@@ -66,6 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
     # health
     p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
     p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")
+    p_health.add_argument("--json", action="store_true", help="Output health inspection results as structured JSON")
 
     # stats
     p_stats = subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
@@ -122,8 +134,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_decompose.add_argument("--by-outcomes", action="store_true", help="Decompose each checkable outcome into a dedicated BDD user story and tasks")
     p_decompose.add_argument("--diff", action="store_true", help="Perform non-destructive delta decomposition for new or modified outcomes")
 
+    p_studio = prd_subs.add_parser("studio", help="Run interactive Web PRD Studio and Low-Code Story Assistant")
+    p_studio.add_argument("--open", action="store_true", help="Automatically open browser")
+    p_studio.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
+    p_studio.add_argument("--host", default="127.0.0.1", help="Server host (default: 127.0.0.1)")
+
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
+    p_curate.add_argument("curate_action", nargs="?", default=None, help="Curation action ('next')")
+    p_curate.add_argument("--json", action="store_true", help="Output next task or curation results as structured JSON")
     p_curate.add_argument("--infer", action="store_true", help="Enable cognitive inference-driven curation, architectural drift reconciliation, and scope slicing")
     p_curate.add_argument("--dry-run", action="store_true", help="Audit candidate tasks and display proposed reconciliations without modifying disk state")
     p_curate.add_argument("--model", default=None, help="LLM model name to use for inference")
@@ -133,6 +152,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_viz.add_argument("--serve", action="store_true", help="Run local interactive web server")
     p_viz.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
     p_viz.add_argument("--build", metavar="OUT_FILE", help="Generate standalone single-file HTML bundle")
+    viz_subs = p_viz.add_subparsers(dest="viz_action", help="Visualizer subcommands")
+    p_export = viz_subs.add_parser("export", help="Export standalone single-file HTML visualizer bundle")
+    p_export.add_argument("out_pos", nargs="?", default=None, help="Output file path (positional)")
+    p_export.add_argument("-o", "--output", default="dist/index.html", help="Output file path (default: dist/index.html)")
 
     # worker
     p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
@@ -175,6 +198,9 @@ def build_parser() -> argparse.ArgumentParser:
     # queue
     p_queue = subparsers.add_parser("queue", help="Manage backlog queue and task integration gates")
     queue_subs = p_queue.add_subparsers(dest="queue_action", help="Queue action")
+
+    p_q_next = queue_subs.add_parser("next", help="Inspect next ready, unblocked backlog task")
+    p_q_next.add_argument("--json", action="store_true", help="Output next task as structured JSON")
 
     p_q_comp = queue_subs.add_parser("complete", help="Gate and complete task integration under merge lock")
     p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")

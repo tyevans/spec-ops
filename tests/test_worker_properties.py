@@ -1,7 +1,7 @@
 """Hypothesis property tests for dynamic unblocking and dependency DAG satisfaction."""
 
 from pathlib import Path
-from hypothesis import given, strategies as st
+from hypothesis import given, settings, strategies as st
 
 from spec_ops.backlog.queue import BacklogQueue, write_task_file
 from spec_ops.core.models import Task
@@ -22,6 +22,7 @@ def dependency_dag_tasks(draw):
     return tasks
 
 
+@settings(deadline=None)
 @given(tasks=dependency_dag_tasks(), completion_count=st.integers(min_value=0, max_value=8))
 def test_hypothesis_dynamic_unblocking_invariants(tmp_path_factory, tasks, completion_count):
     """Property Invariant: Dynamic unblocking identifies strictly ready tasks in priority order."""

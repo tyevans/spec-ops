@@ -253,6 +253,7 @@ def build_docs_site(
     config: SpecOpsConfig,
     out_dir: Path | None = None,
     base_url: str = "/spec-ops/",
+    include_visualizer: bool = True,
 ) -> Path:
     """Compiles Diataxis documentation into a clean static site with embedded visualizer."""
     root_dir = config.root_dir
@@ -267,12 +268,13 @@ def build_docs_site(
     sync_operating_manual(root_dir, docs_dir)
 
     # 2. Compile standalone visualizer bundle
-    visualizer_html = generate_standalone_html(config)
-    (dist_dir / "visualizer.html").write_text(visualizer_html, encoding="utf-8")
+    if include_visualizer:
+        visualizer_html = generate_standalone_html(config, back_link="../index.html")
+        (dist_dir / "visualizer.html").write_text(visualizer_html, encoding="utf-8")
 
-    vis_dir = site_dir / "visualizer"
-    vis_dir.mkdir(parents=True, exist_ok=True)
-    (vis_dir / "index.html").write_text(visualizer_html, encoding="utf-8")
+        vis_dir = site_dir / "visualizer"
+        vis_dir.mkdir(parents=True, exist_ok=True)
+        (vis_dir / "index.html").write_text(visualizer_html, encoding="utf-8")
 
     # 3. Export project JSON data
     payload = serialize_project_data(config)

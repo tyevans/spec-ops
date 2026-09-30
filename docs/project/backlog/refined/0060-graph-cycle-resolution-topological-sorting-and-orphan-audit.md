@@ -1,24 +1,24 @@
 ---
 id: '0060'
-title: Deterministic Graph Cycle Resolution, Topological Sorting, Reachability Pathfinding, and Orphan Work Item Audit
-status: Proposed
-created: 2026-09-29
+title: Deterministic Graph Cycle Resolution, Topological Sorting, Reachability Pathfinding,
+  and Orphan Work Item Audit
+status: Refined
 dependencies:
-  - TASK-0059
+- TASK-0059
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0060
-  - US-0063
-  - US-0016
-  - US-0021
+- US-0060
+- US-0063
+- US-0016
+- US-0021
 target_bc: core
 ---
 

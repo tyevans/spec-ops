@@ -78,7 +78,8 @@ def main() -> int:
             from ..docs.builder import build_docs_site
             out_dir = Path(args.out).resolve() if getattr(args, "out", None) else None
             base_url = getattr(args, "base_url", "/spec-ops/")
-            site_dir = build_docs_site(config, out_dir=out_dir, base_url=base_url)
+            include_viz = getattr(args, "include_visualizer", True)
+            site_dir = build_docs_site(config, out_dir=out_dir, base_url=base_url, include_visualizer=include_viz)
             print(f"🎉 Compiled Diataxis documentation and living 2D visualizer to {site_dir}")
             return 0
         else:
@@ -88,6 +89,11 @@ def main() -> int:
     if args.command == "health":
         checker = HealthChecker(config)
         report = checker.run_check()
+        if getattr(args, "json", False):
+            from .formatters import format_health_json
+            print(format_health_json(report, config))
+            return 0 if report.is_healthy else 1
+
         print(f"=== SpecOps Health Check ({config.project.name}) ===")
         print(f"Limit: <{config.architecture.file_length_limit} lines per file")
         if report.violations:
@@ -164,6 +170,30 @@ def main() -> int:
         return handle_prd_command(args, config, parser)
 
     if args.command == "curate":
+        if getattr(args, "curate_action", None) == "next":
+            from ..backlog.queue import BacklogQueue
+            queue = BacklogQueue(config.backlog_dir)
+            ready = queue.get_ready_unblocked_tasks()
+            target = ready[0] if ready else None
+            if not target:
+                for t in queue.list_all_tasks():
+                    if t.status == "Refined":
+                        target = t
+                        break
+            if getattr(args, "json", False):
+                from .formatters import format_task_json
+                print(format_task_json(target, config))
+                return 0
+            if not target:
+                print("ℹ️ No ready, unblocked tasks in refined/ buffer. Run 'spec-ops curate' first.")
+                return 0
+            clean_id = target.canonical_id.lower().replace("task-", "").replace("spike-", "")
+            branch = target.branch or f"{config.execution.git_branch_prefix}task-{clean_id}"
+            print(f"=== Next Backlog Task ({target.canonical_id}) ===")
+            print(f"Title:        {target.title}")
+            print(f"Branch:       {branch}")
+            return 0
+
         if getattr(args, "infer", False):
             from ..backlog.inference_curator import InferenceCurator
 
@@ -204,11 +234,15 @@ def main() -> int:
         return 0
 
     if args.command == "visualizer":
-        if args.build:
-            html = generate_standalone_html(config)
-            out_file = Path(args.build).resolve()
-            out_file.parent.mkdir(parents=True, exist_ok=True)
-            out_file.write_text(html, encoding="utf-8")
+        from ..visualizer.bundle import export_bundle
+
+        if getattr(args, "viz_action", None) == "export":
+            target = getattr(args, "out_pos", None) or getattr(args, "output", "dist/index.html")
+            out_file = export_bundle(config, output_path=target)
+            print(f"✅ Exported standalone visualizer bundle to {out_file}")
+            return 0
+        elif args.build:
+            out_file = export_bundle(config, output_path=args.build)
             print(f"✅ Exported standalone visualizer bundle to {out_file}")
             return 0
         else:

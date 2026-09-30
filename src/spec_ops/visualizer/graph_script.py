@@ -34,7 +34,7 @@ GRAPH_JS = r"""
   let isPanning = false, panStartX = 0, panStartY = 0;
   let draggedNode = null;
   let searchQuery = "";
-  let focusedNodeId = null;
+  let focusedNodeId = null, targetPanX = null, targetPanY = null;
   function matchNode(n, cleanId) {
     if (!n || !n.id) return false;
     const nid = String(n.id).toUpperCase();
@@ -290,9 +290,9 @@ GRAPH_JS = r"""
     });
 
     ctx.restore();
-    requestAnimationFrame(tick);
+    if (typeof window !== "undefined" && window.requestAnimationFrame) window.requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+  if (typeof window !== "undefined" && window.requestAnimationFrame) window.requestAnimationFrame(tick);
 
   function screenToWorld(sx, sy) {
     return { x: (sx - panX) / zoom, y: (sy - panY) / zoom };

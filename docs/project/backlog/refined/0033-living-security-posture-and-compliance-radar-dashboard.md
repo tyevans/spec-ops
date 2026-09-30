@@ -1,22 +1,23 @@
 ---
 id: '0033'
 title: Living Security Posture and Compliance Radar Visualizer Dashboard
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0023
-  - TASK-0032
+- TASK-0023
+- TASK-0032
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
 governing_prds:
-  - PRD-0002
+- PRD-0002
 governing_stories:
-  - US-0058
-  - US-0114
+- US-0058
+- US-0114
 target_bc: security
+claimed_by: worker-3
+branch: feat/0033-living-security-posture-and-compliance-r
 ---
 
 # TASK-0033: Living Security Posture and Compliance Radar Visualizer Dashboard

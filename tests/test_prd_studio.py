@@ -209,3 +209,65 @@ def test_prd_studio_html_view(running_server):
     assert "parseMarkdown" in html
     assert "cdn.jsdelivr" not in html
     conn.close()
+
+
+def test_accept_user_story_endpoint(running_server):
+    """Asserts POST /api/story/accept saves accepted user story and links to PRD."""
+    addr, root_dir = running_server
+    host, port = addr.split(":")
+    conn = HTTPConnection(host, int(port))
+
+    # Seed PRD
+    prd_dir = root_dir / "docs" / "project" / "product" / "accepted"
+    prd_dir.mkdir(parents=True, exist_ok=True)
+    (prd_dir / "prd-0003-test.md").write_text(
+        "---\nid: PRD-0003\ntitle: Test PRD\n---\n# PRD-0003\n\n## Linked User Stories\n",
+        encoding="utf-8",
+    )
+
+    payload = {
+        "title": "Low-Code Gherkin BDD Story Assistant",
+        "story_id": "0045",
+        "persona": "Taylor",
+        "governing_prd": "PRD-0003",
+        "scenario": (
+            "Scenario: Autocompleting Established Frontdoor Steps during Story Creation\n"
+            "  Given Taylor is authoring a new user story for 'PRD-0001' in the visualizer Story Studio\n"
+            "  When Taylor types 'Given ' into the scenario editor\n"
+            "  Then the step assistant displays an autocomplete dropdown of registered frontdoor fixtures\n"
+        ),
+    }
+
+    body = json.dumps(payload).encode("utf-8")
+    conn.request("POST", "/api/story/accept", body=body, headers={"Content-Type": "application/json"})
+    res = conn.getresponse()
+
+    assert res.status == 201
+    data = json.loads(res.read().decode("utf-8"))
+    assert data["success"] is True
+    assert data["story_id"] == "US-0045"
+    assert (root_dir / data["file_path"]).exists()
+    conn.close()
+
+
+def test_accept_user_story_endpoint_backdoor_rejection(running_server):
+    """Asserts POST /api/story/accept rejects scenarios containing private backdoors (ADR-0003)."""
+    addr, _ = running_server
+    host, port = addr.split(":")
+    conn = HTTPConnection(host, int(port))
+
+    payload = {
+        "title": "Violating Story",
+        "scenario": "Scenario: Bad\n  Given the database table users has record 'admin'\n  Then win\n",
+    }
+
+    body = json.dumps(payload).encode("utf-8")
+    conn.request("POST", "/api/story/accept", body=body, headers={"Content-Type": "application/json"})
+    res = conn.getresponse()
+
+    assert res.status == 400
+    data = json.loads(res.read().decode("utf-8"))
+    assert data["success"] is False
+    assert "ADR-0003" in data.get("error", "") or "Backdoor violation" in data.get("error", "")
+    conn.close()
+
