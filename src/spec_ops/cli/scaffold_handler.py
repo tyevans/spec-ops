@@ -63,5 +63,19 @@ def handle_scaffold_command(
             print(f"❌ Error: {e}")
             return 1
 
+    if action == "ci":
+        from ..scaffold.ci_multi import scaffold_ci_command
+
+        platform = getattr(args, "platform", "all")
+        force = bool(getattr(args, "force", False) or getattr(args, "update", False))
+        matrix = getattr(args, "matrix", None)
+        return scaffold_ci_command(
+            root_dir=config.root_dir,
+            platform=platform,
+            force=force,
+            matrix=matrix,
+            project_name=config.project.name,
+        )
+
     parser.parse_args(["scaffold", "--help"])
     return 0

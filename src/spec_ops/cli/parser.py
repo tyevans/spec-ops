@@ -13,6 +13,7 @@ from .parser_subcommands import (
     register_profile_subparsers,
     register_queue_subparsers,
     register_release_subparsers,
+    register_scaffold_subparsers,
     register_schema_subparsers,
     register_spike_subparsers,
     register_test_subparsers,
@@ -123,36 +124,7 @@ def build_parser() -> argparse.ArgumentParser:
     register_adr_subparsers(subparsers)
 
     # scaffold
-    p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
-    scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
-    scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
-    p_scaffold_docs = scaffold_subs.add_parser(
-        "docs",
-        aliases=["diataxis"],
-        help="Scaffold 4-quadrant Diataxis documentation for a bounded context",
-    )
-    p_scaffold_docs.add_argument(
-        "--bc",
-        "--bounded-context",
-        required=True,
-        dest="bc",
-        help="Target bounded context identifier",
-    )
-    p_scaffold_docs.add_argument(
-        "--title",
-        default=None,
-        help="Human-readable title for the bounded context",
-    )
-    p_scaffold_docs.add_argument(
-        "--force",
-        "--overwrite",
-        dest="force",
-        action="store_true",
-        help="Overwrite existing bounded context documentation",
-    )
-    p_scaffold_hooks = scaffold_subs.add_parser("hooks", help="Scaffold native, zero-dependency git hooks")
-    p_scaffold_hooks.add_argument("--force", action="store_true", help="Overwrite existing hooks")
-    p_scaffold_hooks.add_argument("--native", action="store_true", default=True, help="Scaffold native POSIX shell git hooks")
+    register_scaffold_subparsers(subparsers)
 
     # constitution
     p_const = subparsers.add_parser("constitution", help="Living constitution synchronization and drift verification")

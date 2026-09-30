@@ -2,7 +2,7 @@
 id: 0083
 title: Multi-Platform CI/CD Pipeline Scaffolding Across GitHub Actions and GitLab
   CI
-status: Refined
+status: Complete
 dependencies:
 - TASK-0064
 - TASK-0012
@@ -17,8 +17,6 @@ governing_prds:
 governing_stories:
 - US-0069
 target_bc: scaffold
-claimed_by: worker-1
-branch: feat/0083-multi-platform-ci-cd-pipeline-scaffoldin
 ---
 
 # TASK-0083: Multi-Platform CI/CD Pipeline Scaffolding Across GitHub Actions and GitLab CI
