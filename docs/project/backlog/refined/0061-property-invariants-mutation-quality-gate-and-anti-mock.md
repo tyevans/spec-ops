@@ -2,20 +2,21 @@
 id: '0061'
 title: AST Blackbox Frontdoor Test Verification and Anti-Mock Quality Gate
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0060
+- TASK-0060
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0020
+- US-0020
 target_bc: core
+claimed_by: worker-3
+branch: feat/0061-ast-blackbox-frontdoor-test-verification
 ---
 
 # TASK-0061: AST Blackbox Frontdoor Test Verification and Anti-Mock Quality Gate

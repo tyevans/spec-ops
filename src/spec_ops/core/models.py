@@ -130,7 +130,8 @@ class CommitInfo:
     prs: list[str] = field(default_factory=list)
     signature_status: str = ""
     is_signed: bool = False
-
+    provenance: str = ""
+    trailers: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass

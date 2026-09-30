@@ -75,7 +75,8 @@ MATRIX_JS = r"""
     status: "all",
     persona: "all",
     milestone: "all",
-    bc: "all"
+    bc: "all",
+    contributor: "all"
   };
 
   window.setMatrixFilter = function(key, val) {
@@ -103,6 +104,7 @@ MATRIX_JS = r"""
     const personaFilter = matrixFilterState.persona;
     const milestoneFilter = matrixFilterState.milestone;
     const bcFilter = matrixFilterState.bc;
+    const contribFilter = matrixFilterState.contributor || "all";
 
     // Filter items
     const isLineage = personaFilter !== "all" || matrixFilterState.view === "lineage";
@@ -112,6 +114,18 @@ MATRIX_JS = r"""
       if (stFilter !== "all" && t.status !== stFilter) return false;
       if (bcFilter !== "all" && t.target_bc !== bcFilter) return false;
       if (milestoneFilter !== "all" && (t.target_release || "Unscheduled") !== milestoneFilter) return false;
+
+      if (contribFilter !== "all") {
+        const cLow = contribFilter.toLowerCase();
+        let isAuto = false;
+        if (t.commits && t.commits.length > 0) {
+          isAuto = t.commits.some(c => (c.provenance && c.provenance.toLowerCase().includes("autonomous")) || (c.author && (c.author.toLowerCase().includes("bot") || c.author.toLowerCase().includes("agent") || c.author.toLowerCase().includes("worker"))));
+        } else if (t.claimed_by && (t.claimed_by.toLowerCase().includes("agent") || t.claimed_by.toLowerCase().includes("worker"))) {
+          isAuto = true;
+        }
+        const taskClass = isAuto ? "autonomous agents" : "human developers";
+        if (taskClass !== cLow) return false;
+      }
 
       // Find story & persona
       let linkedPersona = "";
@@ -217,6 +231,13 @@ MATRIX_JS = r"""
             <option value="all" ${bcFilter === 'all' ? 'selected' : ''}>All Bounded Contexts</option>
             ${allBcs.map(bc => `<option value="${escapeHtml(bc)}" ${bcFilter === bc ? 'selected' : ''}>${escapeHtml(bc)}</option>`).join("")}
           </select>
+
+          <div class="matrix-filter-chips contributor-filter-chips" style="display:inline-flex; align-items:center; gap:6px;">
+            <span style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Contributor:</span>
+            <span class="matrix-badge ${contribFilter === 'all' ? 'matrix-badge-complete' : ''}" style="cursor:pointer;" onclick="window.setMatrixFilter('contributor', 'all')">All</span>
+            <span class="matrix-badge ${contribFilter === 'Autonomous Agents' ? 'matrix-badge-complete' : ''}" style="cursor:pointer;" onclick="window.setMatrixFilter('contributor', 'Autonomous Agents')">🤖 Autonomous Agents</span>
+            <span class="matrix-badge ${contribFilter === 'Human Developers' ? 'matrix-badge-complete' : ''}" style="cursor:pointer;" onclick="window.setMatrixFilter('contributor', 'Human Developers')">👤 Human Developers</span>
+          </div>
 
           <button type="button" class="filter-btn" id="matrix-copy-link-btn" onclick="window.copyMatrixShareableLink()"
             style="background:#334155; color:#f8fafc; border:1px solid #475569; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer;">

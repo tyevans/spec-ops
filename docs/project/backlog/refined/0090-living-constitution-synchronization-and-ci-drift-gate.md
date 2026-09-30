@@ -1,5 +1,5 @@
 ---
-id: '0090'
+id: 0090
 title: Living Constitution Synchronization, Extension Preservation, and CI Drift Gate
 status: Refined
 dependencies:
@@ -16,6 +16,8 @@ governing_prds:
 governing_stories:
 - US-0068
 target_bc: scaffold
+claimed_by: worker-3
+branch: feat/0090-living-constitution-synchronization--ext
 ---
 
 # TASK-0090: Living Constitution Synchronization, Extension Preservation, and CI Drift Gate
