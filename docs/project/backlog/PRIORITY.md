@@ -43,7 +43,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0044 (Complete)**: [`0044-machine-readable-task-contracts-backlog-protection-and-claim-gates`](complete/0044-machine-readable-task-contracts-backlog-protection-and-claim-gates.md)
 - **TASK-0057 (Complete)**: [`0057-content-addressed-graph-caching-and-ast-parsing-spike`](complete/0057-content-addressed-graph-caching-and-ast-parsing-spike.md)
 - **TASK-0031 (Refined)**: [`0031-merkle-compliance-manifest-architecture-spike`](refined/0031-merkle-compliance-manifest-architecture-spike.md)
-- **TASK-0040 (Refined)**: [`0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike`](refined/0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike.md)
+- **TASK-0040 (Complete)**: [`0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike`](complete/0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike.md)
 - **TASK-0058 (Refined)**: [`0058-content-addressed-graph-caching-and-ast-parsing`](refined/0058-content-addressed-graph-caching-and-ast-parsing.md)
 - **TASK-0045 (Refined)**: [`0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation`](refined/0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation.md)
 - **TASK-0036 (Refined)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](refined/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)

@@ -1,0 +1,11 @@
+Benchmark findings for SPIKE-0040:
+- Total operations: 100
+- Git tree SHA-256 calculation avg latency: 16.19ms
+- Concurrent PM sign-off reconciliation avg latency: 0.01ms
+- Outcome-to-test mapping avg latency: 0.01ms
+- Headless manifest verification avg latency: 4.01ms
+- Combined p50 latency: 2.86ms
+- Combined p95 latency: 17.47ms
+- Combined p99 latency: 22.91ms
+- External cryptography dependencies: 0 (Pure Python hashlib)
+- Headless verification invariant (<50ms): PASSED

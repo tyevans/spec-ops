@@ -1,23 +1,23 @@
 ---
 id: '0040'
-title: Tamper-Evident Customer UAT Receipt and Cryptographic Release Manifest Architecture Spike
-status: Refined
-created: 2026-09-29
+title: Tamper-Evident Customer UAT Receipt and Cryptographic Release Manifest Architecture
+  Spike
+status: Complete
 dependencies:
-  - TASK-0004
+- TASK-0004
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0003
+- PRD-0003
 governing_stories:
-  - US-0046
-  - US-0100
+- US-0046
+- US-0100
 target_bc: prd
 ---
 
