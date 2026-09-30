@@ -17,6 +17,7 @@ governing_stories:
 - US-0059
 - US-0061
 target_bc: core
+allows_dependencies: true
 ---
 
 # TASK-0058: Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing

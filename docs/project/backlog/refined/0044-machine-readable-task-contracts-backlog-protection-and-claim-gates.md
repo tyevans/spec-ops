@@ -21,6 +21,7 @@ governing_stories:
 - US-0030
 - US-0031
 target_bc: worker
+allows_dependencies: true
 ---
 
 # TASK-0044: Machine-Readable Task Contracts, Backlog Protection Guardrails, and Autonomous Claim Gates
