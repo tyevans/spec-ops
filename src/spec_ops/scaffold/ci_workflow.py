@@ -47,3 +47,30 @@ jobs:
       - name: Execute blackbox test suite
         run: uv run pytest
 """
+
+
+def generate_gitlab_ci_workflow(project_name: str = "SpecOps") -> str:
+    """Generates an opinionated GitLab CI quality gate workflow."""
+    return f"""# GitLab CI Quality Gate ({project_name})
+stages:
+  - test
+
+variables:
+  UV_CACHE_DIR: .uv-cache/
+
+cache:
+  paths:
+    - .uv-cache/
+
+specops-quality-gate:
+  stage: test
+  image: python:3.13-slim
+  before_script:
+    - pip install uv
+    - uv sync
+  script:
+    - uv lock --check
+    - uv run spec-ops health
+    - uv run pytest
+"""
+

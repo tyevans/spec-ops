@@ -1,7 +1,7 @@
 ---
-id: '0088'
+id: 0088
 title: Full Bidirectional Graph Traceability and Orphan Work Item Audit
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0060
 governing_adrs:

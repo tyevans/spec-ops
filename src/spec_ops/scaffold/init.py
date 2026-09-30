@@ -165,6 +165,8 @@ def init_project(
     github_pages: bool = True,
     pre_commit: bool = True,
     agents: list[str] | str | None = None,
+    ci: str = "github",
+    bounded_contexts: list[str] | None = None,
 ) -> list[Path]:
     """Scaffolds the full SpecOps directory structure and starter files with baseline ADRs."""
     root = target_dir.resolve()
@@ -184,45 +186,25 @@ def init_project(
 
     # 1. Profile composition and baseline ADR resolution
     from ..profiles.composer import compose_profiles
+    from .wizard import serialize_specops_toml
 
     composition = compose_profiles(selected_profiles)
     resolved_adrs = composition.adrs
     all_profile_ids = composition.profile_ids or selected_profiles
 
     # 1b. specops.toml
-    toml_content = DEFAULT_SPECOPS_TOML.format(name=project_name)
-    if composition.file_length_limit != 500:
-        import re
-        toml_content = re.sub(r"file_length_limit\s*=\s*\d+", f"file_length_limit = {composition.file_length_limit}", toml_content)
-    qual_overrides = composition.overrides.get("quality", {})
-    if qual_overrides.get("require_mutation_testing"):
-        if "require_mutation_testing" not in toml_content:
-            toml_content = toml_content.replace("require_bdd = true", "require_bdd = true\nrequire_mutation_testing = true")
-
-    if composition.slices:
-        slice_entries = []
-        for s in composition.slices:
-            slice_entries.append(
-                f'  {{ type = "{s.type}", name = "{s.name}", prefix = "{s.prefix}", requires_adr = {str(s.requires_adr).lower()} }}'
-            )
-        extra_slices = ",\n".join(slice_entries)
-        # Append before closing bracket of slices
-        toml_content = toml_content.replace(
-            "  { type = \"test\", name = \"Blackbox Frontdoor Test Suite\" }\n]",
-            f"  {{ type = \"test\", name = \"Blackbox Frontdoor Test Suite\" }},\n{extra_slices}\n]",
-        )
-
-    if parsed_agents:
-        formatted_agents = ", ".join(f'"{a}"' for a in parsed_agents)
-        toml_content += f"\ntarget_agents = [{formatted_agents}]\n"
-
-    prof_ids_fmt = ", ".join(f'"{p}"' for p in all_profile_ids)
-    toml_content += f'\n[profiles]\ninstalled = [{prof_ids_fmt}]\nversion = "{composition.version}"\n'
-
-    if "security" in [p.lower() for p in all_profile_ids]:
-        from ..profiles.security import DEFAULT_SECURITY_TOML
-        toml_content += f"\n{DEFAULT_SECURITY_TOML.strip()}\n"
+    toml_content = serialize_specops_toml(
+        composition,
+        project_name,
+        bounded_contexts=bounded_contexts,
+        agents=parsed_agents,
+    )
     _write(Path("specops.toml"), toml_content)
+
+    if bounded_contexts:
+        for bc in bounded_contexts:
+            bc_title = bc.replace("_", " ").replace("-", " ").title()
+            _write(Path("src") / bc / "__init__.py", f'"""{bc_title} bounded context."""\n')
 
     # 2. docs/project directories
     for folder in [
@@ -298,12 +280,18 @@ Establish initial system architecture, core domain models, and blackbox test har
 """
     _write(docs_project / "backlog" / "refined" / "0001-initial-architecture-spike-and-setup.md", task_0001_content)
 
-    # 6. GitHub Actions CI workflow
-    ci_workflow = generate_ci_workflow(project_name)
-    _write(Path(".github") / "workflows" / "ci.yml", ci_workflow)
+    # 6. CI workflows
+    if ci in ("github", "all"):
+        ci_workflow = generate_ci_workflow(project_name)
+        _write(Path(".github") / "workflows" / "ci.yml", ci_workflow)
+
+    if ci in ("gitlab", "all"):
+        from .ci_workflow import generate_gitlab_ci_workflow
+        gitlab_workflow = generate_gitlab_ci_workflow(project_name)
+        _write(Path(".gitlab-ci.yml"), gitlab_workflow)
 
     # 6b. GitHub Pages deployment workflow
-    if github_pages:
+    if github_pages and ci in ("github", "all"):
         pages_workflow = generate_pages_workflow(project_name)
         _write(Path(".github") / "workflows" / "deploy-pages.yml", pages_workflow)
 
@@ -338,5 +326,23 @@ Establish initial system architecture, core domain models, and blackbox test har
             adrs=resolved_adrs,
         )
         created_files.extend(adapter_files)
+
+    # 10. Machine-readable initialization receipt
+    import json
+    from datetime import datetime, timezone
+    from .wizard import compute_profile_checksums
+
+    receipt = {
+        "project_name": project_name,
+        "profiles": all_profile_ids,
+        "profile_checksums": compute_profile_checksums(all_profile_ids),
+        "bounded_contexts": bounded_contexts or [],
+        "ci_provider": ci,
+        "created_paths": [str(p.relative_to(root)) for p in created_files] + [".specops-scaffold.json"],
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    receipt_file = root / ".specops-scaffold.json"
+    receipt_file.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    created_files.append(receipt_file)
 
     return created_files

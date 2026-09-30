@@ -87,3 +87,38 @@ Supported platform targets:
 - `claude`: Generates `CLAUDE.md` with PMaC hard invariants, key verification commands, and DoR/DoD workflows.
 - `cursor`: Generates `.cursorrules` with coding invariants and preflight handoff checklists.
 - `antigravity`: Generates `GEMINI.md` operating manual and slash command definitions (`/curate`, `/health`, `/worker`) in `.agents/skills/`.
+
+---
+
+## Interactive Guided Initialization Wizard
+
+For a human architect setting up a new repository, launch the interactive terminal wizard:
+
+```bash
+spec-ops init --interactive
+```
+
+The wizard prompts for project name, profiles, bounded contexts, CI provider (GitHub, GitLab, or none), and documentation preferences, and displays a syntax-highlighted preview of `specops.toml` before scaffolding.
+
+---
+
+## Headless CI/CD Automation Scaffolding
+
+For unattended CI runners, container templates, and automated bootstrap scripts:
+
+```bash
+spec-ops init --headless --name "PaymentService" --profile core,bdd --ci github
+```
+
+This runs non-interactively without prompt blocking, scaffolding all requested artifacts and writing a machine-readable receipt to `.specops-scaffold.json`.
+
+---
+
+## Dry-Run Preview Mode
+
+To inspect planned files, detected profile configurations, and potential filename collisions without modifying disk:
+
+```bash
+spec-ops init --dry-run --profile core,bdd
+```
+

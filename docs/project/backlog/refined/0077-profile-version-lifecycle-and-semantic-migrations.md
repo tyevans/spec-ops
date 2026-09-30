@@ -16,6 +16,8 @@ governing_prds:
 governing_stories:
 - US-0070
 target_bc: scaffold
+claimed_by: worker-2
+branch: feat/0077-architectural-profile-version-lifecycle-
 ---
 
 # TASK-0077: Architectural Profile Version Lifecycle, Semantic Diffs, and Invariant Migrations

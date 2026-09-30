@@ -1,7 +1,7 @@
 ---
-id: '0089'
+id: 0089
 title: Autonomous Backlog Bottleneck and Critical Path Deadlock Detection
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0060
 governing_adrs:

@@ -33,6 +33,52 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Target agent platform adapters to configure (antigravity, claude, cursor). Comma-separated or repeatable.",
     )
+    p_init.add_argument(
+        "--interactive",
+        "-i",
+        action="store_true",
+        default=False,
+        help="Launch interactive guided initialization wizard",
+    )
+    p_init.add_argument(
+        "--headless",
+        action="store_true",
+        default=False,
+        help="Run unattended headless initialization without prompting",
+    )
+    p_init.add_argument(
+        "--non-interactive",
+        dest="headless",
+        action="store_true",
+        help="Alias for --headless unattended initialization",
+    )
+    p_init.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Simulate initialization and output planned file manifest and specops.toml without writing to disk",
+    )
+    p_init.add_argument(
+        "--ci",
+        choices=["github", "gitlab", "all", "none"],
+        default="github",
+        help="CI quality gate provider workflow to scaffold (github, gitlab, all, none)",
+    )
+    p_init.add_argument(
+        "--bc",
+        "--bounded-context",
+        dest="bc",
+        action="append",
+        default=None,
+        help="Initial bounded context(s) to declare (repeatable or comma-separated)",
+    )
+    p_init.add_argument(
+        "--yes",
+        "-y",
+        action="store_true",
+        default=False,
+        help="Automatically confirm initialization prompts",
+    )
 
     # adopt
     p_adopt = subparsers.add_parser("adopt", help="Adopt SpecOps into an existing brownfield codebase with debt baseline")
