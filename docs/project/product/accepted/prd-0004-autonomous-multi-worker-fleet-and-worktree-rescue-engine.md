@@ -99,3 +99,5 @@ component: worker
 - `TASK-0072`
 - `TASK-0073`
 - `TASK-0082`
+- `TASK-0093`
+- `TASK-0094`

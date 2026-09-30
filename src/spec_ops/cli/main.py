@@ -332,6 +332,19 @@ def main() -> int:
         from .review_handler import handle_review_command
         return handle_review_command(args, config, parser)
 
+    if args.command == "report":
+        from .report_handler import handle_report_command
+        return handle_report_command(args, config, parser)
+
+    if args.command == "backlog":
+        from ..tui.flow_monitor import FlowMonitor
+
+        monitor = FlowMonitor(config)
+        if getattr(args, "once", False):
+            monitor.render_snapshot()
+            return 0
+        return monitor.run()
+
     return 0
 
 

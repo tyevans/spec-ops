@@ -51,6 +51,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops queue block` | `<TASK_ID> --question QUESTION [--type {unknown,spike_needed,external,dependency}] [--spike] [--timebox TIMEBOX] [--raised-by RAISED_BY]` | Mark a task as blocked by an unknown question or impediment |
 | `spec-ops queue unblock` | `<TASK_ID> --resolution RESOLUTION [--adr ADR]` | Resolve an unknown/blocker and restore ready/proposed state |
 | `spec-ops queue blockers` | `[--json]` | List all currently blocked tasks, open questions, and linked spikes |
+| `spec-ops queue monitor` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
+| `spec-ops backlog flow` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
+| `spec-ops report burndown` | `[--milestone MILESTONE] [--format {deck,html,digest}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone burndown velocity and presentation slide deck export |
+| `spec-ops report milestone` | `[--milestone MILESTONE] [--format {digest,deck,html}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone executive briefing digest and scope alignment |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
