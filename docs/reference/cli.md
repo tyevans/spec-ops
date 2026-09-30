@@ -9,12 +9,14 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | Command | Arguments | Description |
 |---|---|---|
 | `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--agent AGENTS] [--diataxis/--no-diataxis] [--github-pages/--no-github-pages] [--pre-commit/--no-pre-commit]` | Bootstrap a new PMaC project with profile ADRs and multi-agent platform adapters |
+| `spec-ops adopt` | `[--name NAME] [--dir DIR] [--profile PROFILES] [--grandfather-debt] [--no-grandfather-debt]` | Adopt SpecOps into an existing brownfield codebase with debt baseline |
 | `spec-ops profiles list` | None | List available architectural profiles |
 | `spec-ops profiles apply` | `<PROFILE_NAME>` | Apply architectural profile to current repository |
 | `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
 | `spec-ops profiles info` | `[--json]` | Inspect active architectural profile rules and quality preflight commands |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
-| `spec-ops health` | `[--security] [--json]` | Verify file length limits, PRIORITY sync, and security profile guardrails |
+| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
+| `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
 | `spec-ops stats` | `[--cache]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |

@@ -2,7 +2,7 @@
 id: '0062'
 title: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam
   Extraction
-status: Refined
+status: Complete
 dependencies:
 - TASK-0005
 - TASK-0010
@@ -20,8 +20,6 @@ governing_stories:
 - US-0013
 - US-0015
 target_bc: core
-claimed_by: worker-2
-branch: feat/0062-brownfield-codebase-adoption--grandfathe
 ---
 
 # TASK-0062: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam Extraction

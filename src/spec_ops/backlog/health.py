@@ -47,6 +47,8 @@ class FileLengthViolation:
     path: Path
     lines: int
     limit: int
+    is_expanded: bool = False
+    is_unexempt: bool = True
 
 
 @dataclass
@@ -61,6 +63,7 @@ class FileLengthWarning:
 class HealthCheckReport:
     violations: list[FileLengthViolation] = field(default_factory=list)
     warnings: list[FileLengthWarning] = field(default_factory=list)
+    grandfathered_debt: list[tuple[Path, int, int]] = field(default_factory=list)
     top_largest_files: list[tuple[int, Path]] = field(default_factory=list)
     completed_tasks: int = 0
     refined_tasks: int = 0
@@ -84,11 +87,17 @@ class HealthChecker:
         self.limit = config.architecture.file_length_limit
         self.warning_threshold = config.architecture.file_warning_threshold
         self.backlog_dir = config.backlog_dir
+        self.tracked_debt: list[tuple[Path, int, int]] = []
 
     def scan_file_lengths(self) -> tuple[list[FileLengthViolation], list[FileLengthWarning], list[tuple[int, Path]]]:
+        from ..core.debt_baseline import evaluate_file_debt, load_grandfathered_debt
+
         violations: list[FileLengthViolation] = []
         warnings: list[FileLengthWarning] = []
         all_files: list[tuple[int, Path]] = []
+        self.tracked_debt = []
+
+        baseline = load_grandfathered_debt(self.root_dir)
 
         for p in self.root_dir.rglob("*"):
             if not p.is_file():
@@ -102,8 +111,30 @@ class HealthChecker:
             try:
                 line_count = len(p.read_text(encoding="utf-8", errors="ignore").splitlines())
                 all_files.append((line_count, rel_path))
-                if line_count > self.limit:
-                    violations.append(FileLengthViolation(rel_path, line_count, self.limit))
+                eval_res = evaluate_file_debt(rel_path, line_count, baseline, self.limit)
+
+                if eval_res.status == "grandfathered":
+                    self.tracked_debt.append((rel_path, line_count, eval_res.baseline_lines or self.limit))
+                elif eval_res.status == "expanded":
+                    violations.append(
+                        FileLengthViolation(
+                            rel_path,
+                            line_count,
+                            eval_res.baseline_lines or self.limit,
+                            is_expanded=True,
+                            is_unexempt=False,
+                        )
+                    )
+                elif eval_res.status == "unexempt":
+                    violations.append(
+                        FileLengthViolation(
+                            rel_path,
+                            line_count,
+                            self.limit,
+                            is_expanded=False,
+                            is_unexempt=True,
+                        )
+                    )
                 elif line_count >= self.warning_threshold:
                     warnings.append(FileLengthWarning(rel_path, line_count, self.warning_threshold, self.limit))
             except (OSError, UnicodeDecodeError):
@@ -203,6 +234,7 @@ class HealthChecker:
         return HealthCheckReport(
             violations=violations,
             warnings=warnings,
+            grandfathered_debt=self.tracked_debt,
             top_largest_files=top_files,
             completed_tasks=complete_count,
             refined_tasks=refined_count,

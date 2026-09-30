@@ -32,6 +32,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Target agent platform adapters to configure (antigravity, claude, cursor). Comma-separated or repeatable.",
     )
 
+    # adopt
+    p_adopt = subparsers.add_parser("adopt", help="Adopt SpecOps into an existing brownfield codebase with debt baseline")
+    p_adopt.add_argument("--name", help="Project name (defaults to directory name)")
+    p_adopt.add_argument("--dir", default=".", help="Target directory (default: current directory)")
+    p_adopt.add_argument("--profile", default="core,bdd,ddd", help="Comma-separated architectural profiles to install (default: core,bdd,ddd)")
+    p_adopt.add_argument("--grandfather-debt", action="store_true", default=True, help="Baseline existing files exceeding file limits into debt tracker (default: True)")
+    p_adopt.add_argument("--no-grandfather-debt", dest="grandfather_debt", action="store_false", help="Do not grandfather existing debt")
+
     # docs
     p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")
     docs_subs = p_docs.add_subparsers(dest="docs_action", help="Documentation action")
@@ -77,7 +85,16 @@ def build_parser() -> argparse.ArgumentParser:
     # health
     p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
     p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")
+    p_health.add_argument("--architecture", action="store_true", help="Statically verify bounded context boundaries and dependency directions")
+    p_health.add_argument("--suggest-splits", action="store_true", help="Analyze files in warning threshold and suggest AST submodule splits")
+    p_health.add_argument("--emit-task", action="store_true", help="Emit proposed refactoring task into backlog for split suggestions")
+    p_health.add_argument("--generate-refactor-tasks", action="store_true", help="Generate backlog refactoring tasks for all grandfathered debt files")
     p_health.add_argument("--json", action="store_true", help="Output health inspection results as structured JSON")
+
+    # decompose
+    p_decomp = subparsers.add_parser("decompose", help="Analyze AST seams and recommend modular file decomposition")
+    p_decomp.add_argument("--suggest", metavar="PATH", help="Analyze target source file AST and suggest cohesive submodule splits")
+    p_decomp.add_argument("path", nargs="?", default=None, help="Target file path")
 
     # stats
     p_stats = subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
