@@ -211,16 +211,29 @@ def squash_merge_and_commit(
 
     add_res = subprocess.run(["git", "add", "-A"], cwd=repo_root, capture_output=True, text=True)
     if add_res.returncode != 0:
+        subprocess.run(["git", "reset", "--hard", "HEAD"], cwd=repo_root, capture_output=True)
         return False, f"git add failed: {add_res.stderr}"
 
-    commit_res = subprocess.run(
-        ["git", "commit", "-m", commit_msg],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-    )
-    if commit_res.returncode != 0:
+    import time
+    commit_res = None
+    for _ in range(3):
+        commit_res = subprocess.run(
+            ["git", "commit", "-m", commit_msg],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+        )
+        if commit_res.returncode == 0:
+            break
         err = commit_res.stderr.strip() or commit_res.stdout.strip()
+        if "index.lock" in err:
+            time.sleep(0.5)
+            continue
+        break
+
+    if commit_res is None or commit_res.returncode != 0:
+        subprocess.run(["git", "reset", "--hard", "HEAD"], cwd=repo_root, capture_output=True)
+        err = commit_res.stderr.strip() or commit_res.stdout.strip() if commit_res else "unknown error"
         return False, f"git commit failed: {err}"
 
     return True, "Merged and committed cleanly."

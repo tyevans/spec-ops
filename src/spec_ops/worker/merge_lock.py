@@ -23,7 +23,7 @@ class MergeLockManager:
         self._fd: int | None = None
 
     @contextlib.contextmanager
-    def acquire(self, timeout: float = 60.0) -> Generator[None, None, None]:
+    def acquire(self, timeout: float = 120.0) -> Generator[None, None, None]:
         """Context manager to acquire both thread and file-based merge lock."""
         acquired_thread = _THREAD_LOCK.acquire(timeout=timeout)
         if not acquired_thread:

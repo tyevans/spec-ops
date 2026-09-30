@@ -14,6 +14,7 @@ from ..config.models import SpecOpsConfig
 from ..core.models import Task
 from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
 from ..worker.merge_lock import MergeLockManager, _THREAD_LOCK as MERGE_LOCK
+from ..worker.preflight import run_worktree_preflight
 from ..worker.worktree import cleanup_worktree as _cleanup_worktree, create_worktree as _create_worktree
 from .queue import BacklogQueue
 from .reviewer import TaskReviewEngine
@@ -54,66 +55,7 @@ class BacklogWorkerEngine:
 
     def run_preflight(self, cwd: Path, task: Task | None = None) -> tuple[bool, str]:
         """Runs configured preflight verification commands with supply-chain lockfile checks."""
-        from ..security.lockfile import check_worktree_dependency_integrity
-        target_task = task
-        if target_task is None:
-            import re
-            m = re.search(r"task-(\d+)", cwd.name, re.IGNORECASE)
-            if m:
-                cid = f"TASK-{m.group(1).zfill(4)}"
-                for t in self.queue.list_all_tasks():
-                    if t.canonical_id == cid:
-                        target_task = t
-                        break
-
-        allows_dep = getattr(target_task, "allows_dependencies", False) if target_task else False
-        dep_ok, dep_errs = check_worktree_dependency_integrity(cwd, allows_dependencies=allows_dep)
-        if not dep_ok:
-            return False, f"Unauthorized Dependency Modification: {'; '.join(dep_errs)}"
-
-        commands = list(self.config.quality.preflight)
-
-        if getattr(self.config.quality, "enforce_lockfile", True):
-            if (cwd / "uv.lock").exists() and "uv lock --check" not in commands:
-                commands.insert(0, "uv lock --check")
-
-        # Secret scanning preflight check
-        sec_active = bool(
-            (self.config.security and self.config.security.secret_scanning)
-            or ((cwd / "specops.toml").is_file() and "[security]" in (cwd / "specops.toml").read_text(encoding="utf-8"))
-            or (cwd / "docs" / "project" / "SECURITY.md").exists()
-        )
-
-        if sec_active and not any("health" in c and "--security" in c for c in commands):
-            spec_ops_bin = Path(sys.executable).parent / "spec-ops"
-            sec_cmd = "spec-ops health --security" if (spec_ops_bin.is_file() or shutil.which("spec-ops")) else f"{sys.executable} -m spec_ops.cli.main health --security"
-            commands.insert(0, sec_cmd)
-
-        sandbox_config = getattr(self.config.execution, "sandbox", None)
-        if sandbox_config and getattr(sandbox_config, "isolate_network", False):
-            from ..security.sandbox import ExecutionSandbox
-            sandbox = ExecutionSandbox(worktree_dir=cwd, isolate_network=True)
-            return sandbox.run_preflight_suite(commands, cwd=cwd)
-
-        src_dir = str(Path(__file__).resolve().parent.parent.parent)
-        curr_pythonpath = os.environ.get("PYTHONPATH", "")
-        new_pythonpath = f"{src_dir}:{curr_pythonpath}".rstrip(":")
-
-        env = {
-            **os.environ,
-            "PATH": f"{Path(sys.executable).parent}:{os.environ.get('PATH', '')}",
-            "PYTHONPATH": new_pythonpath,
-        }
-
-        logs: list[str] = []
-        for cmd in commands:
-            res = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, env=env)
-            if res.returncode != 0:
-                combined_output = (res.stdout + ("\n" + res.stderr if res.stderr else "")).strip()
-                logs.append(f"Command '{cmd}' failed (code {res.returncode}):\n{combined_output}")
-                return False, "\n".join(logs)
-            logs.append(f"✓ '{cmd}' passed.")
-        return True, "\n".join(logs)
+        return run_worktree_preflight(self.config, cwd, all_tasks=self.queue.list_all_tasks(), task=task)
 
     def create_worktree(self, branch: str, worktree_dir: Path) -> None:
         """Robustly creates or resets an isolated git worktree branch."""
@@ -339,32 +281,48 @@ class BacklogWorkerEngine:
 
             if local_merge:
                 lock_mgr = MergeLockManager(self.repo_root)
-                with lock_mgr.acquire():
+
+                # 1. Rebase and preflight in isolated worktree WITHOUT holding MERGE_LOCK
+                if lock_mgr.is_branch_behind_main(branch):
+                    print(f"🔄 Task branch '{branch}' is behind main. Auto-rebasing onto latest main...")
+                    rebase_ok, rebase_msg = rebase_with_inference_healing(
+                        worktree_dir,
+                        task,
+                        self.config,
+                    )
+                    if not rebase_ok:
+                        print(
+                            f"⚠️ Rebase conflict on {task.canonical_id}. Aborting rebase and preserving worktree with status 'Conflict'."
+                        )
+                        print(f"Actionable rescue: spec-ops rescue {task.canonical_id}")
+                        return WorkerResult(
+                            task.canonical_id,
+                            False,
+                            f"Rebase conflict against main: {rebase_msg}",
+                        )
+                    print("✓ Rebase succeeded. Running preflight verification on rebased code...")
+                    post_rebase_ok, post_rebase_log = self.run_preflight(worktree_dir, task=task)
+                    if not post_rebase_ok:
+                        print(f"❌ Post-rebase preflight failed on {task.canonical_id}.")
+                        return WorkerResult(
+                            task.canonical_id,
+                            False,
+                            f"Post-rebase preflight failed: {post_rebase_log}",
+                        )
+
+                # 2. Acquire MERGE_LOCK strictly for the atomic integration step (<1s)
+                with lock_mgr.acquire(timeout=120.0):
                     if lock_mgr.is_branch_behind_main(branch):
-                        print(f"🔄 Task branch '{branch}' is behind main. Auto-rebasing onto latest main...")
                         rebase_ok, rebase_msg = rebase_with_inference_healing(
                             worktree_dir,
                             task,
                             self.config,
                         )
                         if not rebase_ok:
-                            print(
-                                f"⚠️ Rebase conflict on {task.canonical_id}. Aborting rebase and preserving worktree with status 'Conflict'."
-                            )
-                            print(f"Actionable rescue: spec-ops rescue {task.canonical_id}")
                             return WorkerResult(
                                 task.canonical_id,
                                 False,
                                 f"Rebase conflict against main: {rebase_msg}",
-                            )
-                        print("✓ Rebase succeeded. Running preflight verification on rebased code...")
-                        post_rebase_ok, post_rebase_log = self.run_preflight(worktree_dir, task=task)
-                        if not post_rebase_ok:
-                            print(f"❌ Post-rebase preflight failed on {task.canonical_id}.")
-                            return WorkerResult(
-                                task.canonical_id,
-                                False,
-                                f"Post-rebase preflight failed: {post_rebase_log}",
                             )
 
                     merge_ok, merge_msg = squash_merge_and_commit(
