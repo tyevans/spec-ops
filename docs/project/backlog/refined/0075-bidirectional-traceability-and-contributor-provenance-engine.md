@@ -2,20 +2,19 @@
 id: '0075'
 title: Bidirectional End-to-End Traceability and Contributor Provenance Audit Engine
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0004
-  - TASK-0030
+- TASK-0004
+- TASK-0030
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0019
+- US-0019
 target_bc: core
 ---
 

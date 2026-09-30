@@ -14,8 +14,13 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles apply` | `<PROFILE_NAME>` | Apply architectural profile to current repository |
 | `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
 | `spec-ops profiles info` | `[--json]` | Inspect active architectural profile rules and quality preflight commands |
+| `spec-ops profiles package` | `<SOURCE> [--out OUT] [--output OUT]` | Package custom profile into distributable bundle (.sop / .tar.gz) |
+| `spec-ops profiles export` | `<SOURCE> [--out OUT] [--output OUT]` | Package custom profile into distributable bundle (.sop / .tar.gz) |
+| `spec-ops profiles install` | `<BUNDLE>` | Install custom profile bundle into repository |
+| `spec-ops profiles validate` | `<TARGET>` | Validate profile manifest and resolve inheritance DAG |
+| `spec-ops profiles inspect` | `[TARGET]` | Inspect resolved profile inheritance, merged ADRs and invariant constraints |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
-| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
+| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--check-uat] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
 | `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics, persona coverage distribution, and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |

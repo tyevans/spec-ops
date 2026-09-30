@@ -77,6 +77,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_prof_info = prof_subs.add_parser("info", help="Inspect active architectural profile rules and quality preflight commands")
     p_prof_info.add_argument("--json", action="store_true", help="Output active profiles and invariants as structured JSON")
 
+    # package & export
+    for p_name in ("package", "export"):
+        p_pkg = prof_subs.add_parser(p_name, help="Package custom profile into distributable bundle (.sop / .tar.gz)")
+        p_pkg.add_argument("source", help="Profile directory or name to package")
+        p_pkg.add_argument("--out", "--output", dest="output", required=True, help="Destination bundle file path")
+
+    # install
+    p_prof_inst = prof_subs.add_parser("install", help="Install custom profile bundle into repository")
+    p_prof_inst.add_argument("bundle", help="Path to profile bundle archive (.sop or .tar.gz)")
+
+    # validate
+    p_prof_val = prof_subs.add_parser("validate", help="Validate profile manifest and resolve inheritance DAG")
+    p_prof_val.add_argument("profile_target", help="Profile directory or name to validate")
+
+    # inspect
+    p_prof_insp = prof_subs.add_parser("inspect", help="Inspect resolved profile inheritance, merged ADRs and invariant constraints")
+    p_prof_insp.add_argument("profile_target", nargs="?", default=".", help="Profile directory or name to inspect (default: current project)")
+
     # scaffold
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
@@ -89,7 +107,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_health.add_argument("--suggest-splits", action="store_true", help="Analyze files in warning threshold and suggest AST submodule splits")
     p_health.add_argument("--emit-task", action="store_true", help="Emit proposed refactoring task into backlog for split suggestions")
     p_health.add_argument("--generate-refactor-tasks", action="store_true", help="Generate backlog refactoring tasks for all grandfathered debt files")
+    p_health.add_argument("--check-uat", action="store_true", help="Verify PM UAT sign-off for all checkable outcomes")
     p_health.add_argument("--json", action="store_true", help="Output health inspection results as structured JSON")
+
 
     # decompose
     p_decomp = subparsers.add_parser("decompose", help="Analyze AST seams and recommend modular file decomposition")
@@ -179,7 +199,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # worker
     p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
-    p_worker.add_argument("action_or_task", nargs="?", default=None, help="Action ('execute', 'claim') or target task canonical ID (e.g. TASK-0009)")
+    p_worker.add_argument("action_or_task", nargs="?", default=None, help="Action ('execute', 'claim', 'ci-heal') or target task canonical ID (e.g. TASK-0009)")
     p_worker.add_argument("task_pos", nargs="?", default=None, help="Target task canonical ID when using 'execute' or 'claim'")
     p_worker.add_argument("--task", help="Target task canonical ID (e.g. TASK-0009)")
     p_worker.add_argument("--auto", action="store_true", help="Claim next ready unblocked task automatically in strict priority order")

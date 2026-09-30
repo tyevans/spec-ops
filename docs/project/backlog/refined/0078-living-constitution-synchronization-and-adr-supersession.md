@@ -1,22 +1,21 @@
 ---
-id: '0078'
+id: 0078
 title: Living Constitution Synchronization, ADR Supersession, and CI Drift Gate
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0010
-  - TASK-0063
+- TASK-0010
+- TASK-0063
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0014
-  - US-0068
+- US-0014
+- US-0068
 target_bc: scaffold
 ---
 

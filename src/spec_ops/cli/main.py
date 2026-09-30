@@ -59,8 +59,13 @@ def main() -> int:
                 pre_commit=args.pre_commit,
                 agents=args.agent,
             )
-        except ValueError as err:
-            print(f"❌ Initialization error: {err}", file=sys.stderr)
+        except Exception as err:
+            from ..profiles.models import ProfileError
+
+            if isinstance(err, ProfileError):
+                print(f"{err}", file=sys.stderr)
+            else:
+                print(f"❌ Initialization error: {err}", file=sys.stderr)
             return 1
         print(f"✨ Initialized SpecOps in {target}")
         print(f"📋 Installed Profiles: {', '.join(profile_list)}")
@@ -106,6 +111,11 @@ def main() -> int:
         if getattr(args, "generate_refactor_tasks", False):
             from .health_handler import handle_health_generate_refactor_tasks
             return handle_health_generate_refactor_tasks(config)
+
+        if getattr(args, "check_uat", False):
+            from ..prd.uat import handle_check_uat
+            return handle_check_uat(config)
+
 
         checker = HealthChecker(config)
         report = checker.run_check()

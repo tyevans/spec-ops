@@ -198,7 +198,10 @@ PROFILES: dict[str, Profile] = {
 
 
 def get_profile(profile_id: str) -> Profile | None:
-    return PROFILES.get(profile_id.lower())
+    lowered = profile_id.lower()
+    if lowered == "base":
+        lowered = "core"
+    return PROFILES.get(lowered)
 
 
 def list_profiles() -> list[Profile]:

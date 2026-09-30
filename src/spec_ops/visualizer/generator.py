@@ -186,7 +186,17 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
         ],
         "telemetry": harvest_fleet_telemetry(config),
         "security": security_posture,
+        "uat": _harvest_uat(config),
     }
+
+
+def _harvest_uat(config: SpecOpsConfig) -> dict[str, Any]:
+    try:
+        from ..prd.uat import harvest_uat_readiness
+
+        return harvest_uat_readiness(config.root_dir)
+    except Exception:
+        return {"readiness_percentage": 0.0, "matrix": [], "signoffs": {}}
 
 
 def generate_standalone_html(config: SpecOpsConfig, back_link: str = "../index.html") -> str:

@@ -1,22 +1,22 @@
 ---
 id: '0047'
-title: Targeted AST Diagnostic Hint Injection, Empty-Diff Guardrails, and Remote CI Repair Loop
-status: Refined
-created: 2026-09-29
+title: Targeted AST Diagnostic Hint Injection, Empty-Diff Guardrails, and Remote CI
+  Repair Loop
+status: Complete
 dependencies:
-  - TASK-0012
-  - TASK-0046
+- TASK-0012
+- TASK-0046
 governing_adrs:
-  - ADR-0002
-  - ADR-0003
-  - ADR-0004
-  - ADR-0007
-  - ADR-0009
+- ADR-0002
+- ADR-0003
+- ADR-0004
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0083
-  - US-0033
+- US-0083
+- US-0033
 target_bc: worker
 ---
 

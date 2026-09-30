@@ -91,6 +91,11 @@ class BacklogWorkerEngine:
         """Invokes configured agent command with self-healing feedback loop and concurrent review."""
         prompt = build_task_prompt(task, self.config)
         prompt_file = worktree_dir / ".task-prompt.md"
+        if prompt_file.exists():
+            existing = prompt_file.read_text(encoding="utf-8", errors="ignore")
+            if "## Remote CI Failure Diagnostics" in existing and "## Remote CI Failure Diagnostics" not in prompt:
+                diag_idx = existing.find("## Remote CI Failure Diagnostics")
+                prompt += "\n\n" + existing[diag_idx:]
         prompt_file.write_text(prompt, encoding="utf-8")
 
         run_review_enabled = not skip_review and getattr(self.config.execution, "enable_review", True)
@@ -168,17 +173,18 @@ class BacklogWorkerEngine:
                 continue
 
             # Verify that real code modifications were produced (excluding prompt files)
-            diff_check = subprocess.run(["git", "status", "--porcelain"], cwd=worktree_dir, capture_output=True, text=True)
-            modified_lines = [
-                line for line in diff_check.stdout.splitlines()
-                if not any(line.strip().endswith(p) for p in [".task-prompt.md", ".task-review-prompt.md"])
-            ]
-            if not modified_lines:
-                print(f"⚠️ Agent attempt {attempt} succeeded without producing code modifications. Retrying...")
-                feedback = f"\n\n## Failure Feedback (Attempt {attempt})\nNo code modifications were produced in the worktree. You must implement the requested feature."
+            from ..worker.ci_repair import verify_worktree_diff
+            diff_ok, diff_reason = verify_worktree_diff(worktree_dir)
+            if not diff_ok:
+                print(f"⚠️ Agent attempt {attempt} flagged as '{diff_reason}'. Retrying...")
+                feedback = (
+                    f"\n\n## Failure Feedback (Attempt {attempt})\n"
+                    f"{diff_reason}: Implementation code is required. "
+                    f"You must deliver real modifications to the codebase."
+                )
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
-                last_failure_log = "No modifications produced."
+                last_failure_log = diff_reason
                 continue
 
             if run_review_enabled:
@@ -206,8 +212,9 @@ class BacklogWorkerEngine:
                 feedback_sections: list[str] = []
                 if not preflight_ok:
                     print(f"❌ CI preflight failed on attempt {attempt}.")
+                    from ..worker.ast_analyzer import format_preflight_ast_feedback
                     feedback_sections.append(
-                        f"## Preflight Failure Feedback (Attempt {attempt})\n{preflight_log}\nPlease fix the preflight issues above."
+                        format_preflight_ast_feedback(preflight_log, attempt, worktree_dir)
                     )
                 else:
                     print(f"✓ CI preflight passed on attempt {attempt}.")
@@ -234,7 +241,8 @@ class BacklogWorkerEngine:
                     return True, f"Preflight passed on attempt {attempt}."
 
                 print(f"❌ Preflight failed on attempt {attempt}. Retrying with feedback...")
-                feedback = f"\n\n## Preflight Failure Feedback (Attempt {attempt})\n{preflight_log}\nPlease fix the issues above."
+                from ..worker.ast_analyzer import format_preflight_ast_feedback
+                feedback = "\n\n" + format_preflight_ast_feedback(preflight_log, attempt, worktree_dir)
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
                 last_failure_log = preflight_log

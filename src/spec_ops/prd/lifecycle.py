@@ -222,5 +222,8 @@ class PRDLifecycleManager:
         return True, f"✅ Successfully promoted {canonical_id} to '{stage_norm}' at {target_file}"
 
     def ship(self, prd_id_or_path: str | Path) -> tuple[bool, str]:
-        """Convenience wrapper for promoting an accepted PRD to shipped."""
-        return self.promote(prd_id_or_path, "shipped")
+        """Convenience wrapper for promoting an accepted PRD to shipped via shipping gate."""
+        from .shipping import ship_prd
+
+        return ship_prd(self.config, prd_id_or_path)
+

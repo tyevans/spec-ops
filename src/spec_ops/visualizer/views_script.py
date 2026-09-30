@@ -194,6 +194,8 @@ VIEWS_JS = r"""
       html = typeof window.renderLeadConsoleView === "function" ? window.renderLeadConsoleView() : "";
     } else if (activeTab === "security") {
       html = typeof window.renderSecurityRadarView === "function" ? window.renderSecurityRadarView() : "";
+    } else if (activeTab === "uat") {
+      html = typeof window.renderUatView === "function" ? window.renderUatView() : "";
     } else {
       html = renderFilterBar();
       if (activeTab === "gantt") html += renderGanttView();
