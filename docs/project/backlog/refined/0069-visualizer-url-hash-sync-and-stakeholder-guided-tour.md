@@ -1,21 +1,21 @@
 ---
-id: '0069'
-title: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Stakeholder Guided Tour
-status: Proposed
-created: 2026-09-29
+id: 0069
+title: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Stakeholder
+  Guided Tour
+status: Refined
 dependencies:
-  - TASK-0068
-  - TASK-0022
+- TASK-0068
+- TASK-0022
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0006
+- ADR-0007
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0103
-  - US-0107
+- US-0103
+- US-0107
 target_bc: visualizer
 ---
 

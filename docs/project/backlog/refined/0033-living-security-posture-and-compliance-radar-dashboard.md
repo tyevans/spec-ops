@@ -16,6 +16,8 @@ governing_stories:
 - US-0058
 - US-0114
 target_bc: security
+claimed_by: worker-3
+branch: feat/0033-living-security-posture-and-compliance-r
 ---
 
 # TASK-0033: Living Security Posture and Compliance Radar Visualizer Dashboard

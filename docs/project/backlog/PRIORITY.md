@@ -71,7 +71,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0065 (Proposed)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](proposed/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
 - **TASK-0066 (Proposed)**: [`0066-backlog-health-diagnostics-and-cross-process-locking`](proposed/0066-backlog-health-diagnostics-and-cross-process-locking.md)
 - **TASK-0067 (Proposed)**: [`0067-daily-standup-digest-and-external-tracker-bridge`](proposed/0067-daily-standup-digest-and-external-tracker-bridge.md)
-- **TASK-0069 (Proposed)**: [`0069-visualizer-url-hash-sync-and-stakeholder-guided-tour`](proposed/0069-visualizer-url-hash-sync-and-stakeholder-guided-tour.md)
+- **TASK-0069 (Refined)**: [`0069-visualizer-url-hash-sync-and-stakeholder-guided-tour`](refined/0069-visualizer-url-hash-sync-and-stakeholder-guided-tour.md)
 - **TASK-0070 (Proposed)**: [`0070-worker-fleet-telemetry-review-radar-and-burndown-exporter`](proposed/0070-worker-fleet-telemetry-review-radar-and-burndown-exporter.md)
 - **TASK-0072 (Refined)**: [`0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor`](refined/0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor.md)
 - **TASK-0073 (Refined)**: [`0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge`](refined/0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge.md)
