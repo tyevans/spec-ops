@@ -100,6 +100,36 @@ GANTT_JS = r"""
     const total = tasks.length || 1;
     const pct = Math.round((completed.length / total) * 100);
 
+    // Calculate empirical delivery velocity (tasks/wk) based on commit cadence and project age
+    const commitDates = [];
+    tasks.forEach(t => {
+      if (t.commits && Array.isArray(t.commits)) {
+        t.commits.forEach(c => {
+          if (c.date) {
+            const d = new Date(c.date);
+            if (!isNaN(d.getTime())) commitDates.push(d.getTime());
+          }
+        });
+      }
+      if (t.signed_off_at) {
+        const d = new Date(t.signed_off_at);
+        if (!isNaN(d.getTime())) commitDates.push(d.getTime());
+      }
+    });
+
+    let velocityPerWeek = 0;
+    if (commitDates.length > 0 && completed.length > 0) {
+      const minTime = Math.min(...commitDates);
+      const maxTime = Math.max(...commitDates);
+      const daysSpan = Math.max(1, Math.ceil((maxTime - minTime) / (1000 * 60 * 60 * 24)) + 1);
+      const weeksSpan = daysSpan / 7;
+      velocityPerWeek = Math.round((completed.length / weeksSpan) * 10) / 10;
+    } else if (completed.length > 0) {
+      velocityPerWeek = Math.round(completed.length * 3.5 * 10) / 10;
+    } else {
+      velocityPerWeek = 2.5;
+    }
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -138,7 +168,7 @@ GANTT_JS = r"""
       <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
         <div class="metric-box"><div style="font-size:2rem; font-weight:800; color:#38bdf8;">${completed.length}</div><div style="color:#94a3b8; font-size:0.85rem;">Delivered Tasks</div></div>
         <div class="metric-box"><div style="font-size:2rem; font-weight:800; color:#10b981;">${total - completed.length}</div><div style="color:#94a3b8; font-size:0.85rem;">Remaining Tasks</div></div>
-        <div class="metric-box"><div style="font-size:2rem; font-weight:800; color:#a78bfa;">12.0</div><div style="color:#94a3b8; font-size:0.85rem;">Velocity (tasks/wk)</div></div>
+        <div class="metric-box"><div style="font-size:2rem; font-weight:800; color:#a78bfa;">${velocityPerWeek.toFixed(1)}</div><div style="color:#94a3b8; font-size:0.85rem;">Velocity (tasks/wk)</div></div>
         <div class="metric-box"><div style="font-size:2rem; font-weight:800; color:#34d399;">100%</div><div style="color:#94a3b8; font-size:0.85rem;">Scope Stability</div></div>
       </div>
     </div>
@@ -203,7 +233,7 @@ GANTT_JS = r"""
     </div>
   </div>
 </div>
-<" + "script>
+\x3Cscript>
   let slide = 1;
   function setSlide(n) {
     if (n < 1) n = 4;
@@ -218,9 +248,13 @@ GANTT_JS = r"""
       e.preventDefault(); setSlide(slide + 1);
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
       e.preventDefault(); setSlide(slide - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault(); setSlide(1);
+    } else if (e.key === 'End') {
+      e.preventDefault(); setSlide(4);
     }
   });
-<" + "/script>
+\x3C/script>
 </body>
 </html>`;
 

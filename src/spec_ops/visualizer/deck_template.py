@@ -78,13 +78,13 @@ DECK_JS = """
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
       e.preventDefault();
       showSlide(currentSlide + 1);
-    }} else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
       e.preventDefault();
       showSlide(currentSlide - 1);
-    }} else if (e.key === 'Home') {
+    } else if (e.key === 'Home') {
       e.preventDefault();
       showSlide(1);
-    }} else if (e.key === 'End') {
+    } else if (e.key === 'End') {
       e.preventDefault();
       showSlide(totalSlides);
     }

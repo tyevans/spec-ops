@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
+import shutil
+import subprocess
 
 import pytest
 
@@ -18,6 +21,8 @@ from spec_ops.visualizer.burndown_deck import (
     parse_roadmap_milestones,
     render_presentation_deck,
 )
+from spec_ops.visualizer.deck_template import DECK_JS
+from spec_ops.visualizer.gantt_script import GANTT_JS
 
 
 def test_parse_roadmap_milestones_nonexistent(tmp_path: Path):
@@ -134,3 +139,66 @@ def test_cli_report_handler(tmp_path: Path):
     )
     rc3 = handle_report_command(args_digest, config, parser)
     assert rc3 == 0
+
+
+def test_client_gantt_script_deck_export_syntax_and_script_tags():
+    """Verifies that GANTT_JS and DECK_JS emit valid script tags and valid JS syntax without broken escapes."""
+    assert '<" + "script>' not in GANTT_JS
+    assert '<" + "/script>' not in GANTT_JS
+    assert r"\x3Cscript>" in GANTT_JS
+    assert r"\x3C/script>" in GANTT_JS
+    assert "}} else if" not in DECK_JS
+
+    if shutil.which("node"):
+        # Verify DECK_JS syntax
+        res_deck = subprocess.run(["node", "--check"], input=DECK_JS, text=True, capture_output=True)
+        assert res_deck.returncode == 0, f"DECK_JS syntax error: {res_deck.stderr}"
+
+
+def test_client_gantt_script_empirical_velocity():
+    """Verifies that exportPresentationDeck calculates empirical velocity from commits rather than hardcoded 12.0."""
+    if not shutil.which("node"):
+        pytest.skip("node is required for JS simulation test")
+
+    node_script = f"""
+    const window = {{
+      PROJECT_DATA: {{
+        tasks: [
+          {{ id: 'TASK-0001', status: 'Complete', commits: [{{ date: '2026-09-29' }}] }},
+          {{ id: 'TASK-0002', status: 'Complete', commits: [{{ date: '2026-09-29' }}] }},
+          {{ id: 'TASK-0003', status: 'Complete', commits: [{{ date: '2026-09-30' }}] }},
+          {{ id: 'TASK-0004', status: 'Proposed', commits: [] }}
+        ]
+      }}
+    }};
+    let exportedHtml = null;
+    const Blob = function(parts) {{ exportedHtml = parts.join(''); }};
+    const URL = {{ createObjectURL: () => 'blob:mock', revokeObjectURL: () => {{}} }};
+    const document = {{
+      getElementById: () => null,
+      createElement: () => ({{ click: () => {{}}, setAttribute: () => {{}} }}),
+      body: {{ appendChild: () => {{}}, removeChild: () => {{}} }}
+    }};
+    const escapeHtml = s => s;
+    const fn = new Function('window', 'document', 'Blob', 'URL', 'escapeHtml', {json.dumps(GANTT_JS)} + '; return window.exportPresentationDeck;');
+    const exportPresentationDeck = fn(window, document, Blob, URL, escapeHtml);
+    exportPresentationDeck('M1-MVP');
+
+    console.log(JSON.stringify({{
+      hasScriptTag: exportedHtml.includes('<script>'),
+      hasClosingScriptTag: exportedHtml.includes('</script>'),
+      hasBrokenFragment: exportedHtml.includes('<" + "script>'),
+      html: exportedHtml
+    }}));
+    """
+    res = subprocess.run(["node"], input=node_script, text=True, capture_output=True)
+    assert res.returncode == 0, f"Node script failed: {res.stderr}"
+    data = json.loads(res.stdout)
+    assert data["hasScriptTag"] is True
+    assert data["hasClosingScriptTag"] is True
+    assert data["hasBrokenFragment"] is False
+
+    # 3 completed tasks over 2 days = 1.5 tasks/day = 10.5 tasks/week
+    assert "10.5" in data["html"]
+    assert "Velocity (tasks/wk)" in data["html"]
+
