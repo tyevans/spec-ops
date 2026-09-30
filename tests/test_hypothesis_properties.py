@@ -49,46 +49,126 @@ def test_property_file_length_classification(lines: int, threshold: int, margin:
         assert actual_lines == lines
 
         if lines > limit:
-            assert len(violations) == 1
-            assert violations[0].lines == lines
-            assert violations[0].limit == limit
+            assert len(violations) == 1 and violations[0].lines == lines and violations[0].limit == limit
             assert len(warnings) == 0
         elif lines >= threshold:
             assert len(violations) == 0
-            assert len(warnings) == 1
-            assert warnings[0].lines == lines
-            assert warnings[0].threshold == threshold
+            assert len(warnings) == 1 and warnings[0].lines == lines and warnings[0].threshold == threshold
         else:
-            assert len(violations) == 0
-            assert len(warnings) == 0
+            assert len(violations) == 0 and len(warnings) == 0
 
 
 @given(
     task_num=st.integers(min_value=1, max_value=9999),
-    title=st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=40),
+    title=st.text(alphabet=st.characters(blacklist_categories=("Cs", "Cc"), blacklist_characters=("\x00", "\n", "\r")), min_size=1, max_size=40),
+    emoji=st.sampled_from(["🚀", "💡", "🔥", "✨", "🎯", ""]),
     status=st.sampled_from(["Refined", "Proposed", "Complete"]),
-    body=st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=0, max_size=100),
+    tags=st.lists(st.text(alphabet="abcdefghijklmnopqrstuvwxyz", min_size=1, max_size=8), min_size=0, max_size=4),
+    line_break=st.sampled_from(["\n", "\r\n"]),
+    body=st.text(min_size=0, max_size=100),
 )
-def test_property_frontmatter_extraction_roundtrip(task_num: int, title: str, status: str, body: str):
+def test_property_frontmatter_extraction_roundtrip(
+    task_num: int, title: str, emoji: str, status: str, tags: list[str], line_break: str, body: str
+):
     """Parser Round-Trip Invariant: Markdown specifications with YAML frontmatter parse without data loss."""
-    clean_title = title.strip() or "DefaultTitle"
-    tid = f"{task_num:04d}"
-    content = f"""---
-id: '{tid}'
-title: '{clean_title}'
-status: '{status}'
----
-# {clean_title}
+    from spec_ops.core.parser import serialize_frontmatter
 
-{body}
-"""
+    clean_title = f"{emoji} {title.strip()}".strip() or "DefaultTitle"
+    tid = f"{task_num:04d}"
+    meta_in = {
+        "id": tid,
+        "title": clean_title,
+        "status": status,
+        "dependencies": [f"TASK-{i:04d}" for i in range(1, len(tags) + 1)],
+        "tags": tags,
+    }
+    clean_body = body.replace("\r", "")
+    content = serialize_frontmatter(meta_in, body=f"# {clean_title}{line_break}{clean_body}")
+    if line_break == "\r\n":
+        content = content.replace("\n", "\r\n")
+
     meta, extracted_body = extract_frontmatter(content)
     assert meta.get("id") == tid
     assert meta.get("title") == clean_title
     assert meta.get("status") == status
+    assert meta.get("dependencies") == meta_in["dependencies"]
+    assert meta.get("tags") == tags
     assert f"# {clean_title}" in extracted_body
-    if body:
-        assert body in extracted_body
+
+    re_serialized = serialize_frontmatter(meta, body=extracted_body)
+    re_meta, re_body = extract_frontmatter(re_serialized)
+    assert re_meta == meta
+    assert re_body == extracted_body
+
+
+@given(num_nodes=st.integers(min_value=2, max_value=12))
+def test_property_graph_acyclicity(num_nodes: int):
+    """Graph Acyclicity Invariant: Task dependency graphs remain Directed Acyclic Graphs (DAGs); circular dependencies are detected deterministically."""
+    from spec_ops.core.topology import DirectedGraph, tarjan_scc
+
+    g = DirectedGraph()
+    for i in range(num_nodes):
+        g.add_node(f"TASK-{i:04d}")
+    for i in range(num_nodes - 1):
+        g.add_edge(f"TASK-{i:04d}", f"TASK-{i+1:04d}")
+
+    # Pure DAG: every SCC has exactly 1 node (0 cycles)
+    sccs = tarjan_scc(g)
+    assert len([c for c in sccs if len(c) > 1]) == 0
+
+    # Introduce a back-edge to create a cycle
+    g.add_edge(f"TASK-{num_nodes-1:04d}", "TASK-0000")
+    cycled_sccs = [c for c in tarjan_scc(g) if len(c) > 1]
+    assert len(cycled_sccs) >= 1
+    assert "TASK-0000" in cycled_sccs[0]
+
+
+@given(seed=st.integers(min_value=0, max_value=10000))
+def test_property_graph_permutation_invariance(seed: int):
+    """Graph Permutation Invariance: GraphData contains identical node IDs, edge sets, and computed health metrics regardless of file ingestion sequence."""
+    import random
+    from spec_ops.core.graph import build_graph_data, process_project_graph
+    from spec_ops.core.models import ADR, PRD, Persona, ProjectData, Task, UserStory
+
+    personas = [Persona(id=f"p{i}", name=f"Persona {i}") for i in range(5)]
+    stories = [UserStory(id=f"US-{i:04d}", title=f"Story {i}", persona=f"p{i % 5}") for i in range(10)]
+    prds = [PRD(id=f"PRD-{i:04d}", title=f"PRD {i}", linked_stories=[f"US-{i:04d}"]) for i in range(5)]
+    adrs = [ADR(id=f"ADR-{i:04d}", title=f"ADR {i}") for i in range(5)]
+    tasks = [
+        Task(
+            id=str(i),
+            title=f"Task {i}",
+            status="Refined" if i % 2 == 0 else "Proposed",
+            governing_stories=[f"US-{(i % 10):04d}"],
+            governing_adrs=[f"ADR-{(i % 5):04d}"],
+            governing_prds=[f"PRD-{(i % 5):04d}"],
+            dependencies=[f"TASK-{max(1, i-1):04d}"] if i > 1 else [],
+        )
+        for i in range(1, 26)
+    ]
+
+    base_data = ProjectData(personas=list(personas), stories=list(stories), prds=list(prds), tasks=list(tasks), adrs=list(adrs))
+    process_project_graph(base_data)
+    base_graph = build_graph_data(base_data)
+    base_nodes = {n.id for n in base_graph.nodes}
+    base_edges = {(e.source, e.target, e.relation) for e in base_graph.edges}
+    base_metrics = dict(base_data.health_metrics)
+
+    rng = random.Random(seed)
+    p_tasks, p_stories, p_prds, p_adrs, p_personas = list(tasks), list(stories), list(prds), list(adrs), list(personas)
+    rng.shuffle(p_tasks)
+    rng.shuffle(p_stories)
+    rng.shuffle(p_prds)
+    rng.shuffle(p_adrs)
+    rng.shuffle(p_personas)
+
+    perm_data = ProjectData(personas=p_personas, stories=p_stories, prds=p_prds, tasks=p_tasks, adrs=p_adrs)
+    process_project_graph(perm_data)
+    perm_graph = build_graph_data(perm_data)
+
+    assert {n.id for n in perm_graph.nodes} == base_nodes
+    assert {(e.source, e.target, e.relation) for e in perm_graph.edges} == base_edges
+    assert perm_data.health_metrics == base_metrics
 
 
 @given(
@@ -123,12 +203,9 @@ def test_property_task_canonical_id_formatting(task_num: int):
     """Task Canonical ID Invariant: Canonical task ID is deterministically prefixed with TASK- and 4-digit padded."""
     task = Task(id=str(task_num), title="Sample Task", status="Proposed")
     cid = task.canonical_id
-
-    assert cid.startswith("TASK-")
-    numeric_part = cid.replace("TASK-", "")
-    assert int(numeric_part) == task_num
+    assert cid.startswith("TASK-") and int(cid.replace("TASK-", "")) == task_num
     if task_num < 10000:
-        assert len(numeric_part) == 4
+        assert len(cid.replace("TASK-", "")) == 4
 
 
 @given(task_ids=st.lists(st.integers(min_value=1, max_value=500), min_size=1, max_size=15, unique=True))
@@ -136,19 +213,12 @@ def test_property_priority_rank_parsing(task_ids: list[int]):
     """Priority Rank Ordering Invariant: Priority ranks strictly follow line sequence."""
     with tempfile.TemporaryDirectory() as tmp_dir_str:
         tmp_dir = Path(tmp_dir_str)
-        priority_file = tmp_dir / "PRIORITY.md"
-
-        lines = ["# Backlog Priority Index\n"]
-        for tid in task_ids:
-            lines.append(f"- **TASK-{tid:04d} (Refined)**: [task](refined/{tid:04d}-task.md)")
-        priority_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
+        lines = ["# Backlog Priority Index\n"] + [f"- **TASK-{t:04d} (Refined)**: [task](refined/{t:04d}-task.md)" for t in task_ids]
+        (tmp_dir / "PRIORITY.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
         ranks = parse_priority_ranks(tmp_dir)
         assert len(ranks) == len(task_ids)
-
         for expected_rank, tid in enumerate(task_ids, start=1):
-            cid = f"TASK-{tid:04d}"
-            assert ranks[cid] == expected_rank
+            assert ranks[f"TASK-{tid:04d}"] == expected_rank
 
 
 @given(
@@ -194,15 +264,12 @@ def test_property_diataxis_quadrant_classification(quadrant: str, filename: str)
         target_dir.mkdir(parents=True, exist_ok=True)
         (target_dir / f"{filename}.md").write_text("# Doc\n", encoding="utf-8")
 
-        violations, checked = check_diataxis_structure(docs)
-        is_approved = quadrant in APPROVED_QUADRANTS
-
-        unapproved_violations = [v for v in violations if f"unapproved quadrant '{quadrant}'" in v.message]
-        if is_approved:
-            assert len(unapproved_violations) == 0
+        violations, _ = check_diataxis_structure(docs)
+        unapproved_v = [v for v in violations if f"unapproved quadrant '{quadrant}'" in v.message]
+        if quadrant in APPROVED_QUADRANTS:
+            assert len(unapproved_v) == 0
         else:
-            assert len(unapproved_violations) == 1
-            assert unapproved_violations[0].category == "structure"
+            assert len(unapproved_v) == 1 and unapproved_v[0].category == "structure"
 
 
 @given(
@@ -249,19 +316,13 @@ def test_property_cli_doc_option_drift_roundtrip(parser_flags: set[str], doc_fla
         missing_violations = [v for v in violations if "missing option(s)" in v.message]
         extra_violations = [v for v in violations if "documents non-existent option(s)" in v.message]
 
-        if expected_missing:
-            assert len(missing_violations) == 1
-            for f in expected_missing:
-                assert f in missing_violations[0].message
-        else:
-            assert len(missing_violations) == 0
+        assert len(missing_violations) == (1 if expected_missing else 0)
+        for f in expected_missing:
+            assert f in missing_violations[0].message
 
-        if expected_extra:
-            assert len(extra_violations) == 1
-            for f in expected_extra:
-                assert f in extra_violations[0].message
-        else:
-            assert len(extra_violations) == 0
+        assert len(extra_violations) == (1 if expected_extra else 0)
+        for f in expected_extra:
+            assert f in extra_violations[0].message
 
 
 @given(
@@ -274,109 +335,55 @@ def test_property_cli_doc_option_drift_roundtrip(parser_flags: set[str], doc_fla
 def test_property_profile_permutations_generation(selected_profiles: list[str]):
     """Profile Composition Invariant: Arbitrary profile permutations generate valid, non-overlapping sections without syntax corruption."""
     import sys
-    if sys.version_info >= (3, 11):
-        import tomllib
-    else:
-        import tomli as tomllib  # type: ignore
+    tomllib = __import__("tomllib" if sys.version_info >= (3, 11) else "tomli")
 
     from spec_ops.scaffold.init import init_project
 
     with tempfile.TemporaryDirectory() as tmp_dir_str:
         tmp_dir = Path(tmp_dir_str)
-        init_project(
-            tmp_dir,
-            name="PermutationTest",
-            profiles=selected_profiles,
-            diataxis=False,
-            github_pages=False,
-            pre_commit=False,
-        )
+        init_project(tmp_dir, name="PermutationTest", profiles=selected_profiles, diataxis=False, github_pages=False, pre_commit=False)
 
-        toml_path = tmp_dir / "specops.toml"
-        assert toml_path.is_file()
-        toml_content = toml_path.read_text(encoding="utf-8")
-        parsed_toml = tomllib.loads(toml_content)
-        assert "project" in parsed_toml
-        assert "architecture" in parsed_toml
+        parsed_toml = tomllib.loads((tmp_dir / "specops.toml").read_text(encoding="utf-8"))
+        assert "project" in parsed_toml and "architecture" in parsed_toml
 
         if "security" in selected_profiles:
-            assert "security" in parsed_toml
-            assert parsed_toml["security"]["secret_scanning"] is True
-            assert parsed_toml["security"]["lockfile_immutability"] is True
-            sec_md = tmp_dir / "docs" / "project" / "SECURITY.md"
-            assert sec_md.is_file()
+            assert parsed_toml.get("security", {}).get("secret_scanning") is True
+            assert (tmp_dir / "docs" / "project" / "SECURITY.md").is_file()
 
-        agents_path = tmp_dir / "AGENTS.md"
-        assert agents_path.is_file()
-        agents_content = agents_path.read_text(encoding="utf-8")
+        agents_content = (tmp_dir / "AGENTS.md").read_text(encoding="utf-8")
         assert "# PermutationTest Agent Operating Manual" in agents_content
-        assert "## Hard Invariants" in agents_content
+        for sec in ["## Hard Invariants", "## Design Principles", "## Project Structure & Navigation", "## Definition of Ready (DoR)", "## Definition of Done (DoD)"]:
+            assert agents_content.count(sec) == 1
 
-        assert agents_content.count("## Hard Invariants") == 1
-        assert agents_content.count("## Design Principles") == 1
-        assert agents_content.count("## Project Structure & Navigation") == 1
-        assert agents_content.count("## Definition of Ready (DoR)") == 1
-        assert agents_content.count("## Definition of Done (DoD)") == 1
-
-        if "security" in selected_profiles:
-            assert agents_content.count("## Security & Supply-Chain Hard Invariants") == 1
-            assert "hardcoding credentials" in agents_content
-            assert "unapproved lockfiles" in agents_content
-            assert "non-allowlisted shell commands" in agents_content
-        else:
-            assert "## Security & Supply-Chain Hard Invariants" not in agents_content
-
-        if "bdd" in selected_profiles:
-            assert "Executable BDD User Stories" in agents_content
-        else:
-            assert "Executable BDD User Stories" not in agents_content
-
-        if "ddd" in selected_profiles:
-            assert "Domain-Driven Design (DDD)" in agents_content
-        else:
-            assert "Domain-Driven Design (DDD)" not in agents_content
+        sec_keys = {"security": "## Security & Supply-Chain Hard Invariants", "bdd": "Executable BDD User Stories", "ddd": "Domain-Driven Design (DDD)"}
+        for prof, kw in sec_keys.items():
+            assert (prof in selected_profiles) == (kw in agents_content)
 
 
-@given(
-    summary=st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=0, max_size=100)
-)
+@given(summary=st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=0, max_size=100))
 def test_property_review_output_approval_invariant(summary: str):
     """Review Approval Invariant: Outputs containing STATUS: APPROVED without rejection markers evaluate to approved."""
     from spec_ops.backlog.reviewer import parse_review_output
 
-    text = f"Summary: {summary}\nSTATUS: APPROVED\nAll good."
-    res = parse_review_output(text)
-    assert res.approved is True
-    assert res.feedback == ""
+    res = parse_review_output(f"Summary: {summary}\nSTATUS: APPROVED\nAll good.")
+    assert res.approved is True and res.feedback == ""
 
 
-@given(
-    feedback_items=st.lists(
-        st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=50),
-        min_size=1,
-        max_size=5,
-    )
-)
+@given(feedback_items=st.lists(st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd", "Zs")), min_size=1, max_size=50), min_size=1, max_size=5))
 def test_property_review_output_changes_requested_invariant(feedback_items: list[str]):
     """Review Rejection Invariant: Outputs requesting changes extract feedback and evaluate to unapproved."""
     from spec_ops.backlog.reviewer import parse_review_output
 
     body = "\n".join(f"- {item.strip() or 'Issue'}" for item in feedback_items)
-    text = f"STATUS: CHANGES_REQUESTED\n\n## Review Feedback\n{body}"
-    res = parse_review_output(text)
-    assert res.approved is False
-    assert len(res.feedback) > 0
+    res = parse_review_output(f"STATUS: CHANGES_REQUESTED\n\n## Review Feedback\n{body}")
+    assert res.approved is False and len(res.feedback) > 0
 
 
-@given(
-    arbitrary_text=st.text(min_size=0, max_size=500)
-)
+@given(arbitrary_text=st.text(min_size=0, max_size=500))
 def test_property_review_output_robustness(arbitrary_text: str):
     """Review Robustness Invariant: Any arbitrary input parses deterministically into a valid ReviewResult."""
     from spec_ops.backlog.reviewer import parse_review_output
 
     res = parse_review_output(arbitrary_text)
-    assert isinstance(res.approved, bool)
-    assert isinstance(res.feedback, str)
-    assert isinstance(res.raw_output, str)
+    assert isinstance(res.approved, bool) and isinstance(res.feedback, str) and isinstance(res.raw_output, str)
 

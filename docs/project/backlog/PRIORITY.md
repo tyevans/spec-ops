@@ -78,7 +78,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0073 (Complete)**: [`0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge`](complete/0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge.md)
 - **TASK-0075 (Complete)**: [`0075-bidirectional-traceability-and-contributor-provenance-engine`](complete/0075-bidirectional-traceability-and-contributor-provenance-engine.md)
 - **TASK-0052 (Complete)**: [`0052-preserved-worktree-failure-triage-and-handover-brief-generator`](complete/0052-preserved-worktree-failure-triage-and-handover-brief-generator.md)
-- **TASK-0095 (Refined)**: [`0095-generative-property-invariant-verification-engine`](refined/0095-generative-property-invariant-verification-engine.md)
+- **TASK-0095 (Complete)**: [`0095-generative-property-invariant-verification-engine`](complete/0095-generative-property-invariant-verification-engine.md)
 - **TASK-0096 (Refined)**: [`0096-core-domain-mutation-testing-quality-gate`](refined/0096-core-domain-mutation-testing-quality-gate.md)
 - **TASK-0086 (Refined)**: [`0086-real-time-graph-event-bus-and-workspace-watcher`](refined/0086-real-time-graph-event-bus-and-workspace-watcher.md)
 - **TASK-0065 (Refined)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](refined/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)

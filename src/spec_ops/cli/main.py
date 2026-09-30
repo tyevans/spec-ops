@@ -370,6 +370,10 @@ def main() -> int:
         from .schema_handler import handle_schema_command
         return handle_schema_command(args, config)
 
+    if args.command == "verify":
+        from ..core.properties_runner import handle_properties_command
+        return handle_properties_command(args, config)
+
     return 0
 
 

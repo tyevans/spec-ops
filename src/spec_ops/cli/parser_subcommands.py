@@ -251,6 +251,17 @@ def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:
         p_sub.add_argument("--threshold", type=float, default=80.0, help="Mutation kill score threshold percentage (default: 80.0)")
         p_sub.add_argument("--json", action="store_true", help="Output audit results as structured JSON")
 
+    p_prop = test_subs.add_parser(
+        "properties",
+        aliases=["invariants"],
+        help="Execute Hypothesis generative property invariant verification tests (ADR-0009)",
+    )
+    p_prop.add_argument("path", nargs="?", default=None, help="Target test file or directory to execute (default: tests/test_hypothesis_properties.py)")
+    p_prop.add_argument("--path", dest="opt_path", default=None, help="Target test file or directory to execute")
+    p_prop.add_argument("--max-examples", type=int, default=None, help="Maximum number of Hypothesis examples per property")
+    p_prop.add_argument("-k", "--filter", dest="filter_expr", default=None, help="Filter property tests by name")
+    p_prop.add_argument("--json", action="store_true", help="Output property verification results as structured JSON")
+
 
 def register_schema_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers specification schema validation and migration commands."""
@@ -267,4 +278,3 @@ def register_schema_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_mig.add_argument("--path", dest="opt_path", default=None, help="Target file or directory to migrate")
     p_mig.add_argument("--dry-run", action="store_true", default=False, help="Display unified diff of projected transformations without modifying disk")
     p_mig.add_argument("--in-place", action="store_true", default=False, help="Rewrite outdated frontmatter in-place preserving Markdown body byte-for-byte")
-

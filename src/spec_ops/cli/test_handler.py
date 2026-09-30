@@ -16,6 +16,10 @@ def handle_test_command(
 ) -> int:
     """Executes 'spec-ops test' subcommands (audit-anti-mock, verify-frontdoors)."""
     action = getattr(args, "test_action", None)
+    if action in ("properties", "invariants"):
+        from ..core.properties_runner import handle_properties_command
+        return handle_properties_command(args, config)
+
     if not action or action not in ("audit-anti-mock", "verify-frontdoors"):
         parser.parse_args(["test", "--help"])
         return 0

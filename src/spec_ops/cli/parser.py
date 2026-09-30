@@ -306,4 +306,13 @@ def build_parser() -> argparse.ArgumentParser:
     # schema
     register_schema_subparsers(subparsers)
 
+    # verify
+    p_verify = subparsers.add_parser("verify", help="Execute verification suites and invariant checks")
+    p_verify.add_argument("--invariants", action="store_true", help="Execute Hypothesis generative property tests (ADR-0009)")
+    p_verify.add_argument("--max-examples", type=int, default=None, help="Maximum number of Hypothesis examples per property")
+    p_verify.add_argument("path", nargs="?", default=None, help="Target test file or directory")
+    p_verify.add_argument("--path", dest="opt_path", default=None, help="Target test file or directory")
+    p_verify.add_argument("-k", "--filter", dest="filter_expr", default=None, help="Filter property tests by name")
+    p_verify.add_argument("--json", action="store_true", help="Output verification results as structured JSON")
+
     return parser
