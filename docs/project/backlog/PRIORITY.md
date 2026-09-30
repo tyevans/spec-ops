@@ -92,7 +92,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0043 (Complete)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](complete/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
 - **TASK-0097 (Refined)**: [`0097-preserved-worktree-handover-brief-and-cheatsheet-generator`](refined/0097-preserved-worktree-handover-brief-and-cheatsheet-generator.md)
 - **TASK-0053 (Refined)**: [`0053-anti-loop-worktree-failure-memory-schema-architecture-spike`](refined/0053-anti-loop-worktree-failure-memory-schema-architecture-spike.md)
-- **TASK-0101 (Refined)**: [`0101-fast-incremental-worktree-preflight-runner`](refined/0101-fast-incremental-worktree-preflight-runner.md)
+- **TASK-0101 (Complete)**: [`0101-fast-incremental-worktree-preflight-runner`](complete/0101-fast-incremental-worktree-preflight-runner.md)
 - **TASK-0100 (Refined)**: [`0100-living-architectural-review-radar-and-context-audit`](refined/0100-living-architectural-review-radar-and-context-audit.md)
 - **TASK-0102 (Refined)**: [`0102-cross-process-file-locking-concurrency`](refined/0102-cross-process-file-locking-concurrency.md)
 - **TASK-0066 (Refined)**: [`0066-backlog-health-diagnostics-and-cross-process-locking`](refined/0066-backlog-health-diagnostics-and-cross-process-locking.md)

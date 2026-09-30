@@ -44,8 +44,26 @@ __all__ = [
     "get_targeted_recommendation",
     "calculate_file_diff",
     "takeover_task",
+    "StepRecord",
+    "StepCacheData",
+    "run_incremental_rescue_test",
+    "clear_step_cache",
+    "load_step_cache",
+    "save_step_cache",
+    "is_step_cache_valid",
+    "invalidate_dirty_step_caches",
 ]
 
+from .incremental_runner import (
+    StepCacheData,
+    StepRecord,
+    clear_step_cache,
+    invalidate_dirty_step_caches,
+    is_step_cache_valid,
+    load_step_cache,
+    run_incremental_rescue_test,
+    save_step_cache,
+)
 from .triage import (
     FileDiffMetric,
     TriageFinding,
@@ -57,3 +75,4 @@ from .triage import (
     parse_feedback_diagnostics,
     takeover_task,
 )
+

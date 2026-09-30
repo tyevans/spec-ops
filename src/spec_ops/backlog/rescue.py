@@ -199,11 +199,18 @@ class WorktreeRescueManager:
             if not sec_ok:
                 sync_security_profile(info.worktree_dir, sync_worktrees=False)
 
-        # 4. Run preflight
+        # 4. Run preflight (bypass caches for full preflight pipeline revalidation)
+        from ..rescue.incremental_runner import clear_step_cache
+
+        clear_step_cache(info.worktree_dir)
+        print("🔄 Bypassing preflight caches: executing full, un-truncated preflight verification pipeline...")
         worker_engine = BacklogWorkerEngine(self.config)
         ok, log = worker_engine.run_preflight(info.worktree_dir, task=target_task)
+        if log:
+            print(log)
         if not ok:
             return False, f"Preflight failed in rescued worktree:\n{log}"
+
 
         # 5. Enforce backlog isolation before merge
         if self.config.execution.backlog_isolation:

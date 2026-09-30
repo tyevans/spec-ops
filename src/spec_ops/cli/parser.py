@@ -257,6 +257,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_rescue.add_argument("--dry-run", action="store_true", help="Dry-run preview of candidate worktrees and disk space")
     p_rescue.add_argument("--file", default=None, help="Target file for AST / line count diff inspection in triage")
     p_rescue.add_argument("--action", default=None, help="Direct triage action ([d]iff, [p]atch, [s]hell, [r]eset, [c]omplete, [q]uit)")
+    p_rescue.add_argument("--step", default=None, help="Designated preflight step to run in isolation")
+    p_rescue.add_argument("--only-failed", action="store_true", help="Re-run only previously failed preflight step")
+
 
     # worktree
     p_worktree = subparsers.add_parser("worktree", help="Human developer worktree sandboxing and lifecycle management")

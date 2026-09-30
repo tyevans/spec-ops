@@ -112,3 +112,25 @@ When an autonomous worker session exhausts its self-healing retries, its isolate
    ```bash
    spec-ops rescue TASK-0012 --complete
    ```
+
+---
+
+## Step 6: Rapid Iteration with Fast Incremental Preflight Runner
+
+When troubleshooting a rescued worktree, rerunning the entire multi-minute preflight suite for each small change introduces significant latency. Use the incremental test runner to isolate broken checks:
+
+1. **Re-run Only Failed Steps**:
+   Rerun only the previously failed check (skipping cached passes like lockfile validation and invariant checks):
+   ```bash
+   spec-ops rescue test --only-failed
+   ```
+
+2. **Isolate a Specific Preflight Step**:
+   Target an individual gate or check for sub-second feedback during iterative fixes:
+   ```bash
+   spec-ops rescue test --step lint
+   ```
+
+3. **Mandatory Full Revalidation on Completion**:
+   When completing rescue with `spec-ops rescue <task-id> --complete`, incremental caches are automatically bypassed to enforce an un-truncated, full preflight run before merging into `main`.
+

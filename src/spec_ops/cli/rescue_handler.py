@@ -47,19 +47,33 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     action: str | None = None
     task_id: str | None = None
 
-    known_actions = {"triage", "takeover", "inspect", "shell"}
+    known_actions = {"triage", "takeover", "inspect", "shell", "test"}
     if raw_task_id in known_actions:
         action = raw_task_id
         task_id = target
     elif target in known_actions:
         action = target
         task_id = raw_task_id
+    elif getattr(args, "step", None) or getattr(args, "only_failed", False):
+        action = "test"
+        task_id = raw_task_id
     else:
         task_id = raw_task_id
         if task_id and not args.complete and not args.discard and not args.list:
             action = "inspect"
 
+    if action == "test":
+        from ..rescue.incremental_runner import run_incremental_rescue_test
+
+        return run_incremental_rescue_test(
+            config=config,
+            task_id=task_id,
+            step=getattr(args, "step", None),
+            only_failed=getattr(args, "only_failed", False),
+        )
+
     if args.list or not task_id:
+
         wts = mgr.list_active_worktrees()
         print("=== Active / Stalled Worktrees (.worktrees/) ===")
         if not wts:
