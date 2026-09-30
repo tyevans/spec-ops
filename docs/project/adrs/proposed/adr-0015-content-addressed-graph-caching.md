@@ -1,4 +1,4 @@
-# ADR-0010: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing
+# ADR-0015: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing
 
 ## Status
 Proposed

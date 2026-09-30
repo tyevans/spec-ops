@@ -1,4 +1,4 @@
-# ADR-0011: Tamper-Evident Merkle Tree Compliance Manifests
+# ADR-0016: Tamper-Evident Merkle Tree Compliance Manifests
 
 ## Status
 Accepted

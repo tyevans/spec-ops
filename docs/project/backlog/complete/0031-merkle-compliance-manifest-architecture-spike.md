@@ -19,7 +19,7 @@ target_bc: security
 # TASK-0031: Architectural Spike: Merkle Tree Compliance Data Structure and Manifest Specification
 
 ## Summary
-Research, design, and formally specify a deterministic Merkle tree compliance data structure and cryptographic audit manifest format linking PRDs, User Stories, Tasks, Agent Prompts, Test Results, Commit SHAs, and Human Sign-offs. Evaluate canonical serialization (RFC 8785 JSON canonicalization), leaf hashing rules, and inclusion proof generation. Author and graduate findings into ADR-0011: Tamper-Evident Merkle Tree Compliance Manifests.
+Research, design, and formally specify a deterministic Merkle tree compliance data structure and cryptographic audit manifest format linking PRDs, User Stories, Tasks, Agent Prompts, Test Results, Commit SHAs, and Human Sign-offs. Evaluate canonical serialization (RFC 8785 JSON canonicalization), leaf hashing rules, and inclusion proof generation. Author and graduate findings into ADR-0016: Tamper-Evident Merkle Tree Compliance Manifests.
 
 ## Problem Statement & Context
 Enterprise compliance audits (SOC2 Type II, ISO 27001 Annex A) require mathematical proof of end-to-end SDLC integrity and non-repudiation. Traditional audit evidence consists of disparate screenshots, email threads, and mutable database records that auditors struggle to verify. A mathematically verifiable Merkle DAG structure is needed to cryptographically bind every requirement and scenario to its implementation commit, test execution evidence, and human review sign-off.
@@ -38,7 +38,7 @@ Enterprise compliance audits (SOC2 Type II, ISO 27001 Annex A) require mathemati
 - **Mutmut Mutation Scope**: Canonical serializer and Merkle tree node calculation algorithms evaluated under mutmut to ensure zero mutation escapes in hash combination or sorting logic.
 
 ## Definition of Done (Blackbox Frontdoor TDD)
-1. Formal JSON schema and deterministic Merkle tree calculation algorithm specified and documented in ADR-0011: Tamper-Evident Merkle Tree Compliance Manifests (`docs/project/adrs/accepted/adr-0011-tamper-evident-merkle-compliance-manifests.md`).
+1. Formal JSON schema and deterministic Merkle tree calculation algorithm specified and documented in ADR-0016: Tamper-Evident Merkle Tree Compliance Manifests (`docs/project/adrs/accepted/adr-0016-tamper-evident-merkle-compliance-manifests.md`).
 2. Registry updated in `docs/project/adrs/REGISTRY.md`.
 3. Working spike prototype demonstrates compiling a cryptographic Merkle root hash across relational SDLC graph entities with partial inclusion proofs.
 4. Spike verified with blackbox tests exercising public hashing and verification interfaces without mock backdoors (ADR-0003).

@@ -1,6 +1,6 @@
 # Merkle Compliance Manifest Reference
 
-SpecOps provides a mathematically verifiable, tamper-evident audit manifest data structure governed by [ADR-0011](../project/adrs/accepted/adr-0011-tamper-evident-merkle-compliance-manifests.md).
+SpecOps provides a mathematically verifiable, tamper-evident audit manifest data structure governed by [ADR-0016](../project/adrs/accepted/adr-0016-tamper-evident-merkle-compliance-manifests.md).
 
 ---
 

@@ -48,4 +48,4 @@ As PMaC repositories grow to hundreds of user stories, tasks, PRDs, and ADRs, fu
 2. Prototype accurately detects single-file SHA-256 hash changes and invalidates strictly that node and its immediate downstream dependents in the cached dependency tree.
 3. Intentionally corrupted or truncated cache files are detected via checksums, logged at debug level, and discarded in favor of a cold rebuild without user-facing failures.
 4. Markdown AST parser extracts frontmatter and body AST preserving tables and fenced code blocks, and returns structured diagnostic errors containing line, column, and snippet hints on malformed YAML.
-5. All findings, benchmarks, and cache schema recommendations are published into `docs/project/adrs/proposed/adr-0010-content-addressed-graph-caching.md`.
+5. All findings, benchmarks, and cache schema recommendations are published into `docs/project/adrs/proposed/adr-0015-content-addressed-graph-caching.md`.

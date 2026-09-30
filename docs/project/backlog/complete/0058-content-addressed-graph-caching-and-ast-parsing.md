@@ -10,7 +10,7 @@ governing_adrs:
 - ADR-0003
 - ADR-0007
 - ADR-0009
-- ADR-0010
+- ADR-0015
 governing_prds:
 - PRD-0005
 governing_stories:

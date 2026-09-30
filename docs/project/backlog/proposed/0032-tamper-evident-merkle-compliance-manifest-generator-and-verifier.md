@@ -10,6 +10,7 @@ governing_adrs:
   - ADR-0003
   - ADR-0006
   - ADR-0007
+  - ADR-0016
 governing_prds:
   - PRD-0002
 governing_stories:
@@ -21,7 +22,7 @@ target_bc: security
 # TASK-0032: Tamper-Evident Merkle Compliance Manifest Generator and Verifier Engine
 
 ## Summary
-Implement production CLI commands `spec-ops audit export --standard soc2 --output dist/compliance/` and `spec-ops audit verify --manifest <path>` governed by ADR-0011. Generate cryptographic compliance manifest `soc2-audit-manifest.json` and top-level root digest `dist/compliance/MERKLE_ROOT`, binding PRD IDs, User Story Gherkins, Task metadata, agent prompt SHA-256 digests, test execution logs, human reviewer signatures, and git commit SHAs. Detect out-of-band tampering or broken traceability with exit code 1.
+Implement production CLI commands `spec-ops audit export --standard soc2 --output dist/compliance/` and `spec-ops audit verify --manifest <path>` governed by ADR-0016. Generate cryptographic compliance manifest `soc2-audit-manifest.json` and top-level root digest `dist/compliance/MERKLE_ROOT`, binding PRD IDs, User Story Gherkins, Task metadata, agent prompt SHA-256 digests, test execution logs, human reviewer signatures, and git commit SHAs. Detect out-of-band tampering or broken traceability with exit code 1.
 
 ## Problem Statement & Context
 Auditing enterprise software built by autonomous coding agents requires undeniable proof that every line of code traces directly to an accepted PRD, an executable BDD user story, a passing test suite, and an authorized human sign-off. Generating this evidence manually takes 4 to 6 weeks per audit cycle. SpecOps must provide a 5-second deterministic CLI command that compiles and mathematically verifies the entire SDLC provenance chain.
