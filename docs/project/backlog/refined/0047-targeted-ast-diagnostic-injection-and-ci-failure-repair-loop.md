@@ -1,7 +1,7 @@
 ---
 id: '0047'
 title: Targeted AST Diagnostic Hint Injection, Empty-Diff Guardrails, and Remote CI Repair Loop
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0012

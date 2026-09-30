@@ -1,7 +1,7 @@
 ---
 id: '0063'
 title: Modular Architectural Profile Inheritance and Composition Engine
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0062

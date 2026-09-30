@@ -1,7 +1,7 @@
 ---
 id: '0041'
 title: Living Customer UAT Verification Matrix and Automated PRD Shipping Gate
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0034
