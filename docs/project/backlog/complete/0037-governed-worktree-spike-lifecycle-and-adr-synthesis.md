@@ -16,6 +16,7 @@ governing_adrs:
 governing_prds:
 - PRD-0003
 governing_stories:
+- US-0018
 - US-0097
 - US-0098
 target_bc: prd
