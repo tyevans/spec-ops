@@ -72,6 +72,7 @@ class Task:
     raw_markdown: str = ""
     file_path: Path = field(default_factory=Path)
     commits: list[CommitInfo] = field(default_factory=list)
+    allows_dependencies: bool = False
 
     @property
     def canonical_id(self) -> str:

@@ -52,8 +52,25 @@ class BacklogWorkerEngine:
         self.queue = BacklogQueue(config.backlog_dir)
         self.reviewer = TaskReviewEngine(config)
 
-    def run_preflight(self, cwd: Path) -> tuple[bool, str]:
+    def run_preflight(self, cwd: Path, task: Task | None = None) -> tuple[bool, str]:
         """Runs configured preflight verification commands with supply-chain lockfile checks."""
+        from ..security.lockfile import check_worktree_dependency_integrity
+        target_task = task
+        if target_task is None:
+            import re
+            m = re.search(r"task-(\d+)", cwd.name, re.IGNORECASE)
+            if m:
+                cid = f"TASK-{m.group(1).zfill(4)}"
+                for t in self.queue.list_all_tasks():
+                    if t.canonical_id == cid:
+                        target_task = t
+                        break
+
+        allows_dep = getattr(target_task, "allows_dependencies", False) if target_task else False
+        dep_ok, dep_errs = check_worktree_dependency_integrity(cwd, allows_dependencies=allows_dep)
+        if not dep_ok:
+            return False, f"Unauthorized Dependency Modification: {'; '.join(dep_errs)}"
+
         commands = list(self.config.quality.preflight)
 
         if getattr(self.config.quality, "enforce_lockfile", True):
@@ -61,20 +78,16 @@ class BacklogWorkerEngine:
                 commands.insert(0, "uv lock --check")
 
         # Secret scanning preflight check
-        sec_active = False
-        if self.config.security and self.config.security.secret_scanning:
-            sec_active = True
-        elif (cwd / "specops.toml").is_file() and "[security]" in (cwd / "specops.toml").read_text(encoding="utf-8"):
-            sec_active = True
-        elif (cwd / "docs" / "project" / "SECURITY.md").exists():
-            sec_active = True
+        sec_active = bool(
+            (self.config.security and self.config.security.secret_scanning)
+            or ((cwd / "specops.toml").is_file() and "[security]" in (cwd / "specops.toml").read_text(encoding="utf-8"))
+            or (cwd / "docs" / "project" / "SECURITY.md").exists()
+        )
 
         if sec_active and not any("health" in c and "--security" in c for c in commands):
             spec_ops_bin = Path(sys.executable).parent / "spec-ops"
-            if spec_ops_bin.is_file() or shutil.which("spec-ops"):
-                commands.insert(0, "spec-ops health --security")
-            else:
-                commands.insert(0, f"{sys.executable} -m spec_ops.cli.main health --security")
+            sec_cmd = "spec-ops health --security" if (spec_ops_bin.is_file() or shutil.which("spec-ops")) else f"{sys.executable} -m spec_ops.cli.main health --security"
+            commands.insert(0, sec_cmd)
 
         sandbox_config = getattr(self.config.execution, "sandbox", None)
         if sandbox_config and getattr(sandbox_config, "isolate_network", False):
@@ -204,7 +217,7 @@ class BacklogWorkerEngine:
             if run_review_enabled:
                 print(f"🔍 Running CI preflight and architectural review concurrently (Attempt {attempt})...")
                 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-                    ci_future = executor.submit(self.run_preflight, worktree_dir)
+                    ci_future = executor.submit(self.run_preflight, worktree_dir, task)
                     review_future = executor.submit(
                         self.reviewer.run_review,
                         task,
@@ -214,6 +227,10 @@ class BacklogWorkerEngine:
                     )
                     preflight_ok, preflight_log = ci_future.result()
                     review_res = review_future.result()
+
+                if "Unauthorized Dependency Modification" in preflight_log:
+                    print(f"❌ Security violation: {preflight_log}")
+                    return False, f"Unauthorized Dependency Modification violation: {preflight_log}"
 
                 if preflight_ok and review_res.approved:
                     print(f"✅ Preflight passed and architectural review approved on attempt {attempt}.")
@@ -241,7 +258,11 @@ class BacklogWorkerEngine:
                 prompt_file.write_text(current_prompt, encoding="utf-8")
                 last_failure_log = feedback
             else:
-                preflight_ok, preflight_log = self.run_preflight(worktree_dir)
+                preflight_ok, preflight_log = self.run_preflight(worktree_dir, task)
+                if "Unauthorized Dependency Modification" in preflight_log:
+                    print(f"❌ Security violation: {preflight_log}")
+                    return False, f"Unauthorized Dependency Modification violation: {preflight_log}"
+
                 if preflight_ok:
                     return True, f"Preflight passed on attempt {attempt}."
 
@@ -272,7 +293,7 @@ class BacklogWorkerEngine:
             self.create_worktree(branch, worktree_dir)
             worktree_created = True
 
-            preflight_ok, preflight_log = self.run_preflight(worktree_dir)
+            preflight_ok, preflight_log = self.run_preflight(worktree_dir, task=task)
             if not preflight_ok:
                 return WorkerResult(task.canonical_id, False, f"Initial preflight failed: {preflight_log}")
 
@@ -285,17 +306,10 @@ class BacklogWorkerEngine:
                 return WorkerResult(task.canonical_id, True, "Dry-run successful.")
 
             if self.config.execution.backlog_isolation:
-                status = subprocess.run(
-                    ["git", "status", "--porcelain", str(self.config.project.docs_dir)],
-                    cwd=worktree_dir,
-                    capture_output=True,
-                    text=True,
-                )
+                docs_dir = str(self.config.project.docs_dir)
+                status = subprocess.run(["git", "status", "--porcelain", docs_dir], cwd=worktree_dir, capture_output=True, text=True)
                 if status.stdout.strip():
-                    subprocess.run(
-                        ["git", "checkout", "HEAD", "--", str(self.config.project.docs_dir)],
-                        cwd=worktree_dir,
-                    )
+                    subprocess.run(["git", "checkout", "HEAD", "--", docs_dir], cwd=worktree_dir)
 
             # Clean up task prompt files before checking status and committing
             prompt_file = worktree_dir / ".task-prompt.md"
@@ -344,7 +358,7 @@ class BacklogWorkerEngine:
                                 f"Rebase conflict against main: {rebase_msg}",
                             )
                         print("✓ Rebase succeeded. Running preflight verification on rebased code...")
-                        post_rebase_ok, post_rebase_log = self.run_preflight(worktree_dir)
+                        post_rebase_ok, post_rebase_log = self.run_preflight(worktree_dir, task=task)
                         if not post_rebase_ok:
                             print(f"❌ Post-rebase preflight failed on {task.canonical_id}.")
                             return WorkerResult(

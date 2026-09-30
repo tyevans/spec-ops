@@ -38,6 +38,8 @@ def write_task_file(task: Task) -> Path:
         meta["claimed_by"] = task.claimed_by
     if task.branch:
         meta["branch"] = task.branch
+    if task.allows_dependencies:
+        meta["allows_dependencies"] = True
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()
@@ -143,3 +145,97 @@ class BacklogQueue:
         updated = pattern.sub(replacement, content)
         if updated != content:
             priority_file.write_text(updated, encoding="utf-8")
+
+    def complete_task_with_gate(
+        self,
+        task: Task,
+        base_branch: str = "main",
+        repo_root: Path | None = None,
+    ) -> tuple[bool, str]:
+        """Integration gate verifying zero unauthorized lockfile alterations under merge lock."""
+        import subprocess
+        from ..worker.merge_lock import MergeLockManager
+        from ..security.lockfile import (
+            PROTECTED_DEPENDENCY_FILES,
+            check_diff_for_dependency_modifications,
+            verify_lockfile,
+        )
+
+        root = (repo_root or self.backlog_dir.parent.parent).resolve()
+        lock_mgr = MergeLockManager(root)
+        with lock_mgr.acquire():
+            wt_dir = root / ".worktrees" / f"task-{task.id}"
+            check_dirs = [wt_dir] if (wt_dir.exists() and wt_dir.is_dir()) else [root]
+            for cdir in check_dirs:
+                diff_status = subprocess.run(
+                    ["git", "status", "--porcelain"],
+                    cwd=cdir,
+                    capture_output=True,
+                    text=True,
+                )
+                if diff_status.returncode == 0:
+                    unstaged = [
+                        line for line in diff_status.stdout.splitlines()
+                        if any(Path(line[3:].strip()).name in PROTECTED_DEPENDENCY_FILES for _ in [1])
+                    ]
+                    if unstaged:
+                        return False, "Integration gate failed: unstaged lockfile alterations detected."
+
+            target_branch = task.branch
+            if not target_branch and wt_dir.exists() and wt_dir.is_dir():
+                b_res = subprocess.run(
+                    ["git", "branch", "--show-current"],
+                    cwd=wt_dir,
+                    capture_output=True,
+                    text=True,
+                )
+                target_branch = b_res.stdout.strip()
+            if not target_branch:
+                cur_b = subprocess.run(
+                    ["git", "branch", "--show-current"],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip()
+                if cur_b != base_branch and (task.id.lower() in cur_b.lower() or task.canonical_id.lower() in cur_b.lower()):
+                    target_branch = cur_b
+
+            changed_files: set[str] = set()
+            if target_branch:
+                diff_res = subprocess.run(
+                    ["git", "diff", "--name-only", f"{base_branch}...{target_branch}"],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                )
+                if diff_res.returncode == 0:
+                    changed_files = {line.strip() for line in diff_res.stdout.splitlines() if line.strip()}
+                else:
+                    diff_res2 = subprocess.run(
+                        ["git", "diff", "--name-only", base_branch],
+                        cwd=root,
+                        capture_output=True,
+                        text=True,
+                    )
+                    if diff_res2.returncode == 0:
+                        changed_files = {line.strip() for line in diff_res2.stdout.splitlines() if line.strip()}
+
+            dep_ok, dep_errors = check_diff_for_dependency_modifications(
+                changed_files,
+                task.allows_dependencies,
+            )
+            if not dep_ok:
+                return False, f"Integration gate failed: {'; '.join(dep_errors)}"
+
+            touched_protected = any(
+                Path(f).name in PROTECTED_DEPENDENCY_FILES for f in changed_files
+            )
+            if touched_protected:
+                target_dir = wt_dir if (wt_dir.exists() and wt_dir.is_dir()) else root
+                v_ok, v_errors = verify_lockfile(target_dir, run_uv=True)
+                if not v_ok:
+                    return False, f"Integration gate failed: Cryptographic lockfile verification failed: {'; '.join(v_errors)}"
+
+            self.complete_task(task)
+            return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
+

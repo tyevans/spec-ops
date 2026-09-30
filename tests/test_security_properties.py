@@ -175,3 +175,64 @@ def test_property_non_allowlisted_command_terminates_with_126_and_audits(
     assert last_event["event"] == "SECURITY_ALERT_COMMAND_PROHIBITED"
     assert last_event["prohibited_binary"] == unallowed_bin
 
+
+# --- Lockfile Invariant Property Tests (ADR-0009) ---
+
+safe_filename_st = st.from_regex(r"^[a-zA-Z0-9_\-\.]+\.[a-zA-Z0-9]+$", fullmatch=True)
+safe_dir_st = st.from_regex(r"^[a-zA-Z0-9_\-]+(/[a-zA-Z0-9_\-]+)*$", fullmatch=True)
+
+
+@st.composite
+def file_diff_tree_strategy(draw):
+    from pathlib import Path
+    base_files = draw(
+        st.lists(
+            st.tuples(st.one_of(st.just(""), safe_dir_st), safe_filename_st).map(
+                lambda t: f"{t[0]}/{t[1]}".lstrip("/")
+            ),
+            min_size=0,
+            max_size=15,
+        )
+    )
+    clean_files = [f for f in base_files if Path(f).name not in ("pyproject.toml", "uv.lock")]
+    include_protected = draw(st.booleans())
+    if include_protected:
+        protected_target = draw(st.sampled_from(["pyproject.toml", "uv.lock", "sub/pyproject.toml", "sub/uv.lock"]))
+        clean_files.append(protected_target)
+    return clean_files, include_protected
+
+
+@given(
+    diff_and_flag=file_diff_tree_strategy(),
+    allows_dep=st.booleans(),
+    task_id=st.integers(min_value=1, max_value=9999).map(lambda i: f"TASK-{str(i).zfill(4)}"),
+    task_title=st.text(min_size=1, max_size=40),
+)
+def test_property_lockfile_diff_gate_invariance(diff_and_flag, allows_dep: bool, task_id: str, task_title: str):
+    """Invariant: Any diff touching pyproject.toml or uv.lock without allows_dependencies strictly fails."""
+    from pathlib import Path
+    from spec_ops.core.models import Task
+    from spec_ops.security.lockfile import PROTECTED_DEPENDENCY_FILES, check_diff_for_dependency_modifications
+
+    diff_files, has_protected = diff_and_flag
+    task = Task(
+        id=task_id,
+        title=task_title,
+        status="Refined",
+        allows_dependencies=allows_dep,
+    )
+
+    ok, errors = check_diff_for_dependency_modifications(diff_files, task.allows_dependencies)
+
+    if has_protected and not task.allows_dependencies:
+        assert ok is False
+        assert len(errors) > 0
+        assert "Unauthorized Dependency Modification" in errors[0]
+        assert any(p in errors[0] for p in PROTECTED_DEPENDENCY_FILES)
+    elif has_protected and task.allows_dependencies:
+        assert ok is True
+        assert errors == []
+    else:
+        assert ok is True
+        assert errors == []
+

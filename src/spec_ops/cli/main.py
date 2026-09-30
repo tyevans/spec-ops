@@ -395,6 +395,14 @@ def main() -> int:
             return 0
         return dashboard.run(initial_view=getattr(args, "view", "overview"))
 
+    if args.command == "security":
+        from .security_handler import handle_security_command
+        return handle_security_command(args, config, parser)
+
+    if args.command == "queue":
+        from .security_handler import handle_queue_command
+        return handle_queue_command(args, config, parser)
+
     return 0
 
 

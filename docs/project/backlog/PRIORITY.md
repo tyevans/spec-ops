@@ -31,7 +31,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0071 (Complete)**: [`0071-inference-driven-backlog-refinement-and-architectural-reconciliation`](complete/0071-inference-driven-backlog-refinement-and-architectural-reconciliation.md)
 - **TASK-0026 (Complete)**: [`0026-worker-process-sandboxing-and-execution-interceptors`](complete/0026-worker-process-sandboxing-and-execution-interceptors.md)
 - **TASK-0027 (Complete)**: [`0027-worktree-secret-and-credential-detection-engine`](complete/0027-worktree-secret-and-credential-detection-engine.md)
-- **TASK-0028 (Refined)**: [`0028-supply-chain-lockfile-verification-and-slopsquatting-defense`](refined/0028-supply-chain-lockfile-verification-and-slopsquatting-defense.md)
+- **TASK-0028 (Complete)**: [`0028-supply-chain-lockfile-verification-and-slopsquatting-defense`](complete/0028-supply-chain-lockfile-verification-and-slopsquatting-defense.md)
 - **TASK-0029 (Proposed)**: [`0029-dependency-vulnerability-and-license-policy-gating`](proposed/0029-dependency-vulnerability-and-license-policy-gating.md)
 - **TASK-0030 (Proposed)**: [`0030-cryptographic-commit-verification-and-dual-custody-gate`](proposed/0030-cryptographic-commit-verification-and-dual-custody-gate.md)
 - **TASK-0031 (Proposed)**: [`0031-merkle-compliance-manifest-architecture-spike`](proposed/0031-merkle-compliance-manifest-architecture-spike.md)

@@ -148,4 +148,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_tui.add_argument("--once", action="store_true", help="Render dashboard snapshot and exit without interactive loop")
     p_tui.add_argument("--view", choices=["overview", "backlog", "tree", "health"], default="overview", help="Initial view to display (default: overview)")
 
+    # queue
+    p_queue = subparsers.add_parser("queue", help="Manage backlog queue and task integration gates")
+    queue_subs = p_queue.add_subparsers(dest="queue_action", help="Queue action")
+    p_q_comp = queue_subs.add_parser("complete", help="Gate and complete task integration under merge lock")
+    p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")
+    p_q_comp.add_argument("--base", default="main", help="Base branch for diff comparison (default: main)")
+
+    # security
+    p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")
+    sec_subs = p_sec.add_subparsers(dest="security_action", help="Security action")
+    p_vlock = sec_subs.add_parser("verify-lock", help="Verify supply-chain lockfile cryptographic hashes and pinning")
+    p_vlock.add_argument("--path", default=".", help="Directory containing uv.lock (default: current directory)")
+
     return parser

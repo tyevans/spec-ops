@@ -1,7 +1,7 @@
 ---
 id: 0028
 title: Supply-Chain Lockfile Verification and Slopsquatting Defense Gate
-status: Refined
+status: Complete
 dependencies:
 - TASK-0019
 - TASK-0027
@@ -16,8 +16,6 @@ governing_stories:
 - US-0053
 - US-0111
 target_bc: security
-claimed_by: worker-3
-branch: feat/0028-supply-chain-lockfile-verification-and-s
 ---
 
 # TASK-0028: Supply-Chain Lockfile Verification and Slopsquatting Defense Gate

@@ -122,6 +122,7 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         body=body,
         raw_markdown=content,
         file_path=file_path,
+        allows_dependencies=bool(meta.get("allows_dependencies", False)),
     )
 
 
