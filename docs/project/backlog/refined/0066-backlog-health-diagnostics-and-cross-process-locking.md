@@ -1,20 +1,19 @@
 ---
 id: '0066'
 title: Proactive Backlog Health Diagnostics and Self-Healing Dependency Repair
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0065
+- TASK-0065
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0075
+- US-0075
 target_bc: backlog
 ---
 
