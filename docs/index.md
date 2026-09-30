@@ -11,7 +11,7 @@ By version-locking specifications, user stories, tasks, and architectural decisi
 This documentation follows the Diataxis framework:
 
 - **Tutorials**: Hands-on guides to learn SpecOps step-by-step. Start with [Getting Started](/spec-ops/tutorials/01-getting-started.html).
-- **How-To Guides**: Practical recipes for everyday development tasks like [Bootstrapping Projects](/spec-ops/how-to/bootstrap-project.html), [Verifying Health](/spec-ops/how-to/check-health.html), [Decomposing PRDs](/spec-ops/how-to/decompose-prds.html), and [Sharing Visualizer Deep Links](/spec-ops/how-to/share-visualizer-deep-links.html).
+- **How-To Guides**: Practical recipes for everyday development tasks like [Bootstrapping Projects](/spec-ops/how-to/bootstrap-project.html), [Verifying Health](/spec-ops/how-to/check-health.html), [Decomposing PRDs](/spec-ops/how-to/decompose-prds.html), [Sharing Visualizer Deep Links](/spec-ops/how-to/share-visualizer-deep-links.html), and [Exporting Burndown Decks & Monitoring Flow](/spec-ops/how-to/export-milestone-burndown-decks-and-monitor-flow.html).
 - **Technical Reference**: Authoritative documentation of the [CLI Reference](/spec-ops/reference/cli.html) and [Baseline ADRs](/spec-ops/reference/baseline-adrs.html).
 - **Architecture Explanation**: In-depth design philosophy exploring [Project Management as Code](/spec-ops/explanation/project-management-as-code.html), [Hard Invariants](/spec-ops/explanation/hard-invariants.html), [Delivering Integrated Value](/spec-ops/explanation/delivering-integrated-value.html), and [End-to-End Project Lifecycle](/spec-ops/explanation/project-lifecycle.html).
 
