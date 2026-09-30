@@ -58,16 +58,25 @@ Filter parameters can be combined in the URL hash to share exact triage views wi
 # Kanban view filtered to Refined tasks in the 'core' bounded context
 visualizer.html#tab=kanban&status=refined&bc=core
 
-# Backlog view with completed tasks hidden and filtered by search query
-visualizer.html#tab=kanban&hideDone=true&q=rescue
+# Relationship graph clustered by Bounded Context with boundary hulls and labels
+visualizer.html#tab=graph&groupBy=bc
+
+# Relationship graph filtered to Active Delivery (tasks, stories, PRDs with complete hidden)
+visualizer.html#tab=graph&types=task,story,prd&hideDone=true
+
+# Relationship graph blast radius isolated to 1-hop neighborhood of a focused task
+visualizer.html#tab=graph&entity=TASK-0009&hops=1
 ```
 
 Supported filter parameters include:
-- `q`: Text search query (matches titles, canonical IDs, and tags).
+- `q`: Text search query (matches titles, canonical IDs, roles, and tags).
 - `status`: Lifecycle status filter (`all`, `complete`, `refined`, `proposed`).
-- `bc`: Target bounded context filter.
+- `bc`: Target bounded context filter (isolates nodes in that architectural domain).
 - `hideDone`: Boolean toggle (`true`/`false`) to exclude completed tasks.
-- `groupBy`: Timeline grouping mode (`release` or `bc`).
+- `groupBy`: Grouping mode (`bc` for Bounded Context clusters with boundary hulls on the graph or BC groups in Gantt; `release` for delivery milestones).
+- `types`: Comma-separated list of visible entity types (`task`, `story`, `prd`, `adr`, `persona`, `bc`).
+- `hops`: Blast radius degree-of-separation (`all`, `1`, or `2` hops from focused/searched nodes).
+- `preset`: Perspective preset (`default`, `bc`, `delivery`, `architecture`, `flow`).
 
 ---
 
