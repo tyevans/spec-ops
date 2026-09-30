@@ -188,6 +188,17 @@ class WorktreeRescueManager:
             if not rebase_ok:
                 return False, f"Rebase conflict against main during rescue: {rebase_msg}"
 
+        # Ensure active repository profiles (e.g. security) are synchronized in rescued worktree
+        if (
+            self.config.security is not None
+            or (self.repo_root / "docs" / "project" / "SECURITY.md").exists()
+        ):
+            from ..profiles.security import sync_security_profile, validate_security_policy
+
+            sec_ok, _ = validate_security_policy(info.worktree_dir)
+            if not sec_ok:
+                sync_security_profile(info.worktree_dir, sync_worktrees=False)
+
         # 4. Run preflight
         worker_engine = BacklogWorkerEngine(self.config)
         ok, log = worker_engine.run_preflight(info.worktree_dir, task=target_task)
@@ -196,14 +207,18 @@ class WorktreeRescueManager:
 
         # 5. Enforce backlog isolation before merge
         if self.config.execution.backlog_isolation:
+            try:
+                backlog_target = str(self.config.backlog_dir.relative_to(self.config.root_dir))
+            except ValueError:
+                backlog_target = str(self.config.backlog_dir)
             status = subprocess.run(
-                ["git", "status", "--porcelain", str(self.config.project.docs_dir)],
+                ["git", "status", "--porcelain", backlog_target],
                 cwd=info.worktree_dir,
                 capture_output=True,
                 text=True,
             )
             if status.stdout.strip():
-                subprocess.run(["git", "checkout", "HEAD", "--", str(self.config.project.docs_dir)], cwd=info.worktree_dir)
+                subprocess.run(["git", "checkout", "HEAD", "--", backlog_target], cwd=info.worktree_dir)
 
         # 6. Merge under MERGE_LOCK
         try:

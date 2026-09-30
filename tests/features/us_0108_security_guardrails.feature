@@ -23,3 +23,10 @@ Feature: Enterprise Security Profile Scaffolding and Living Constitution Guardra
     When "spec-ops health --security" executes
     Then the command exits with returncode 1
     And reports "Security Policy Invariant Violated: docs/project/SECURITY.md is missing or invalid. Run 'spec-ops profile sync security' to restore".
+
+  Scenario: Synchronizing security profile across active worker worktrees and rescue preflight
+    Given a repository configured with the security profile having an active worktree missing "docs/project/SECURITY.md"
+    When the developer executes "spec-ops profile sync security"
+    Then "docs/project/SECURITY.md" is restored in both the root repository and the active worktree
+    And executing "spec-ops health --security" in the worktree succeeds with returncode 0
+
