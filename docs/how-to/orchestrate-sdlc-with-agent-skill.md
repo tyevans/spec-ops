@@ -13,7 +13,7 @@ The SpecOps skill turns an AI coding assistant into a **Lead SDLC Orchestrator**
 To generate the skill in any SpecOps project:
 
 ```bash
-uv run spec-ops scaffold --agents antigravity
+uv run spec-ops scaffold agents
 ```
 
 This scaffolds:
