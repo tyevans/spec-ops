@@ -169,9 +169,17 @@ def _run_node_test(html: str, test_script: str) -> None:
       addEventListener: (ev, fn) => {{ (events[ev] = events[ev] || []).push(fn); }},
     }};
 
+    const storage = {{}};
+    const localStorage = {{
+      getItem: (k) => storage[k] !== undefined ? storage[k] : null,
+      setItem: (k, v) => {{ storage[k] = String(v); }},
+      removeItem: (k) => {{ delete storage[k]; }},
+      clear: () => {{ for (const k in storage) delete storage[k]; }},
+    }};
+
     let clipboardContent = '';
     const window = {{
-      location, history, document,
+      location, history, document, localStorage,
       addEventListener: (ev, fn) => {{ (events[ev] = events[ev] || []).push(fn); }},
       navigator: {{ clipboard: {{ writeText: async (t) => {{ clipboardContent = t; }} }} }},
       requestAnimationFrame: () => {{}},
@@ -181,6 +189,7 @@ def _run_node_test(html: str, test_script: str) -> None:
     global.document = document;
     global.location = location;
     global.history = history;
+    global.localStorage = localStorage;
     global.requestAnimationFrame = window.requestAnimationFrame;
     global.URLSearchParams = URLSearchParams;
 

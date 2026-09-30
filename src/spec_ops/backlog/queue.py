@@ -54,6 +54,8 @@ def write_task_file(task: Task) -> Path:
         meta["commit_signature_status"] = task.commit_signature_status
     if getattr(task, "slice_type", "") and getattr(task, "slice_type", "") != "feat":
         meta["slice_type"] = task.slice_type
+    if getattr(task, "unblocked", False):
+        meta["unblocked"] = True
     if getattr(task, "blocker", None):
         b = task.blocker
         b_dict: dict[str, Any] = {"type": b.type, "question": b.question}
@@ -140,6 +142,7 @@ class BacklogQueue:
         dest = self.refined_dir / task.file_path.name
         self.refined_dir.mkdir(parents=True, exist_ok=True)
         task.status = "Refined"
+        task.unblocked = False
         if task.file_path.exists() and task.file_path != dest:
             task.file_path.rename(dest)
         task.file_path = dest
@@ -147,8 +150,14 @@ class BacklogQueue:
         self._sync_priority_file(task, "Refined", "refined")
         return dest
 
-    def complete_task(self, task: Task) -> Path:
-        """Transitions a task from refined/ to complete/."""
+    def complete_task(
+        self,
+        task: Task,
+        cascade: bool = True,
+        repo_root: Path | None = None,
+        target_buffer: int = 10,
+    ) -> Path:
+        """Transitions a task from refined/ to complete/ and triggers unblocking cascade."""
         dest = self.complete_dir / task.file_path.name
         self.complete_dir.mkdir(parents=True, exist_ok=True)
         task.status = "Complete"
@@ -159,6 +168,17 @@ class BacklogQueue:
         task.file_path = dest
         write_task_file(task)
         self._sync_priority_file(task, "Complete", "complete")
+
+        if cascade:
+            from .unblocker import UnblockingCascadeEngine
+
+            engine = UnblockingCascadeEngine(
+                self.backlog_dir,
+                target_buffer=target_buffer,
+                repo_root=repo_root,
+            )
+            engine.cascade(completed_task_id=task.canonical_id)
+
         return dest
 
     def _sync_priority_file(self, task: Task, new_status: str, new_folder: str) -> None:
@@ -246,6 +266,15 @@ class BacklogQueue:
                             target_branch = b
                             break
 
+            if target_branch:
+                branch_exists = subprocess.run(
+                    ["git", "rev-parse", "--verify", target_branch],
+                    cwd=root,
+                    capture_output=True,
+                ).returncode == 0
+                if not branch_exists:
+                    target_branch = ""
+
             changed_files: set[str] = set()
             if target_branch:
                 diff_res = subprocess.run(
@@ -302,6 +331,10 @@ class BacklogQueue:
             if not dc_ok:
                 return False, dc_msg
 
+            buf_target = 10
+            if cfg and hasattr(cfg, "architecture") and hasattr(cfg.architecture, "buffer_target"):
+                buf_target = cfg.architecture.buffer_target
+
             # Integration merge with structured trailers
             if target_branch and target_branch != base_branch:
                 from ..worker.commits import format_task_commit_message
@@ -312,14 +345,14 @@ class BacklogQueue:
                     root,
                     target_branch,
                     commit_msg,
-                    on_staged=lambda: self.complete_task(task),
+                    on_staged=lambda: self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target),
                     main_branch=base_branch,
                 )
                 if not merge_ok:
                     return False, f"Integration gate failed: {merge_msg}"
                 return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
 
-            self.complete_task(task)
+            self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target)
             return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
 
     def refine_task_with_gate(

@@ -1,20 +1,20 @@
 ---
 id: '0102'
-title: Cross-Process File Locking and Transactional Concurrency Protection for Parallel Workers
-status: Proposed
-created: 2026-09-30
+title: Cross-Process File Locking and Transactional Concurrency Protection for Parallel
+  Workers
+status: Refined
 dependencies:
-  - TASK-0065
+- TASK-0065
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0076
+- US-0076
 target_bc: backlog
 ---
 

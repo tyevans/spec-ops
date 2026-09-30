@@ -162,6 +162,7 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         commit_signature_status=str(meta.get("commit_signature_status", "")),
         blocker=blocker_info,
         slice_type=str(meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat").lower(),
+        unblocked=bool(meta.get("unblocked", False)),
     )
 
 

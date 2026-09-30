@@ -1,18 +1,18 @@
 ---
-id: '0099'
+id: 0099
 title: Automated Definition of Ready Gatekeeper and Ticket Health Audit
-status: Proposed
+status: Refined
 dependencies:
-  - TASK-0065
+- TASK-0065
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0024
+- US-0024
 target_bc: backlog
 ---
 

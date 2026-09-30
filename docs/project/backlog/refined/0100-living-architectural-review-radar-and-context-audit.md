@@ -1,22 +1,23 @@
 ---
 id: '0100'
 title: Living Architectural Review Radar and Bounded Context Dependency Audit
-status: Proposed
-created: 2026-09-30
+status: Refined
 dependencies:
-  - TASK-0070
-  - TASK-0060
+- TASK-0070
+- TASK-0060
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0106
+- US-0106
 target_bc: visualizer
+claimed_by: worker-3
+branch: feat/0100-living-architectural-review-radar-and-bo
 ---
 
 # TASK-0100: Living Architectural Review Radar and Bounded Context Dependency Audit

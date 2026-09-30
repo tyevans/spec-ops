@@ -12,6 +12,7 @@ from .parser_subcommands import (
     register_prd_subparsers,
     register_profile_subparsers,
     register_queue_subparsers,
+    register_release_subparsers,
     register_schema_subparsers,
     register_spike_subparsers,
     register_test_subparsers,
@@ -125,6 +126,30 @@ def build_parser() -> argparse.ArgumentParser:
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
     scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
+    p_scaffold_docs = scaffold_subs.add_parser(
+        "docs",
+        aliases=["diataxis"],
+        help="Scaffold 4-quadrant Diataxis documentation for a bounded context",
+    )
+    p_scaffold_docs.add_argument(
+        "--bc",
+        "--bounded-context",
+        required=True,
+        dest="bc",
+        help="Target bounded context identifier",
+    )
+    p_scaffold_docs.add_argument(
+        "--title",
+        default=None,
+        help="Human-readable title for the bounded context",
+    )
+    p_scaffold_docs.add_argument(
+        "--force",
+        "--overwrite",
+        dest="force",
+        action="store_true",
+        help="Overwrite existing bounded context documentation",
+    )
 
     # constitution
     p_const = subparsers.add_parser("constitution", help="Living constitution synchronization and drift verification")
@@ -173,6 +198,9 @@ def build_parser() -> argparse.ArgumentParser:
     # export
     register_export_subparsers(subparsers)
 
+    # release
+    register_release_subparsers(subparsers)
+
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")
     p_curate.add_argument("curate_action", nargs="?", default=None, help="Curation action ('next')")
@@ -204,6 +232,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_worker.add_argument("--dry-run", action="store_true", help="Generate prompt without invoking agent")
     p_worker.add_argument("--no-merge", action="store_true", help="Do not merge branch to main on completion")
     p_worker.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
+    p_worker.add_argument("--telemetry", action="store_true", help="Display live autonomous worker fleet telemetry and worktree operations")
+    p_worker.add_argument("--json", action="store_true", help="Output telemetry as JSON")
 
     # cycle
     p_cycle = subparsers.add_parser("cycle", help="Execute end-to-end autonomous development cycle")

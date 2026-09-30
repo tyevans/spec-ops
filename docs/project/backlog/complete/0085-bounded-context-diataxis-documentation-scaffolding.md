@@ -1,20 +1,19 @@
 ---
-id: '0085'
+id: 0085
 title: Bounded-Context Diataxis Documentation Scaffolding and Living Spec Linking
-status: Refined
-created: 2026-09-29
+status: Complete
 dependencies:
-  - TASK-0064
-  - TASK-0015
+- TASK-0064
+- TASK-0015
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0003
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0071
+- US-0071
 target_bc: scaffold
 ---
 

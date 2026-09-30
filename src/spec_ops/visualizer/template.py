@@ -59,16 +59,17 @@ _BASE_SHELL = """<!DOCTYPE html>
   </header>
 
   <nav class="nav-tabs-bar" id="tab-nav">
-    <button class="tab-btn active" data-tab="graph" onclick="switchTab('graph')">🌐 Relationship Graph</button>
-    <button class="tab-btn" data-tab="matrix" onclick="switchTab('matrix')">🗂️ Project Matrix</button>
-    <button class="tab-btn" data-tab="gantt" onclick="switchTab('gantt')">📊 Gantt & Timeline</button>
-    <button class="tab-btn" data-tab="kanban" onclick="switchTab('kanban')">📋 Kanban Board</button>
-    <button class="tab-btn" data-tab="prds" onclick="switchTab('prds')">🎯 PRDs & Features</button>
-    <button class="tab-btn" data-tab="adrs" onclick="switchTab('adrs')">🏛️ ADR Architecture</button>
-    <button class="tab-btn" data-tab="personas" onclick="switchTab('personas')">👥 Personas & Stories</button>
-    <button class="tab-btn" data-tab="lead" onclick="switchTab('lead')">⚡ Lead Console</button>
-    <button class="tab-btn" data-tab="security" onclick="switchTab('security')">🛡️ Security &amp; Compliance</button>
-    <button class="tab-btn" data-tab="uat" onclick="switchTab('uat')">📋 UAT Readiness</button>
+    <button class="tab-btn active" id="tab-graph" data-tab="graph" onclick="switchTab('graph')">🌐 Relationship Graph</button>
+    <button class="tab-btn" id="tab-matrix" data-tab="matrix" onclick="switchTab('matrix')">🗂️ Project Matrix</button>
+    <button class="tab-btn" id="tab-gantt" data-tab="gantt" onclick="switchTab('gantt')">📊 Gantt & Timeline</button>
+    <button class="tab-btn" id="tab-kanban" data-tab="kanban" onclick="switchTab('kanban')">📋 Kanban Board</button>
+    <button class="tab-btn" id="tab-prds" data-tab="prds" onclick="switchTab('prds')">🎯 PRDs & Features</button>
+    <button class="tab-btn" id="tab-adrs" data-tab="adrs" onclick="switchTab('adrs')">🏛️ ADR Architecture</button>
+    <button class="tab-btn" id="tab-personas" data-tab="personas" onclick="switchTab('personas')">👥 Personas & Stories</button>
+    <button class="tab-btn" id="tab-lead" data-tab="lead" onclick="switchTab('lead')" title="Live Autonomous Worker Fleet Telemetry and Lead Operations Console">⚡ Lead Console / Fleet Telemetry</button>
+    <button class="tab-btn" id="tab-security" data-tab="security" onclick="switchTab('security')">🛡️ Security &amp; Compliance</button>
+    <button class="tab-btn" id="tab-uat" data-tab="uat" onclick="switchTab('uat')">📋 UAT Readiness</button>
+    <button class="tab-btn" id="tab-sandbox" data-tab="sandbox" onclick="switchTab('sandbox')">🧪 PRD Sandbox</button>
   </nav>
 
   <main>
@@ -166,6 +167,24 @@ _BASE_SHELL = """<!DOCTYPE html>
         <button class="close-btn" onclick="closeDrawer()">&times;</button>
       </div>
       <div class="drawer-body" id="drawer-body"></div>
+    </div>
+
+    <div id="welcome-overlay" class="tour-overlay" style="display:none;">
+      <div id="welcome-modal" class="tour-modal">
+        <div class="tour-header">
+          <span class="tour-step-badge">Product Manager Onboarding</span>
+          <button class="tour-close-btn" onclick="dismissWelcomeModal()">&times;</button>
+        </div>
+        <h3 id="welcome-title">Welcome to SpecOps</h3>
+        <p id="welcome-desc">Take a 2-minute tour of SpecOps for Product Managers</p>
+        <p style="font-size:0.8rem; color:#94a3b8; margin-bottom:16px;">
+          Learn how to explore PRDs &amp; Features, Gantt timelines, UAT matrix, and deep-link permalinks with zero terminal jargon.
+        </p>
+        <div class="tour-footer">
+          <button class="ctrl-btn" id="welcome-skip-btn" onclick="dismissWelcomeModal()">Skip</button>
+          <button class="ctrl-btn active" id="welcome-start-btn" onclick="startGuidedTourFromWelcome()">Take a 2-minute tour of SpecOps for Product Managers</button>
+        </div>
+      </div>
     </div>
 
     <div id="tour-overlay" class="tour-overlay" style="display:none;">

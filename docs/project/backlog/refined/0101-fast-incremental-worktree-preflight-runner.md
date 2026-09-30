@@ -2,22 +2,23 @@
 id: '0101'
 title: Fast Incremental In-Worktree Preflight Runner with Targeted Step Isolation
 status: Refined
-created: 2026-09-30
 dependencies:
-  - TASK-0052
-  - TASK-0046
+- TASK-0052
+- TASK-0046
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0093
+- US-0093
 target_bc: rescue
+claimed_by: worker-3
+branch: feat/0101-fast-incremental-in-worktree-preflight-r
 ---
 
 # TASK-0101: Fast Incremental In-Worktree Preflight Runner with Targeted Step Isolation

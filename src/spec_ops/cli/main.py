@@ -8,9 +8,6 @@ from pathlib import Path
 from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
 from ..config.loader import load_config
-from ..scaffold.init import init_project
-from ..visualizer.generator import generate_standalone_html
-from ..visualizer.server import serve_visualizer
 from .parser import build_parser
 
 
@@ -33,14 +30,8 @@ def main() -> int:
         return handle_adr_command(args, config)
 
     if args.command == "scaffold":
-        if args.scaffold_action == "agents":
-            from ..scaffold.agents_md import scaffold_agents_command
-            msg = scaffold_agents_command(config.root_dir)
-            print(f"✨ {msg}")
-            return 0
-        else:
-            parser.parse_args(["scaffold", "--help"])
-            return 0
+        from .scaffold_handler import handle_scaffold_command
+        return handle_scaffold_command(args, config, parser)
 
     if args.command == "constitution":
         from ..scaffold.constitution_sync import check_constitution, sync_constitution
@@ -213,6 +204,10 @@ def main() -> int:
     if args.command == "export":
         from .export_handler import handle_export_command
         return handle_export_command(args, config, parser)
+
+    if args.command == "release":
+        from .release_handler import handle_release_command
+        return handle_release_command(args, config, parser)
 
     if args.command == "curate":
         if getattr(args, "curate_action", None) == "next":

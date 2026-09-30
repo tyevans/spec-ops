@@ -1,7 +1,7 @@
 ---
 id: '0065'
 title: Automated Reactive Unblocking Cascade and JIT Buffer Replenishment
-status: Refined
+status: Complete
 dependencies:
 - TASK-0064
 - TASK-0007

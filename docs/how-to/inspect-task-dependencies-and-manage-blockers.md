@@ -103,3 +103,20 @@ spec-ops queue unblock TASK-0052 \
 ```
 
 SpecOps records the resolution and ADR reference in the task frontmatter, re-evaluates upstream dependencies, and restores the task to `Refined` (if all prerequisites are fulfilled) or `Proposed`.
+
+---
+
+## 6. Automated Reactive Cascading Unblocking upon Task Completion
+
+When a prerequisite task is integrated into `main` via `spec-ops queue complete <task-id>`, SpecOps automatically triggers a reactive cascading unblocking engine:
+
+```bash
+spec-ops queue complete TASK-0013
+```
+
+The unblocking cascade:
+1. Moves the completed task to `docs/project/backlog/complete/` and syncs `PRIORITY.md`.
+2. Re-evaluates dependency graphs for all downstream tasks in `proposed/`.
+3. Promotes newly unblocked tasks into `docs/project/backlog/refined/` up to the lean ready buffer target (`buffer_target = 10`).
+4. Tags excess unblocked tasks with `unblocked: true` in their frontmatter and holds them in `proposed/` to prevent buffer overflow.
+5. Emits structured telemetry events (`{"event": "task_unblocked", "task_id": "...", ...}`) to stdout, appends to `.specops/events.log`, and outputs `.spec-ops/events/unblocked.json` for autonomous agent dispatchers.

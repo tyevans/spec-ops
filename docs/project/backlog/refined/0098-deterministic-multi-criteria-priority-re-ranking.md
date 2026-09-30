@@ -1,18 +1,18 @@
 ---
-id: '0098'
+id: 0098
 title: Deterministic Multi-Criteria Priority Re-Ranking and Topological Backlog Ordering
-status: Proposed
+status: Refined
 dependencies:
-  - TASK-0065
+- TASK-0065
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0007
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0074
+- US-0074
 target_bc: backlog
 ---
 

@@ -39,9 +39,12 @@ VIEWS_JS = r"""
   };
 
   function internalSwitchTab(tabName) {
+    if (tabName === "fleet" || tabName === "telemetry") {
+      tabName = "lead";
+    }
     activeTab = tabName;
     document.querySelectorAll(".tab-btn").forEach(btn => {
-      if (btn.dataset.tab === tabName) btn.classList.add("active");
+      if (btn.dataset.tab === tabName || (tabName === "lead" && (btn.dataset.tab === "fleet" || btn.dataset.tab === "telemetry"))) btn.classList.add("active");
       else btn.classList.remove("active");
     });
 
@@ -196,6 +199,8 @@ VIEWS_JS = r"""
       html = typeof window.renderSecurityRadarView === "function" ? window.renderSecurityRadarView() : "";
     } else if (activeTab === "uat") {
       html = typeof window.renderUatView === "function" ? window.renderUatView() : "";
+    } else if (activeTab === "sandbox") {
+      html = typeof window.renderSandboxView === "function" ? window.renderSandboxView() : "";
     } else {
       html = renderFilterBar();
       if (activeTab === "gantt") html += renderGanttView();
