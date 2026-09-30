@@ -17,8 +17,6 @@ governing_prds:
 governing_stories:
 - US-0090
 target_bc: rescue
-claimed_by: worker-3
-branch: feat/0097-preserved-worktree-ai-to-human-handover-
 ---
 
 # TASK-0097: Preserved Worktree AI-to-Human Handover Brief and Debug Cheatsheet Generator

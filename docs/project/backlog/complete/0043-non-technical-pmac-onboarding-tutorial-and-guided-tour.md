@@ -1,7 +1,7 @@
 ---
 id: '0043'
 title: Non-Technical PMaC Onboarding Tutorial, Interactive Tour, and Discovery Sandbox
-status: Refined
+status: Complete
 dependencies:
 - TASK-0015
 - TASK-0039
@@ -19,8 +19,6 @@ governing_prds:
 governing_stories:
 - US-0050
 target_bc: prd
-claimed_by: worker-3
-branch: feat/0043-non-technical-pmac-onboarding-tutorial--
 ---
 
 # TASK-0043: Non-Technical PMaC Onboarding Tutorial, Interactive Tour, and Discovery Sandbox

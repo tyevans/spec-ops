@@ -199,6 +199,8 @@ VIEWS_JS = r"""
       html = typeof window.renderSecurityRadarView === "function" ? window.renderSecurityRadarView() : "";
     } else if (activeTab === "uat") {
       html = typeof window.renderUatView === "function" ? window.renderUatView() : "";
+    } else if (activeTab === "sandbox") {
+      html = typeof window.renderSandboxView === "function" ? window.renderSandboxView() : "";
     } else {
       html = renderFilterBar();
       if (activeTab === "gantt") html += renderGanttView();
