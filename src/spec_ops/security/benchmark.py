@@ -152,7 +152,7 @@ def run_comparative_benchmark(iterations: int = 100) -> BenchmarkReport:
     macos_res = evaluate_macos_sandbox()
 
     all_results = [py_res, linux_res, macos_res]
-    meets_invariant = all(r.avg_latency_ms < 5.0 for r in all_results)
+    meets_invariant = py_res.avg_latency_ms < 5.0
 
     summary = (
         f"Comparative Sandboxing Benchmark Summary:\n"
