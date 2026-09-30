@@ -123,6 +123,14 @@ def build_parser() -> argparse.ArgumentParser:
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
     scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
 
+    # constitution
+    p_const = subparsers.add_parser("constitution", help="Living constitution synchronization and drift verification")
+    const_subs = p_const.add_subparsers(dest="constitution_action", help="Constitution action")
+    p_const_sync = const_subs.add_parser("sync", help="Synchronize AGENTS.md and operating manual while preserving custom invariants")
+    p_const_sync.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
+    p_const_check = const_subs.add_parser("check", help="Check for drift between specops.toml and AGENTS.md")
+    p_const_check.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
+
     # health
     p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
     p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")

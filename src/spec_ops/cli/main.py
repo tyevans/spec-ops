@@ -42,6 +42,24 @@ def main() -> int:
             parser.parse_args(["scaffold", "--help"])
             return 0
 
+    if args.command == "constitution":
+        from ..scaffold.constitution_sync import check_constitution, sync_constitution
+
+        repo_root = Path(getattr(args, "repo", ".")) if getattr(args, "repo", ".") != "." else config.root_dir
+        if args.constitution_action == "sync":
+            _, msg = sync_constitution(repo_root)
+            print(f"✨ {msg}")
+            return 0
+        elif args.constitution_action == "check":
+            in_sync, diff, msg = check_constitution(repo_root)
+            if not in_sync:
+                if diff:
+                    print(diff)
+                print(msg)
+                return 1
+            print(msg)
+            return 0
+
     if args.command == "adopt":
         from .adopt_handler import handle_adopt_command
         return handle_adopt_command(args)
