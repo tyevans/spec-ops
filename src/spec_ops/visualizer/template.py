@@ -64,6 +64,58 @@ _BASE_SHELL = """<!DOCTYPE html>
 
   <main>
     <div id="canvas-view">
+      <div class="graph-filter-toolbar" id="graph-filter-toolbar">
+        <div class="toolbar-left">
+          <select class="filter-select preset-select" id="graph-preset-select" onchange="applyPerspectivePreset(this.value)" title="Choose a perspective preset">
+            <option value="default">🌐 Perspective: Default</option>
+            <option value="bc">🪐 Bounded Context Clusters</option>
+            <option value="delivery">⚡ Active Delivery</option>
+            <option value="architecture">🏛️ Architecture &amp; ADRs</option>
+            <option value="flow">🌊 Traceability Flow</option>
+            <option value="custom" disabled hidden>⚙️ Custom Perspective</option>
+          </select>
+
+          <button class="ctrl-btn cluster-toggle-btn" id="btn-cluster-bc" onclick="toggleBcClustering()" title="Group and cluster nodes by Bounded Context">
+            📦 Cluster: BC
+          </button>
+
+          <select class="filter-select" id="graph-bc-select" onchange="window.setFilter('bc', this.value)" title="Filter by Bounded Context">
+            <option value="all">All Bounded Contexts</option>
+          </select>
+
+          <select class="filter-select" id="graph-status-select" onchange="window.setFilter('status', this.value)" title="Filter by status">
+            <option value="all">All Statuses</option>
+            <option value="Complete">Complete</option>
+            <option value="Refined">Refined</option>
+            <option value="Proposed">Proposed</option>
+          </select>
+
+          <button class="ctrl-btn" id="graph-hide-done-btn" onclick="toggleHideDone()" title="Hide complete tasks">
+            👁️ Hide Done
+          </button>
+        </div>
+
+        <div class="toolbar-right">
+          <div class="type-pills-group" id="graph-type-pills">
+            <button class="type-pill-btn active" id="pill-toggle-task" onclick="toggleTypeFilter('task')" title="Toggle Tasks"><span class="dot" style="background:#10B981"></span>Tasks</button>
+            <button class="type-pill-btn active" id="pill-toggle-story" onclick="toggleTypeFilter('story')" title="Toggle Stories"><span class="dot" style="background:#06B6D4"></span>Stories</button>
+            <button class="type-pill-btn active" id="pill-toggle-prd" onclick="toggleTypeFilter('prd')" title="Toggle PRDs"><span class="dot" style="background:#F43F5E"></span>PRDs</button>
+            <button class="type-pill-btn active" id="pill-toggle-adr" onclick="toggleTypeFilter('adr')" title="Toggle ADRs"><span class="dot" style="background:#6366F1"></span>ADRs</button>
+            <button class="type-pill-btn active" id="pill-toggle-persona" onclick="toggleTypeFilter('persona')" title="Toggle Personas"><span class="dot" style="background:#F59E0B"></span>Personas</button>
+            <button class="type-pill-btn active" id="pill-toggle-bc" onclick="toggleTypeFilter('bc')" title="Toggle BC Nodes"><span class="dot" style="background:#EC4899"></span>BCs</button>
+          </div>
+
+          <select class="filter-select" id="graph-hop-select" onchange="setHopFilter(this.value)" title="Blast Radius / Neighborhood Hops">
+            <option value="all">Hops: All</option>
+            <option value="1">1-Hop</option>
+            <option value="2">2-Hops</option>
+          </select>
+
+          <span class="filter-count-badge" id="graph-filter-count">0 nodes</span>
+          <button class="ctrl-btn" id="btn-reset-filters" onclick="resetAllFilters()" title="Reset all filters">↺ Reset</button>
+        </div>
+      </div>
+
       <div class="legend">
         <div class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span> Persona</div>
         <div class="legend-item"><span class="legend-dot" style="background:#06B6D4"></span> Story</div>

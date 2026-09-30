@@ -198,17 +198,32 @@ LAYOUTS_JS = r"""
   };
 
   window.togglePhysics = function() {
-    isPhysicsRunning = !isPhysicsRunning;
+    if (typeof isPhysicsSleeping !== "undefined" && isPhysicsSleeping) {
+      if (typeof wakePhysics === "function") wakePhysics();
+      isPhysicsRunning = true;
+    } else {
+      isPhysicsRunning = !isPhysicsRunning;
+      if (isPhysicsRunning && typeof wakePhysics === "function") wakePhysics();
+    }
     updatePhysicsBtn();
   };
 
   function updatePhysicsBtn() {
     const btn = document.getElementById("btn-physics-toggle");
-    if (btn) btn.textContent = isPhysicsRunning ? "⏸️ Freeze" : "▶️ Run";
+    if (!btn) return;
+    if (typeof isPhysicsSleeping !== "undefined" && isPhysicsSleeping && isPhysicsRunning) {
+      btn.textContent = "💤 Idle (Sleep)";
+      btn.title = "Physics simulation idle to conserve CPU. Click to wake or freeze.";
+    } else {
+      btn.textContent = isPhysicsRunning ? "⏸️ Freeze" : "▶️ Run";
+      btn.title = isPhysicsRunning ? "Pause Force Simulation" : "Resume Force Simulation";
+    }
   }
+  window.updatePhysicsBtn = updatePhysicsBtn;
 
   window.shufflePhysics = function() {
     isPhysicsRunning = true;
+    if (typeof wakePhysics === "function") wakePhysics();
     updatePhysicsBtn();
     nodes.forEach(n => {
       n.vx += (Math.random() - 0.5) * 14;

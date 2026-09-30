@@ -3,6 +3,14 @@
 GRAPH_JS = r"""
   const data = window.PROJECT_DATA || {};
   const stats = data.health || {};
+  var filterState = window.filterState = window.filterState || {
+    query: "",
+    status: "all",
+    bc: "all",
+    linked: null,
+    hideDone: false,
+    groupBy: "release",
+  };
 
   const statMap = {
     "stat-tasks": stats.total_tasks || 0,
@@ -109,6 +117,9 @@ GRAPH_JS = r"""
     }))
     .filter(l => l.source && l.target);
 
+  window.nodes = nodes;
+  window.links = links;
+
   function matchesSearch(node) {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
@@ -122,7 +133,8 @@ GRAPH_JS = r"""
   let flowStages = [];
 
   function tick() {
-    if (isPhysicsRunning && currentLayout === "network") {
+    const isSleeping = typeof isPhysicsSleeping !== "undefined" && isPhysicsSleeping;
+    if (isPhysicsRunning && currentLayout === "network" && (!isSleeping || draggedNode)) {
       const nLen = nodes.length;
       for (let i = 0; i < nLen; i++) {
         for (let j = i + 1; j < nLen; j++) {
@@ -150,6 +162,11 @@ GRAPH_JS = r"""
         l.target.vx -= fx; l.target.vy -= fy;
       });
 
+      if (typeof applyBcClusteringForces === "function") {
+        applyBcClusteringForces();
+      }
+
+      let totalVelocity = 0;
       const cx = width / 2, cy = height / 2;
       nodes.forEach(n => {
         if (n === draggedNode) return;
@@ -162,7 +179,12 @@ GRAPH_JS = r"""
         }
         n.x += n.vx; n.y += n.vy;
         n.vx *= 0.88; n.vy *= 0.88;
+        totalVelocity += speed;
       });
+
+      if (typeof checkPhysicsSleep === "function") {
+        checkPhysicsSleep(totalVelocity);
+      }
     }
 
     if (targetPanX !== null && targetPanY !== null) {
@@ -209,10 +231,17 @@ GRAPH_JS = r"""
       ctx.setLineDash([]);
     }
 
+    if (typeof drawBcHulls === "function") {
+      drawBcHulls(ctx);
+    }
+
     links.forEach(l => {
-      const highlighted = !searchQuery || (matchesSearch(l.source) || matchesSearch(l.target));
-      ctx.strokeStyle = highlighted ? "rgba(255, 255, 255, 0.16)" : "rgba(255, 255, 255, 0.03)";
-      ctx.lineWidth = highlighted ? 1.2 : 0.6;
+      const sVis = typeof isNodeVisible === "function" ? isNodeVisible(l.source) : (!searchQuery || matchesSearch(l.source));
+      const tVis = typeof isNodeVisible === "function" ? isNodeVisible(l.target) : (!searchQuery || matchesSearch(l.target));
+      const highlighted = sVis && tVis;
+      const partial = sVis || tVis;
+      ctx.strokeStyle = highlighted ? "rgba(255, 255, 255, 0.22)" : (partial ? "rgba(56, 189, 248, 0.08)" : "rgba(255, 255, 255, 0.015)");
+      ctx.lineWidth = highlighted ? 1.4 : 0.6;
       ctx.beginPath();
       ctx.moveTo(l.source.x, l.source.y);
       ctx.lineTo(l.target.x, l.target.y);
@@ -220,11 +249,11 @@ GRAPH_JS = r"""
     });
 
     nodes.forEach(n => {
-      const match = matchesSearch(n);
-      ctx.globalAlpha = (!searchQuery || match) ? 1.0 : 0.15;
+      const visible = typeof isNodeVisible === "function" ? isNodeVisible(n) : (!searchQuery || matchesSearch(n));
+      ctx.globalAlpha = visible ? 1.0 : 0.08;
       ctx.fillStyle = n.color || "#8b5cf6";
-      ctx.shadowColor = (match && searchQuery) ? "#38bdf8" : (n.color || "#8b5cf6");
-      ctx.shadowBlur = (match && searchQuery) ? 16 : 6;
+      ctx.shadowColor = (visible && (searchQuery || focusedNodeId)) ? "#38bdf8" : (n.color || "#8b5cf6");
+      ctx.shadowBlur = (visible && (searchQuery || focusedNodeId)) ? 14 : (visible ? 5 : 0);
 
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
@@ -252,9 +281,11 @@ GRAPH_JS = r"""
         ctx.restore();
       }
 
-      ctx.fillStyle = "#e5e7eb";
-      ctx.font = "10px ui-monospace, SFMono-Regular, Menlo, monospace";
-      ctx.fillText(n.id, n.x + n.radius + 4, n.y + 3);
+      if (visible) {
+        ctx.fillStyle = "#e5e7eb";
+        ctx.font = "10px ui-monospace, SFMono-Regular, Menlo, monospace";
+        ctx.fillText(n.id, n.x + n.radius + 4, n.y + 3);
+      }
       ctx.globalAlpha = 1.0;
     });
 
@@ -268,6 +299,7 @@ GRAPH_JS = r"""
   }
 
   canvas.addEventListener("mousedown", e => {
+    if (typeof wakePhysics === "function") wakePhysics();
     targetPanX = null;
     targetPanY = null;
     const rect = canvas.getBoundingClientRect();
@@ -304,6 +336,7 @@ GRAPH_JS = r"""
 
   canvas.addEventListener("wheel", e => {
     e.preventDefault();
+    if (typeof wakePhysics === "function") wakePhysics();
     const rect = canvas.getBoundingClientRect();
     const sx = e.clientX - rect.left, sy = e.clientY - rect.top;
     const factor = e.deltaY < 0 ? 1.15 : 0.87;
@@ -313,17 +346,40 @@ GRAPH_JS = r"""
     zoom = newZoom;
   }, { passive: false });
 
-  window.zoomIn = () => { zoom = Math.min(4.5, zoom * 1.25); };
-  window.zoomOut = () => { zoom = Math.max(0.15, zoom / 1.25); };
-  window.resetZoom = () => { panX = 0; panY = 0; zoom = 1; };
+  window.zoomIn = () => { if (typeof wakePhysics === "function") wakePhysics(); zoom = Math.min(4.5, zoom * 1.25); };
+  window.zoomOut = () => { if (typeof wakePhysics === "function") wakePhysics(); zoom = Math.max(0.15, zoom / 1.25); };
+  window.resetZoom = () => { if (typeof wakePhysics === "function") wakePhysics(); panX = 0; panY = 0; zoom = 1; };
 
-  document.getElementById("search-input").addEventListener("input", e => {
-    searchQuery = e.target.value.trim();
-    if (typeof filterState !== "undefined") {
-      filterState.query = searchQuery;
+  const searchInputEl = document.getElementById("search-input");
+  if (searchInputEl) {
+    searchInputEl.addEventListener("input", e => {
+      searchQuery = e.target.value.trim();
+      if (typeof filterState !== "undefined") {
+        filterState.query = searchQuery;
+      }
+      if (typeof wakePhysics === "function") wakePhysics();
+      if (typeof updateGraphToolbarUI === "function") updateGraphToolbarUI();
+      if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+        updateUrl(false);
+      }
+    });
+  }
+
+  (function initBcOptions() {
+    const bcSelect = document.getElementById("graph-bc-select");
+    if (!bcSelect) return;
+    const bcs = Array.from(new Set(nodes.map(n => n.resolvedBc || n.bc).filter(Boolean))).sort();
+    if (typeof document.createElement === "function" && typeof bcSelect.appendChild === "function") {
+      bcs.forEach(bc => {
+        const opt = document.createElement("option");
+        opt.value = bc;
+        opt.textContent = bc;
+        bcSelect.appendChild(opt);
+      });
+    } else {
+      bcs.forEach(bc => {
+        bcSelect.innerHTML = (bcSelect.innerHTML || "") + `<option value="${bc}">${bc}</option>`;
+      });
     }
-    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
-      updateUrl(false);
-    }
-  });
+  })();
 """

@@ -29,7 +29,7 @@ VIEWS_JS = r"""
   }
 
   let activeTab = "graph";
-  const filterState = {
+  var filterState = window.filterState = window.filterState || {
     query: "",
     status: "all",
     bc: "all",
@@ -78,6 +78,12 @@ VIEWS_JS = r"""
       searchQuery = String(val).trim();
       const si = document.getElementById("search-input");
       if (si && si.value !== val) si.value = val;
+    }
+    if (typeof updateGraphToolbarUI === "function") {
+      updateGraphToolbarUI();
+    }
+    if (typeof wakePhysics === "function") {
+      wakePhysics();
     }
     renderActiveView();
     if (typeof updateUrl === "function" && !isSyncingFromUrl) {

@@ -31,6 +31,15 @@ ROUTING_JS = r"""
     const rawGroupBy = params.get("groupBy");
     const groupBy = rawGroupBy === "bc" ? "bc" : "release";
 
+    const rawTypes = params.get("types");
+    let types = null;
+    if (rawTypes) {
+      types = rawTypes.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
+    }
+
+    const hops = params.get("hops") || "all";
+    const preset = params.get("preset") || null;
+
     const linked = params.get("linked") || null;
     let entity = params.get("entity") || null;
 
@@ -39,7 +48,7 @@ ROUTING_JS = r"""
       if (trimmed) entity = trimmed;
     }
 
-    return { tab, q, status, bc, hideDone, groupBy, linked, entity };
+    return { tab, q, status, bc, hideDone, groupBy, linked, entity, types, hops, preset };
   }
 
   function serializeHash() {
@@ -62,6 +71,14 @@ ROUTING_JS = r"""
     }
     if (filterState.linked) {
       parts.push(`linked=${encodeURIComponent(filterState.linked)}`);
+    }
+    if (typeof graphFilterState !== "undefined" && graphFilterState.types) {
+      if (typeof ALL_ENTITY_TYPES !== "undefined" && graphFilterState.types.size < ALL_ENTITY_TYPES.length) {
+        parts.push(`types=${encodeURIComponent(Array.from(graphFilterState.types).join(","))}`);
+      }
+      if (graphFilterState.hops && graphFilterState.hops !== "all") {
+        parts.push(`hops=${encodeURIComponent(graphFilterState.hops)}`);
+      }
     }
     if (currentEntity && (currentEntity.id || currentEntity.name)) {
       parts.push(`entity=${encodeURIComponent(currentEntity.id || currentEntity.name)}`);
@@ -92,9 +109,30 @@ ROUTING_JS = r"""
     filterState.groupBy = state.groupBy || "release";
     filterState.linked = state.linked || null;
 
+    if (typeof graphFilterState !== "undefined") {
+      if (state.types && Array.isArray(state.types) && state.types.length > 0) {
+        graphFilterState.types = new Set(state.types);
+      }
+      if (state.hops) {
+        graphFilterState.hops = state.hops;
+      }
+      if (state.groupBy === "bc") {
+        graphFilterState.preset = "bc";
+      } else if (state.preset) {
+        graphFilterState.preset = state.preset;
+      }
+    }
+
     searchQuery = filterState.query;
     const searchInput = document.getElementById("search-input");
     if (searchInput) searchInput.value = filterState.query;
+
+    if (typeof updateGraphToolbarUI === "function") {
+      updateGraphToolbarUI();
+    }
+    if (typeof wakePhysics === "function") {
+      wakePhysics();
+    }
 
     if (activeTab !== "graph") {
       renderActiveView();

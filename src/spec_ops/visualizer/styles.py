@@ -109,10 +109,45 @@ main { flex: 1; display: flex; position: relative; overflow: hidden; }
 #network-canvas { flex: 1; width: 100%; height: 100%; background: radial-gradient(circle at center, #111827 0%, #030712 100%); cursor: grab; }
 #network-canvas:active { cursor: grabbing; }
 
+/* Graph Canvas Filter Toolbar */
+.graph-filter-toolbar {
+  position: absolute; top: 10px; left: 14px; right: 14px;
+  background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; display: flex; justify-content: space-between;
+  align-items: center; gap: 8px; z-index: 10; flex-wrap: wrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
+.toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.type-pills-group {
+  display: flex; align-items: center; gap: 3px;
+  background: rgba(11, 15, 25, 0.6); border: 1px solid var(--border-subtle);
+  border-radius: 6px; padding: 2px 4px;
+}
+.type-pill-btn {
+  background: transparent; border: 1px solid transparent; border-radius: 4px;
+  padding: 3px 6px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s ease;
+}
+.type-pill-btn .dot { width: 7px; height: 7px; border-radius: 50%; opacity: 0.5; }
+.type-pill-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+.type-pill-btn.active {
+  background: rgba(255, 255, 255, 0.1); color: #fff; border-color: rgba(255, 255, 255, 0.2);
+}
+.type-pill-btn.active .dot { opacity: 1; box-shadow: 0 0 6px currentColor; }
+.filter-count-badge {
+  font-size: 0.72rem; color: var(--text-muted); padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.05); border-radius: 4px; white-space: nowrap; font-family: monospace;
+}
+.cluster-toggle-btn.active {
+  background: rgba(236, 72, 153, 0.2); border-color: #ec4899; color: #f472b6;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.25);
+}
+
 .legend {
-  position: absolute; top: 14px; left: 14px; background: var(--card-bg);
+  position: absolute; top: 56px; left: 14px; background: var(--card-bg);
   backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: 8px;
-  padding: 10px 14px; font-size: 0.74rem; z-index: 5; display: flex; flex-direction: column; gap: 5px; pointer-events: none;
+  padding: 8px 12px; font-size: 0.72rem; z-index: 5; display: flex; flex-direction: column; gap: 4px; pointer-events: none;
 }
 .legend-item { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
 .legend-dot { width: 9px; height: 9px; border-radius: 50%; }

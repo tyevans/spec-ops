@@ -196,13 +196,32 @@ DRAWER_JS = r"""
   }
 
   function renderBcCard(b) {
+    const bcName = b.id || b.name || b.bc || "";
     return `
       <div class="card-box">
-        <div class="card-box-title">Deployed Tasks</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="entity-pill pill-bc">Architectural Boundary</span>
+          <button class="ctrl-btn" onclick="window.filterByBc('${bcName}')" title="Isolate this Bounded Context on Graph">🔍 Isolate on Graph</button>
+        </div>
+      </div>
+      <div class="card-box">
+        <div class="card-box-title">Deployed Tasks (${(b.tasks || []).length})</div>
         <div class="pills-container">${b.tasks && b.tasks.length ? b.tasks.map(t => pill(t, "task")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div>
       </div>
     `;
   }
+
+  window.filterByBc = function(bcName, targetTab) {
+    if (!bcName) return;
+    window.setFilter('bc', bcName);
+    if (targetTab) {
+      window.switchTab(targetTab);
+    } else if (activeTab !== 'graph') {
+      window.switchTab('graph');
+    }
+    if (typeof updateGraphToolbarUI === "function") updateGraphToolbarUI();
+    if (typeof wakePhysics === "function") wakePhysics();
+  };
 
   window.openDrawer = function(id) {
     const match = findEntity(id);
