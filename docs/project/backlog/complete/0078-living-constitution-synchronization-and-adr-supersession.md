@@ -1,7 +1,7 @@
 ---
 id: 0078
 title: Architectural Decision Record Supersession and Deprecation Workflow
-status: Refined
+status: Complete
 dependencies:
 - TASK-0010
 - TASK-0063
@@ -16,8 +16,6 @@ governing_prds:
 governing_stories:
 - US-0014
 target_bc: scaffold
-claimed_by: worker-3
-branch: feat/0078-architectural-decision-record-supersessi
 ---
 
 # TASK-0078: Architectural Decision Record Supersession and Deprecation Workflow

@@ -125,7 +125,11 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         title=str(meta.get("title", file_path.stem)),
         status=status,
         dependencies=[str(d) for d in meta.get("dependencies", [])],
-        governing_adrs=[str(a) for a in meta.get("governing_adrs", [])],
+        governing_adrs=(
+            [str(a) for a in meta.get("governing_adrs", [])]
+            if "governing_adrs" in meta
+            else ([str(meta["governing_adr"])] if "governing_adr" in meta else [])
+        ),
         governing_prds=[str(p) for p in meta.get("governing_prds", [])],
         governing_stories=[str(s) for s in (meta.get("governing_stories") or meta.get("stories") or ([meta["story"]] if "story" in meta else []))],
         target_bc=str(meta.get("target_bc", "")),

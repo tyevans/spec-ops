@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from .parser_subcommands import register_prd_subparsers, register_profile_subparsers
+from .parser_subcommands import register_adr_subparsers, register_prd_subparsers, register_profile_subparsers
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -116,6 +116,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     # profiles
     register_profile_subparsers(subparsers)
+
+    # adr
+    register_adr_subparsers(subparsers)
 
     # scaffold
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")

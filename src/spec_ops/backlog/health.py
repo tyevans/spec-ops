@@ -72,6 +72,7 @@ class HealthCheckReport:
     priority_sync_ok: bool = True
     sync_errors: list[str] = field(default_factory=list)
     constitution_drift_warnings: list[str] = field(default_factory=list)
+    superseded_adr_warnings: list[str] = field(default_factory=list)
 
     @property
     def is_healthy(self) -> bool:
@@ -202,10 +203,28 @@ class HealthChecker:
 
         return validate_security_policy(self.root_dir)
 
+    def check_superseded_adrs(self) -> list[str]:
+        from ..adrs.supersede import discover_superseded_adrs, find_tasks_citing_adr
+
+        adrs_dir = self.root_dir / "docs" / "project" / "adrs"
+        superseded_map = discover_superseded_adrs(adrs_dir)
+        if not superseded_map:
+            return []
+
+        warnings: list[str] = []
+        for old_id in sorted(superseded_map.keys()):
+            citing_tasks = find_tasks_citing_adr(self.backlog_dir, old_id)
+            for tid in sorted(citing_tasks):
+                msg = f"Task {tid} cites superseded {old_id}; requires architectural re-refinement"
+                if msg not in warnings:
+                    warnings.append(msg)
+        return warnings
+
     def run_check(self) -> HealthCheckReport:
         violations, warnings, top_files = self.scan_file_lengths()
         sync_ok, sync_errors = self.check_priority_sync()
         constitution_warnings = self.check_constitution()
+        superseded_adr_warnings = self.check_superseded_adrs()
 
         complete_count = 0
         refined_count = 0
@@ -243,4 +262,5 @@ class HealthChecker:
             priority_sync_ok=sync_ok,
             sync_errors=sync_errors,
             constitution_drift_warnings=constitution_warnings,
+            superseded_adr_warnings=superseded_adr_warnings,
         )

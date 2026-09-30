@@ -63,7 +63,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0064 (Complete)**: [`0064-interactive-init-wizard-and-headless-ci-automation`](complete/0064-interactive-init-wizard-and-headless-ci-automation.md)
 - **TASK-0060 (Complete)**: [`0060-graph-cycle-resolution-topological-sorting-and-orphan-audit`](complete/0060-graph-cycle-resolution-topological-sorting-and-orphan-audit.md)
 - **TASK-0077 (Complete)**: [`0077-profile-version-lifecycle-and-semantic-migrations`](complete/0077-profile-version-lifecycle-and-semantic-migrations.md)
-- **TASK-0078 (Refined)**: [`0078-living-constitution-synchronization-and-adr-supersession`](refined/0078-living-constitution-synchronization-and-adr-supersession.md)
+- **TASK-0078 (Complete)**: [`0078-living-constitution-synchronization-and-adr-supersession`](complete/0078-living-constitution-synchronization-and-adr-supersession.md)
 - **TASK-0042 (Refined)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](refined/0042-executive-roadmap-exporter-and-release-notes-generator.md)
 - **TASK-0069 (Complete)**: [`0069-visualizer-url-hash-sync-and-stakeholder-guided-tour`](complete/0069-visualizer-url-hash-sync-and-stakeholder-guided-tour.md)
 - **TASK-0072 (Complete)**: [`0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor`](complete/0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor.md)

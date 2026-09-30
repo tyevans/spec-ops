@@ -18,6 +18,8 @@ governing_stories:
 - US-0040
 - US-0041
 target_bc: visualizer
+claimed_by: worker-3
+branch: feat/0073-living-diataxis-documentation-drift-guar
 ---
 
 # TASK-0073: Living Diataxis Documentation Drift Guard and Visualizer Blast Radius CLI Bridge

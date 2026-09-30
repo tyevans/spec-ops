@@ -28,6 +28,10 @@ def main() -> int:
         from .profile_handler import handle_profile_command
         return handle_profile_command(args, config)
 
+    if args.command == "adr":
+        from .adr_handler import handle_adr_command
+        return handle_adr_command(args, config)
+
     if args.command == "scaffold":
         if args.scaffold_action == "agents":
             from ..scaffold.agents_md import scaffold_agents_command
@@ -123,6 +127,11 @@ def main() -> int:
                 print(f"   - {cw}")
         else:
             print("✅ 0 file limit violations (<500 lines) and 0 constitution drift warnings.")
+
+        if getattr(report, "superseded_adr_warnings", None):
+            print(f"\n⚠️ {len(report.superseded_adr_warnings)} Superseded ADR Warning(s):")
+            for sw in report.superseded_adr_warnings:
+                print(f"   - {sw}")
 
         print("\nBacklog State:")
         print(f"   Complete Tasks: {report.completed_tasks}")

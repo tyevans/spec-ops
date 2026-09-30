@@ -92,3 +92,13 @@ def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_prof_up.add_argument("--force", action="store_true", help="Force upgrade and overwrite conflicting local ADR modifications")
     p_prof_up.add_argument("--action", choices=["keep-local", "accept-upstream", "custom", "diff", "abort"], default=None, help="Conflict resolution action")
 
+
+def register_adr_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers Architectural Decision Record (ADR) lifecycle commands."""
+    p_adr = subparsers.add_parser("adr", help="Architectural Decision Record (ADR) lifecycle and supersession")
+    adr_subs = p_adr.add_subparsers(dest="adr_action", help="ADR action")
+
+    p_sup = adr_subs.add_parser("supersede", help="Supersede an existing ADR with a new decision")
+    p_sup.add_argument("old_id", help="Canonical ID or path of superseded ADR (e.g. ADR-0003)")
+    p_sup.add_argument("new_id_pos", nargs="?", default=None, help="Superseding ADR identifier or path")
+    p_sup.add_argument("--by", "--with", dest="by", default=None, help="Superseding ADR identifier or path (e.g. ADR-0015)")

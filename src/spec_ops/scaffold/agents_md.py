@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -15,6 +17,8 @@ def generate_agents_md(
     adrs: list[ADRDefinition] | None = None,
     file_length_limit: int = 500,
     custom_invariants: list[str] | None = None,
+    root_dir: Path | None = None,
+    superseded_map: dict[str, str] | None = None,
 ) -> str:
     """Generates an opinionated AGENTS.md constitution tailored to active architectural profiles."""
     profiles_lower = {p.lower() for p in profiles}
@@ -78,6 +82,22 @@ def generate_agents_md(
                 f"{idx}. **Compliance Invariant**:\n"
                 f"   - {inv}"
             )
+
+    if superseded_map and root_dir:
+        from ..adrs.supersede import find_adr_file, parse_adr_info
+        adrs_dir = root_dir / "docs" / "project" / "adrs"
+        for i, inv in enumerate(invariants):
+            for old_id, new_id in superseded_map.items():
+                if old_id in inv:
+                    new_title = new_id
+                    try:
+                        f = find_adr_file(adrs_dir, new_id)
+                        _, _, new_title, _ = parse_adr_info(f)
+                    except Exception:
+                        pass
+                    updated = re.sub(r"\*\*([^*]+)\*\*:", f"**{new_title}**:", inv, count=1)
+                    updated = re.sub(rf"Governed by {re.escape(old_id)}\.?", f"Governed by {new_id}.", updated)
+                    invariants[i] = updated
 
     invariants_text = "\n".join(invariants)
 
@@ -231,9 +251,35 @@ def scaffold_agents_command(root_dir: Path) -> str:
             if "security" not in profiles:
                 profiles.append("security")
 
+    adrs_dir = root_dir / "docs" / "project" / "adrs"
+    superseded_map: dict[str, str] = {}
+    try:
+        from ..adrs.supersede import discover_superseded_adrs
+        superseded_map = discover_superseded_adrs(adrs_dir)
+    except Exception:
+        pass
+
     adrs = resolve_adrs_for_profiles(profiles)
-    content = generate_agents_md(cfg.project.name, profiles, adrs)
+    content = generate_agents_md(
+        cfg.project.name,
+        profiles,
+        adrs,
+        root_dir=root_dir,
+        superseded_map=superseded_map,
+    )
     agents_path = root_dir / "AGENTS.md"
+    old_content = agents_path.read_text(encoding="utf-8") if agents_path.exists() else ""
     agents_path.write_text(content, encoding="utf-8")
+
+    if (root_dir / ".git").exists() and superseded_map and content != old_content:
+        trailers = [f"SpecOps-ADR: {new_id}" for new_id in sorted(set(superseded_map.values()))]
+        trailer_str = "\n".join(trailers)
+        commit_msg = f"docs: re-synchronize AGENTS.md constitution\n\n{trailer_str}"
+        try:
+            subprocess.run(["git", "add", "AGENTS.md"], cwd=root_dir, check=True, capture_output=True)
+            subprocess.run(["git", "commit", "-m", commit_msg], cwd=root_dir, check=True, capture_output=True)
+        except subprocess.SubprocessError:
+            pass
+
     return "AGENTS.md updated successfully with active profile invariants."
 
