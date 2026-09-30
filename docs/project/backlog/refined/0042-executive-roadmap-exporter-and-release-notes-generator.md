@@ -18,8 +18,6 @@ governing_prds:
 governing_stories:
 - US-0047
 target_bc: prd
-claimed_by: worker-3
-branch: feat/0042-executive-roadmap-visualizer-and-milesto
 ---
 
 # TASK-0042: Executive Roadmap Visualizer and Milestone Horizon Exporter

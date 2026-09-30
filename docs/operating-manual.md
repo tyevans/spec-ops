@@ -49,6 +49,9 @@ These security and supply-chain guardrails are non-negotiable across all autonom
 2. **Lockfile Immutability**: Autonomous agents are strictly forbidden from modifying unapproved lockfiles (`uv.lock`, `package-lock.json`) without explicit human architectural approval.
 3. **Allowlisted Command Execution**: Autonomous agents are strictly forbidden from executing non-allowlisted shell commands outside approved development toolchains.
 
+<!-- BEGIN CUSTOM INVARIANTS -->
+<!-- END CUSTOM INVARIANTS -->
+
 ---
 
 ## Design Principles

@@ -13,8 +13,13 @@ from ..security.lockfile import verify_lockfile
 
 
 def handle_audit_command(args: argparse.Namespace, config: SpecOpsConfig, parser: argparse.ArgumentParser) -> int:
-    """Executes 'spec-ops audit' commands (export, verify, dependencies)."""
+    """Executes 'spec-ops audit' commands (export, verify, dependencies, provenance)."""
     action = getattr(args, "audit_action", None)
+
+    if action in ("provenance", "traceability"):
+        from ..core.provenance import run_provenance_audit
+
+        return run_provenance_audit(args, config)
 
     if action == "export":
         from ..security.audit.exporter import export_compliance_manifest

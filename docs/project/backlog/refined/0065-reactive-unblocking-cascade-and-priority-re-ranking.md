@@ -2,21 +2,22 @@
 id: '0065'
 title: Automated Reactive Unblocking Cascade and JIT Buffer Replenishment
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0064
-  - TASK-0007
+- TASK-0064
+- TASK-0007
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0006
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0006
+- ADR-0007
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0073
+- US-0073
 target_bc: backlog
+claimed_by: worker-3
+branch: feat/0065-automated-reactive-unblocking-cascade-an
 ---
 
 # TASK-0065: Automated Reactive Unblocking Cascade and JIT Buffer Replenishment

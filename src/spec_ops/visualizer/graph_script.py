@@ -48,9 +48,15 @@ GRAPH_JS = r"""
     return false;
   }
 
+  let focusedNeighbors = new Set();
+  window.getFocusedNeighbors = function() {
+    return Array.from(focusedNeighbors);
+  };
+
   window.focusNode = function(nodeId, immediate = false, targetZoom = 1.5) {
     if (!nodeId) {
       focusedNodeId = null;
+      focusedNeighbors.clear();
       targetPanX = null;
       targetPanY = null;
       return;
@@ -60,6 +66,11 @@ GRAPH_JS = r"""
     if (target) {
       focusedNodeId = target.id;
       zoom = targetZoom || 1.5;
+      focusedNeighbors.clear();
+      links.forEach(l => {
+        if (matchNode(l.source, cleanId)) focusedNeighbors.add(l.target.id);
+        if (matchNode(l.target, cleanId)) focusedNeighbors.add(l.source.id);
+      });
       const cw = width || (canvas && canvas.clientWidth) || 1000;
       const ch = height || (canvas && canvas.clientHeight) || 800;
       targetPanX = cw / 2 - target.x * zoom;
@@ -224,25 +235,18 @@ GRAPH_JS = r"""
       ctx.setLineDash([4, 6]);
       ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
       ctx.lineWidth = 1;
-      rings.forEach(r => {
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.stroke();
-      });
+      rings.forEach(r => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke(); });
       ctx.setLineDash([]);
     }
 
-    if (typeof drawBcHulls === "function") {
-      drawBcHulls(ctx);
-    }
+    if (typeof drawBcHulls === "function") drawBcHulls(ctx);
 
     links.forEach(l => {
       const sVis = typeof isNodeVisible === "function" ? isNodeVisible(l.source) : (!searchQuery || matchesSearch(l.source));
       const tVis = typeof isNodeVisible === "function" ? isNodeVisible(l.target) : (!searchQuery || matchesSearch(l.target));
-      const highlighted = sVis && tVis;
-      const partial = sVis || tVis;
-      ctx.strokeStyle = highlighted ? "rgba(255, 255, 255, 0.22)" : (partial ? "rgba(56, 189, 248, 0.08)" : "rgba(255, 255, 255, 0.015)");
-      ctx.lineWidth = highlighted ? 1.4 : 0.6;
+      const isConnected = focusedNodeId && (matchNode(l.source, String(focusedNodeId).toUpperCase()) || matchNode(l.target, String(focusedNodeId).toUpperCase()));
+      ctx.strokeStyle = isConnected ? "rgba(56, 189, 248, 0.85)" : ((sVis && tVis) ? "rgba(255, 255, 255, 0.22)" : ((sVis || tVis) ? "rgba(56, 189, 248, 0.08)" : "rgba(255, 255, 255, 0.015)"));
+      ctx.lineWidth = isConnected ? 2.4 : ((sVis && tVis) ? 1.4 : 0.6);
       ctx.beginPath();
       ctx.moveTo(l.source.x, l.source.y);
       ctx.lineTo(l.target.x, l.target.y);
@@ -251,10 +255,12 @@ GRAPH_JS = r"""
 
     nodes.forEach(n => {
       const visible = typeof isNodeVisible === "function" ? isNodeVisible(n) : (!searchQuery || matchesSearch(n));
-      ctx.globalAlpha = visible ? 1.0 : 0.08;
+      const isFocus = focusedNodeId && matchNode(n, String(focusedNodeId).toUpperCase());
+      const isNeighbor = focusedNeighbors && focusedNeighbors.has(n.id);
+      ctx.globalAlpha = visible ? 1.0 : (isFocus || isNeighbor ? 1.0 : 0.08);
       ctx.fillStyle = n.color || "#8b5cf6";
-      ctx.shadowColor = (visible && (searchQuery || focusedNodeId)) ? "#38bdf8" : (n.color || "#8b5cf6");
-      ctx.shadowBlur = (visible && (searchQuery || focusedNodeId)) ? 14 : (visible ? 5 : 0);
+      ctx.shadowColor = (isFocus || isNeighbor || (visible && searchQuery)) ? "#38bdf8" : (n.color || "#8b5cf6");
+      ctx.shadowBlur = isFocus ? 16 : (isNeighbor ? 12 : ((visible && searchQuery) ? 14 : (visible ? 5 : 0)));
 
       ctx.beginPath();
       ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);

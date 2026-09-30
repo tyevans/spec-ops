@@ -42,6 +42,24 @@ def main() -> int:
             parser.parse_args(["scaffold", "--help"])
             return 0
 
+    if args.command == "constitution":
+        from ..scaffold.constitution_sync import check_constitution, sync_constitution
+
+        repo_root = Path(getattr(args, "repo", ".")) if getattr(args, "repo", ".") != "." else config.root_dir
+        if args.constitution_action == "sync":
+            _, msg = sync_constitution(repo_root)
+            print(f"✨ {msg}")
+            return 0
+        elif args.constitution_action == "check":
+            in_sync, diff, msg = check_constitution(repo_root)
+            if not in_sync:
+                if diff:
+                    print(diff)
+                print(msg)
+                return 1
+            print(msg)
+            return 0
+
     if args.command == "adopt":
         from .adopt_handler import handle_adopt_command
         return handle_adopt_command(args)
@@ -55,7 +73,12 @@ def main() -> int:
         return handle_init_command(args)
 
     if args.command == "docs":
-        if args.docs_action == "audit":
+        if args.docs_action == "check":
+            from ..docs.checker import run_docs_check
+
+            docs_dir = Path(args.dir).resolve() if getattr(args, "dir", None) else config.docs_dir
+            return run_docs_check(docs_dir, parser=parser)
+        elif args.docs_action == "audit":
             from ..docs.auditor import DocsAuditor
             docs_dir = Path(args.dir).resolve() if getattr(args, "dir", None) else config.docs_dir
             auditor = DocsAuditor(docs_dir, parser=parser)
@@ -257,20 +280,9 @@ def main() -> int:
         return 0
 
     if args.command == "visualizer":
-        from ..visualizer.bundle import export_bundle
+        from ..visualizer.cli_bridge import handle_visualizer_command
 
-        if getattr(args, "viz_action", None) == "export":
-            target = getattr(args, "out_pos", None) or getattr(args, "output", "dist/index.html")
-            out_file = export_bundle(config, output_path=target)
-            print(f"✅ Exported standalone visualizer bundle to {out_file}")
-            return 0
-        elif args.build:
-            out_file = export_bundle(config, output_path=args.build)
-            print(f"✅ Exported standalone visualizer bundle to {out_file}")
-            return 0
-        else:
-            serve_visualizer(config, port=args.port)
-            return 0
+        return handle_visualizer_command(args, config)
 
     if args.command == "worker":
         from .cycle_handler import handle_worker_command
@@ -349,6 +361,10 @@ def main() -> int:
     if args.command == "doctor":
         from ..rescue.doctor import handle_doctor_command
         return handle_doctor_command(args, config)
+
+    if args.command == "test":
+        from .test_handler import handle_test_command
+        return handle_test_command(args, config, parser)
 
     return 0
 

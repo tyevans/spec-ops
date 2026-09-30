@@ -52,6 +52,22 @@ If `#tab` is omitted, the visualizer activates the default context for the entit
 
 ---
 
+## Inspecting Blast Radius via CLI
+
+During code review or refactoring, engineers can launch the visualizer focused directly on a task entity:
+
+```bash
+spec-ops visualizer --serve --entity TASK-0009
+```
+
+This:
+1. Starts the local visualizer server on port 8787.
+2. Automatically opens the browser to `#entity=TASK-0009`.
+3. Centers the 2D relationship graph on the entity and highlights its immediate upstream stories and downstream dependents.
+4. Opens the task detail drawer with full metadata, linked PRDs, and the **Target Bounded Context** field showing filterable pills for related tasks in the same architectural boundary.
+
+---
+
 ## Preserving Faceted Filters and Search Queries
 
 Filter parameters can be combined in the URL hash to share exact triage views with teammates:

@@ -4,7 +4,16 @@ from __future__ import annotations
 
 import argparse
 
-from .parser_subcommands import register_adr_subparsers, register_prd_subparsers, register_profile_subparsers
+from .parser_subcommands import (
+    register_adr_subparsers,
+    register_audit_subparsers,
+    register_graph_subparsers,
+    register_prd_subparsers,
+    register_profile_subparsers,
+    register_queue_subparsers,
+    register_spike_subparsers,
+    register_test_subparsers,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -98,21 +107,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_audit = docs_subs.add_parser("audit", help="Audit Diataxis documentation structure, CLI drift, and code snippets")
     p_audit.add_argument("--dir", help="Documentation directory (default: docs/)")
     p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
+    p_check = docs_subs.add_parser("check", help="Audit public CLI commands against Diataxis documentation and flag drift")
+    p_check.add_argument("--dir", help="Documentation directory (default: docs/)")
 
     # audit
-    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies, compliance manifests, and security policies")
-    audit_subs = p_audit_cmd.add_subparsers(dest="audit_action", help="Audit action")
-    p_audit_deps = audit_subs.add_parser("dependencies", help="Scan dependencies for CVEs and license allowlist compliance")
-    p_audit_deps.add_argument("--path", default=".", help="Directory containing dependencies (default: current directory)")
-    p_audit_deps.add_argument("--offline", action="store_true", help="Run in air-gapped/offline mode with local cache")
-
-    p_audit_export = audit_subs.add_parser("export", help="Compile and export tamper-evident Merkle compliance audit manifest")
-    p_audit_export.add_argument("--standard", default="soc2", help="Compliance standard profile (e.g. soc2, iso27001, hipaa)")
-    p_audit_export.add_argument("--output", default="dist/compliance/", help="Output directory for compliance manifest and root hash")
-
-    p_audit_verify = audit_subs.add_parser("verify", help="Verify cryptographic compliance manifest integrity and SDLC traceability")
-    p_audit_verify.add_argument("--manifest", default="dist/compliance/soc2-audit-manifest.json", help="Path to compliance manifest JSON")
-    p_audit_verify.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
+    register_audit_subparsers(subparsers)
 
     # profiles
     register_profile_subparsers(subparsers)
@@ -124,6 +123,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
     scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
+
+    # constitution
+    p_const = subparsers.add_parser("constitution", help="Living constitution synchronization and drift verification")
+    const_subs = p_const.add_subparsers(dest="constitution_action", help="Constitution action")
+    p_const_sync = const_subs.add_parser("sync", help="Synchronize AGENTS.md and operating manual while preserving custom invariants")
+    p_const_sync.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
+    p_const_check = const_subs.add_parser("check", help="Check for drift between specops.toml and AGENTS.md")
+    p_const_check.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
 
     # health
     p_health = subparsers.add_parser("health", help="Check file length invariants, buffer health, and priority sync")
@@ -151,34 +158,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_parse.add_argument("path", help="Path to markdown specification file to parse")
 
     # graph
-    p_graph = subparsers.add_parser("graph", help="Relational graph operations and compilation")
-    graph_subs = p_graph.add_subparsers(dest="graph_action", help="Graph action")
-    p_g_comp = graph_subs.add_parser("compile", help="Compile repository relational knowledge graph")
-    p_g_comp.add_argument("--incremental", action="store_true", help="Perform incremental compilation backed by content-addressed cache")
-    p_g_comp.add_argument("--json", action="store_true", help="Output compilation result and graph statistics as JSON")
-    p_g_comp.add_argument("--force-cold", action="store_true", help="Force a cold compilation rebuild regardless of cache state")
-
-    p_g_cyc = graph_subs.add_parser("cycles", help="Deterministic cycle detection via Tarjan SCC")
-    p_g_cyc.add_argument("--format", choices=["text", "json"], default="text", help="Output format (default: text)")
-    p_g_cyc.add_argument("--json", action="store_true", help="Output cycles as JSON")
-
-    p_g_sort = graph_subs.add_parser("sort", help="Deterministic topological backlog execution sorting")
-    p_g_sort.add_argument("--type", default="task", help="Entity type filter (default: task)")
-
-    p_g_ord = graph_subs.add_parser("order", help="Deterministic topological backlog execution ordering")
-    p_g_ord.add_argument("--type", default="task", help="Entity type filter (default: task)")
-
-    p_g_path = graph_subs.add_parser("path", help="Reachability pathfinding and lineage tracing")
-    p_g_path.add_argument("--from", dest="from_node", required=True, help="Origin entity ID (e.g. persona:taylor)")
-    p_g_path.add_argument("--to", dest="to_node", required=True, help="Destination entity ID (e.g. commit:a1b2c3d)")
-
-    p_g_blast = graph_subs.add_parser("blast-radius", help="Calculate downstream blast radius of entity")
-    p_g_blast.add_argument("entity", help="Target entity ID (e.g. ADR-0003)")
-
-    p_g_insp = graph_subs.add_parser("inspect", help="Inspect entity metadata, lineage card, and neighborhood")
-    p_g_insp.add_argument("entity", help="Target entity ID (e.g. TASK-0042)")
-
-    graph_subs.add_parser("audit", help="Full bidirectional graph traceability and orphan work item audit")
+    register_graph_subparsers(subparsers)
 
     # trace
     p_trace = subparsers.add_parser("trace", help="Audit end-to-end bidirectional graph linkages and traceability")
@@ -200,6 +180,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_viz = subparsers.add_parser("visualizer", help="Living 2D graph visualizer")
     p_viz.add_argument("--serve", action="store_true", help="Run local interactive web server")
     p_viz.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
+    p_viz.add_argument("--entity", default=None, help="Target entity ID to focus and inspect (e.g. TASK-0009)")
     p_viz.add_argument("--build", metavar="OUT_FILE", help="Generate standalone single-file HTML bundle")
     viz_subs = p_viz.add_subparsers(dest="viz_action", help="Visualizer subcommands")
     p_export = viz_subs.add_parser("export", help="Export standalone single-file HTML visualizer bundle")
@@ -232,12 +213,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     # rescue
     p_rescue = subparsers.add_parser("rescue", help="Inspect and recover stalled or failed autonomous worktrees")
-    p_rescue.add_argument("task_id", nargs="?", help="Target task canonical ID (e.g. TASK-0011, prune, or 0011)")
+    p_rescue.add_argument("task_id", nargs="?", help="Action ('triage', 'takeover', 'inspect', 'shell', 'prune') or target task canonical ID (e.g. TASK-0011)")
+    p_rescue.add_argument("target", nargs="?", default=None, help="Target task canonical ID when an action is specified (e.g. TASK-0011)")
     p_rescue.add_argument("--list", action="store_true", help="List all active/stalled worktrees")
     p_rescue.add_argument("--complete", action="store_true", help="Verify preflight and merge rescued worktree into main")
     p_rescue.add_argument("--discard", action="store_true", help="Discard worktree and branch")
     p_rescue.add_argument("--prune", action="store_true", help="Prune and clean up all stale/orphaned worktrees")
     p_rescue.add_argument("--dry-run", action="store_true", help="Dry-run preview of candidate worktrees and disk space")
+    p_rescue.add_argument("--file", default=None, help="Target file for AST / line count diff inspection in triage")
+    p_rescue.add_argument("--action", default=None, help="Direct triage action ([d]iff, [p]atch, [s]hell, [r]eset, [c]omplete, [q]uit)")
 
     # worktree
     p_worktree = subparsers.add_parser("worktree", help="Human developer worktree sandboxing and lifecycle management")
@@ -254,45 +238,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_tui.add_argument("--view", choices=["overview", "backlog", "tree", "health"], default="overview", help="Initial view to display (default: overview)")
 
     # queue
-    p_queue = subparsers.add_parser("queue", help="Manage backlog queue and task integration gates")
-    queue_subs = p_queue.add_subparsers(dest="queue_action", help="Queue action")
-
-    p_q_next = queue_subs.add_parser("next", help="Inspect next ready, unblocked backlog task")
-    p_q_next.add_argument("--json", action="store_true", help="Output next task as structured JSON")
-
-    p_q_refine = queue_subs.add_parser("refine", help="Validate Definition of Ready and promote task to refined")
-    p_q_refine.add_argument("task_id", help="Canonical task ID (e.g. TASK-0025 or 0025)")
-
-    p_q_comp = queue_subs.add_parser("complete", help="Gate and complete task integration under merge lock")
-    p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")
-    p_q_comp.add_argument("--base", default="main", help="Base branch for diff comparison (default: main)")
-
-    p_q_tree = queue_subs.add_parser("tree", help="Display task dependency tree, execution waves, and blockers")
-    p_q_tree.add_argument("--task", default=None, help="Focus tree on a specific task canonical ID (e.g. TASK-0054)")
-    p_q_tree.add_argument("--direction", choices=["blocks", "blocked-by"], default="blocks", help="Tree orientation: 'blocks' (forward execution flow) or 'blocked-by' (prerequisites)")
-    p_q_tree.add_argument("--reverse", action="store_true", help="Alias for --direction blocked-by")
-    p_q_tree.add_argument("--waves", action="store_true", help="Display execution horizons / delivery waves breakdown")
-    p_q_tree.add_argument("--all", action="store_true", help="Include completed tasks in dependency tree output")
-    p_q_tree.add_argument("--json", action="store_true", help="Output dependency DAG and waves as structured JSON")
-
-    p_q_block = queue_subs.add_parser("block", help="Mark a task as blocked by an unknown question or impediment")
-    p_q_block.add_argument("task_id", help="Canonical task ID (e.g. TASK-0052 or 0052)")
-    p_q_block.add_argument("--question", required=True, help="The unanswered question or unknown needing resolution")
-    p_q_block.add_argument("--type", default="unknown", choices=["unknown", "spike_needed", "external", "dependency"], help="Type of blocker (default: unknown)")
-    p_q_block.add_argument("--spike", action="store_true", help="Automatically scaffold an isolated architectural spike and test harness")
-    p_q_block.add_argument("--timebox", default="2h", help="Timebox for the created spike (default: 2h)")
-    p_q_block.add_argument("--raised-by", default="", help="Identifier of person or agent raising the blocker")
-
-    p_q_unblock = queue_subs.add_parser("unblock", help="Resolve an unknown/blocker and restore ready/proposed state")
-    p_q_unblock.add_argument("task_id", help="Canonical task ID (e.g. TASK-0052 or 0052)")
-    p_q_unblock.add_argument("--resolution", required=True, help="Explanation or findings that resolved the blocker")
-    p_q_unblock.add_argument("--adr", default=None, help="Governing ADR canonical ID if resolved via ADR (e.g. ADR-0017)")
-
-    p_q_blockers = queue_subs.add_parser("blockers", help="List all currently blocked tasks, open questions, and linked spikes")
-    p_q_blockers.add_argument("--json", action="store_true", help="Output blockers summary as JSON")
-
-    p_q_mon = queue_subs.add_parser("monitor", help="Interactive terminal backlog flow monitor and JIT buffer telemetry")
-    p_q_mon.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
+    register_queue_subparsers(subparsers)
 
     # backlog
     p_backlog = subparsers.add_parser("backlog", help="Backlog flow monitor, buffer telemetry, and bottleneck detection")
@@ -320,40 +266,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_rep_ms.add_argument("--check-alignment", action="store_true", help="Audit completed tasks unanchored from ROADMAP.md")
 
     # spike
-    p_spike = subparsers.add_parser("spike", help="Governed architectural spike lifecycle, sandboxing, and empirical ADR synthesis")
-    spike_subs = p_spike.add_subparsers(dest="spike_action", help="Spike action")
-
-    # spike create
-    p_spk_create = spike_subs.add_parser("create", help="Author a new architectural spike task and isolated test harness")
-    p_spk_create.add_argument("--name", required=True, help="Spike descriptive name / topic")
-    p_spk_create.add_argument("--question", required=True, help="Unanswered question or hypothesis statement to validate")
-    p_spk_create.add_argument("--timebox", default="2h", help="Timebox duration (default: 2h)")
-    p_spk_create.add_argument("--task", default=None, help="Governing task canonical ID (e.g. TASK-0052)")
-    p_spk_create.add_argument("--prd", default=None, help="Governing PRD canonical ID (e.g. PRD-0002)")
-
-    # spike start
-    p_spk_start = spike_subs.add_parser("start", help="Instantiate disposable sandboxed spike worktree")
-    p_spk_start.add_argument("spike_id", help="Spike canonical identifier (e.g. SPIKE-0002 or 0002)")
-    p_spk_start.add_argument("--hypothesis", default=None, help="Hypothesis statement for empirical validation")
-    p_spk_start.add_argument("--timebox", default=None, help="Spike timebox duration (e.g. 2h, 4h)")
-
-    # spike check
-    p_spk_check = spike_subs.add_parser("check", help="Check spike timebox and write isolation")
-    p_spk_check.add_argument("spike_id", nargs="?", default=None, help="Spike identifier (optional if run inside worktree)")
-    p_spk_check.add_argument("--elapsed", type=float, default=None, help="Simulated elapsed seconds for testing")
-
-    # spike preflight
-    p_spk_preflight = spike_subs.add_parser("preflight", help="Enforce in-worktree write isolation preflight hook")
-    p_spk_preflight.add_argument("spike_id", nargs="?", default=None, help="Spike identifier")
-
-    # spike graduate
-    p_spk_grad = spike_subs.add_parser("graduate", help="Graduate empirical spike findings into an Architectural Decision Record")
-    p_spk_grad.add_argument("spike_id", help="Spike canonical identifier (e.g. SPIKE-0002 or 0002)")
-    p_spk_grad.add_argument("--result", required=True, choices=["proven", "disproven"], help="Empirical hypothesis validation result")
-    p_spk_grad.add_argument("--title", default=None, help="ADR Title")
-    p_spk_grad.add_argument("--notes", default=None, help="Empirical observations or rationale")
-    p_spk_grad.add_argument("--findings", default=None, help="Recorded benchmark output / findings")
-    p_spk_grad.add_argument("--status", default=None, help="ADR status (e.g. Accepted, Proposed)")
+    register_spike_subparsers(subparsers)
 
     # security
     p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")
@@ -385,5 +298,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_doctor = subparsers.add_parser("doctor", help="Audit and repair local developer workspace and tooling")
     p_doctor.add_argument("--fix", action="store_true", help="Automatically repair missing hooks and workspace configuration")
     p_doctor.add_argument("--json", action="store_true", help="Output diagnostic results as structured JSON")
+
+    # test
+    register_test_subparsers(subparsers)
 
     return parser

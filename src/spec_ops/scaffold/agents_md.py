@@ -19,10 +19,23 @@ def generate_agents_md(
     custom_invariants: list[str] | None = None,
     root_dir: Path | None = None,
     superseded_map: dict[str, str] | None = None,
+    preflight_commands: list[str] | None = None,
+    custom_invariants_text: str | None = None,
 ) -> str:
     """Generates an opinionated AGENTS.md constitution tailored to active architectural profiles."""
     profiles_lower = {p.lower() for p in profiles}
     warn_threshold = max(1, file_length_limit - 100)
+
+    tools: list[str] = ["uv run pytest"]
+    if preflight_commands:
+        for cmd in preflight_commands:
+            c = cmd.strip()
+            c_str = c if c.startswith("uv ") else f"uv run {c}"
+            if c_str not in tools:
+                tools.append(c_str)
+    if "uv run spec-ops ..." not in tools:
+        tools.append("uv run spec-ops ...")
+    tools_str = ", ".join(f"`{t}`" for t in tools)
 
     invariants = [
         f"1. **File Length Limit (<{file_length_limit} lines)**:\n"
@@ -36,7 +49,7 @@ def generate_agents_md(
         "   - Shared backlog files (`docs/project/backlog/`) must never be modified directly on feature branches; transitions are synchronized upon integration.\n"
         "   - Governed by ADR-0005.",
         "4. **UV Workspace Package Management**:\n"
-        "   - All Python tools and dependencies are managed through root UV workspace (`uv run pytest`, `uv run spec-ops ...`). Never invoke bare `pip` or create ad-hoc virtual environments.",
+        f"   - All Python tools and dependencies are managed through root UV workspace ({tools_str}). Never invoke bare `pip` or create ad-hoc virtual environments.",
         "5. **Specification as Code (PMaC)**:\n"
         "   - Every requirement, persona, architectural decision, and work item lives under `docs/project/` as Markdown with YAML frontmatter.\n"
         "   - Governed by ADR-0001.",
@@ -149,6 +162,19 @@ These security and supply-chain guardrails are non-negotiable across all autonom
 2. **Lockfile Immutability**: Autonomous agents are strictly forbidden from modifying unapproved lockfiles (`uv.lock`, `package-lock.json`) without explicit human architectural approval.
 3. **Allowlisted Command Execution**: Autonomous agents are strictly forbidden from executing non-allowlisted shell commands outside approved development toolchains."""
 
+    from .constitution_sync import wrap_custom_invariants
+    custom_block = wrap_custom_invariants(custom_invariants_text)
+
+    extra_preflights = []
+    if preflight_commands:
+        for cmd in preflight_commands:
+            c = cmd.strip()
+            if c in ("pytest", "uv run pytest"):
+                continue
+            c_str = c if c.startswith("uv ") else f"uv run {c}"
+            extra_preflights.append(f"   - Run `{c_str}` (verify quality preflight passes).")
+    extra_preflights_text = ("\n" + "\n".join(extra_preflights)) if extra_preflights else ""
+
     content = f"""# {project_name} Agent Operating Manual
 
 Welcome to **{project_name}**, managed via **SpecOps**—the opinionated, autonomous Project Management as Code (PMaC) engine for human architects and AI coding assistants.
@@ -162,6 +188,8 @@ All specifications, user stories, tasks, and architectural decisions are version
 These rules are non-negotiable. Autonomous agents and human contributors must follow them without exception:
 
 {invariants_text}{security_section}
+
+{custom_block}
 
 ---
 
@@ -225,7 +253,7 @@ When picking up engineering work:
 3. **Implement**: Develop the solution using test-driven development through public frontdoors. Maintain BDD scenarios and Hypothesis property tests alongside feature code.
 4. **Preflight Verification**:
    - Run `uv run spec-ops health` (verify 0 file limit violations, 0 warnings, and PRIORITY.md sync).
-   - Run `uv run pytest` (verify 100% test pass rate across unit, BDD, and Hypothesis property tests).
+   - Run `uv run pytest` (verify 100% test pass rate across unit, BDD, and Hypothesis property tests).{extra_preflights_text}
    - Run `uv run mutmut run` (verify mutant kill score on mutated domain modules).
    - Run `uv lock --check` (verify lockfile synchronization).
 5. **Complete**: Verify all Definition of Done (DoD) criteria; move task to `complete/` or use `spec-ops queue complete <task-id>`, update `PRIORITY.md`, and link commit or PR.
@@ -235,51 +263,9 @@ When picking up engineering work:
 
 def scaffold_agents_command(root_dir: Path) -> str:
     """Scaffolds or regenerates AGENTS.md constitution tailored to installed profiles."""
-    from ..config.loader import load_config
-    from ..profiles.registry import resolve_adrs_for_profiles
+    from .constitution_sync import sync_constitution
 
-    cfg = load_config(root_dir=root_dir)
-    profiles = ["core", "bdd", "ddd"]
+    _, msg = sync_constitution(root_dir)
+    return msg
 
-    if cfg.security is not None:
-        if "security" not in profiles:
-            profiles.append("security")
-    else:
-        sec_md = root_dir / "docs" / "project" / "SECURITY.md"
-        toml_path = root_dir / "specops.toml"
-        if sec_md.exists() or (toml_path.exists() and "[security]" in toml_path.read_text(encoding="utf-8")):
-            if "security" not in profiles:
-                profiles.append("security")
-
-    adrs_dir = root_dir / "docs" / "project" / "adrs"
-    superseded_map: dict[str, str] = {}
-    try:
-        from ..adrs.supersede import discover_superseded_adrs
-        superseded_map = discover_superseded_adrs(adrs_dir)
-    except Exception:
-        pass
-
-    adrs = resolve_adrs_for_profiles(profiles)
-    content = generate_agents_md(
-        cfg.project.name,
-        profiles,
-        adrs,
-        root_dir=root_dir,
-        superseded_map=superseded_map,
-    )
-    agents_path = root_dir / "AGENTS.md"
-    old_content = agents_path.read_text(encoding="utf-8") if agents_path.exists() else ""
-    agents_path.write_text(content, encoding="utf-8")
-
-    if (root_dir / ".git").exists() and superseded_map and content != old_content:
-        trailers = [f"SpecOps-ADR: {new_id}" for new_id in sorted(set(superseded_map.values()))]
-        trailer_str = "\n".join(trailers)
-        commit_msg = f"docs: re-synchronize AGENTS.md constitution\n\n{trailer_str}"
-        try:
-            subprocess.run(["git", "add", "AGENTS.md"], cwd=root_dir, check=True, capture_output=True)
-            subprocess.run(["git", "commit", "-m", commit_msg], cwd=root_dir, check=True, capture_output=True)
-        except subprocess.SubprocessError:
-            pass
-
-    return "AGENTS.md updated successfully with active profile invariants."
 

@@ -73,9 +73,9 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
                         "author": c.author,
                         "date": c.date,
                         "subject": c.subject,
-                        "prs": c.prs,
                         "signature_status": getattr(c, "signature_status", ""),
                         "is_signed": getattr(c, "is_signed", False),
+                        "provenance": getattr(c, "provenance", ""),
                     }
                     for c in t.commits
                 ],

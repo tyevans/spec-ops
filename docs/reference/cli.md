@@ -23,6 +23,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles upgrade` | `[PROFILE] [--force] [--action ACTION]` | Upgrade profile version, migrate baseline ADRs, and perform safe 3-way conflict resolution |
 | `spec-ops adr supersede` | `<OLD_ID> [--by BY] [--with WITH]` | Supersede an existing Architectural Decision Record with a new decision and audit active backlog citations |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
+| `spec-ops constitution sync` | `[--repo PATH]` | Synchronize AGENTS.md constitution and docs/operating-manual.md while preserving human custom sections |
+| `spec-ops constitution check` | `[--repo PATH]` | CI drift detection gate comparing specops.toml settings against AGENTS.md |
 | `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--check-uat] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
 | `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics, persona coverage distribution, and entity counts |
@@ -46,11 +48,11 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
 | `spec-ops prd studio` | `[--open] [--port PORT] [--host HOST]` | Run interactive Web PRD Studio and Low-Code Story Assistant |
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
-| `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
+| `spec-ops visualizer` | `[--serve] [--entity ENTITY] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
-| `spec-ops rescue` | `[TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run]` | Inspect and recover stalled or failed autonomous worktrees |
+| `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run] [--action ACTION] [--file FILE]` | Inspect, triage, and recover stalled or failed autonomous worktrees |
 | `spec-ops worktree start` | `<TASK_ID>` | Spawn an isolated development worktree for a task |
 | `spec-ops worktree finish` | `[--task-id TASK_ID]` | Verify preflight, merge into main under MERGE_LOCK, and clean up worktree |
 | `spec-ops spike create` | `--name NAME --question QUESTION [--timebox TIMEBOX] [--task TASK_ID] [--prd PRD_ID]` | Author a new architectural spike task and isolated test harness |
@@ -78,7 +80,11 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
 | `spec-ops audit verify` | `[--manifest MANIFEST] [--repo REPO]` | Verify cryptographic compliance manifest integrity and SDLC traceability |
+| `spec-ops audit provenance` | `[--strict] [--contributions] [--repo REPO]` | Audit unbroken commit trailers, SDLC traceability lineage, and contributor provenance (alias: traceability) |
 | `spec-ops review` | `[TASK_ID] [--identity IDENTITY] [--provenance]` | Generate structured architectural review brief or cryptographically sign review |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL] [--include-visualizer]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
+| `spec-ops docs check` | `[--dir DIR]` | Audit public CLI commands against Diataxis documentation and flag drift |
+| `spec-ops test audit-anti-mock` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Audit test ASTs for prohibited mock backdoors and verify ADR-0003 frontdoor compliance |
+| `spec-ops test verify-frontdoors` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Verify blackbox frontdoors, audit anti-mock AST violations, and enforce mutation score invariants |
 

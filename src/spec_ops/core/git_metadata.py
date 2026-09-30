@@ -31,7 +31,7 @@ class GitMetadataHarvester:
             cmd = [
                 "git",
                 "log",
-                "--pretty=format:%h%x09%an%x09%ad%x09%s%x09%G?",
+                "--pretty=format:%h%x1f%an%x1f%ad%x1f%s%x1f%G?%x1f%B%x1e",
                 "--date=short",
                 "-n",
                 "600",
@@ -45,35 +45,61 @@ class GitMetadataHarvester:
         except Exception:
             return result
 
-        for line in raw_output.splitlines():
-            line = line.strip()
-            if not line:
+        for block in raw_output.split("\x1e"):
+            block = block.strip()
+            if not block:
                 continue
 
-            parts = line.split("\t")
+            parts = block.split("\x1f")
             if len(parts) < 4:
                 continue
 
-            chash, author, date, subject = parts[0], parts[1], parts[2], parts[3]
+            chash = parts[0]
+            author = parts[1]
+            date = parts[2]
+            subject = parts[3]
             sig_status = parts[4].strip() if len(parts) > 4 else ""
             is_signed = sig_status in ("G", "U")
+            body = parts[5] if len(parts) > 5 else ""
 
             pr_numbers = re.findall(r"(?:pull request\s*#|PR\s*#|#)(\d+)", subject, re.IGNORECASE)
             formatted_prs = [f"#{pr}" for pr in set(pr_numbers)]
 
-            task_matches = re.findall(r"\btask[-_ ]?(\d+)\b", subject, re.IGNORECASE)
-            for m in set(task_matches):
-                task_id = f"TASK-{m.zfill(4)}"
-                commit = CommitInfo(
-                    hash=chash,
-                    author=author,
-                    date=date,
-                    subject=subject,
-                    prs=formatted_prs,
-                    signature_status=sig_status,
-                    is_signed=is_signed,
-                )
+            trailers: dict[str, str] = {}
+            for line in f"{subject}\n{body}".splitlines():
+                tm = re.match(r"^([A-Za-z0-9][A-Za-z0-9_-]*)\s*:\s*(.+)$", line.strip())
+                if tm:
+                    trailers[tm.group(1).strip()] = tm.group(2).strip()
 
+            prov_val = ""
+            for tk, tv in trailers.items():
+                if tk.lower() == "provenance":
+                    prov_val = tv
+                    break
+
+            matched_tasks: set[str] = set()
+            for m in re.findall(r"\btask[-_ ]?(\d+)\b", subject, re.IGNORECASE):
+                matched_tasks.add(f"TASK-{m.zfill(4)}")
+            for tk, tv in trailers.items():
+                if tk.replace("_", "-").lower() in ("specops-task", "task-id", "task", "taskid"):
+                    for m in re.findall(r"(?:TASK|SPIKE)?[-_ ]?0*(\d+)", tv, re.IGNORECASE):
+                        if m:
+                            prefix = "SPIKE-" if "SPIKE" in tv.upper() else "TASK-"
+                            matched_tasks.add(f"{prefix}{m.zfill(4)}")
+
+            commit = CommitInfo(
+                hash=chash,
+                author=author,
+                date=date,
+                subject=subject,
+                prs=formatted_prs,
+                signature_status=sig_status,
+                is_signed=is_signed,
+                provenance=prov_val,
+                trailers=trailers,
+            )
+
+            for task_id in matched_tasks:
                 if task_id not in result:
                     result[task_id] = ([], [])
 
