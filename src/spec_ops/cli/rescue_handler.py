@@ -186,6 +186,12 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     print(f"\nFile diffs:\n{diff_stat}")
     if info.failure_feedback:
         print(f"\nLast Diagnostics:\n{info.failure_feedback}\n")
-    print("👉 To finish and integrate: run 'spec-ops rescue <task-id> --complete'")
-    print("👉 To discard: run 'spec-ops rescue <task-id> --discard'")
+
+    from ..rescue.handover import render_quickstart_cheatsheet
+
+    cheatsheet = render_quickstart_cheatsheet(info.task_id, info.worktree_dir, failure_log=info.failure_feedback)
+    print(f"\n{cheatsheet}\n")
+
+    print(f"👉 To finish and integrate: run 'spec-ops rescue {info.task_id} --complete'")
+    print(f"👉 To discard: run 'spec-ops rescue {info.task_id} --discard'")
     return 0

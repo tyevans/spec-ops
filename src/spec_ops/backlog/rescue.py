@@ -131,6 +131,15 @@ class WorktreeRescueManager:
             text = prompt_file.read_text(encoding="utf-8", errors="ignore")
             if "## Preflight Failure Feedback" in text:
                 feedback = text.split("## Preflight Failure Feedback")[-1].strip()
+        if not feedback:
+            handover_file = worktree_dir / "HANDOVER.md"
+            if handover_file.exists():
+                htext = handover_file.read_text(encoding="utf-8", errors="ignore")
+                m = re.search(r"## Exact Failure Log\s*```(?:text)?\s*(.+?)\s*```", htext, re.DOTALL)
+                if m:
+                    feedback = m.group(1).strip()
+            if not feedback and (worktree_dir / ".failure.log").exists():
+                feedback = (worktree_dir / ".failure.log").read_text(encoding="utf-8", errors="ignore")
 
         return RescueInfo(
             task_id=tid,
@@ -159,10 +168,10 @@ class WorktreeRescueManager:
         if not target_task:
             return False, f"Task {clean_id} not found in backlog."
 
-        # 2. Commit any uncommitted changes in the worktree
-        for p in (info.worktree_dir / ".task-prompt.md", info.worktree_dir / ".task-review-prompt.md"):
-            if p.exists():
-                p.unlink()
+        # 2. Purge ephemeral handover brief and prompts prior to git staging
+        from ..rescue.handover import purge_ephemeral_handover_artifacts
+
+        purge_ephemeral_handover_artifacts(info.worktree_dir)
 
         from ..worker.guardrails import prepare_guardrailed_commit
 

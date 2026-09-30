@@ -1,7 +1,7 @@
 ---
 id: 0097
 title: Preserved Worktree AI-to-Human Handover Brief and Debug Cheatsheet Generator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0052
 governing_adrs:
@@ -17,8 +17,6 @@ governing_prds:
 governing_stories:
 - US-0090
 target_bc: rescue
-claimed_by: worker-2
-branch: feat/0097-preserved-worktree-ai-to-human-handover-
 ---
 
 # TASK-0097: Preserved Worktree AI-to-Human Handover Brief and Debug Cheatsheet Generator

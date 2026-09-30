@@ -131,6 +131,7 @@ def cleanup_worktree(
 
     # Clean up temporary prompt files and ephemeral caches
     ephemeral_names = [
+        "HANDOVER.md",
         ".task-prompt.md",
         ".task-review-prompt.md",
         ".pytest_cache",

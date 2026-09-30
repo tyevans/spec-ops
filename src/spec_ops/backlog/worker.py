@@ -123,6 +123,7 @@ class BacklogWorkerEngine:
         max_attempts = self.config.execution.agent_max_attempts
         last_failure_log = ""
         current_prompt = prompt
+        self.last_attempt_history: list[tuple[int, int]] = []
 
         for attempt in range(1, max_attempts + 1):
             if is_shutdown_requested():
@@ -173,6 +174,7 @@ class BacklogWorkerEngine:
                 feedback = f"\n\n## Agent Execution Failure (Attempt {attempt})\n{err_msg}\nPlease resolve this failure."
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
+                self.last_attempt_history.append((attempt, res.returncode if res.returncode else 1))
                 last_failure_log = err_msg
                 continue
 
@@ -188,6 +190,7 @@ class BacklogWorkerEngine:
                 )
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
+                self.last_attempt_history.append((attempt, 1))
                 last_failure_log = diff_reason
                 continue
 
@@ -234,6 +237,7 @@ class BacklogWorkerEngine:
                 feedback = "\n\n".join(feedback_sections)
                 current_prompt = prompt + "\n\n" + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
+                self.last_attempt_history.append((attempt, 1))
                 last_failure_log = feedback
             else:
                 preflight_ok, preflight_log = self.run_preflight(worktree_dir, task)
@@ -249,6 +253,7 @@ class BacklogWorkerEngine:
                 feedback = "\n\n" + format_preflight_ast_feedback(preflight_log, attempt, worktree_dir)
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
+                self.last_attempt_history.append((attempt, 1))
                 last_failure_log = preflight_log
 
         return False, f"Agent failed after {max_attempts} attempts. Last feedback:\n{last_failure_log}"
@@ -298,7 +303,7 @@ class BacklogWorkerEngine:
                 success = True
                 return WorkerResult(task.canonical_id, True, "Zero-cost dry-run simulation completed cleanly.")
 
-            for p in (worktree_dir / ".task-prompt.md", worktree_dir / ".task-review-prompt.md"):
+            for p in (worktree_dir / ".task-prompt.md", worktree_dir / ".task-review-prompt.md", worktree_dir / "HANDOVER.md"):
                 if p.exists():
                     p.unlink()
 
@@ -313,21 +318,11 @@ class BacklogWorkerEngine:
                 # 1. Rebase and preflight in isolated worktree WITHOUT holding MERGE_LOCK
                 if lock_mgr.is_branch_behind_main(branch):
                     print(f"🔄 Task branch '{branch}' is behind main. Auto-rebasing onto latest main...")
-                    rebase_ok, rebase_msg = rebase_with_inference_healing(
-                        worktree_dir,
-                        task,
-                        self.config,
-                    )
+                    rebase_ok, rebase_msg = rebase_with_inference_healing(worktree_dir, task, self.config)
                     if not rebase_ok:
-                        print(
-                            f"⚠️ Rebase conflict on {task.canonical_id}. Aborting rebase and preserving worktree with status 'Conflict'."
-                        )
+                        print(f"⚠️ Rebase conflict on {task.canonical_id}. Aborting rebase and preserving worktree with status 'Conflict'.")
                         print(f"Actionable rescue: spec-ops rescue {task.canonical_id}")
-                        return WorkerResult(
-                            task.canonical_id,
-                            False,
-                            f"Rebase conflict against main: {rebase_msg}",
-                        )
+                        return WorkerResult(task.canonical_id, False, f"Rebase conflict against main: {rebase_msg}")
                     print("✓ Rebase succeeded. Running preflight verification on rebased code...")
                     post_rebase_ok, post_rebase_log = self.run_preflight(worktree_dir, task=task)
                     if not post_rebase_ok:
@@ -379,6 +374,8 @@ class BacklogWorkerEngine:
                         f"Autonomous Worker Execution Failure Report\nTask: {task.canonical_id}\n\nLast Failure Log:\n{agent_log or 'Preflight verification failed'}\n",
                         encoding="utf-8",
                     )
+                    from ..rescue.handover import generate_handover_brief
+                    generate_handover_brief(worktree_dir, task, agent_log or "Preflight verification failed", getattr(self, "last_attempt_history", None), self.config)
                     print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
                     print(f"spec-ops rescue {task.canonical_id}")
             else:

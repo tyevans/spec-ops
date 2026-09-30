@@ -90,7 +90,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0083 (Complete)**: [`0083-multi-platform-ci-pipeline-scaffolding-github-gitlab`](complete/0083-multi-platform-ci-pipeline-scaffolding-github-gitlab.md)
 - **TASK-0091 (Complete)**: [`0091-automated-customer-facing-release-notes-generator`](complete/0091-automated-customer-facing-release-notes-generator.md)
 - **TASK-0043 (Complete)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](complete/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
-- **TASK-0097 (Refined)**: [`0097-preserved-worktree-handover-brief-and-cheatsheet-generator`](refined/0097-preserved-worktree-handover-brief-and-cheatsheet-generator.md)
+- **TASK-0097 (Complete)**: [`0097-preserved-worktree-handover-brief-and-cheatsheet-generator`](complete/0097-preserved-worktree-handover-brief-and-cheatsheet-generator.md)
 - **TASK-0053 (Complete)**: [`0053-anti-loop-worktree-failure-memory-schema-architecture-spike`](complete/0053-anti-loop-worktree-failure-memory-schema-architecture-spike.md)
 - **TASK-0101 (Complete)**: [`0101-fast-incremental-worktree-preflight-runner`](complete/0101-fast-incremental-worktree-preflight-runner.md)
 - **TASK-0100 (Complete)**: [`0100-living-architectural-review-radar-and-context-audit`](complete/0100-living-architectural-review-radar-and-context-audit.md)

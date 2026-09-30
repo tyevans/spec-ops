@@ -71,13 +71,22 @@ class PreCommitHookEvaluator:
         else:
             output_lines.append("✅ PRIORITY.md is synchronized with disk state.")
 
+        from ..rescue.handover import assert_handover_excluded_from_staging
+
+        excl_ok, excl_msg = assert_handover_excluded_from_staging(self.root_dir)
+        if not excl_ok:
+            output_lines.append(f"\n❌ Pre-commit Staging Violation: {excl_msg}")
+            is_healthy = False
+        else:
+            is_healthy = report.is_healthy
+
         output = "\n".join(output_lines)
-        exit_code = 0 if report.is_healthy else 1
+        exit_code = 0 if is_healthy else 1
         return HookEvaluationResult(
-            success=report.is_healthy,
+            success=is_healthy,
             exit_code=exit_code,
             output=output,
-            violations_count=len(report.violations),
+            violations_count=len(report.violations) + (0 if excl_ok else 1),
             warnings_count=len(report.warnings),
         )
 

@@ -348,9 +348,7 @@ class PreflightPipeline:
         sandbox_config = getattr(config.execution, "sandbox", None)
         if sandbox_config and getattr(sandbox_config, "isolate_network", False):
             from ..security.sandbox import ExecutionSandbox
-
             sandbox = ExecutionSandbox(worktree_dir=cwd, isolate_network=True)
-
         return cls(stages=stages, cwd=cwd, sandbox=sandbox, config=config)
 
 
@@ -379,17 +377,20 @@ def run_worktree_preflight(
     if not dep_ok:
         return False, f"Unauthorized Dependency Modification: {'; '.join(dep_errs)}"
 
+    from ..rescue.handover import assert_handover_excluded_from_staging
+
+    excl_ok, excl_msg = assert_handover_excluded_from_staging(cwd)
+    if not excl_ok:
+        return False, f"Preflight gate failed: {excl_msg}"
+
     sec_active = bool(
         (config.security and config.security.secret_scanning)
         or ((cwd / "specops.toml").is_file() and "[security]" in (cwd / "specops.toml").read_text(encoding="utf-8"))
         or (cwd / "docs" / "project" / "SECURITY.md").exists()
     )
 
-    if sec_active and not (cwd / "docs" / "project" / "SECURITY.md").exists() and (
-        (config.root_dir / "docs" / "project" / "SECURITY.md").exists() or config.security is not None
-    ):
+    if sec_active and not (cwd / "docs" / "project" / "SECURITY.md").exists() and ((config.root_dir / "docs" / "project" / "SECURITY.md").exists() or config.security is not None):
         from ..profiles.security import sync_security_profile
-
         sync_security_profile(cwd, sync_worktrees=False)
 
     pipeline = PreflightPipeline.from_config(config, cwd, task=target_task, initial=initial)

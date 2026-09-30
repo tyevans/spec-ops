@@ -65,7 +65,7 @@ def stage_legitimate_files(
     """Stages only functional source code and tests, keeping backlog un-staged."""
     worktree_path = Path(worktree_dir).resolve()
 
-    subprocess.run(["git", "reset", "HEAD", "--", "docs/project/backlog"], cwd=worktree_path, capture_output=True)
+    subprocess.run(["git", "reset", "HEAD", "--", "docs/project/backlog", "HANDOVER.md"], cwd=worktree_path, capture_output=True)
 
     if allowed_dirs is not None:
         for d in allowed_dirs:
@@ -74,7 +74,7 @@ def stage_legitimate_files(
                 subprocess.run(["git", "add", d], cwd=worktree_path, capture_output=True, check=True)
     else:
         subprocess.run(["git", "add", "-A"], cwd=worktree_path, capture_output=True, check=True)
-        subprocess.run(["git", "reset", "HEAD", "--", "docs/project/backlog"], cwd=worktree_path, capture_output=True)
+        subprocess.run(["git", "reset", "HEAD", "--", "docs/project/backlog", "HANDOVER.md"], cwd=worktree_path, capture_output=True)
 
     diff_cached = subprocess.run(
         ["git", "diff", "--cached", "--name-only"],
@@ -150,6 +150,9 @@ def prepare_guardrailed_commit(
 
     sanitize_backlog_modifications(worktree_path, stage_legitimate=False)
     sanitize_unauthorized_dependency_modifications(worktree_path, allows_dependencies=allows_dependencies)
+    handover = worktree_path / "HANDOVER.md"
+    if handover.exists():
+        handover.unlink()
     staged = stage_legitimate_files(worktree_path, allowed_dirs=allowed_dirs)
     if not staged:
         return False, "No modifications staged to commit."

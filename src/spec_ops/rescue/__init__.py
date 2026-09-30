@@ -72,8 +72,28 @@ __all__ = [
     "save_step_cache",
     "is_step_cache_valid",
     "invalidate_dirty_step_caches",
+    "AttemptSummary",
+    "HandoverBrief",
+    "generate_handover_brief",
+    "render_quickstart_cheatsheet",
+    "purge_ephemeral_handover_artifacts",
+    "assert_handover_excluded_from_staging",
+    "assert_handover_excluded_from_git",
+    "sanitize_credentials",
+    "extract_reproduction_command",
 ]
 
+from .handover import (
+    AttemptSummary,
+    HandoverBrief,
+    assert_handover_excluded_from_git,
+    assert_handover_excluded_from_staging,
+    extract_reproduction_command,
+    generate_handover_brief,
+    purge_ephemeral_handover_artifacts,
+    render_quickstart_cheatsheet,
+    sanitize_credentials,
+)
 from .incremental_runner import (
     StepCacheData,
     StepRecord,

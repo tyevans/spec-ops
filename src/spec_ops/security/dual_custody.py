@@ -95,4 +95,10 @@ def verify_worker_integration_gates(
     if not dc_ok:
         return False, dc_msg
 
+    from ..rescue.handover import assert_handover_excluded_from_git
+
+    handover_ok, handover_msg = assert_handover_excluded_from_git(repo_root, branch=branch)
+    if not handover_ok:
+        return False, handover_msg
+
     return True, "All integration gates passed."

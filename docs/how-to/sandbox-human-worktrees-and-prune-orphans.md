@@ -96,19 +96,39 @@ spec-ops rescue prune
 
 ## Step 5: Triage and Takeover Preserved Agent Worktrees
 
-When an autonomous worker session exhausts its self-healing retries, its isolated worktree is preserved under `.worktrees/task-<id>`.
+When an autonomous worker session exhausts its self-healing retries, its isolated worktree is preserved under `.worktrees/task-<id>` with an automated `HANDOVER.md` debug brief.
 
-1. **Interactive Failure Triage**: Inspect categorized root causes (file length invariants, test suite failures, lockfile drift, git status) and AST diffs:
+1. **Automated Handover Brief (`HANDOVER.md`)**:
+   Contains task header metadata, attempt timeline (chronological summary with exit codes), isolated failure traceback, governing PRD/story/ADR hyperlinks, reproduction command, and completion command. Ephemeral handover files (`HANDOVER.md`, `.task-prompt.md`) are automatically excluded from git staging and purged during rescue completion.
+
+2. **Terminal Quickstart Cheatsheet**:
+   Inspect the worktree metadata and view an instant copy-paste developer cheatsheet:
+   ```bash
+   spec-ops rescue TASK-0014
+   # or
+   spec-ops rescue inspect TASK-0014
+   ```
+   Displays high-contrast reproducer commands and rescue next steps:
+   ```text
+   🚀 Rescue Quickstart:
+   1. Jump into worktree:  cd .worktrees/task-0014
+   2. Reproduce failure:   uv run pytest tests/test_curator.py -k test_buffer_sync
+   3. Inspect changes:     git diff HEAD
+   4. Complete & merge:    spec-ops rescue TASK-0014 --complete
+   5. Discard & reset:     spec-ops rescue reset TASK-0014
+   ```
+
+3. **Interactive Failure Triage**: Inspect categorized root causes (file length invariants, test suite failures, lockfile drift, git status) and AST diffs:
    ```bash
    spec-ops rescue triage TASK-0012
    ```
 
-2. **Diagnostic Human Takeover**: Transfer task claim from autonomous worker to human developer and provision workspace:
+4. **Diagnostic Human Takeover**: Transfer task claim from autonomous worker to human developer and provision workspace:
    ```bash
    spec-ops rescue takeover TASK-0012
    ```
 
-3. **Verify and Finalize**: Implement fixes inside `.worktrees/task-0012`, then verify preflight and squash-merge into `main`:
+5. **Verify and Finalize**: Implement fixes inside `.worktrees/task-0012`, then verify preflight and squash-merge into `main`:
    ```bash
    spec-ops rescue TASK-0012 --complete
    ```

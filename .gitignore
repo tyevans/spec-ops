@@ -14,5 +14,5 @@ mutants/
 .specops/
 .agents/*
 !.agents/skills/
-
+HANDOVER.md
 
