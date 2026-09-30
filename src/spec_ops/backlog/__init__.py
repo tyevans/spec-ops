@@ -10,6 +10,7 @@ from .commands import (
 )
 from .curator import BacklogCurator, CurationResult
 from .decider import TaskDecider, TaskState
+from .digest import DailyStandupDigestGenerator, StandupDigest, generate_standup_digest
 from .doctor import (
     BacklogDefect,
     BacklogDoctor,
@@ -57,6 +58,7 @@ __all__ = [
     "ClaimTask",
     "CompleteTask",
     "CurationResult",
+    "DailyStandupDigestGenerator",
     "FileLengthViolation",
     "HealthCheckReport",
     "HealthChecker",
@@ -70,6 +72,8 @@ __all__ = [
     "RefineTask",
     "ReleaseTask",
     "ReviewResult",
+    "StandupDigest",
+    "generate_standup_digest",
     "run_backlog_doctor",
     "TaskClaimed",
     "TaskCompleted",

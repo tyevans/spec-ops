@@ -95,6 +95,10 @@ class Task:
     slice_type: str = "feat"
     unblocked: bool = False
     failure_history: list[dict[str, Any]] = field(default_factory=list)
+    completed_at: str = ""
+    claimed_at: str = ""
+    timestamp: str = ""
+
 
     @property
     def canonical_id(self) -> str:

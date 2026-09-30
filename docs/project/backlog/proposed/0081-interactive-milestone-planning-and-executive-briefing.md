@@ -1,21 +1,21 @@
 ---
-id: '0081'
+id: 0081
 title: Automated Executive Milestone Briefing and Roadmap Alignment Digest
 status: Proposed
-created: 2026-09-29
 dependencies:
-  - TASK-0067
-  - TASK-0074
+- TASK-0067
+- TASK-0074
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0007
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0023
+- US-0023
 target_bc: backlog
+unblocked: true
 ---
 
 # TASK-0081: Automated Executive Milestone Briefing and Roadmap Alignment Digest

@@ -1,22 +1,21 @@
 ---
-id: '0079'
+id: 0079
 title: External Issue Tracker Ingestion Bridge
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0067
-  - TASK-0072
+- TASK-0067
+- TASK-0072
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0079
+- US-0079
 target_bc: backlog
 ---
 

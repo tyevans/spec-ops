@@ -1,23 +1,23 @@
 ---
-id: '0080'
+id: 0080
 title: Hybrid Team Delivery Velocity and Rescue Telemetry Reporter
 status: Proposed
-created: 2026-09-29
 dependencies:
-  - TASK-0067
-  - TASK-0070
+- TASK-0067
+- TASK-0070
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0022
+- US-0022
 target_bc: backlog
+unblocked: true
 ---
 
 # TASK-0080: Hybrid Team Delivery Velocity and Rescue Telemetry Reporter

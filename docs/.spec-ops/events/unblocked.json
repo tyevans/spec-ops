@@ -1,0 +1,6 @@
+{
+  "event": "task_unblocked",
+  "task_id": "TASK-0079",
+  "target_bc": "backlog",
+  "priority_rank": 103
+}

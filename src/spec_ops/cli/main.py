@@ -257,6 +257,12 @@ def main(argv: list[str] | None = None) -> int:
             from .graph_handler import handle_backlog_command
             return handle_backlog_command(args, config)
 
+        if getattr(args, "backlog_action", None) == "sweep":
+            from .queue_handler import handle_queue_command
+            setattr(args, "queue_action", "digest")
+            return handle_queue_command(args, config, parser)
+
+
         from ..tui.flow_monitor import FlowMonitor
 
         monitor = FlowMonitor(config)

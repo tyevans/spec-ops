@@ -74,6 +74,13 @@ def write_task_file(task: Task) -> Path:
         meta["blocker"] = b_dict
     if getattr(task, "failure_history", None):
         meta["failure_history"] = task.failure_history
+    if getattr(task, "completed_at", ""):
+        meta["completed_at"] = task.completed_at
+    if getattr(task, "claimed_at", ""):
+        meta["claimed_at"] = task.claimed_at
+    if getattr(task, "timestamp", ""):
+        meta["timestamp"] = task.timestamp
+
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()

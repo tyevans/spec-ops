@@ -164,7 +164,11 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         slice_type=str(meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat").lower(),
         unblocked=bool(meta.get("unblocked", False)),
         failure_history=list(meta.get("failure_history", []) or []),
+        completed_at=str(meta.get("completed_at", "")),
+        claimed_at=str(meta.get("claimed_at", "")),
+        timestamp=str(meta.get("timestamp", "")),
     )
+
 
 
 def parse_user_story(file_path: Path) -> UserStory:

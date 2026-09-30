@@ -243,5 +243,15 @@ def handle_queue_command(
         as_json = bool(getattr(args, "json", False))
         return run_backlog_doctor(target_dir, fix=fix, as_json=as_json)
 
+    if action == "digest":
+        from ..backlog.digest import generate_standup_digest
+
+        fmt = getattr(args, "format", "markdown") or "markdown"
+        window = getattr(args, "window", "24h") or "24h"
+        digest_output = generate_standup_digest(config, window=window, fmt=fmt)
+        print(digest_output)
+        return 0
+
     parser.parse_args(["queue", "--help"])
+
     return 0

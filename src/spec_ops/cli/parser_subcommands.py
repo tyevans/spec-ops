@@ -199,6 +199,23 @@ def register_queue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_q_doc.add_argument("--json", action="store_true", help="Output diagnostic report as structured JSON")
     p_q_doc.add_argument("--dir", default=None, help="Backlog directory path (defaults to docs/project/backlog)")
 
+    p_q_digest = queue_subs.add_parser(
+        "digest",
+        help="Generate automated daily standup curation digest",
+    )
+    p_q_digest.add_argument(
+        "--format",
+        choices=["markdown", "json"],
+        default="markdown",
+        help="Standup digest serialization format (default: markdown)",
+    )
+    p_q_digest.add_argument(
+        "--window",
+        default="24h",
+        help="Time window for completed throughput analysis (default: 24h)",
+    )
+
+
 
 def register_spike_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural spike lifecycle commands."""
@@ -330,67 +347,6 @@ def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_notes.add_argument("--format", choices=["markdown", "html"], default="markdown", help="Output format (markdown, html)")
     p_notes.add_argument("--branded", action="store_true", default=False, help="Include branded styling and visualizer links")
     p_notes.add_argument("-o", "--output", default=None, help="Output file path")
-
-
-def register_scaffold_subparsers(subparsers: argparse._SubParsersAction) -> None:
-    """Registers scaffold commands (agents, docs, ci)."""
-    p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
-    scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
-    scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
-    p_scaffold_docs = scaffold_subs.add_parser(
-        "docs",
-        aliases=["diataxis"],
-        help="Scaffold 4-quadrant Diataxis documentation for a bounded context",
-    )
-    p_scaffold_docs.add_argument(
-        "--bc",
-        "--bounded-context",
-        required=True,
-        dest="bc",
-        help="Target bounded context identifier",
-    )
-    p_scaffold_docs.add_argument(
-        "--title",
-        default=None,
-        help="Human-readable title for the bounded context",
-    )
-    p_scaffold_docs.add_argument(
-        "--force",
-        "--overwrite",
-        dest="force",
-        action="store_true",
-        help="Overwrite existing bounded context documentation",
-    )
-
-    p_scaffold_ci = scaffold_subs.add_parser(
-        "ci",
-        help="Scaffold multi-platform CI/CD quality gate workflows (GitHub Actions, GitLab CI)",
-    )
-    p_scaffold_ci.add_argument(
-        "--platform",
-        choices=["github", "gitlab", "all"],
-        default="all",
-        help="Target CI platform (github, gitlab, all)",
-    )
-    p_scaffold_ci.add_argument(
-        "--force",
-        action="store_true",
-        default=False,
-        help="Overwrite existing CI workflow files and update toolchains while preserving custom configurations",
-    )
-    p_scaffold_ci.add_argument(
-        "--update",
-        action="store_true",
-        default=False,
-        help="Alias for --force to update existing CI workflow files",
-    )
-    p_scaffold_ci.add_argument(
-        "--matrix",
-        help="Comma-separated Python versions for matrix testing (e.g. 3.12,3.13)",
-    )
-
-    p_scaffold_hooks = scaffold_subs.add_parser("hooks", help="Scaffold native, zero-dependency git hooks")
-    p_scaffold_hooks.add_argument("--force", action="store_true", help="Overwrite existing hooks")
-    p_scaffold_hooks.add_argument("--native", action="store_true", default=True, help="Scaffold native POSIX shell git hooks")
+from .parser_scaffold import register_scaffold_subparsers
 
 

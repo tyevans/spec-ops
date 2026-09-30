@@ -1,7 +1,7 @@
 ---
 id: '0067'
 title: Daily Curation Standup Digest Generator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0066
 governing_adrs:

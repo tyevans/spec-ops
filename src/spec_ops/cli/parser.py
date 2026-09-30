@@ -271,6 +271,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_b_doc.add_argument("--repair", action="store_true", help="Alias for --fix")
     p_b_doc.add_argument("--json", action="store_true", help="Output diagnostic report as structured JSON")
     p_b_doc.add_argument("--dir", default=None, help="Backlog directory path (defaults to docs/project/backlog)")
+    p_b_swp = backlog_subs.add_parser("sweep", help="Daily standup curation digest and backlog sweep")
+    p_b_swp.add_argument("--format", choices=["markdown", "json"], default="markdown", help="Digest serialization format (default: markdown)")
+    p_b_swp.add_argument("--window", default="24h", help="Time window for completed throughput analysis (default: 24h)")
+    p_b_swp.add_argument("--reclaim-stalled", action="store_true", help="Flag and reclaim stalled worker claims")
+
 
     # report
     p_report = subparsers.add_parser("report", help="Executive milestone reports, burndown velocity, and presentation decks")
