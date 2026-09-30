@@ -44,6 +44,17 @@ When `allows_dependencies: true` is set:
 
 ---
 
+## Automatic Non-Dependency Sanitization
+
+Agents sometimes inadvertently modify non-dependency sections in `pyproject.toml` (for example, attempting to adjust test configurations or mutation testing targets under `[tool.mutmut]`).
+
+SpecOps implements proactive guardrails during commit preparation:
+- If a task has `allows_dependencies: false` (the default) and only non-dependency sections of `pyproject.toml` were modified, the guardrail automatically resets `pyproject.toml` to `HEAD`.
+- If actual dependency sections (`[project.dependencies]`, `dependencies =`, `[project.optional-dependencies]`, `[dependency-groups]`, `[build-system]`) are altered without authorization, the file is left modified so preflight security gates properly block the commit.
+- Task hydration prompts explicitly inform autonomous workers that `pyproject.toml` and `uv.lock` are immutable under US-0111 unless authorized.
+
+---
+
 ## Gating Backlog Integration Under Merge Lock
 
 To gate and complete an autonomous feature branch against `main`:
