@@ -81,6 +81,16 @@ def test_cli_rescue(tmp_path: Path):
     assert res_inspect.returncode == 1
     assert "No worktree found" in res_inspect.stdout
 
+    # Inspect with inspect action prefix
+    res_inspect_sub = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "rescue", "inspect", "0099"],
+        cwd=str(tmp_path),
+        capture_output=True,
+        text=True,
+    )
+    assert res_inspect_sub.returncode == 1
+    assert "No worktree found" in res_inspect_sub.stdout
+
     # Prune
     res_prune = subprocess.run(
         [sys.executable, "-m", "spec_ops.cli.main", "rescue", "--prune"],

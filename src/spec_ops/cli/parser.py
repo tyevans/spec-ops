@@ -213,7 +213,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # rescue
     p_rescue = subparsers.add_parser("rescue", help="Inspect and recover stalled or failed autonomous worktrees")
-    p_rescue.add_argument("task_id", nargs="?", help="Target task canonical ID (e.g. TASK-0011, prune, or 0011)")
+    p_rescue.add_argument("task_id", nargs="*", help="Target task canonical ID (e.g. TASK-0011, prune, or 0011) or action (e.g. inspect TASK-0011)")
     p_rescue.add_argument("--list", action="store_true", help="List all active/stalled worktrees")
     p_rescue.add_argument("--complete", action="store_true", help="Verify preflight and merge rescued worktree into main")
     p_rescue.add_argument("--discard", action="store_true", help="Discard worktree and branch")

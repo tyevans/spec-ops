@@ -52,7 +52,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
-| `spec-ops rescue` | `[TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run]` | Inspect and recover stalled or failed autonomous worktrees |
+| `spec-ops rescue` | `[[inspect] TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run]` | Inspect and recover stalled or failed autonomous worktrees |
 | `spec-ops worktree start` | `<TASK_ID>` | Spawn an isolated development worktree for a task |
 | `spec-ops worktree finish` | `[--task-id TASK_ID]` | Verify preflight, merge into main under MERGE_LOCK, and clean up worktree |
 | `spec-ops spike create` | `--name NAME --question QUESTION [--timebox TIMEBOX] [--task TASK_ID] [--prd PRD_ID]` | Author a new architectural spike task and isolated test harness |

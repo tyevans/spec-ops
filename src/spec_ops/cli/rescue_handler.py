@@ -8,7 +8,16 @@ from ..config.models import SpecOpsConfig
 
 def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Executes the rescue subcommand actions."""
-    is_prune = (getattr(args, "task_id", None) == "prune") or getattr(args, "prune", False)
+    raw_task_id = getattr(args, "task_id", None)
+    task_id: str | None = None
+
+    if isinstance(raw_task_id, list):
+        filtered = [t for t in raw_task_id if t not in ("inspect", "takeover", "triage")]
+        task_id = filtered[0] if filtered else None
+    elif isinstance(raw_task_id, str):
+        task_id = None if raw_task_id in ("inspect", "takeover", "triage") else raw_task_id
+
+    is_prune = (task_id == "prune") or getattr(args, "prune", False)
     if is_prune:
         from ..rescue.prune import format_bytes, prune_worktrees
 
@@ -40,7 +49,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
     mgr = WorktreeRescueManager(config)
 
-    if args.list or not args.task_id:
+    if args.list or not task_id:
         wts = mgr.list_active_worktrees()
         print("=== Active / Stalled Worktrees (.worktrees/) ===")
         if not wts:
@@ -54,20 +63,20 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         return 0
 
     if args.complete:
-        ok, msg = mgr.complete_rescue(args.task_id)
-        print(f"=== Worktree Rescue: {args.task_id} ===")
+        ok, msg = mgr.complete_rescue(task_id)
+        print(f"=== Worktree Rescue: {task_id} ===")
         print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
         print(msg)
         return 0 if ok else 1
 
     if args.discard:
-        ok, msg = mgr.discard_worktree(args.task_id)
+        ok, msg = mgr.discard_worktree(task_id)
         print(msg)
         return 0 if ok else 1
 
-    info = mgr.inspect_task(args.task_id)
+    info = mgr.inspect_task(task_id)
     if not info:
-        print(f"❌ No worktree found for {args.task_id}.")
+        print(f"❌ No worktree found for {task_id}.")
         return 1
 
     print(f"=== Stalled Worktree: {info.task_id} ===")
