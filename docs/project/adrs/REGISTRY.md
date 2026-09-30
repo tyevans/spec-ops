@@ -13,6 +13,7 @@
 | ADR-0009 | Property-Based Testing with Hypothesis and Mutation Testing with Mutmut | Accepted | 2026-09-29 |
 | ADR-0010 | Event-Sourced Core Substrate with eventsource-py | Accepted | 2026-09-29 |
 | ADR-0011 | Relational Knowledge Graph Substrate with redstring | Accepted | 2026-09-29 |
+| ADR-0011 | Tamper-Evident Merkle Tree Compliance Manifests | Accepted | 2026-09-29 |
 | ADR-0012 | Zero-Trust Autonomous Worker Process Sandboxing | Accepted | 2026-09-29 |
 | ADR-0013 | Zero-Dependency Local Web PRD Studio Architecture | Accepted | 2026-09-29 |
 | ADR-0014 | Tamper-Evident Customer UAT Receipts and Cryptographic Release Manifests | Accepted | 2026-09-29 |

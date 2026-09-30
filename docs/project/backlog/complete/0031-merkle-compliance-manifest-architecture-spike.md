@@ -1,19 +1,18 @@
 ---
 id: '0031'
 title: 'Architectural Spike: Merkle Tree Compliance Data Structure and Manifest Specification'
-status: Refined
-created: 2026-09-29
+status: Complete
 dependencies:
-  - TASK-0030
+- TASK-0030
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0007
+- ADR-0001
+- ADR-0003
+- ADR-0007
 governing_prds:
-  - PRD-0002
+- PRD-0002
 governing_stories:
-  - US-0056
-  - US-0114
+- US-0056
+- US-0114
 target_bc: security
 ---
 
