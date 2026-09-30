@@ -19,4 +19,4 @@
 | ADR-0015 | Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing | Accepted | 2026-09-29 |
 | ADR-0016 | Tamper-Evident Merkle Tree Compliance Manifests | Accepted | 2026-09-29 |
 | ADR-0017 | Deterministic DAG Topology and Tarjan SCC Cycle Resolution | Proposed | 2026-09-29 |
-
+| ADR-0018 | Real-Time Secret Scanning and Credential Leak Defense | Accepted | 2026-09-29 |

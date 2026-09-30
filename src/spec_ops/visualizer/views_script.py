@@ -187,12 +187,19 @@ VIEWS_JS = r"""
     const container = document.getElementById("dashboard-content");
     if (!container) return;
 
-    let html = renderFilterBar();
-    if (activeTab === "gantt") html += renderGanttView();
-    else if (activeTab === "kanban") html += renderKanbanView();
-    else if (activeTab === "prds") html += renderPrdsView();
-    else if (activeTab === "adrs") html += renderAdrsView();
-    else if (activeTab === "personas") html += renderPersonasView();
+    let html = "";
+    if (activeTab === "matrix") {
+      html = typeof window.renderMatrixView === "function" ? window.renderMatrixView() : "";
+    } else if (activeTab === "lead") {
+      html = typeof window.renderLeadConsoleView === "function" ? window.renderLeadConsoleView() : "";
+    } else {
+      html = renderFilterBar();
+      if (activeTab === "gantt") html += renderGanttView();
+      else if (activeTab === "kanban") html += renderKanbanView();
+      else if (activeTab === "prds") html += renderPrdsView();
+      else if (activeTab === "adrs") html += renderAdrsView();
+      else if (activeTab === "personas") html += renderPersonasView();
+    }
 
     container.innerHTML = html;
   }

@@ -78,7 +78,8 @@ def main() -> int:
             from ..docs.builder import build_docs_site
             out_dir = Path(args.out).resolve() if getattr(args, "out", None) else None
             base_url = getattr(args, "base_url", "/spec-ops/")
-            site_dir = build_docs_site(config, out_dir=out_dir, base_url=base_url)
+            include_viz = getattr(args, "include_visualizer", True)
+            site_dir = build_docs_site(config, out_dir=out_dir, base_url=base_url, include_visualizer=include_viz)
             print(f"🎉 Compiled Diataxis documentation and living 2D visualizer to {site_dir}")
             return 0
         else:
@@ -233,11 +234,15 @@ def main() -> int:
         return 0
 
     if args.command == "visualizer":
-        if args.build:
-            html = generate_standalone_html(config)
-            out_file = Path(args.build).resolve()
-            out_file.parent.mkdir(parents=True, exist_ok=True)
-            out_file.write_text(html, encoding="utf-8")
+        from ..visualizer.bundle import export_bundle
+
+        if getattr(args, "viz_action", None) == "export":
+            target = getattr(args, "out_pos", None) or getattr(args, "output", "dist/index.html")
+            out_file = export_bundle(config, output_path=target)
+            print(f"✅ Exported standalone visualizer bundle to {out_file}")
+            return 0
+        elif args.build:
+            out_file = export_bundle(config, output_path=args.build)
             print(f"✅ Exported standalone visualizer bundle to {out_file}")
             return 0
         else:

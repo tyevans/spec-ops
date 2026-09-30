@@ -30,6 +30,21 @@ def extract_parser_commands(
         commands[prefix] = ParsedCLICommand(command=prefix, options=options, positionals=positionals)
         return commands
 
+    # If this parser has its own options and is not the root parser, record it
+    own_options: set[str] = set()
+    own_positionals: list[str] = []
+    for a in parser._actions:
+        if a.dest == "help" or any(opt in ("-h", "--help") for opt in a.option_strings):
+            continue
+        if a.option_strings:
+            for opt in a.option_strings:
+                own_options.add(opt)
+        elif not isinstance(a, argparse._SubParsersAction):
+            own_positionals.append(a.dest)
+
+    if own_options and prefix != "spec-ops":
+        commands[prefix] = ParsedCLICommand(command=prefix, options=own_options, positionals=own_positionals)
+
     seen_subparsers: set[Any] = set()
     for subact in subactions:
         for name, subp in subact.choices.items():
@@ -136,6 +151,8 @@ def check_cli_drift(
                 if opt in ("--max-workers", "--concurrency", "--max-concurrency") and (
                     {"--max-workers", "--concurrency", "--max-concurrency"} & d_opts
                 ):
+                    continue
+                if opt.startswith("-") and not opt.startswith("--"):
                     continue
                 missing_opts.add(opt)
 

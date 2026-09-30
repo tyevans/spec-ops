@@ -189,12 +189,21 @@ def install_security_adrs(root_dir: Path) -> list[Path]:
 
     # Determine highest existing ADR number
     highest_num = 0
-    for p in adrs_dir.glob("*.md"):
+    adrs_proposed_dir = root_dir / "docs" / "project" / "adrs" / "proposed"
+    all_adr_paths = list(adrs_dir.glob("*.md"))
+    if adrs_proposed_dir.exists():
+        all_adr_paths.extend(adrs_proposed_dir.glob("*.md"))
+    for p in all_adr_paths:
         m = re.match(r"^adr-(\d+)", p.name)
         if m:
             highest_num = max(highest_num, int(m.group(1)))
 
-    existing_slugs = {p.stem for p in adrs_dir.glob("*.md")}
+    if registry_file.exists():
+        reg_content = registry_file.read_text(encoding="utf-8")  # pragma: no mutate
+        for m in re.finditer(r"\|\s*ADR-(\d+)\s*\|", reg_content):
+            highest_num = max(highest_num, int(m.group(1)))
+
+    existing_slugs = {p.stem for p in all_adr_paths}
 
     for adr in SECURITY_PROFILE.adrs:
         if any(adr.slug in s for s in existing_slugs):

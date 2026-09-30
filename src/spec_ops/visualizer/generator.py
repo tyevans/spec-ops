@@ -10,6 +10,7 @@ from ..config.models import SpecOpsConfig
 from ..core.git_metadata import GitMetadataHarvester
 from ..core.graph import build_graph_data, process_project_graph
 from ..core.parser import SpecOpsParser
+from .lead_console import harvest_fleet_telemetry
 from .template import VISUALIZER_HTML_TEMPLATE
 
 
@@ -171,10 +172,11 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             }
             for bc in sorted({t.target_bc for t in data.tasks if t.target_bc})
         ],
+        "telemetry": harvest_fleet_telemetry(config),
     }
 
 
-def generate_standalone_html(config: SpecOpsConfig) -> str:
-    data_json = json.dumps(serialize_project_data(config))
-    title = config.project.name
-    return VISUALIZER_HTML_TEMPLATE.format(title=title, data_json=data_json)
+def generate_standalone_html(config: SpecOpsConfig, back_link: str = "../index.html") -> str:
+    from .bundle import compile_bundle
+
+    return compile_bundle(config, back_link=back_link)

@@ -52,3 +52,10 @@ allowed = [
   "CNRI-Python"
 ]
 
+[security]
+secret_scanning = true
+lockfile_immutability = true
+enforce_lockfile = true
+sandbox_enabled = true
+allowed_commands = ["pytest", "git", "uv"]
+reporting_contact = "security@example.com"

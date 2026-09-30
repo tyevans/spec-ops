@@ -38,6 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_build = docs_subs.add_parser("build", help="Compile static HTML documentation site and living 2D visualizer")
     p_build.add_argument("--out", help="Output directory for static site (default: site/)")
     p_build.add_argument("--base-url", default="/spec-ops/", help="Base URL path for links (default: /spec-ops/)")
+    p_build.add_argument("--include-visualizer", action="store_true", default=True, help="Compile living visualizer bundle into site (default: True)")
     p_audit = docs_subs.add_parser("audit", help="Audit Diataxis documentation structure, CLI drift, and code snippets")
     p_audit.add_argument("--dir", help="Documentation directory (default: docs/)")
     p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
@@ -151,6 +152,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_viz.add_argument("--serve", action="store_true", help="Run local interactive web server")
     p_viz.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
     p_viz.add_argument("--build", metavar="OUT_FILE", help="Generate standalone single-file HTML bundle")
+    viz_subs = p_viz.add_subparsers(dest="viz_action", help="Visualizer subcommands")
+    p_export = viz_subs.add_parser("export", help="Export standalone single-file HTML visualizer bundle")
+    p_export.add_argument("out_pos", nargs="?", default=None, help="Output file path (positional)")
+    p_export.add_argument("-o", "--output", default="dist/index.html", help="Output file path (default: dist/index.html)")
 
     # worker
     p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")

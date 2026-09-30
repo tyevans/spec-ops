@@ -1,7 +1,7 @@
 # ADR-0017: Deterministic DAG Topology, Tarjan SCC Cycle Resolution, and Blast-Radius Traversal
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 As project backlogs, product requirement documents (PRDs), user stories, and architectural decision records (ADRs) grow in size and interdependency, circular dependency deadlocks inevitably arise (e.g. Task A depends on Task B, which transitively depends on Task A, or circular implementation references between PRDs and User Stories).

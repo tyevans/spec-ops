@@ -26,6 +26,8 @@ To link directly to a specific visualizer tab, append `#tab=<identifier>` to the
 | **PRDs & Features** | `#tab=prds` | `visualizer.html#tab=prds` |
 | **ADR Architecture** | `#tab=adrs` | `visualizer.html#tab=adrs` |
 | **Personas & Stories** | `#tab=personas` | `visualizer.html#tab=personas` |
+| **Project Matrix** | `#tab=matrix` | `visualizer.html#tab=matrix` |
+| **Lead Operations Console** | `#tab=lead` | `visualizer.html#tab=lead` |
 
 When a user or agent opens the link, the visualizer immediately mounts the specified tab view without full page reloads.
 
@@ -104,3 +106,21 @@ When deep linking to an entity on the relationship graph (`#tab=graph&entity=<ID
 The visualizer responds to native browser navigation:
 - Clicking the browser **Back** button closes an active detail drawer or returns to the previous tab.
 - Clicking **Forward** steps forward through your inspection history without triggering network reloads.
+
+---
+
+## Air-Gapped Standalone Bundle Export
+
+To share the visualizer in zero-network or air-gapped environments, export a standalone, self-contained HTML bundle:
+
+```bash
+spec-ops visualizer export --output dist/index.html
+```
+
+Or build the artifact during static documentation site compilation:
+
+```bash
+spec-ops docs build --include-visualizer
+```
+
+The resulting single-file HTML artifact bundles all CSS, SVG icons, and JavaScript logic with zero external CDN dependencies, fully supporting local `file://` protocol execution.

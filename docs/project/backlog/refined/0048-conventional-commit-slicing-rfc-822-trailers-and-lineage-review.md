@@ -1,23 +1,23 @@
 ---
-id: '0048'
-title: Conventional Commit Slicing, Standardized RFC-822 Git Trailers, and Lineage Review Brief
-status: Proposed
-created: 2026-09-29
+id: 0048
+title: Conventional Commit Slicing, Standardized RFC-822 Git Trailers, and Lineage
+  Review Brief
+status: Refined
 dependencies:
-  - TASK-0044
-  - TASK-0045
+- TASK-0044
+- TASK-0045
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0084
-  - US-0036
+- US-0084
+- US-0036
 target_bc: worker
 ---
 

@@ -35,6 +35,11 @@ class VisualizerHandler(BaseHTTPRequestHandler):
         elif path == "/api/data":
             data = serialize_project_data(self.config)
             self._send_json(200, data)
+        elif path == "/api/telemetry":
+            from .lead_console import harvest_fleet_telemetry
+
+            telemetry = harvest_fleet_telemetry(self.config)
+            self._send_json(200, telemetry)
         elif path == "/api/steps/frontdoor":
             query_params = urllib.parse.parse_qs(parsed_url.query)
             q = query_params.get("q", [None])[0]
