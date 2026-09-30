@@ -92,7 +92,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0043 (Refined)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](refined/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
 - **TASK-0097 (Refined)**: [`0097-preserved-worktree-handover-brief-and-cheatsheet-generator`](refined/0097-preserved-worktree-handover-brief-and-cheatsheet-generator.md)
 - **TASK-0053 (Refined)**: [`0053-anti-loop-worktree-failure-memory-schema-architecture-spike`](refined/0053-anti-loop-worktree-failure-memory-schema-architecture-spike.md)
-- **TASK-0101 (Proposed)**: [`0101-fast-incremental-worktree-preflight-runner`](proposed/0101-fast-incremental-worktree-preflight-runner.md)
+- **TASK-0101 (Refined)**: [`0101-fast-incremental-worktree-preflight-runner`](refined/0101-fast-incremental-worktree-preflight-runner.md)
 - **TASK-0055 (Proposed)**: [`0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor`](proposed/0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor.md)
 - **TASK-0100 (Proposed)**: [`0100-living-architectural-review-radar-and-context-audit`](proposed/0100-living-architectural-review-radar-and-context-audit.md)
 - **TASK-0054 (Proposed)**: [`0054-selective-patch-salvage-safe-reset-and-anti-loop-memory`](proposed/0054-selective-patch-salvage-safe-reset-and-anti-loop-memory.md)
