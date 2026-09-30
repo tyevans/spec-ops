@@ -1,5 +1,5 @@
 ---
-id: '0082'
+id: 0082
 title: Resilient Worktree Profile Synchronization and Rescue Preflight Guardrails
 status: Complete
 dependencies:
@@ -19,7 +19,12 @@ governing_stories:
 - US-0051
 - US-0108
 target_bc: security
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0082: Resilient Worktree Profile Synchronization and Rescue Preflight Guardrails
 

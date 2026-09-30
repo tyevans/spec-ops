@@ -14,7 +14,12 @@ governing_prds:
 governing_stories:
 - US-0009
 target_bc: visualizer
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0017: Multi-View Visualizer Dashboard (Gantt, Kanban, PRDs, ADRs, Personas) with Faceted Cross-Filtering
 

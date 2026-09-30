@@ -1,20 +1,25 @@
 ---
-id: '0018'
+id: 0018
 title: Git Worktree Rescue and Human Takeover Tooling
 status: Complete
 created: 2026-09-29
 completed: 2026-09-29
 dependencies:
-  - TASK-0011
+- TASK-0011
 governing_adrs:
-  - ADR-0004
-  - ADR-0005
+- ADR-0004
+- ADR-0005
 governing_prds:
-  - PRD-0001
+- PRD-0001
 governing_stories:
-  - US-0005
+- US-0005
 target_bc: backlog
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0018: Git Worktree Rescue and Human Takeover Tooling
 

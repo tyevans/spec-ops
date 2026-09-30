@@ -12,7 +12,12 @@ governing_prds:
 governing_stories:
 - US-0006
 target_bc: visualizer
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0013: Interactive Terminal UI (TUI) Dashboard
 

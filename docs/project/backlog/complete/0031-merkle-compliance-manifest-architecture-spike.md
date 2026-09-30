@@ -14,7 +14,12 @@ governing_stories:
 - US-0056
 - US-0114
 target_bc: security
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0031: Architectural Spike: Merkle Tree Compliance Data Structure and Manifest Specification
 

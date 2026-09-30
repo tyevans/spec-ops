@@ -89,6 +89,8 @@ class Task:
     timebox: str = ""
     signed_off_by: str = ""
     signed_off_at: str = ""
+    has_signed_commits: bool | None = None
+    commit_signature_status: str = ""
     blocker: BlockerInfo | None = None
     slice_type: str = "feat"
 
@@ -126,6 +128,9 @@ class CommitInfo:
     date: str
     subject: str
     prs: list[str] = field(default_factory=list)
+    signature_status: str = ""
+    is_signed: bool = False
+
 
 
 @dataclass

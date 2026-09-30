@@ -18,7 +18,12 @@ governing_stories:
 - US-0061
 target_bc: core
 allows_dependencies: true
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-09-30T18:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
+
 
 # TASK-0058: Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing
 

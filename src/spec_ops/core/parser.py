@@ -147,6 +147,8 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         timebox=str(meta.get("timebox", "")),
         signed_off_by=str(meta.get("signed_off_by", "")),
         signed_off_at=str(meta.get("signed_off_at", "")),
+        has_signed_commits=meta.get("has_signed_commits"),
+        commit_signature_status=str(meta.get("commit_signature_status", "")),
         blocker=blocker_info,
         slice_type=str(meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat").lower(),
     )

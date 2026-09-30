@@ -197,6 +197,7 @@ def test_verify_branch_commit_signatures_simulation(tmp_path: Path):
     subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
     subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True)
 
     # Empty repo / no commits
     ok, sha, msg = verify_branch_commit_signatures(repo, base_branch="main", target_branch="non-existent")

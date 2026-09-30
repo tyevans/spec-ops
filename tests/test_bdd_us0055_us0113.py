@@ -33,6 +33,7 @@ def bdd_signing_context(tmp_path: Path) -> dict[str, Any]:
     subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test User"], cwd=repo, check=True)
     subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo, check=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True)
 
     backlog = repo / "docs" / "project" / "backlog"
     refined = backlog / "refined"

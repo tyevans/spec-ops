@@ -48,6 +48,10 @@ def write_task_file(task: Task) -> Path:
         meta["signed_off_by"] = task.signed_off_by
     if task.signed_off_at:
         meta["signed_off_at"] = task.signed_off_at
+    if getattr(task, "has_signed_commits", None) is not None:
+        meta["has_signed_commits"] = task.has_signed_commits
+    if getattr(task, "commit_signature_status", ""):
+        meta["commit_signature_status"] = task.commit_signature_status
     if getattr(task, "slice_type", "") and getattr(task, "slice_type", "") != "feat":
         meta["slice_type"] = task.slice_type
     if getattr(task, "blocker", None):
