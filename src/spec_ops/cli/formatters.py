@@ -107,6 +107,19 @@ def format_health_json(report: HealthCheckReport, config: SpecOpsConfig | None =
             "mismatched_tasks": mismatched_tasks,
         },
         "constitution_warnings": list(report.constitution_drift_warnings),
+        "numbering": {
+            "ok": len(getattr(report, "numbering_collisions", [])) == 0,
+            "collision_count": len(getattr(report, "numbering_collisions", [])),
+            "collisions": [
+                {
+                    "group": c.group,
+                    "number": c.number,
+                    "canonical_id": c.canonical_id,
+                    "paths": [str(p) for p in c.paths],
+                }
+                for c in getattr(report, "numbering_collisions", [])
+            ],
+        },
         "backlog": {
             "completed_tasks": report.completed_tasks,
             "refined_tasks": report.refined_tasks,
