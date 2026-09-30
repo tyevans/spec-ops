@@ -78,7 +78,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles validate` | `<TARGET>` | Validate profile manifest and resolve inheritance DAG |
 | `spec-ops profiles inspect` | `[TARGET]` | Inspect resolved profile inheritance, merged ADRs and invariant constraints |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
-| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
+| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--check-uat] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
 | `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |

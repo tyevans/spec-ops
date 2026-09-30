@@ -2,22 +2,23 @@
 id: '0074'
 title: Executive Milestone Burndown Deck Exporter and Interactive Terminal Flow Monitor
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0013
-  - TASK-0068
+- TASK-0013
+- TASK-0068
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0105
-  - US-0078
+- US-0105
+- US-0078
 target_bc: visualizer
+claimed_by: worker-3
+branch: feat/0074-executive-milestone-burndown-deck-export
 ---
 
 # TASK-0074: Executive Milestone Burndown Deck Exporter and Interactive Terminal Flow Monitor

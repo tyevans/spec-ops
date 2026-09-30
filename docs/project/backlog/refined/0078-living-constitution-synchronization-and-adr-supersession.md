@@ -1,8 +1,7 @@
 ---
 id: '0078'
 title: Living Constitution Synchronization, ADR Supersession, and CI Drift Gate
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
   - TASK-0010
   - TASK-0063

@@ -9,6 +9,7 @@ from .layouts_script import LAYOUTS_JS
 from .lead_console import LEAD_CONSOLE_JS
 from .matrix import MATRIX_JS
 from .routing_script import ROUTING_JS
+from .uat_script import UAT_JS
 from .views_script import VIEWS_JS
 
 _SECURITY_RADAR_PATH = Path(__file__).parent / "templates" / "security_radar.js"
@@ -26,6 +27,7 @@ VISUALIZER_JS = f"""
 {MATRIX_JS}
 {LEAD_CONSOLE_JS}
 {SECURITY_RADAR_JS}
+{UAT_JS}
 {ROUTING_JS}
 }})();
 """

@@ -1,7 +1,7 @@
 ---
 id: '0041'
 title: Living Customer UAT Verification Matrix and Automated PRD Shipping Gate
-status: Refined
+status: Complete
 dependencies:
 - TASK-0034
 - TASK-0036
@@ -20,8 +20,6 @@ governing_stories:
 - US-0046
 - US-0100
 target_bc: prd
-claimed_by: worker-3
-branch: feat/0041-living-customer-uat-verification-matrix-
 ---
 
 # TASK-0041: Living Customer UAT Verification Matrix and Automated PRD Shipping Gate

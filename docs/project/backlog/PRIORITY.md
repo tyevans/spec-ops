@@ -62,7 +62,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0072 (Refined)**: [`0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor`](refined/0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor.md)
 - **TASK-0063 (Complete)**: [`0063-architectural-profile-inheritance-and-constitution-lifecycle`](complete/0063-architectural-profile-inheritance-and-constitution-lifecycle.md)
 - **TASK-0047 (Refined)**: [`0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop`](refined/0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop.md)
-- **TASK-0041 (Refined)**: [`0041-customer-uat-verification-matrix-and-automated-shipping-gate`](refined/0041-customer-uat-verification-matrix-and-automated-shipping-gate.md)
+- **TASK-0041 (Complete)**: [`0041-customer-uat-verification-matrix-and-automated-shipping-gate`](complete/0041-customer-uat-verification-matrix-and-automated-shipping-gate.md)
 - **TASK-0074 (Refined)**: [`0074-executive-milestone-burndown-deck-and-terminal-flow-monitor`](refined/0074-executive-milestone-burndown-deck-and-terminal-flow-monitor.md)
 - **TASK-0075 (Refined)**: [`0075-bidirectional-traceability-and-contributor-provenance-engine`](refined/0075-bidirectional-traceability-and-contributor-provenance-engine.md)
 - **TASK-0076 (Refined)**: [`0076-specification-frontmatter-schema-validation-and-migration`](refined/0076-specification-frontmatter-schema-validation-and-migration.md)

@@ -1,8 +1,7 @@
 ---
 id: '0077'
 title: Architectural Profile Version Lifecycle, Semantic Diffs, and Invariant Migrations
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
   - TASK-0063
 governing_adrs:

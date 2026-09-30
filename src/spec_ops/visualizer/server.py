@@ -98,6 +98,30 @@ class VisualizerHandler(BaseHTTPRequestHandler):
             res = accept_user_story(root, payload)
             code = 201 if res.get("success") else 400
             self._send_json(code, res)
+        elif path == "/api/uat/signoff":
+            from ..prd.uat import record_uat_signoff
+
+            prd_id = payload.get("prd_id", "")
+            outcome_id = payload.get("outcome_id", "")
+            reviewer = payload.get("reviewer", "Taylor")
+            status = payload.get("status", "Approved")
+            notes = payload.get("notes", "")
+            timestamp = payload.get("timestamp")
+
+            if not prd_id or not outcome_id:
+                self._send_json(400, {"success": False, "error": "Missing 'prd_id' or 'outcome_id'"})
+                return
+
+            entry = record_uat_signoff(
+                repo_root=root,
+                prd_id=prd_id,
+                outcome_id=outcome_id,
+                reviewer=reviewer,
+                status=status,
+                notes=notes,
+                timestamp=timestamp,
+            )
+            self._send_json(200, {"success": True, "signoff": entry})
         else:
             self.send_response(404)
             self.end_headers()

@@ -112,6 +112,11 @@ def main() -> int:
             from .health_handler import handle_health_generate_refactor_tasks
             return handle_health_generate_refactor_tasks(config)
 
+        if getattr(args, "check_uat", False):
+            from ..prd.uat import handle_check_uat
+            return handle_check_uat(config)
+
+
         checker = HealthChecker(config)
         report = checker.run_check()
         if getattr(args, "json", False):
