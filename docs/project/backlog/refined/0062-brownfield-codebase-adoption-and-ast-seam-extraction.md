@@ -1,10 +1,11 @@
 ---
 id: '0062'
 title: Brownfield Codebase Adoption, Grandfathered File Debt Baseline, and AST Seam Extraction
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
-  - TASK-0061
+  - TASK-0005
+  - TASK-0010
 governing_adrs:
   - ADR-0001
   - ADR-0002

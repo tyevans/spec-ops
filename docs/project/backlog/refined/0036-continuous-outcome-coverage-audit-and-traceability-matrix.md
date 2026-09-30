@@ -1,7 +1,7 @@
 ---
 id: '0036'
 title: Continuous PRD Outcome Coverage Audit and Persona-to-Commit Traceability Engine
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0004

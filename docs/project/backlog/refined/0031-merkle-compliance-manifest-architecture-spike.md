@@ -1,7 +1,7 @@
 ---
 id: '0031'
 title: 'Architectural Spike: Merkle Tree Compliance Data Structure and Manifest Specification'
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0030
