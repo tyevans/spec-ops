@@ -242,6 +242,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_q_next = queue_subs.add_parser("next", help="Inspect next ready, unblocked backlog task")
     p_q_next.add_argument("--json", action="store_true", help="Output next task as structured JSON")
 
+    p_q_refine = queue_subs.add_parser("refine", help="Validate Definition of Ready and promote task to refined")
+    p_q_refine.add_argument("task_id", help="Canonical task ID (e.g. TASK-0025 or 0025)")
+
     p_q_comp = queue_subs.add_parser("complete", help="Gate and complete task integration under merge lock")
     p_q_comp.add_argument("task_id", help="Canonical task ID (e.g. TASK-0028 or 0028)")
     p_q_comp.add_argument("--base", default="main", help="Base branch for diff comparison (default: main)")
@@ -343,5 +346,23 @@ def build_parser() -> argparse.ArgumentParser:
     p_rev.add_argument("sign_task_id", nargs="?", default=None, help="Target task ID when using 'sign'")
     p_rev.add_argument("--identity", default=None, help="Authorized reviewer identity or key ID (e.g. 'Riley <riley@example.com>')")
     p_rev.add_argument("--provenance", action="store_true", help="Audit commit provenance trailers and author distinction")
+
+    # task
+    p_task = subparsers.add_parser("task", help="Ergonomic PMaC task authoring and Definition of Ready scaffolding")
+    task_subs = p_task.add_subparsers(dest="task_action", help="Task action")
+    p_task_create = task_subs.add_parser("create", help="Scaffold a new PMaC task with Definition of Ready scaffolding")
+    p_task_create.add_argument("--title", help="Task title")
+    p_task_create.add_argument("--bc", dest="target_bc", help="Target bounded context")
+    p_task_create.add_argument("--prd", action="append", help="Governing PRD (repeatable or comma-separated)")
+    p_task_create.add_argument("--story", action="append", help="Governing BDD user story (repeatable or comma-separated)")
+    p_task_create.add_argument("--adr", action="append", help="Governing ADR (repeatable or comma-separated)")
+    p_task_create.add_argument("--deps", "--dependencies", dest="dependencies", action="append", help="Task dependencies (repeatable or comma-separated)")
+    p_task_create.add_argument("--stage", choices=["proposed", "refined"], default="proposed", help="Task backlog stage (default: proposed)")
+    p_task_create.add_argument("--non-interactive", action="store_true", help="Do not prompt interactively")
+
+    # doctor
+    p_doctor = subparsers.add_parser("doctor", help="Audit and repair local developer workspace and tooling")
+    p_doctor.add_argument("--fix", action="store_true", help="Automatically repair missing hooks and workspace configuration")
+    p_doctor.add_argument("--json", action="store_true", help="Output diagnostic results as structured JSON")
 
     return parser

@@ -345,6 +345,14 @@ def main() -> int:
             return 0
         return monitor.run()
 
+    if args.command == "task":
+        from .task_handler import handle_task_command
+        return handle_task_command(args, config, parser)
+
+    if args.command == "doctor":
+        from ..rescue.doctor import handle_doctor_command
+        return handle_doctor_command(args, config)
+
     return 0
 
 

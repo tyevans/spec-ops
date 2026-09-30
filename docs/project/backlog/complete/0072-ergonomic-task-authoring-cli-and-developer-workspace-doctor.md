@@ -1,7 +1,7 @@
 ---
 id: '0072'
 title: Ergonomic Task Authoring CLI and Developer Workspace Onboarding Doctor
-status: Refined
+status: Complete
 dependencies:
 - TASK-0007
 - TASK-0044

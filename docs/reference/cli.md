@@ -46,6 +46,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops spike graduate` | `<SPIKE_ID> --result {proven,disproven} [--title TITLE] [--notes NOTES] [--findings FINDINGS] [--status STATUS]` | Graduate empirical spike findings into an Architectural Decision Record |
 | `spec-ops tui` | `[--once] [--view {overview,backlog,tree,health}]` | Launch interactive Terminal UI (TUI) dashboard |
 | `spec-ops queue next` | `[--json]` | Inspect next ready, unblocked backlog task |
+| `spec-ops queue refine` | `<TASK_ID>` | Validate Definition of Ready and promote task to refined |
 | `spec-ops queue complete` | `<TASK_ID> [--base BASE]` | Gate and complete task integration under merge lock |
 | `spec-ops queue tree` | `[--task TASK] [--direction {blocks,blocked-by}] [--reverse] [--waves] [--all] [--json]` | Display task dependency tree, execution waves, and blockers |
 | `spec-ops queue block` | `<TASK_ID> --question QUESTION [--type {unknown,spike_needed,external,dependency}] [--spike] [--timebox TIMEBOX] [--raised-by RAISED_BY]` | Mark a task as blocked by an unknown question or impediment |
@@ -55,6 +56,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops backlog flow` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
 | `spec-ops report burndown` | `[--milestone MILESTONE] [--format {deck,html,digest}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone burndown velocity and presentation slide deck export |
 | `spec-ops report milestone` | `[--milestone MILESTONE] [--format {digest,deck,html}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone executive briefing digest and scope alignment |
+| `spec-ops task create` | `[--title TITLE] [--bc TARGET_BC] [--prd PRD] [--story STORY] [--adr ADR] [--dependencies/--deps DEPS] [--stage STAGE] [--non-interactive]` | Scaffold a new PMaC task with Definition of Ready scaffolding |
+| `spec-ops doctor` | `[--fix] [--json]` | Audit and repair local developer workspace and tooling |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |

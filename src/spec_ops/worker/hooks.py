@@ -85,6 +85,19 @@ class PreCommitHookEvaluator:
 def install_pre_commit_hook(repo_root: Path) -> Path:
     """Installs native git pre-commit hook enforcing SpecOps health invariants."""
     hooks_dir = repo_root / ".git" / "hooks"
+    if (repo_root / ".git").is_file():
+        try:
+            res = subprocess.run(
+                ["git", "rev-parse", "--git-path", "hooks"],
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            p = Path(res.stdout.strip())
+            hooks_dir = p if p.is_absolute() else (repo_root / p).resolve()
+        except Exception:
+            pass
     hooks_dir.mkdir(parents=True, exist_ok=True)
     hook_file = hooks_dir / "pre-commit"
     content = (

@@ -55,6 +55,34 @@ def handle_queue_command(
         print(f"Governing ADRs: {', '.join(target_task.governing_adrs) or 'None'}")
         return 0
 
+    if action == "refine":
+        clean_id = args.task_id.upper()
+        if not clean_id.startswith("TASK-") and clean_id.isdigit():
+            clean_id = f"TASK-{clean_id.zfill(4)}"
+
+        target_task = None
+        for t in queue.list_all_tasks():
+            if t.canonical_id == clean_id:
+                target_task = t
+                break
+
+        if not target_task:
+            print(f"❌ Task {args.task_id} not found in backlog.", file=sys.stderr)
+            return 1
+
+        from ..backlog.dor import validate_task_dor
+
+        dor_ok, dor_errors = validate_task_dor(target_task, config)
+        if not dor_ok:
+            print("❌ Definition of Ready (DoR) validation failed:")
+            for err in dor_errors:
+                print(f"   • {err}")
+            return 1
+
+        dest = queue.refine_task(target_task)
+        print(f"✅ Promoted task {target_task.canonical_id} to refined/ ({dest.name}).")
+        return 0
+
     if action == "complete":
         clean_id = args.task_id.upper()
         if not clean_id.startswith("TASK-") and clean_id.isdigit():
