@@ -18,11 +18,13 @@ def _resolve_sandbox_from_context(root: Path, spike_id: str | None) -> SpikeSand
         return SpikeSandbox(root, spike_id)
 
     cwd = Path.cwd().resolve()
+    # Check if running inside .worktrees/spike-XXXX
     for part in cwd.parts:
         if part.startswith("spike-"):
             num = part.replace("spike-", "")
             return SpikeSandbox(root, num, worktree_dir=cwd)
 
+    # Check for .specops/spike.json in cwd
     meta_path = cwd / ".specops" / "spike.json"
     if meta_path.exists():
         try:
@@ -66,12 +68,14 @@ def handle_spike_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
             print("❌ Spike ID not specified and could not be detected from current directory context.")
             return 1
 
+        # Check write isolation
         iso_ok, iso_msg = sandbox.check_write_isolation()
         if not iso_ok:
             print(f"❌ {iso_msg}", file=sys.stderr)
             print(iso_msg)
             return 1
 
+        # Check timebox
         simulated_elapsed = getattr(args, "elapsed", None)
         tb_ok, tb_msg = sandbox.check_timebox(simulated_elapsed=simulated_elapsed)
         if not tb_ok:

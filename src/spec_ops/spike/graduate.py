@@ -33,7 +33,7 @@ class GraduationResult:
 def slugify(text: str) -> str:
     """Converts a title string to a kebab-case URL/filename slug."""
     clean = re.sub(r"[^\w\s-]", "", text.lower())
-    clean = re.sub(r"[\s_]+", "-", clean)
+    clean = re.sub(r"[\s_-]+", "-", clean)
     return clean.strip("-")
 
 
@@ -63,7 +63,7 @@ def extract_benchmark_findings(
     if harness_dir.exists():
         for fn in ["benchmark.txt", "benchmark.json", "findings.txt", "results.txt"]:
             fp = harness_dir / fn
-            if fp.exists() and fp.stat().st_size > 0:
+            if fp.is_file() and fp.stat().st_size > 0:
                 text = fp.read_text(encoding="utf-8").strip()
                 if text:
                     return text
@@ -92,7 +92,7 @@ def format_adr_content(
     findings: str,
     result: str,
     notes: str | None = None,
-    status: str = "Accepted",
+    status: str = "Proposed",
 ) -> str:
     """Authors Markdown ADR content conforming strictly to ADR-0001 schema."""
     proven = result.lower() == "proven"
@@ -116,7 +116,6 @@ def format_adr_content(
             "- **Negative**: Incurs implementation and ongoing maintenance responsibilities."
         )
     else:
-        status = "Proposed"
         context = (
             f"Exploratory architectural spike {spike_id} investigated the hypothesis:\n"
             f'"{hypothesis}".\n\n'
@@ -148,14 +147,26 @@ def format_adr_content(
     )
 
 
-def update_adr_registry(registry_file: Path, adr_id: str, title: str, status: str, date_str: str) -> None:
+def update_adr_registry(
+    registry_file: Path,
+    adr_id: str,
+    title: str,
+    status_or_date: str = "Proposed",
+    date_str: str | None = None,
+) -> None:
     """Appends newly generated ADR entry to docs/project/adrs/REGISTRY.md."""
     if not registry_file.exists():
         return
     content = registry_file.read_text(encoding="utf-8")
     if adr_id in content:
         return
-    row = f"| {adr_id} | {title} | {status} | {date_str} |\n"
+    if date_str is None:
+        status = "Proposed"
+        final_date = status_or_date
+    else:
+        status = status_or_date
+        final_date = date_str
+    row = f"| {adr_id} | {title} | {status} | {final_date} |\n"
     updated = content.rstrip() + "\n" + row
     registry_file.write_text(updated, encoding="utf-8")
 
@@ -170,7 +181,7 @@ def transition_spike_task(backlog_dir: Path, spike_canonical: str, num: str) -> 
             if p.name.startswith("."):
                 continue
             digits = re.findall(r"\d+", p.stem)
-            if digits and digits[-1].zfill(4) == num:
+            if digits and digits[0].zfill(4) == num:
                 task = parse_task(p)
                 dest = (backlog_dir / "complete") / p.name
                 dest.parent.mkdir(parents=True, exist_ok=True)
@@ -192,7 +203,6 @@ def _sync_priority_for_graduated(backlog_dir: Path, task: Task) -> None:
     if not priority_file.exists():
         return
     content = priority_file.read_text(encoding="utf-8")
-    clean_id = task.canonical_id
     pattern = re.compile(
         rf"(\*\*(?:TASK|SPIKE)-{task.id.replace('TASK-', '').replace('SPIKE-', '').zfill(4)}\s*\()(?:[^\)]+)(\)\*\*:\s*\[`?[^`\]]+`?\]\()(?:[^/]+)(/[^)]+\))",
         re.IGNORECASE,
@@ -222,7 +232,7 @@ def update_dependent_tasks(
             if p.name.startswith("."):
                 continue
             digits = re.findall(r"\d+", p.stem)
-            if digits and digits[-1].zfill(4) == num:
+            if digits and digits[0].zfill(4) == num:
                 continue
             task = parse_task(p)
             matches = [
@@ -231,10 +241,12 @@ def update_dependent_tasks(
             ]
             if matches:
                 if proven:
+                    # Resolve dependency
                     task.dependencies = [d for d in task.dependencies if d not in matches]
                     write_task_file(task)
                     updated.append(task.canonical_id)
                 else:
+                    # Mark blocked
                     task.status = "Blocked: Spike hypothesis failed"
                     write_task_file(task)
                     updated.append(task.canonical_id)
@@ -259,22 +271,15 @@ def graduate_spike(
     task = sandbox.lookup_task()
 
     hypothesis = getattr(task, "hypothesis", "") or (task.title if task else f"Evaluate {canonical_id}")
-    harness_dirs = [sandbox.harness_dir, root / "spikes" / f"spike_{num}"]
-    benchmark_findings = ""
-    for hd in harness_dirs:
-        findings_try = extract_benchmark_findings(hd, notes=notes, explicit_findings=findings)
-        if findings_try and findings_try != "p95 latency = 142ms":
-            benchmark_findings = findings_try
-            break
-    if not benchmark_findings:
-        benchmark_findings = extract_benchmark_findings(sandbox.harness_dir, notes=notes, explicit_findings=findings)
+    harness_dir = sandbox.harness_dir if sandbox.harness_dir.exists() else (root / "spikes" / f"spike_{num}")
+    benchmark_findings = extract_benchmark_findings(harness_dir, notes=notes, explicit_findings=findings)
 
     # Determine status & target ADR folder
     adrs_dir = root / "docs" / "project" / "adrs"
     if status:
         target_status = status.capitalize()
     else:
-        target_status = "Accepted" if result.lower() == "proven" else "Proposed"
+        target_status = "Proposed"
 
     if target_status == "Accepted" and (adrs_dir / "accepted").exists():
         target_adrs_dir = adrs_dir / "accepted"
@@ -287,7 +292,7 @@ def graduate_spike(
     else:
         target_adr_id = adr_id
         num_m = re.search(r"\d+", target_adr_id)
-        next_num = int(num_m.group(0)) if num_m else 12
+        next_num = int(num_m.group(0)) if num_m else 10
 
     default_title = title or (
         f"Adopt {hypothesis}" if result.lower() == "proven"

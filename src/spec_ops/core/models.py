@@ -73,16 +73,19 @@ class Task:
     file_path: Path = field(default_factory=Path)
     commits: list[CommitInfo] = field(default_factory=list)
     allows_dependencies: bool = False
+    hypothesis: str = ""
+    timebox: str = ""
 
     @property
     def canonical_id(self) -> str:
-        clean = self.id.replace("TASK-", "").lstrip("0")
-        return f"TASK-{clean.zfill(4)}" if clean else self.id
+        clean = self.id.replace("TASK-", "").replace("SPIKE-", "").lstrip("0")
+        prefix = "SPIKE-" if str(self.id).upper().startswith("SPIKE") else "TASK-"
+        return f"{prefix}{clean.zfill(4)}" if clean else self.id
 
     @property
     def slug(self) -> str:
         clean = "".join(c if c.isalnum() else "-" for c in self.title.lower()).strip("-")
-        clean_id = self.canonical_id.lower().replace("task-", "")
+        clean_id = self.canonical_id.lower().replace("task-", "").replace("spike-", "")
         return f"{clean_id}-{clean[:40]}"
 
 

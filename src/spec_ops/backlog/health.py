@@ -93,14 +93,14 @@ class HealthChecker:
         for p in self.root_dir.rglob("*"):
             if not p.is_file():
                 continue
-            if any(part in EXCLUDE_DIRS for part in p.parts):
+            rel_path = p.relative_to(self.root_dir)
+            if any(part in EXCLUDE_DIRS for part in rel_path.parts):
                 continue
             if p.suffix not in SOURCE_EXTENSIONS:
                 continue
 
             try:
                 line_count = len(p.read_text(encoding="utf-8", errors="ignore").splitlines())
-                rel_path = p.relative_to(self.root_dir)
                 all_files.append((line_count, rel_path))
                 if line_count > self.limit:
                     violations.append(FileLengthViolation(rel_path, line_count, self.limit))

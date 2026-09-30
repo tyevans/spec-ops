@@ -145,6 +145,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_rescue.add_argument("--discard", action="store_true", help="Discard worktree and branch")
     p_rescue.add_argument("--prune", action="store_true", help="Prune and clean up all stale/orphaned worktrees")
 
+
     # tui
     p_tui = subparsers.add_parser("tui", help="Launch interactive Terminal UI (TUI) dashboard")
     p_tui.add_argument("--once", action="store_true", help="Render dashboard snapshot and exit without interactive loop")

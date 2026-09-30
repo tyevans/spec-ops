@@ -40,6 +40,10 @@ def write_task_file(task: Task) -> Path:
         meta["branch"] = task.branch
     if task.allows_dependencies:
         meta["allows_dependencies"] = True
+    if getattr(task, "hypothesis", ""):
+        meta["hypothesis"] = task.hypothesis
+    if getattr(task, "timebox", ""):
+        meta["timebox"] = task.timebox
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()

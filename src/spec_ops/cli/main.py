@@ -9,14 +9,9 @@ from pathlib import Path
 import subprocess
 from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
-from ..backlog.queue import BacklogQueue
-from ..backlog.worker import BacklogWorkerEngine
-from ..worker import BatchCycleOrchestrator
 from ..config.loader import load_config
 from ..core.graph import process_project_graph
 from ..core.parser import SpecOpsParser
-from ..prd.decomposer import PRDDecomposer
-from ..prd.manager import PRDManager
 from ..scaffold.init import init_project
 from ..visualizer.generator import generate_standalone_html
 from ..visualizer.server import serve_visualizer
@@ -223,122 +218,20 @@ def main() -> int:
             return 0
 
     if args.command == "worker":
-        if getattr(args, "drain", False) or getattr(args, "max_tasks", None) is not None or getattr(args, "max_concurrency", 1) > 1:
-            orchestrator = BatchCycleOrchestrator(
-                config,
-                max_concurrency=getattr(args, "max_concurrency", 1),
-                max_tasks=getattr(args, "max_tasks", None),
-                drain=getattr(args, "drain", False),
-                dry_run=args.dry_run,
-                no_merge=args.no_merge,
-            )
-            report = orchestrator.run()
-            return 0 if not report.tasks_failed else 1
-
-        worker = BacklogWorkerEngine(config)
-        queue = BacklogQueue(config.backlog_dir)
-        target_task = None
-        target_task_id = args.task
-        action_or_task = getattr(args, "action_or_task", None)
-        task_pos = getattr(args, "task_pos", None)
-        if action_or_task:
-            if action_or_task.lower() == "execute":
-                target_task_id = task_pos or target_task_id
-            else:
-                target_task_id = action_or_task or target_task_id
-        elif task_pos:
-            target_task_id = task_pos
-
-        if target_task_id:
-            clean_id = target_task_id.upper()
-            if not clean_id.startswith("TASK-") and clean_id.isdigit():
-                clean_id = f"TASK-{clean_id.zfill(4)}"
-            for t in queue.list_all_tasks():
-                if t.canonical_id == clean_id:
-                    target_task = t
-                    break
-            if not target_task:
-                print(f"❌ Task {target_task_id} not found in backlog.")
-                return 1
-        else:
-            ready = queue.get_ready_unblocked_tasks()
-            if not ready:
-                print("ℹ️ No ready, unblocked tasks in refined/ buffer. Run 'spec-ops curate' first.")
-                return 0
-            target_task = ready[0]
-
-        res = worker.execute_task(
-            target_task,
-            local_merge=not args.no_merge,
-            dry_run=args.dry_run,
-            skip_review=getattr(args, "no_review", False),
-        )
-        print(f"=== Worker Result ({target_task.canonical_id}) ===")
-        print(f"Status: {'✅ SUCCESS' if res.success else '❌ FAILED'}")
-        print(f"Message: {res.message}")
-        return 0 if res.success else 1
+        from .cycle_handler import handle_worker_command
+        return handle_worker_command(args, config)
 
     if args.command == "cycle":
-        print(f"🔄 Starting autonomous SpecOps development lifecycle ({config.project.name})...")
-        # Step 1: PRD Audit & Decompose
-        mgr = PRDManager(config)
-        audit_res = mgr.audit()
-        if audit_res.undecomposed_prds:
-            decomposer = PRDDecomposer(config)
-            for prd_id in audit_res.undecomposed_prds:
-                print(f"📄 Decomposing accepted PRD {prd_id}...")
-                decomposer.decompose(prd_id)
-
-        # Step 2: JIT Curate Backlog
-        curator = BacklogCurator(config)
-        cur_res = curator.curate()
-        print(f"📋 Backlog Curation: {cur_res.message}")
-
-        # Step 3: Health Check
-        checker = HealthChecker(config)
-        h_report = checker.run_check()
-        if not h_report.is_healthy:
-            print("❌ Invariant health check failed. Stopping cycle.")
-            for v in h_report.violations:
-                print(f"   Violation: {v.path} ({v.lines} lines > {v.limit})")
-            for err in h_report.sync_errors:
-                print(f"   Sync Error: {err}")
-            return 1
-        print("✅ Health invariants verified: 0 file violations, PRIORITY.md synchronized.")
-
-        # Step 4: Worker Execution
-        max_concurrency = getattr(args, "max_concurrency", 3)
-        drain = getattr(args, "drain", False)
-        max_tasks = getattr(args, "max_tasks", None)
-        if not drain and max_tasks is None:
-            max_tasks = 1
-
-        orchestrator = BatchCycleOrchestrator(
-            config,
-            max_concurrency=max_concurrency,
-            max_tasks=max_tasks,
-            drain=drain,
-            dry_run=args.dry_run,
-            no_merge=args.no_merge,
-            skip_review=getattr(args, "no_review", False),
-        )
-        report = orchestrator.run()
-        if report.tasks_failed:
-            print(f"❌ Cycle finished with {len(report.tasks_failed)} failure(s).")
-            return 1
-
-        # Step 5: Visualizer & Docs build
-        if getattr(args, "build_docs", False):
-            print("📚 Compiling documentation and living 2D visualizer...")
-            from ..docs.builder import build_docs_site
-            build_docs_site(config)
-
-        print("\n🎉 Autonomous cycle completed cleanly.")
-        return 0
+        from .cycle_handler import handle_cycle_command
+        return handle_cycle_command(args, config)
 
     if args.command == "rescue":
         from .rescue_handler import handle_rescue_command
         return handle_rescue_command(args, config)
+
+    if args.command == "spike":
+        from .spike_handler import handle_spike_command
+        return handle_spike_command(args, config)
 
     if args.command == "tui":
         from ..tui import TUIDashboard

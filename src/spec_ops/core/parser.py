@@ -96,13 +96,15 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
     content = file_path.read_text(encoding="utf-8")
     meta, body = extract_frontmatter(content)
     raw_id = str(meta.get("id", file_path.stem.split("-")[0]))
-    status = meta.get("status", "Proposed")
+    raw_status = meta.get("status")
     if file_path.parent.name == "complete":
-        status = "Complete"
+        status = "Graduated" if raw_status == "Graduated" else "Complete"
     elif file_path.parent.name == "refined":
-        status = "Refined"
+        status = str(raw_status) if raw_status in ("In-Progress", "Review", "Ready") else "Refined"
     elif file_path.parent.name == "proposed":
-        status = "Proposed"
+        status = str(raw_status) if raw_status and str(raw_status).startswith("Blocked") else "Proposed"
+    else:
+        status = str(raw_status or "Proposed")
 
     return Task(
         id=raw_id,
@@ -123,6 +125,8 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         raw_markdown=content,
         file_path=file_path,
         allows_dependencies=bool(meta.get("allows_dependencies", False)),
+        hypothesis=str(meta.get("hypothesis", "")),
+        timebox=str(meta.get("timebox", "")),
     )
 
 

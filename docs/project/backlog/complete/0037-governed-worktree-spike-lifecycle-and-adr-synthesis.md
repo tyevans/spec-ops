@@ -1,7 +1,7 @@
 ---
 id: '0037'
 title: Governed Worktree Spike Lifecycle and Empirical ADR Synthesis
-status: Refined
+status: Complete
 dependencies:
 - TASK-0002
 - TASK-0011
@@ -19,8 +19,6 @@ governing_stories:
 - US-0097
 - US-0098
 target_bc: prd
-claimed_by: worker-3
-branch: feat/0037-governed-worktree-spike-lifecycle-and-em
 allows_dependencies: true
 ---
 

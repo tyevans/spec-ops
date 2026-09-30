@@ -31,7 +31,10 @@ class BacklogCurator:
     def curate(self) -> CurationResult:
         all_tasks = self.queue.list_all_tasks()
         refined_tasks = [t for t in all_tasks if t.status in ("Refined", "Ready")]
-        proposed_tasks = [t for t in all_tasks if t.status == "Proposed"]
+        proposed_tasks = [
+            t for t in all_tasks
+            if t.status == "Proposed" and not str(t.status).startswith("Blocked")
+        ]
         completed_ids = self.queue.get_completed_task_ids()
 
         needed = max(0, self.target_buffer - len(refined_tasks))
@@ -42,6 +45,8 @@ class BacklogCurator:
             proposed_tasks.sort(key=lambda t: t.priority_rank)
 
             for task in proposed_tasks:
+                if str(task.status).startswith("Blocked"):
+                    continue
                 if len(refined_ids) >= needed:
                     break
 

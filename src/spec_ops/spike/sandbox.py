@@ -71,7 +71,7 @@ class SpikeSandbox:
                 if p.name.startswith("."):
                     continue
                 stem_digits = re.findall(r"\d+", p.stem)
-                if stem_digits and stem_digits[-1].zfill(4) == self.num:
+                if stem_digits and stem_digits[0].zfill(4) == self.num:
                     try:
                         return parse_task(p)
                     except Exception:
@@ -179,6 +179,7 @@ class SpikeSandbox:
         )
         pre_commit_script.chmod(0o755)
 
+        # Configure git to use worktree hooks
         subprocess.run(
             ["git", "config", "core.hooksPath", ".specops/hooks"],
             cwd=self.worktree_dir,
@@ -190,19 +191,36 @@ class SpikeSandbox:
         if not self.worktree_dir.exists():
             return True, ""
 
+        violations: list[str] = []
         res = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=self.worktree_dir,
+            capture_output=True,
+            text=True,
+        )
+        for line in res.stdout.splitlines():
+            clean_line = line.strip()
+            if not clean_line:
+                continue
+            path_part = clean_line[2:].strip().strip('"')
+            if " -> " in path_part:
+                path_part = path_part.split(" -> ")[-1].strip().strip('"')
+            # Check if any changed/untracked file touches src/ or src/spec_ops/
+            if path_part.startswith("src/"):
+                violations.append(path_part)
+
+        res_cached = subprocess.run(
             ["git", "diff", "--cached", "--name-only"],
             cwd=self.worktree_dir,
             capture_output=True,
             text=True,
         )
-        violations: list[str] = []
-        for line in res.stdout.splitlines():
+        for line in res_cached.stdout.splitlines():
             clean_line = line.strip()
-            if not clean_line:
-                continue
-            if clean_line.startswith("src/"):
+            if clean_line and clean_line.startswith("src/"):
                 violations.append(clean_line)
+
+        violations = list(dict.fromkeys(violations))
 
         if violations:
             msg = (

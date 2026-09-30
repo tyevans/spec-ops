@@ -42,7 +42,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0034 (Complete)**: [`0034-prd-discovery-guide-falsifiable-linter-and-lifecycle-stage-gates`](complete/0034-prd-discovery-guide-falsifiable-linter-and-lifecycle-stage-gates.md)
 - **TASK-0035 (Complete)**: [`0035-outcome-to-bdd-decomposition-and-incremental-delta-evolution`](complete/0035-outcome-to-bdd-decomposition-and-incremental-delta-evolution.md)
 - **TASK-0036 (Proposed)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](proposed/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
-- **TASK-0037 (Refined)**: [`0037-governed-worktree-spike-lifecycle-and-adr-synthesis`](refined/0037-governed-worktree-spike-lifecycle-and-adr-synthesis.md)
+- **TASK-0037 (Complete)**: [`0037-governed-worktree-spike-lifecycle-and-adr-synthesis`](complete/0037-governed-worktree-spike-lifecycle-and-adr-synthesis.md)
 - **TASK-0038 (Complete)**: [`0038-zero-dependency-web-prd-studio-architecture-spike`](complete/0038-zero-dependency-web-prd-studio-architecture-spike.md)
 - **TASK-0039 (Proposed)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](proposed/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
 - **TASK-0040 (Proposed)**: [`0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike`](proposed/0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike.md)
