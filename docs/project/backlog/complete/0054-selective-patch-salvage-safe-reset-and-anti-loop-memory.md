@@ -1,7 +1,7 @@
 ---
 id: '0054'
 title: Selective Patch Takeover and Partial File Salvage from Stalled Worktrees
-status: Refined
+status: Complete
 dependencies:
 - TASK-0048
 - TASK-0053

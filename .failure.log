@@ -1,5 +1,6 @@
 Autonomous Worker Execution Failure Report
-Task: TASK-0053
+Task: TASK-0054
 
 Last Failure Log:
-Preflight and architectural review passed on attempt 1.
+Interrupted by signal: root agent idle; waiting up to 30m0s for 1 background task(s)
+error: interrupted
