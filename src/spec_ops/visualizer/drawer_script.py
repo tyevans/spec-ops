@@ -80,7 +80,7 @@ DRAWER_JS = r"""
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.78rem;">
           <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing ADRs:</div><div class="pills-container">${t.governing_adrs && t.governing_adrs.length ? t.governing_adrs.map(a => pill(a, "adr")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
           <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Dependencies:</div><div class="pills-container">${t.dependencies && t.dependencies.length ? t.dependencies.map(d => pill(d, "task")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
-          <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing Stories:</div><div class="pills-container">${t.governing_stories && t.governing_stories.length ? t.governing_stories.map(s => pill(s, "story")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
+          <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing Stories:</div><div class="pills-container">${t.governing_stories && t.governing_stories.length ? t.governing_stories.map(s => `<button class="entity-pill pill-story highlighted-story" onclick="openDrawer('${s}')">${s}</button>`).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
           <div><div style="color:var(--text-muted); font-weight:600; margin-bottom:4px;">Governing PRDs:</div><div class="pills-container">${t.governing_prds && t.governing_prds.length ? t.governing_prds.map(p => pill(p, "prd")).join("") : '<span style="color:var(--text-muted)">None</span>'}</div></div>
         </div>
       </div>
@@ -95,6 +95,7 @@ DRAWER_JS = r"""
         <div style="display:flex; gap:8px; align-items:center;">
           <span class="entity-pill pill-story">Persona: ${s.persona || 'Alex'}</span>
           ${s.governing_prd ? `<span class="entity-pill pill-prd" onclick="openDrawer('${s.governing_prd}')">PRD: ${s.governing_prd}</span>` : ""}
+          <button class="uat-receipt-btn" onclick="window.exportUatReceipt('${s.feature || s.id}', '${s.governing_prd || 'PRD-0005'}', ${JSON.stringify(s.scenarios || [])}, event)" style="margin-left:auto;">📄 Export UAT Verification Receipt</button>
         </div>
       </div>
       ${(s.as_a || s.i_want || s.so_that) ? `

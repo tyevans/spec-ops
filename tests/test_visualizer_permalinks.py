@@ -150,3 +150,63 @@ def test_kanban_and_adr_context_actions_copy_link(tmp_path: Path):
     assert.strictEqual(mockAdrBtn.textContent, '✓ Copied URL!');
     """
     run_node_test(html, test_js)
+
+
+def test_matrix_deep_link_activates_tab_and_highlights_stories(tmp_path: Path):
+    """Verify #tab=matrix&entity=<ID> activates Matrix tab, opens drawer, and highlights linked stories (DoD 1)."""
+    init_project(tmp_path, name="TestMatrixDeepLink")
+    config = load_config(root_dir=tmp_path)
+    html = generate_standalone_html(config)
+    project_data_js, app_js = _extract_scripts(html)
+
+    test_js = f"""
+    location.hash = "#tab=matrix&entity=TASK-0001";
+    location.href = "http://localhost:8080/#tab=matrix&entity=TASK-0001";
+    {project_data_js}
+    {app_js}
+
+    // Verify matrix tab is active
+    assert.strictEqual(tabBtns.find(b => b.classList.contains('active'))?.dataset.tab, 'matrix');
+
+    // Verify drawer opened automatically
+    assert.strictEqual(elements['drawer'].classList.contains('open'), true);
+    assert(elements['drawer-title'].textContent.includes('TASK-0001'));
+
+    // Verify matrix view rendered with row and linked story highlighting
+    const matrixContent = elements['dashboard-content'].innerHTML;
+    assert(matrixContent.includes('Project Traceability Matrix'));
+    assert(matrixContent.includes('TASK-0001'));
+    assert(matrixContent.includes('highlighted-story') || matrixContent.includes('border-left:3px solid #38bdf8'));
+    """
+    run_node_test(html, test_js)
+
+
+def test_canvas_focus_deep_link_smooth_pan_and_zoom(tmp_path: Path):
+    """Verify #tab=canvas&focus=<ID> smoothly animates camera to center at 1.5x zoom (DoD 4)."""
+    init_project(tmp_path, name="TestCanvasFocus")
+    config = load_config(root_dir=tmp_path)
+    html = generate_standalone_html(config)
+    project_data_js, app_js = _extract_scripts(html)
+
+    test_js = f"""
+    location.hash = "#tab=canvas&focus=TASK-0001";
+    location.href = "http://localhost:8080/#tab=canvas&focus=TASK-0001";
+    {project_data_js}
+    {app_js}
+
+    // Verify tab mapped to graph
+    assert.strictEqual(tabBtns.find(b => b.classList.contains('active'))?.dataset.tab, 'graph');
+
+    // Verify camera focal node and 1.5x zoom
+    assert.strictEqual(window.getFocusedNodeId(), 'TASK-0001');
+    const camera = window.getCameraState();
+    assert.strictEqual(camera.focusedNodeId, 'TASK-0001');
+    assert.strictEqual(camera.zoom, 1.5);
+    assert(camera.targetPanX !== null || camera.panX !== 0);
+
+    // Verify detail drawer opened for target entity
+    assert.strictEqual(elements['drawer'].classList.contains('open'), true);
+    assert(elements['drawer-title'].textContent.includes('TASK-0001'));
+    """
+    run_node_test(html, test_js)
+

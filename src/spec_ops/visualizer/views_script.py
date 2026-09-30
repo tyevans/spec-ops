@@ -202,7 +202,7 @@ VIEWS_JS = r"""
       else if (activeTab === "kanban") html += renderKanbanView();
       else if (activeTab === "prds") html += renderPrdsView();
       else if (activeTab === "adrs") html += renderAdrsView();
-      else if (activeTab === "personas") html += renderPersonasView();
+      else if (activeTab === "personas") html += (typeof window.renderPersonasTourView === "function" ? window.renderPersonasTourView() : renderPersonasView());
     }
 
     container.innerHTML = html;

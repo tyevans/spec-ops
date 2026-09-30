@@ -9,6 +9,7 @@ from .layouts_script import LAYOUTS_JS
 from .lead_console import LEAD_CONSOLE_JS
 from .matrix import MATRIX_JS
 from .routing_script import ROUTING_JS
+from .tour_script import TOUR_JS
 from .uat_script import UAT_JS
 from .views_script import VIEWS_JS
 
@@ -28,6 +29,7 @@ VISUALIZER_JS = f"""
 {LEAD_CONSOLE_JS}
 {SECURITY_RADAR_JS}
 {UAT_JS}
+{TOUR_JS}
 {ROUTING_JS}
 }})();
 """

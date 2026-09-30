@@ -92,12 +92,33 @@ To copy a canonical permalink from the visualizer:
 
 ---
 
-## 2D Canvas Focal Centering and Glowing Halo
+## 2D Canvas Focal Centering and 1.5x Zoom
 
-When deep linking to an entity on the relationship graph (`#tab=graph&entity=<ID>` or `#entity=<ID>`):
-- The 2D Canvas camera viewport automatically pans and centers directly on the target entity node.
+When deep linking to an entity on the relationship canvas (`#tab=canvas&focus=<ID>` or `#tab=graph&entity=<ID>`):
+- The 2D Canvas camera viewport smoothly animates and centers directly on the target node at 1.5x zoom.
 - A glowing dual-ring halo pulses around the target node to immediately distinguish it from neighboring nodes in the graph.
 - Opening or closing detail drawers synchronizes the URL hash (`entity=...`), smoothly centering the camera when inspected and clearing the focal halo when dismissed.
+
+---
+
+## Interactive Stakeholder Guided Tour
+
+For non-technical product managers, domain experts, and auditors:
+- Clicking **🧭 Take Guided Tour** in the top navigation launches an interactive 4-step walkthrough explaining:
+  1. The core philosophy of Project Management as Code (PMaC).
+  2. How Personas connect to PRDs, Stories, and Backlog Tasks.
+  3. How to filter delivery horizons on the Gantt chart and Kanban lanes.
+  4. How to inspect verifiable test evidence in the detail drawer.
+- The tour can be stepped through, skipped, or restarted at any time, with first-visit completion tracked in `localStorage`.
+
+---
+
+## Persona-Filtered BDD Scenarios and UAT Verification Receipts
+
+In the **Personas & Stories** tab (`#tab=personas`):
+- Clicking any persona card isolates the story catalog to stories authored for that persona.
+- Clicking any user story expands an accordion displaying exact executable Gherkin scenarios with green blackbox verification badges (`✓ PASSED`).
+- Clicking **📄 Export UAT Verification Receipt** generates a cryptographically hashed (SHA-256), timestamped markdown compliance receipt with dual signature blocks for Product and Security sign-off, downloadable for SOC2/ISO compliance audits.
 
 ---
 

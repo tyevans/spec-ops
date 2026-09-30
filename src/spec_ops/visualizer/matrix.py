@@ -81,6 +81,9 @@ MATRIX_JS = r"""
   window.setMatrixFilter = function(key, val) {
     matrixFilterState[key] = val;
     renderActiveView();
+    if (typeof updateUrl === "function" && !isSyncingFromUrl) {
+      updateUrl(false);
+    }
   };
 
   window.renderMatrixView = function() {
@@ -293,8 +296,11 @@ MATRIX_JS = r"""
                   `;
                 }
 
+                const isCurrentTask = typeof currentEntity !== "undefined" && currentEntity && currentEntity.id === t.id;
+                const rowStyle = isCurrentTask ? 'style="background:rgba(56,189,248,0.18); border-left:3px solid #38bdf8;"' : '';
+
                 return `
-                  <tr>
+                  <tr ${rowStyle}>
                     <td>
                       <span class="matrix-badge ${stClass}" onclick="openDrawer('${escapeHtml(t.id)}')">${escapeHtml(t.id)}</span>
                       <strong style="cursor:pointer; color:#f8fafc;" onclick="openDrawer('${escapeHtml(t.id)}')">${escapeHtml(t.title)}</strong>
@@ -304,7 +310,11 @@ MATRIX_JS = r"""
                     <td><span class="matrix-badge matrix-badge-release">${escapeHtml(t.target_release || 'Unscheduled')}</span></td>
                     <td>${personaName ? `<span class="matrix-badge matrix-badge-persona" onclick="openDrawer('${escapeHtml(personaId || personaName)}')">${escapeHtml(personaName)}</span>` : '<span style="color:#64748b">—</span>'}</td>
                     <td>${(t.governing_prds || []).map(pid => `<span class="matrix-badge matrix-badge-prd" onclick="openDrawer('${escapeHtml(pid)}')">${escapeHtml(pid)}</span>`).join(" ") || '<span style="color:#64748b">—</span>'}</td>
-                    <td>${(t.governing_stories || []).map(sid => `<span class="matrix-badge matrix-badge-story" onclick="openDrawer('${escapeHtml(sid)}')">${escapeHtml(sid)}</span>`).join(" ") || '<span style="color:#64748b">—</span>'}</td>
+                    <td>${(t.governing_stories || []).map(sid => {
+                      const isLinked = isCurrentTask || (typeof currentEntity !== "undefined" && currentEntity && (currentEntity.id === sid || (currentEntity.governing_stories || []).includes(sid)));
+                      const hlClass = isLinked ? "highlighted-story" : "";
+                      return `<span class="matrix-badge matrix-badge-story ${hlClass}" onclick="openDrawer('${escapeHtml(sid)}')">${escapeHtml(sid)}</span>`;
+                    }).join(" ") || '<span style="color:#64748b">—</span>'}</td>
                     <td>${(t.governing_adrs || []).map(aid => `<span class="matrix-badge matrix-badge-adr" onclick="openDrawer('${escapeHtml(aid)}')">${escapeHtml(aid)}</span>`).join(" ") || '<span style="color:#64748b">—</span>'}</td>
                   </tr>
                 `;

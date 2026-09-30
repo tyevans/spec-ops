@@ -48,7 +48,7 @@ GRAPH_JS = r"""
     return false;
   }
 
-  window.focusNode = function(nodeId, immediate = false) {
+  window.focusNode = function(nodeId, immediate = false, targetZoom = 1.5) {
     if (!nodeId) {
       focusedNodeId = null;
       targetPanX = null;
@@ -59,11 +59,12 @@ GRAPH_JS = r"""
     const target = nodes.find(n => matchNode(n, cleanId));
     if (target) {
       focusedNodeId = target.id;
+      zoom = targetZoom || 1.5;
       const cw = width || (canvas && canvas.clientWidth) || 1000;
       const ch = height || (canvas && canvas.clientHeight) || 800;
       targetPanX = cw / 2 - target.x * zoom;
       targetPanY = ch / 2 - target.y * zoom;
-      if (immediate || (typeof isSyncingFromUrl !== "undefined" && isSyncingFromUrl)) {
+      if (immediate) {
         panX = targetPanX;
         panY = targetPanY;
         targetPanX = null;

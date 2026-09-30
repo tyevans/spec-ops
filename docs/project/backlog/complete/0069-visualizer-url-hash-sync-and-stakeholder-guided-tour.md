@@ -1,7 +1,8 @@
 ---
-id: '0069'
-title: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Canvas Focus
-status: Refined
+id: 0069
+title: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Canvas
+  Focus
+status: Complete
 dependencies:
 - TASK-0068
 - TASK-0022

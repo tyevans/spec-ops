@@ -4,6 +4,7 @@ from typing import Any
 
 from .scripts import VISUALIZER_JS
 from .styles import VISUALIZER_CSS
+from .tour_script import TOUR_CSS
 
 
 class SafeTemplate(str):
@@ -26,6 +27,7 @@ _BASE_SHELL = """<!DOCTYPE html>
   <title>{title} — SpecOps Visualizer</title>
   <style>
 """ + VISUALIZER_CSS + """
+""" + TOUR_CSS + """
   </style>
 </head>
 <body>
@@ -33,6 +35,7 @@ _BASE_SHELL = """<!DOCTYPE html>
     <div class="header-left">
       <a href="{back_link}" class="nav-back-btn">← Back to Docs</a>
       <h1>⚡ {title} <span class="badge">Visualizer</span></h1>
+      <button class="tour-btn" id="btn-guided-tour" onclick="startGuidedTour()" title="Interactive walkthrough of SpecOps visualizer">🧭 Take Guided Tour</button>
     </div>
     <div class="header-center" id="graph-controls">
       <div class="layout-group">
@@ -163,6 +166,22 @@ _BASE_SHELL = """<!DOCTYPE html>
         <button class="close-btn" onclick="closeDrawer()">&times;</button>
       </div>
       <div class="drawer-body" id="drawer-body"></div>
+    </div>
+
+    <div id="tour-overlay" class="tour-overlay" style="display:none;">
+      <div id="tour-modal" class="tour-modal">
+        <div class="tour-header">
+          <span id="tour-step-badge" class="tour-step-badge">Step 1 of 4</span>
+          <button class="tour-close-btn" onclick="closeTour()">&times;</button>
+        </div>
+        <h3 id="tour-title">1. Philosophy of PMaC (Project Management as Code)</h3>
+        <p id="tour-desc">All specifications, user stories, tasks, and architectural decisions are version-locked in git directly alongside implementation code.</p>
+        <div class="tour-footer">
+          <button class="ctrl-btn" id="tour-prev-btn" onclick="prevTourStep()" style="visibility:hidden;">← Back</button>
+          <button class="ctrl-btn" id="tour-skip-btn" onclick="closeTour()">Skip Tour</button>
+          <button class="ctrl-btn active" id="tour-next-btn" onclick="nextTourStep()">Next →</button>
+        </div>
+      </div>
     </div>
   </main>
   <script>
