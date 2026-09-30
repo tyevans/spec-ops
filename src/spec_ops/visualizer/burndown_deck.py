@@ -11,6 +11,7 @@ from typing import Any
 
 from ..config.loader import load_config
 from ..config.models import SpecOpsConfig
+from ..core.git_metadata import GitMetadataHarvester
 from ..core.models import ProjectData, Task
 from ..core.parser import SpecOpsParser
 from .deck_template import render_deck_html
@@ -157,7 +158,33 @@ def calculate_milestone_burndown(
     rem_count = len(remaining)
 
     pct = round((comp_count / total_count * 100.0) if total_count > 0 else 0.0, 1)
-    velocity = max(2.5, round(comp_count * 1.5, 1))
+    all_completed = [t for t in data.tasks if t.status == "Complete"]
+    dates: list[date] = []
+    harvester = GitMetadataHarvester(config.root_dir)
+    git_map = harvester.harvest()
+    for t in data.tasks:
+        if not getattr(t, "commits", None) and t.canonical_id in git_map:
+            t_commits, t_prs = git_map[t.canonical_id]
+            t.commits = t_commits
+        for c in getattr(t, "commits", []):
+            if hasattr(c, "date") and c.date:
+                try:
+                    dates.append(date.fromisoformat(c.date.split("T")[0].split(" ")[0]))
+                except Exception:
+                    pass
+        if getattr(t, "signed_off_at", None):
+            try:
+                dates.append(date.fromisoformat(str(t.signed_off_at).split("T")[0].split(" ")[0]))
+            except Exception:
+                pass
+
+    if dates and (all_completed or comp_count > 0):
+        days_span = max(1, (max(dates) - min(dates)).days + 1)
+        weeks_span = days_span / 7.0
+        count_for_vel = len(all_completed) if len(all_completed) > 0 else comp_count
+        velocity = max(2.5, round(count_for_vel / weeks_span, 1))
+    else:
+        velocity = max(2.5, round(comp_count * 1.5, 1))
 
     weeks_left = math.ceil(rem_count / (velocity / 2.0)) if velocity > 0 else 2
     proj_date = (date.today() + timedelta(weeks=weeks_left)).isoformat()
