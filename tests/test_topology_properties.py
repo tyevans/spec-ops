@@ -13,7 +13,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from spec_ops.core.spikes.topology_spike import (
+from spec_ops.core.topology import (
     DirectedGraph,
     compute_execution_tiers,
     detect_cycles,
@@ -203,3 +203,83 @@ def test_hypothesis_topological_execution_tiering_invariant(
         assert tier_res.critical_path_depth == max(depth_map.values())
     else:
         assert tier_res.critical_path_depth == 0
+
+
+@st.composite
+def dag_strategy(draw: st.DrawFn) -> tuple[list[str], list[tuple[str, str]]]:
+    """Generates guaranteed Directed Acyclic Graphs (DAGs) using upper-triangular edge sampling."""
+    num_nodes = draw(st.integers(min_value=2, max_value=20))
+    nodes = [f"TASK-{i:04d}" for i in range(1, num_nodes + 1)]
+    valid_edges = [(nodes[i], nodes[j]) for i in range(num_nodes) for j in range(i + 1, num_nodes)]
+    edges = draw(st.lists(st.sampled_from(valid_edges), min_size=0, max_size=len(valid_edges), unique=True)) if valid_edges else []
+    return nodes, edges
+
+
+@given(dag_data=dag_strategy())
+@settings(max_examples=100)
+def test_hypothesis_dag_topological_sort_order_invariant(
+    dag_data: tuple[list[str], list[tuple[str, str]]],
+):
+    """Hypothesis Invariant: For any generated DAG, topological sort produces an ordering where for every directed edge (u, v), u appears before v."""
+    nodes, edges = dag_data
+    adj: dict[str, list[str]] = {n: [] for n in nodes}
+    for u, v in edges:
+        adj[u].append(v)
+
+    order, is_acyclic = kahns_topological_sort(adj)
+    assert is_acyclic is True, f"Generated graph must be acyclic: {edges}"
+    assert len(order) == len(nodes)
+
+    index_map = {node: i for i, node in enumerate(order)}
+    for u, v in edges:
+        assert index_map[u] < index_map[v], (
+            f"Topological sort invariant violated: edge ({u}, {v}) but {u} at index {index_map[u]} >= {v} at index {index_map[v]}"
+        )
+
+
+@st.composite
+def cyclic_graph_strategy(draw: st.DrawFn) -> tuple[list[str], list[tuple[str, str]], list[str]]:
+    """Generates directed graphs with at least one guaranteed elementary cycle."""
+    num_nodes = draw(st.integers(min_value=3, max_value=20))
+    nodes = [f"TASK-{i:04d}" for i in range(1, num_nodes + 1)]
+
+    # Draw a subset of 2 to 5 nodes to form an injected cycle
+    cycle_size = draw(st.integers(min_value=2, max_value=min(5, num_nodes)))
+    cycle_nodes = draw(st.lists(st.sampled_from(nodes), min_size=cycle_size, max_size=cycle_size, unique=True))
+
+    cycle_edges = [(cycle_nodes[i], cycle_nodes[(i + 1) % cycle_size]) for i in range(cycle_size)]
+
+    # Draw additional random background edges
+    extra_edges = draw(
+        st.lists(
+            st.tuples(st.sampled_from(nodes), st.sampled_from(nodes)),
+            min_size=0,
+            max_size=num_nodes * 2,
+            unique=True,
+        )
+    )
+
+    all_edges = list(set(cycle_edges + extra_edges))
+    return nodes, all_edges, cycle_nodes
+
+
+@given(cyclic_data=cyclic_graph_strategy())
+@settings(max_examples=100)
+def test_hypothesis_cyclic_graph_always_reports_cycles(
+    cyclic_data: tuple[list[str], list[tuple[str, str]], list[str]],
+):
+    """Hypothesis Invariant: For any cyclic graph, cycle detection always reports non-empty cycles."""
+    nodes, edges, cycle_nodes = cyclic_data
+    g = DirectedGraph()
+    for n in nodes:
+        g.add_node(n)
+    for u, v in edges:
+        g.add_edge(u, v)
+
+    cycles = detect_cycles(g)
+    assert len(cycles) > 0, f"Expected cycles but none detected! Cycle nodes: {cycle_nodes}, edges: {edges}"
+    for c in cycles:
+        assert c.size >= 1
+        assert len(c.cycle_path) >= 2
+        assert c.cycle_path[0] == c.cycle_path[-1]
+

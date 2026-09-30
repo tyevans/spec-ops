@@ -47,4 +47,33 @@ __all__ = [
     "generate_traceability_edges",
     "parse_markdown_document",
     "process_project_graph",
+    "DirectedGraph",
+    "CycleResult",
+    "TopologicalTierResult",
+    "BlastRadiusResult",
+    "tarjan_scc",
+    "detect_cycles",
+    "kahns_topological_sort",
+    "compute_execution_tiers",
+    "compute_blast_radius",
+    "find_shortest_traceability_path",
+    "format_traceability_path",
+    "inspect_entity",
+    "audit_traceability",
+    "audit_bottlenecks",
+    "audit_graph_all",
 ]
+
+from .graph_audit import audit_bottlenecks, audit_graph_all, audit_traceability
+from .pathfinder import find_shortest_traceability_path, format_traceability_path, inspect_entity
+from .topology import (
+    BlastRadiusResult,
+    CycleResult,
+    DirectedGraph,
+    TopologicalTierResult,
+    compute_blast_radius,
+    compute_execution_tiers,
+    detect_cycles,
+    kahns_topological_sort,
+    tarjan_scc,
+)

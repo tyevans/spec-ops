@@ -1,4 +1,4 @@
-"""CLI command handler for relational graph operations and compilation."""
+"""CLI command handler for relational graph operations, cycle detection, pathfinding, and audits."""
 
 from __future__ import annotations
 
@@ -8,11 +8,30 @@ import sys
 
 from ..config.models import SpecOpsConfig
 from ..core.cache import RelationalGraphCacheEngine
+from ..core.git_metadata import GitMetadataHarvester
+from ..core.graph_audit import audit_bottlenecks, audit_graph_all, audit_traceability
+from ..core.pathfinder import find_shortest_traceability_path, format_traceability_path, inspect_entity
+from ..core.topology import (
+    DirectedGraph,
+    compute_blast_radius,
+    compute_execution_tiers,
+    detect_cycles,
+)
+
+
+def _load_graph(config: SpecOpsConfig) -> tuple[Any, DirectedGraph]:
+    engine = RelationalGraphCacheEngine(config.root_dir)
+    data, _ = engine.compile_graph(force_cold=False)
+    harvester = GitMetadataHarvester(config.root_dir)
+    git_commits = harvester.harvest()
+    graph = DirectedGraph.from_project_data(data, harvested_git=git_commits)
+    return data, graph
 
 
 def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Handles 'spec-ops graph' subcommands."""
     action = getattr(args, "graph_action", None)
+
     if action == "compile":
         incremental = getattr(args, "incremental", False)
         force_cold = getattr(args, "force_cold", False) or (not incremental)
@@ -49,5 +68,125 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
             print(f"Incremental graph sync: {stats.invalidated} {files_word} invalidated, {stats.cache_hits} cache hits ({misses_str})")
         return 0
 
+    if action == "cycles":
+        fmt = getattr(args, "format", "text")
+        is_json = fmt == "json" or getattr(args, "json", False)
+        data, graph = _load_graph(config)
+        cycles = detect_cycles(graph)
+
+        if is_json:
+            out = {
+                "cyclic": len(cycles) > 0,
+                "cycle_count": len(cycles),
+                "cycles": [
+                    {
+                        "scc": c.scc,
+                        "cycle_path": c.cycle_path,
+                        "path_str": c.path_str,
+                        "feedback_edge": list(c.feedback_edge),
+                        "remediation": c.remediation,
+                        "size": c.size,
+                    }
+                    for c in cycles
+                ],
+            }
+            print(json.dumps(out, indent=2))
+            return 1 if cycles else 0
+
+        if not cycles:
+            print("Traceability Invariant Met: Zero dependency cycles detected.")
+            return 0
+
+        for c in cycles:
+            print(f"Cyclic Backlog Dependency Detected: Strongly Connected Component of size {c.size}")
+            print(f"Directed cycle path: {c.path_str}")
+            print(f"Actionable suggestion: {c.remediation}.")
+        return 1
+
+    if action in ("sort", "order"):
+        etype = getattr(args, "type", None)
+        data, graph = _load_graph(config)
+        res = compute_execution_tiers(graph, entity_type=etype)
+
+        if res.quarantined_cycles:
+            c = res.quarantined_cycles[0]
+            print(f"Cyclic Backlog Dependency Detected: Strongly Connected Component of size {c.size}")
+            print(f"Directed cycle path: {c.path_str}")
+            print(f"Actionable suggestion: {c.remediation}.")
+            return 1
+
+        print("Topological Execution Order:")
+        print(res.formatted_sequence)
+        print(f"Identifies the critical path depth as {res.critical_path_depth}.")
+        return 0
+
+    if action == "path":
+        src = getattr(args, "from_node", None) or getattr(args, "from", None)
+        dst = getattr(args, "to_node", None) or getattr(args, "to", None)
+        if not src or not dst:
+            print("Error: Both --from and --to nodes are required.", file=sys.stderr)
+            return 1
+
+        data, graph = _load_graph(config)
+        path = find_shortest_traceability_path(graph, src, dst)
+        if not path:
+            print(f"No unbroken traceability path found between '{src}' and '{dst}'.", file=sys.stderr)
+            return 1
+
+        print(format_traceability_path(path, graph=graph))
+        return 0
+
+    if action == "blast-radius":
+        target = getattr(args, "entity", None)
+        if not target:
+            print("Error: Entity identifier required for blast-radius calculation.", file=sys.stderr)
+            return 1
+
+        data, graph = _load_graph(config)
+        blast = compute_blast_radius(graph, target)
+        print(blast.formatted_summary)
+        return 0
+
+    if action == "inspect":
+        target = getattr(args, "entity", None)
+        if not target:
+            print("Error: Entity identifier required for graph inspection.", file=sys.stderr)
+            return 1
+
+        data, graph = _load_graph(config)
+        print(inspect_entity(graph, target, data=data))
+        return 0
+
+    if action == "audit":
+        data, _ = _load_graph(config)
+        code, msgs = audit_graph_all(data)
+        for msg in msgs:
+            print(msg)
+        return code
+
     print(f"❌ Unknown graph action: {action}", file=sys.stderr)
+    return 1
+
+
+def handle_trace_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+    """Handles 'spec-ops trace' commands."""
+    data, _ = _load_graph(config)
+    code, msgs = audit_traceability(data)
+    for msg in msgs:
+        print(msg)
+    return code
+
+
+def handle_backlog_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+    """Handles 'spec-ops backlog' commands."""
+    action = getattr(args, "backlog_action", None)
+    if action == "bottlenecks":
+        data, _ = _load_graph(config)
+        forecast = getattr(args, "forecast", False)
+        code, msgs = audit_bottlenecks(data, forecast=forecast)
+        for msg in msgs:
+            print(msg)
+        return code
+
+    print(f"❌ Unknown backlog action: {action}", file=sys.stderr)
     return 1

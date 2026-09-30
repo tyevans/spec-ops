@@ -61,7 +61,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0047 (Complete)**: [`0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop`](complete/0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop.md)
 - **TASK-0074 (Complete)**: [`0074-executive-milestone-burndown-deck-and-terminal-flow-monitor`](complete/0074-executive-milestone-burndown-deck-and-terminal-flow-monitor.md)
 - **TASK-0064 (Refined)**: [`0064-interactive-init-wizard-and-headless-ci-automation`](refined/0064-interactive-init-wizard-and-headless-ci-automation.md)
-- **TASK-0060 (Refined)**: [`0060-graph-cycle-resolution-topological-sorting-and-orphan-audit`](refined/0060-graph-cycle-resolution-topological-sorting-and-orphan-audit.md)
+- **TASK-0060 (Complete)**: [`0060-graph-cycle-resolution-topological-sorting-and-orphan-audit`](complete/0060-graph-cycle-resolution-topological-sorting-and-orphan-audit.md)
 - **TASK-0077 (Refined)**: [`0077-profile-version-lifecycle-and-semantic-migrations`](refined/0077-profile-version-lifecycle-and-semantic-migrations.md)
 - **TASK-0078 (Refined)**: [`0078-living-constitution-synchronization-and-adr-supersession`](refined/0078-living-constitution-synchronization-and-adr-supersession.md)
 - **TASK-0042 (Refined)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](refined/0042-executive-roadmap-exporter-and-release-notes-generator.md)

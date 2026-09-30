@@ -25,6 +25,15 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics, persona coverage distribution, and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |
+| `spec-ops graph cycles` | `[--format {text,json}] [--json]` | Deterministic cycle detection via Tarjan SCC |
+| `spec-ops graph sort` | `[--type TYPE]` | Deterministic topological backlog execution sorting |
+| `spec-ops graph order` | `[--type TYPE]` | Deterministic topological backlog execution ordering |
+| `spec-ops graph path` | `--from ORIGIN --to DEST` | Reachability pathfinding and lineage tracing |
+| `spec-ops graph blast-radius` | `<ENTITY>` | Calculate downstream blast radius of entity |
+| `spec-ops graph inspect` | `<ENTITY>` | Inspect entity metadata, lineage card, and neighborhood |
+| `spec-ops graph audit` | None | Full bidirectional graph traceability and orphan work item audit |
+| `spec-ops trace` | `[--verify]` | Audit end-to-end bidirectional graph linkages and traceability |
+| `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
 | `spec-ops prd new` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--friction FRICTION] [--good GOOD] [--anti-goals ANTI_GOALS] [--outcomes OUTCOMES] [--non-interactive]` | Interactively scaffold a new PRD specification in idea stage |
 | `spec-ops prd lint` | `[PATH]` | Lint PRD markdown files for mandatory sections and falsifiable outcomes |

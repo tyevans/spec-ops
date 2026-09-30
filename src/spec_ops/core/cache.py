@@ -176,7 +176,7 @@ class RelationalGraphCacheEngine:
                 if (
                     not fn.endswith(".md")
                     or fn.startswith(".")
-                    or fn in ("REGISTRY.md", "FEATURE_INVENTORY.md", "README.md", "PRIORITY.md")
+                    or fn in ("REGISTRY.md", "FEATURE_INVENTORY.md", "README.md", "PRIORITY.md", "ROADMAP.md")
                 ):
                     continue
                 full_path = os.path.join(dirpath, fn)

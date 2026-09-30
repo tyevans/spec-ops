@@ -336,7 +336,15 @@ def main() -> int:
         from .report_handler import handle_report_command
         return handle_report_command(args, config, parser)
 
+    if args.command == "trace":
+        from .graph_handler import handle_trace_command
+        return handle_trace_command(args, config)
+
     if args.command == "backlog":
+        if getattr(args, "backlog_action", None) == "bottlenecks":
+            from .graph_handler import handle_backlog_command
+            return handle_backlog_command(args, config)
+
         from ..tui.flow_monitor import FlowMonitor
 
         monitor = FlowMonitor(config)

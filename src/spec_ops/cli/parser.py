@@ -133,6 +133,33 @@ def build_parser() -> argparse.ArgumentParser:
     p_g_comp.add_argument("--json", action="store_true", help="Output compilation result and graph statistics as JSON")
     p_g_comp.add_argument("--force-cold", action="store_true", help="Force a cold compilation rebuild regardless of cache state")
 
+    p_g_cyc = graph_subs.add_parser("cycles", help="Deterministic cycle detection via Tarjan SCC")
+    p_g_cyc.add_argument("--format", choices=["text", "json"], default="text", help="Output format (default: text)")
+    p_g_cyc.add_argument("--json", action="store_true", help="Output cycles as JSON")
+
+    p_g_sort = graph_subs.add_parser("sort", help="Deterministic topological backlog execution sorting")
+    p_g_sort.add_argument("--type", default="task", help="Entity type filter (default: task)")
+
+    p_g_ord = graph_subs.add_parser("order", help="Deterministic topological backlog execution ordering")
+    p_g_ord.add_argument("--type", default="task", help="Entity type filter (default: task)")
+
+    p_g_path = graph_subs.add_parser("path", help="Reachability pathfinding and lineage tracing")
+    p_g_path.add_argument("--from", dest="from_node", required=True, help="Origin entity ID (e.g. persona:taylor)")
+    p_g_path.add_argument("--to", dest="to_node", required=True, help="Destination entity ID (e.g. commit:a1b2c3d)")
+
+    p_g_blast = graph_subs.add_parser("blast-radius", help="Calculate downstream blast radius of entity")
+    p_g_blast.add_argument("entity", help="Target entity ID (e.g. ADR-0003)")
+
+    p_g_insp = graph_subs.add_parser("inspect", help="Inspect entity metadata, lineage card, and neighborhood")
+    p_g_insp.add_argument("entity", help="Target entity ID (e.g. TASK-0042)")
+
+    graph_subs.add_parser("audit", help="Full bidirectional graph traceability and orphan work item audit")
+
+    # trace
+    p_trace = subparsers.add_parser("trace", help="Audit end-to-end bidirectional graph linkages and traceability")
+    p_trace.add_argument("--verify", action="store_true", default=True, help="Verify bidirectional graph connectivity and orphan work items")
+
+
     # prd
     p_prd = subparsers.add_parser("prd", help="PRD management commands")
     prd_subs = p_prd.add_subparsers(dest="prd_action", help="PRD action")
@@ -277,10 +304,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_q_mon.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
 
     # backlog
-    p_backlog = subparsers.add_parser("backlog", help="Backlog flow monitor and buffer telemetry")
+    p_backlog = subparsers.add_parser("backlog", help="Backlog flow monitor, buffer telemetry, and bottleneck detection")
+    p_backlog.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
     backlog_subs = p_backlog.add_subparsers(dest="backlog_action", help="Backlog action")
     p_b_flow = backlog_subs.add_parser("flow", help="Interactive terminal backlog flow monitor and JIT buffer telemetry")
     p_b_flow.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
+    p_bnk = backlog_subs.add_parser("bottlenecks", help="Detect circular dependency deadlocks and choke points")
+    p_bnk.add_argument("--forecast", action="store_true", help="Forecast ready buffer starvation and recommend unblockings")
 
     # report
     p_report = subparsers.add_parser("report", help="Executive milestone reports, burndown velocity, and presentation decks")
