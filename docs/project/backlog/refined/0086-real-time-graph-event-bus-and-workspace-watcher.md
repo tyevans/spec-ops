@@ -1,7 +1,7 @@
 ---
 id: '0086'
 title: Real-Time In-Memory Graph Event Bus and Workspace Change Watcher
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0060

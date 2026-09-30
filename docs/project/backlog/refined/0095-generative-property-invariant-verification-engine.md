@@ -1,20 +1,22 @@
 ---
-id: '0095'
+id: 0095
 title: Generative Property-Based Invariant Verification Engine
 status: Refined
 dependencies:
-  - TASK-0060
+- TASK-0060
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0062
+- US-0062
 target_bc: core
+claimed_by: worker-3
+branch: feat/0095-generative-property-based-invariant-veri
 ---
 
 # TASK-0095: Generative Property-Based Invariant Verification Engine
