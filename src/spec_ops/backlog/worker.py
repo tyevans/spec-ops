@@ -72,9 +72,10 @@ class BacklogWorkerEngine:
         commit_msg: str = "",
     ) -> tuple[bool, str]:
         """Initiates commit preparation with backlog guardrails and staging."""
+        from ..worker.commits import format_task_commit_message
         from ..worker.guardrails import prepare_guardrailed_commit
         msg = commit_msg or (
-            f"feat({task.canonical_id.lower()}): {task.title}\n\nTask-ID: {task.canonical_id}"
+            format_task_commit_message(task)
             if task else "feat: worker commit"
         )
         allows_dep = getattr(task, "allows_dependencies", False) if task else False
@@ -289,14 +290,8 @@ class BacklogWorkerEngine:
                 if p.exists():
                     p.unlink()
 
-            trailers = (
-                f"Task-ID: {task.canonical_id}\n"
-                f"Governing-ADRs: {', '.join(task.governing_adrs) or 'None'}\n"
-                f"Provenance: spec-ops autonomous worker"
-            )
-            if task.signed_off_by:
-                trailers += f"\nSpecOps-Signed-By: {task.signed_off_by}"
-            commit_msg = f"feat({task.canonical_id.lower()}): {task.title}\n\n{trailers}"
+            from ..worker.commits import format_task_commit_message
+            commit_msg = format_task_commit_message(task)
             commit_ok, commit_log = self.prepare_commit(worktree_dir, task=task, commit_msg=commit_msg)
             if not commit_ok:
                 return WorkerResult(task.canonical_id, False, f"Commit preparation failed: {commit_log}")

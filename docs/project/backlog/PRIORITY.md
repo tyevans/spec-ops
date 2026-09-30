@@ -59,7 +59,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0043 (Proposed)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](proposed/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
 - **TASK-0046 (Complete)**: [`0046-extensible-preflight-validation-pipeline-and-fast-fail-gates`](complete/0046-extensible-preflight-validation-pipeline-and-fast-fail-gates.md)
 - **TASK-0047 (Proposed)**: [`0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop`](proposed/0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop.md)
-- **TASK-0048 (Refined)**: [`0048-conventional-commit-slicing-rfc-822-trailers-and-lineage-review`](refined/0048-conventional-commit-slicing-rfc-822-trailers-and-lineage-review.md)
+- **TASK-0048 (Complete)**: [`0048-conventional-commit-slicing-rfc-822-trailers-and-lineage-review`](complete/0048-conventional-commit-slicing-rfc-822-trailers-and-lineage-review.md)
 - **TASK-0051 (Refined)**: [`0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning`](refined/0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning.md)
 - **TASK-0052 (Proposed)**: [`0052-preserved-worktree-failure-triage-and-handover-brief-generator`](proposed/0052-preserved-worktree-failure-triage-and-handover-brief-generator.md)
 - **TASK-0053 (Proposed)**: [`0053-anti-loop-worktree-failure-memory-schema-architecture-spike`](proposed/0053-anti-loop-worktree-failure-memory-schema-architecture-spike.md)

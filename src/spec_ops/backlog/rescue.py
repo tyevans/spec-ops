@@ -232,10 +232,13 @@ class WorktreeRescueManager:
                     if not rebase_ok:
                         return False, f"Rebase conflict against main under merge lock: {rebase_msg}"
 
+                from ..worker.commits import format_task_commit_message
+
+                commit_msg = format_task_commit_message(target_task)
                 merge_ok, merge_msg = squash_merge_and_commit(
                     self.repo_root,
                     info.branch,
-                    f"feat({clean_id.lower()}): {target_task.title} (rescued)",
+                    commit_msg,
                     on_staged=lambda: self.queue.complete_task(target_task),
                 )
                 if not merge_ok:

@@ -2,7 +2,7 @@
 id: 0048
 title: Conventional Commit Slicing, Standardized RFC-822 Git Trailers, and Lineage
   Review Brief
-status: Refined
+status: Complete
 dependencies:
 - TASK-0044
 - TASK-0045
@@ -19,8 +19,6 @@ governing_stories:
 - US-0084
 - US-0036
 target_bc: worker
-claimed_by: worker-3
-branch: feat/0048-conventional-commit-slicing--standardize
 ---
 
 # TASK-0048: Conventional Commit Slicing, Standardized RFC-822 Git Trailers, and Lineage Review Brief

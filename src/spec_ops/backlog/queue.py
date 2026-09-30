@@ -48,6 +48,8 @@ def write_task_file(task: Task) -> Path:
         meta["signed_off_by"] = task.signed_off_by
     if task.signed_off_at:
         meta["signed_off_at"] = task.signed_off_at
+    if getattr(task, "slice_type", "") and getattr(task, "slice_type", "") != "feat":
+        meta["slice_type"] = task.slice_type
     if getattr(task, "blocker", None):
         b = task.blocker
         b_dict: dict[str, Any] = {"type": b.type, "question": b.question}
@@ -298,19 +300,10 @@ class BacklogQueue:
 
             # Integration merge with structured trailers
             if target_branch and target_branch != base_branch:
-                from ..security.signing import format_commit_message
+                from ..worker.commits import format_task_commit_message
                 from ..worker.integration import squash_merge_and_commit
 
-                trailers: dict[str, str] = {"SpecOps-Task": task.canonical_id}
-                if task.signed_off_by:
-                    trailers["SpecOps-Signed-By"] = task.signed_off_by
-                if task.governing_adrs:
-                    trailers["Governing-ADRs"] = ", ".join(task.governing_adrs)
-
-                commit_msg = format_commit_message(
-                    f"feat({task.target_bc or 'backlog'}): Complete {task.canonical_id} - {task.title}",
-                    trailers=trailers,
-                )
+                commit_msg = format_task_commit_message(task)
                 merge_ok, merge_msg = squash_merge_and_commit(
                     root,
                     target_branch,
