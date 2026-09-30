@@ -210,6 +210,10 @@ def main() -> int:
         from .prd_handler import handle_prd_command
         return handle_prd_command(args, config, parser)
 
+    if args.command == "export":
+        from .export_handler import handle_export_command
+        return handle_export_command(args, config, parser)
+
     if args.command == "curate":
         if getattr(args, "curate_action", None) == "next":
             from ..backlog.queue import BacklogQueue

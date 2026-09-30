@@ -278,3 +278,15 @@ def register_schema_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_mig.add_argument("--path", dest="opt_path", default=None, help="Target file or directory to migrate")
     p_mig.add_argument("--dry-run", action="store_true", default=False, help="Display unified diff of projected transformations without modifying disk")
     p_mig.add_argument("--in-place", action="store_true", default=False, help="Rewrite outdated frontmatter in-place preserving Markdown body byte-for-byte")
+
+def register_export_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers export commands for executive roadmaps and stakeholder presentations."""
+    p_exp = subparsers.add_parser("export", help="Export executive roadmaps and stakeholder presentations")
+    exp_subs = p_exp.add_subparsers(dest="export_action", help="Export action")
+
+    p_rd = exp_subs.add_parser("roadmap", help="Export executive roadmap vector visual or interactive presentation")
+    p_rd.add_argument("--format", choices=["svg", "html"], default="svg", help="Export format (svg, html, default: svg)")
+    p_rd.add_argument("-o", "--out", "--output", dest="output", default=None, help="Output file path (default: dist/roadmap.<format>)")
+    p_rd.add_argument("--audience", default="Leadership / Non-Technical", help="Target audience (default: Leadership / Non-Technical)")
+    p_rd.add_argument("--granularity", default="Milestones & PRD Outcomes", help="Delivery granularity (default: Milestones & PRD Outcomes)")
+

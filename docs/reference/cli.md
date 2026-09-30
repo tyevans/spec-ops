@@ -50,6 +50,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--entity ENTITY] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
+| `spec-ops export roadmap` | `[--format {svg,html}] [-o OUTPUT] [--out OUTPUT] [--output OUTPUT] [--audience AUDIENCE] [--granularity GRANULARITY]` | Export executive roadmap vector visual or interactive presentation |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
 | `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run] [--action ACTION] [--file FILE]` | Inspect, triage, and recover stalled or failed autonomous worktrees |

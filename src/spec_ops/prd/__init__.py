@@ -3,6 +3,7 @@
 from .audit import DeepPRDAuditor, OutcomeAuditResult, calculate_outcome_coverage, run_deep_audit
 from .decomposer import PRDDecomposer
 from .discovery import interactive_new_prd
+from .exporter import export_roadmap, render_roadmap_html, render_roadmap_svg
 from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
 from .manager import PRDAuditResult, PRDManager
@@ -20,6 +21,9 @@ __all__ = [
     "PersonaLineageRecord",
     "PersonaTraceabilityEngine",
     "calculate_outcome_coverage",
+    "export_roadmap",
     "interactive_new_prd",
+    "render_roadmap_html",
+    "render_roadmap_svg",
     "run_deep_audit",
 ]
