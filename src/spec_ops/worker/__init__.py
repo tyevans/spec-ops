@@ -12,7 +12,12 @@ from .guardrails import (
     sanitize_backlog_modifications,
     stage_legitimate_files,
 )
-from .integration import rebase_with_inference_healing, squash_merge_and_commit
+from .integration import (
+    determine_rebase_command,
+    is_rebase_in_progress,
+    rebase_with_inference_healing,
+    squash_merge_and_commit,
+)
 from .merge_lock import MergeLockManager
 from .orchestrator import BatchCycleOrchestrator, BatchCycleReport
 from .preflight import run_worktree_preflight
@@ -34,9 +39,11 @@ __all__ = [
     "cleanup_worktree",
     "create_worktree",
     "detect_backlog_modifications",
+    "determine_rebase_command",
     "hydrate_task_prompt",
     "initialize_worktree",
     "interpolate_runner_template",
+    "is_rebase_in_progress",
     "prepare_guardrailed_commit",
     "prepare_runner_environment",
     "rebase_with_inference_healing",
