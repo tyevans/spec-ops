@@ -33,14 +33,8 @@ def main() -> int:
         return handle_adr_command(args, config)
 
     if args.command == "scaffold":
-        if args.scaffold_action == "agents":
-            from ..scaffold.agents_md import scaffold_agents_command
-            msg = scaffold_agents_command(config.root_dir)
-            print(f"✨ {msg}")
-            return 0
-        else:
-            parser.parse_args(["scaffold", "--help"])
-            return 0
+        from .scaffold_handler import handle_scaffold_command
+        return handle_scaffold_command(args, config, parser)
 
     if args.command == "constitution":
         from ..scaffold.constitution_sync import check_constitution, sync_constitution

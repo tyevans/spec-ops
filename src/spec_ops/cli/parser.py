@@ -125,6 +125,30 @@ def build_parser() -> argparse.ArgumentParser:
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
     scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
+    p_scaffold_docs = scaffold_subs.add_parser(
+        "docs",
+        aliases=["diataxis"],
+        help="Scaffold 4-quadrant Diataxis documentation for a bounded context",
+    )
+    p_scaffold_docs.add_argument(
+        "--bc",
+        "--bounded-context",
+        required=True,
+        dest="bc",
+        help="Target bounded context identifier",
+    )
+    p_scaffold_docs.add_argument(
+        "--title",
+        default=None,
+        help="Human-readable title for the bounded context",
+    )
+    p_scaffold_docs.add_argument(
+        "--force",
+        "--overwrite",
+        dest="force",
+        action="store_true",
+        help="Overwrite existing bounded context documentation",
+    )
 
     # constitution
     p_const = subparsers.add_parser("constitution", help="Living constitution synchronization and drift verification")

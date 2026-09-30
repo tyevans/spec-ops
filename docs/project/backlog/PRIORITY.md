@@ -85,7 +85,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0096 (Complete)**: [`0096-core-domain-mutation-testing-quality-gate`](complete/0096-core-domain-mutation-testing-quality-gate.md)
 - **TASK-0065 (Refined)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](refined/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
 - **TASK-0084 (Refined)**: [`0084-zero-dependency-native-git-hook-scaffolding`](refined/0084-zero-dependency-native-git-hook-scaffolding.md)
-- **TASK-0085 (Refined)**: [`0085-bounded-context-diataxis-documentation-scaffolding`](refined/0085-bounded-context-diataxis-documentation-scaffolding.md)
+- **TASK-0085 (Complete)**: [`0085-bounded-context-diataxis-documentation-scaffolding`](complete/0085-bounded-context-diataxis-documentation-scaffolding.md)
 - **TASK-0070 (Refined)**: [`0070-worker-fleet-telemetry-review-radar-and-burndown-exporter`](refined/0070-worker-fleet-telemetry-review-radar-and-burndown-exporter.md)
 - **TASK-0083 (Refined)**: [`0083-multi-platform-ci-pipeline-scaffolding-github-gitlab`](refined/0083-multi-platform-ci-pipeline-scaffolding-github-gitlab.md)
 - **TASK-0091 (Refined)**: [`0091-automated-customer-facing-release-notes-generator`](refined/0091-automated-customer-facing-release-notes-generator.md)
