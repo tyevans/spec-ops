@@ -20,8 +20,6 @@ governing_stories:
 - US-0016
 - US-0021
 target_bc: core
-claimed_by: worker-3
-branch: feat/0060-deterministic-graph-cycle-resolution--to
 ---
 
 # TASK-0060: Deterministic Graph Cycle Resolution, Topological Sorting, Reachability Pathfinding, and Orphan Work Item Audit

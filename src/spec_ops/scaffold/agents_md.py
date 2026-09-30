@@ -13,14 +13,17 @@ def generate_agents_md(
     project_name: str,
     profiles: list[str],
     adrs: list[ADRDefinition] | None = None,
+    file_length_limit: int = 500,
+    custom_invariants: list[str] | None = None,
 ) -> str:
     """Generates an opinionated AGENTS.md constitution tailored to active architectural profiles."""
     profiles_lower = {p.lower() for p in profiles}
+    warn_threshold = max(1, file_length_limit - 100)
 
     invariants = [
-        "1. **File Length Limit (<500 lines)**:\n"
-        "   - Source files over ~500 lines are strictly forbidden. Decompose large files into focused, single-responsibility modules.\n"
-        "   - Enforced by `uv run spec-ops health` (warns proactively at >=400 lines). Governed by ADR-0002.",
+        f"1. **File Length Limit (<{file_length_limit} lines)**:\n"
+        f"   - Source files over ~{file_length_limit} lines are strictly forbidden. Decompose large files into focused, single-responsibility modules.\n"
+        f"   - Enforced by `uv run spec-ops health` (warns proactively at >={warn_threshold} lines). Governed by ADR-0002.",
         "2. **Blackbox Frontdoor Verification**:\n"
         "   - Tests must exercise public interfaces (CLI commands, public module entry points, domain models) rather than reaching into private internals or backdoor state manipulation.\n"
         "   - Governed by ADR-0003.",
@@ -69,6 +72,13 @@ def generate_agents_md(
             "   - Enforced by `uv run spec-ops health --security` and preflight secret scanners. Governed by ADR-0010, ADR-0011, and ADR-0012."
         )
 
+    if custom_invariants:
+        for idx, inv in enumerate(custom_invariants, start=len(invariants) + 1):
+            invariants.append(
+                f"{idx}. **Compliance Invariant**:\n"
+                f"   - {inv}"
+            )
+
     invariants_text = "\n".join(invariants)
 
     dor_items = [
@@ -97,7 +107,7 @@ def generate_agents_md(
     dod_items.extend([
         "3. **Hypothesis Property Tests Passing**: Generative property tests verify domain invariants across randomized inputs without shrinking failures (ADR-0009).",
         "4. **Mutmut Mutation Score Attained**: Target domain modules achieve >=80% mutant kill score under `mutmut` (ADR-0009).",
-        "5. **Codebase Health Check**: `uv run spec-ops health` reports 0 file limit violations (<500 lines) and 0 proactive warnings (<400 lines), and verifies `PRIORITY.md` sync (ADR-0002).",
+        f"5. **Codebase Health Check**: `uv run spec-ops health` reports 0 file limit violations (<{file_length_limit} lines) and 0 proactive warnings (<{warn_threshold} lines), and verifies `PRIORITY.md` sync (ADR-0002).",
         "6. **Lockfile Integrity**: `uv lock --check` passes cleanly without unstaged dependency drifts.",
         "7. **Documentation Integrity (Diataxis)**:\n"
         "   - Inaccurate or stale docs discovered during work are corrected.\n"

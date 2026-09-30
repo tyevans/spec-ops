@@ -77,6 +77,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_prof_info = prof_subs.add_parser("info", help="Inspect active architectural profile rules and quality preflight commands")
     p_prof_info.add_argument("--json", action="store_true", help="Output active profiles and invariants as structured JSON")
 
+    # package & export
+    for p_name in ("package", "export"):
+        p_pkg = prof_subs.add_parser(p_name, help="Package custom profile into distributable bundle (.sop / .tar.gz)")
+        p_pkg.add_argument("source", help="Profile directory or name to package")
+        p_pkg.add_argument("--out", "--output", dest="output", required=True, help="Destination bundle file path")
+
+    # install
+    p_prof_inst = prof_subs.add_parser("install", help="Install custom profile bundle into repository")
+    p_prof_inst.add_argument("bundle", help="Path to profile bundle archive (.sop or .tar.gz)")
+
+    # validate
+    p_prof_val = prof_subs.add_parser("validate", help="Validate profile manifest and resolve inheritance DAG")
+    p_prof_val.add_argument("profile_target", help="Profile directory or name to validate")
+
+    # inspect
+    p_prof_insp = prof_subs.add_parser("inspect", help="Inspect resolved profile inheritance, merged ADRs and invariant constraints")
+    p_prof_insp.add_argument("profile_target", nargs="?", default=".", help="Profile directory or name to inspect (default: current project)")
+
     # scaffold
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")

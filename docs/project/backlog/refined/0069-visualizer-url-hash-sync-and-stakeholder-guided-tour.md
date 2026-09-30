@@ -17,8 +17,6 @@ governing_stories:
 - US-0103
 - US-0107
 target_bc: visualizer
-claimed_by: worker-3
-branch: feat/0069-reactive-url-hash-state-synchronization-
 ---
 
 # TASK-0069: Reactive URL Hash State Synchronization, Deep-Linked Permalinks, and Stakeholder Guided Tour

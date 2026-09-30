@@ -182,14 +182,46 @@ def init_project(
             full_path.write_text(content.strip() + "\n", encoding="utf-8")
             created_files.append(full_path)
 
-    # 1. specops.toml
+    # 1. Profile composition and baseline ADR resolution
+    from ..profiles.composer import compose_profiles
+
+    composition = compose_profiles(selected_profiles)
+    resolved_adrs = composition.adrs
+    all_profile_ids = composition.profile_ids or selected_profiles
+
+    # 1b. specops.toml
     toml_content = DEFAULT_SPECOPS_TOML.format(name=project_name)
-    if "security" in [p.lower() for p in selected_profiles]:
-        from ..profiles.security import DEFAULT_SECURITY_TOML
-        toml_content += f"\n{DEFAULT_SECURITY_TOML.strip()}\n"
+    if composition.file_length_limit != 500:
+        import re
+        toml_content = re.sub(r"file_length_limit\s*=\s*\d+", f"file_length_limit = {composition.file_length_limit}", toml_content)
+    qual_overrides = composition.overrides.get("quality", {})
+    if qual_overrides.get("require_mutation_testing"):
+        if "require_mutation_testing" not in toml_content:
+            toml_content = toml_content.replace("require_bdd = true", "require_bdd = true\nrequire_mutation_testing = true")
+
+    if composition.slices:
+        slice_entries = []
+        for s in composition.slices:
+            slice_entries.append(
+                f'  {{ type = "{s.type}", name = "{s.name}", prefix = "{s.prefix}", requires_adr = {str(s.requires_adr).lower()} }}'
+            )
+        extra_slices = ",\n".join(slice_entries)
+        # Append before closing bracket of slices
+        toml_content = toml_content.replace(
+            "  { type = \"test\", name = \"Blackbox Frontdoor Test Suite\" }\n]",
+            f"  {{ type = \"test\", name = \"Blackbox Frontdoor Test Suite\" }},\n{extra_slices}\n]",
+        )
+
     if parsed_agents:
         formatted_agents = ", ".join(f'"{a}"' for a in parsed_agents)
         toml_content += f"\ntarget_agents = [{formatted_agents}]\n"
+
+    prof_ids_fmt = ", ".join(f'"{p}"' for p in all_profile_ids)
+    toml_content += f'\n[profiles]\ninstalled = [{prof_ids_fmt}]\nversion = "{composition.version}"\n'
+
+    if "security" in [p.lower() for p in all_profile_ids]:
+        from ..profiles.security import DEFAULT_SECURITY_TOML
+        toml_content += f"\n{DEFAULT_SECURITY_TOML.strip()}\n"
     _write(Path("specops.toml"), toml_content)
 
     # 2. docs/project directories
@@ -207,7 +239,6 @@ def init_project(
         folder.mkdir(parents=True, exist_ok=True)
 
     # 3. Baseline ADRs from Profiles
-    resolved_adrs = resolve_adrs_for_profiles(selected_profiles)
     adr_registry_rows = []
     governing_adr_ids = []
 
@@ -224,7 +255,13 @@ def init_project(
     )
 
     # 4. Agent Constitution (AGENTS.md)
-    agents_md = generate_agents_md(project_name, selected_profiles, resolved_adrs)
+    agents_md = generate_agents_md(
+        project_name,
+        all_profile_ids,
+        resolved_adrs,
+        file_length_limit=composition.file_length_limit,
+        custom_invariants=composition.invariants,
+    )
     _write(Path("AGENTS.md"), agents_md)
 
     # 5. Starter documents
@@ -234,7 +271,7 @@ def init_project(
     _write(docs_project / "backlog" / "README.md", DEFAULT_BACKLOG_README)
     _write(docs_project / "backlog" / "PRIORITY.md", DEFAULT_PRIORITY)
     _write(docs_project / "backlog" / "ROADMAP.md", "# Delivery Roadmap\n\n## Milestone 1: Foundations\n- Core system architecture and blackbox harness.\n")
-    if "security" in [p.lower() for p in selected_profiles]:
+    if "security" in [p.lower() for p in all_profile_ids]:
         from ..profiles.security import DEFAULT_SECURITY_MD
         _write(docs_project / "SECURITY.md", DEFAULT_SECURITY_MD)
 

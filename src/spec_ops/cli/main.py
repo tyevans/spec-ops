@@ -59,8 +59,13 @@ def main() -> int:
                 pre_commit=args.pre_commit,
                 agents=args.agent,
             )
-        except ValueError as err:
-            print(f"❌ Initialization error: {err}", file=sys.stderr)
+        except Exception as err:
+            from ..profiles.models import ProfileError
+
+            if isinstance(err, ProfileError):
+                print(f"{err}", file=sys.stderr)
+            else:
+                print(f"❌ Initialization error: {err}", file=sys.stderr)
             return 1
         print(f"✨ Initialized SpecOps in {target}")
         print(f"📋 Installed Profiles: {', '.join(profile_list)}")

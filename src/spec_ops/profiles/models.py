@@ -31,5 +31,22 @@ class Profile:
     id: str
     name: str
     description: str
+    version: str = "0.1.0"
+    extends: list[str] = field(default_factory=list)
     adrs: list[BaselineADR] = field(default_factory=list)
     slices: list[SliceConfig] = field(default_factory=list)
+    overrides: dict[str, Any] = field(default_factory=dict)
+    invariants: list[str] = field(default_factory=list)
+    rules: list[str] = field(default_factory=list)
+
+
+class ProfileError(Exception):
+    """Base exception for profile operations."""
+
+
+class ProfileInheritanceError(ProfileError):
+    """Raised when circular inheritance or inheritance graph resolution fails."""
+
+
+class ADRCollisionError(ProfileError):
+    """Raised when duplicate or conflicting baseline ADR numbers occur."""

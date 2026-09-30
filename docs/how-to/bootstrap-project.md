@@ -31,6 +31,50 @@ This generates `specops.toml` and sequentially renumbers installed baseline ADRs
 
 ---
 
+## Packaging and Distributing Custom Profiles
+
+You can author organization-specific profiles with custom ADRs, invariant overrides, and rule fragments, and package them for multi-repo distribution:
+
+```bash
+# Package a local profile directory into a portable bundle (.sop or .tar.gz)
+spec-ops profiles package profiles/fintech-service --out dist/fintech-service.sop
+
+# Initialize a new repository directly with the exported profile bundle
+spec-ops init --name "FintechApp" --profile dist/fintech-service.sop
+
+# Or install the bundle into an existing project
+spec-ops profiles install dist/fintech-service.sop
+```
+
+---
+
+## Hierarchical Profile Inheritance and Composition
+
+Custom profiles declare parent profiles using `extends = ["core", "security", "ddd"]` and override specific architectural invariants:
+
+```toml
+[profile]
+id = "enterprise-fintech"
+name = "Enterprise Fintech Profile"
+version = "1.0.0"
+extends = ["core", "security"]
+
+[overrides.architecture]
+file_length_limit = 350
+
+[overrides.quality]
+require_mutation_testing = true
+```
+
+Validate and inspect the resolved inheritance DAG and merged constraints:
+
+```bash
+spec-ops profiles validate profiles/enterprise-fintech
+spec-ops profiles inspect profiles/enterprise-fintech
+```
+
+---
+
 ## Configuring Multi-Agent Platform Adapters
 
 SpecOps supports generating platform-native configuration, rule sets, and slash commands for AI coding assistants:

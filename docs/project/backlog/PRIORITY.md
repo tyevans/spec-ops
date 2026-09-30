@@ -60,7 +60,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0060 (Refined)**: [`0060-graph-cycle-resolution-topological-sorting-and-orphan-audit`](refined/0060-graph-cycle-resolution-topological-sorting-and-orphan-audit.md)
 - **TASK-0069 (Refined)**: [`0069-visualizer-url-hash-sync-and-stakeholder-guided-tour`](refined/0069-visualizer-url-hash-sync-and-stakeholder-guided-tour.md)
 - **TASK-0072 (Refined)**: [`0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor`](refined/0072-ergonomic-task-authoring-cli-and-developer-workspace-doctor.md)
-- **TASK-0063 (Refined)**: [`0063-architectural-profile-inheritance-and-constitution-lifecycle`](refined/0063-architectural-profile-inheritance-and-constitution-lifecycle.md)
+- **TASK-0063 (Complete)**: [`0063-architectural-profile-inheritance-and-constitution-lifecycle`](complete/0063-architectural-profile-inheritance-and-constitution-lifecycle.md)
 - **TASK-0047 (Refined)**: [`0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop`](refined/0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop.md)
 - **TASK-0041 (Refined)**: [`0041-customer-uat-verification-matrix-and-automated-shipping-gate`](refined/0041-customer-uat-verification-matrix-and-automated-shipping-gate.md)
 - **TASK-0074 (Refined)**: [`0074-executive-milestone-burndown-deck-and-terminal-flow-monitor`](refined/0074-executive-milestone-burndown-deck-and-terminal-flow-monitor.md)
