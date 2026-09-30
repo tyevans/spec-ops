@@ -332,12 +332,13 @@ class PreflightPipeline:
                 sname = "test"
             else:
                 sname = f"stage-{len(stages) + 1}"
+            timeout_val = 600.0 if sname == "test" else 120.0
             stages.append(
                 PreflightStage(
                     name=sname,
                     command=c_str,
                     required=True,
-                    timeout_seconds=120.0,
+                    timeout_seconds=timeout_val,
                 )
             )
 

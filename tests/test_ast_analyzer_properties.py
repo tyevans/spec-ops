@@ -13,8 +13,14 @@ from spec_ops.worker.ast_analyzer import (
     generate_ast_decomposition_hint,
 )
 
-identifier_strategy = st.from_regex(r"[a-z_][a-z0-9_]{0,15}", fullmatch=True)
-class_name_strategy = st.from_regex(r"[A-Z][a-zA-Z0-9]{0,15}", fullmatch=True)
+import keyword
+
+identifier_strategy = st.from_regex(r"[a-z_][a-z0-9_]{0,15}", fullmatch=True).filter(
+    lambda s: not keyword.iskeyword(s) and not keyword.issoftkeyword(s)
+)
+class_name_strategy = st.from_regex(r"[A-Z][a-zA-Z0-9]{0,15}", fullmatch=True).filter(
+    lambda s: not keyword.iskeyword(s) and not keyword.issoftkeyword(s)
+)
 
 
 @st.composite
