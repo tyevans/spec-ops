@@ -232,6 +232,7 @@ def verify_antigravity(bdd_context: dict[str, Any]):
     assert (skills_dir / "curate" / "SKILL.md").is_file()
     assert (skills_dir / "health" / "SKILL.md").is_file()
     assert (skills_dir / "worker" / "SKILL.md").is_file()
+    assert (skills_dir / "spec-ops" / "SKILL.md").is_file()
 
 
 @then("all generated files contain the hard invariant file limit under 500 lines")

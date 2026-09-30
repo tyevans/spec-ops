@@ -97,6 +97,7 @@ def test_get_antigravity_slash_commands():
     assert ".agents/skills/curate/SKILL.md" in cmds
     assert ".agents/skills/health/SKILL.md" in cmds
     assert ".agents/skills/worker/SKILL.md" in cmds
+    assert ".agents/skills/spec-ops/SKILL.md" in cmds
 
     curate_content = cmds[".agents/skills/curate/SKILL.md"]
     assert "name: curate" in curate_content
@@ -115,6 +116,11 @@ def test_get_antigravity_slash_commands():
     assert "uv run spec-ops worker" in worker_content
     assert "TASK-XXXX" in worker_content
     assert ".worktrees/<task-id>" in worker_content
+
+    spec_ops_content = cmds[".agents/skills/spec-ops/SKILL.md"]
+    assert "name: spec-ops" in spec_ops_content
+    assert "Company in a Box" in spec_ops_content
+    assert "Orchestration Failure Protocol" in spec_ops_content or "Orchestrator" in spec_ops_content
 
 
 def test_scaffold_agent_adapters_individual(tmp_path: Path):
@@ -137,11 +143,12 @@ def test_scaffold_agent_adapters_individual(tmp_path: Path):
     # Antigravity only
     ag_dir = tmp_path / "ag_project"
     files = scaffold_agent_adapters(ag_dir, "AgApp", agents="antigravity")
-    assert len(files) == 4
+    assert len(files) == 5
     assert (ag_dir / "GEMINI.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "curate" / "SKILL.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "health" / "SKILL.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "worker" / "SKILL.md").is_file()
+    assert (ag_dir / ".agents" / "skills" / "spec-ops" / "SKILL.md").is_file()
     assert not (ag_dir / "CLAUDE.md").exists()
     assert not (ag_dir / ".cursorrules").exists()
 
@@ -149,7 +156,7 @@ def test_scaffold_agent_adapters_individual(tmp_path: Path):
 def test_scaffold_agent_adapters_all(tmp_path: Path):
     target = tmp_path / "all_project"
     files = scaffold_agent_adapters(target, "AllApp", agents="antigravity,claude,cursor")
-    assert len(files) == 6
+    assert len(files) == 7
 
     assert (target / "CLAUDE.md").is_file()
     assert (target / ".cursorrules").is_file()
@@ -157,6 +164,7 @@ def test_scaffold_agent_adapters_all(tmp_path: Path):
     assert (target / ".agents" / "skills" / "curate" / "SKILL.md").is_file()
     assert (target / ".agents" / "skills" / "health" / "SKILL.md").is_file()
     assert (target / ".agents" / "skills" / "worker" / "SKILL.md").is_file()
+    assert (target / ".agents" / "skills" / "spec-ops" / "SKILL.md").is_file()
 
     # Verify idempotency (no duplication)
     second_run = scaffold_agent_adapters(target, "AllApp", agents="antigravity,claude,cursor")

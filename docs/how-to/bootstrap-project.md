@@ -86,7 +86,7 @@ spec-ops init --name "PaymentService" --agent antigravity,claude,cursor
 Supported platform targets:
 - `claude`: Generates `CLAUDE.md` with PMaC hard invariants, key verification commands, and DoR/DoD workflows.
 - `cursor`: Generates `.cursorrules` with coding invariants and preflight handoff checklists.
-- `antigravity`: Generates `GEMINI.md` operating manual and slash command definitions (`/curate`, `/health`, `/worker`) in `.agents/skills/`.
+- `antigravity`: Generates `GEMINI.md` operating manual and skill/slash command definitions (`/curate`, `/health`, `/worker`, `/spec-ops`) in `.agents/skills/`.
 
 ---
 

@@ -130,6 +130,7 @@ def test_cli_init_with_agent_flags(tmp_path: Path):
     assert (target / ".agents" / "skills" / "curate" / "SKILL.md").is_file()
     assert (target / ".agents" / "skills" / "health" / "SKILL.md").is_file()
     assert (target / ".agents" / "skills" / "worker" / "SKILL.md").is_file()
+    assert (target / ".agents" / "skills" / "spec-ops" / "SKILL.md").is_file()
 
 
 def test_cli_init_with_invalid_agent(tmp_path: Path):
