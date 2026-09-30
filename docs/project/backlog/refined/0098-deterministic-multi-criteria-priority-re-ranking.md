@@ -14,6 +14,8 @@ governing_prds:
 governing_stories:
 - US-0074
 target_bc: backlog
+claimed_by: worker-3
+branch: feat/0098-deterministic-multi-criteria-priority-re
 ---
 
 # TASK-0098: Deterministic Multi-Criteria Priority Re-Ranking and Topological Backlog Ordering

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 
 from rich.console import Console
 from rich.table import Table
@@ -215,6 +216,15 @@ def handle_queue_command(
             monitor.render_snapshot()
             return 0
         return monitor.run()
+
+    if action == "doctor":
+        from ..backlog.doctor import run_backlog_doctor
+
+        backlog_dir = getattr(args, "dir", None)
+        target_dir = Path(backlog_dir) if backlog_dir else config.backlog_dir
+        fix = bool(getattr(args, "fix", False) or getattr(args, "repair", False))
+        as_json = bool(getattr(args, "json", False))
+        return run_backlog_doctor(target_dir, fix=fix, as_json=as_json)
 
     parser.parse_args(["queue", "--help"])
     return 0

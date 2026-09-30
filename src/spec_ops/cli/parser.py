@@ -289,6 +289,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_b_flow.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
     p_bnk = backlog_subs.add_parser("bottlenecks", help="Detect circular dependency deadlocks and choke points")
     p_bnk.add_argument("--forecast", action="store_true", help="Forecast ready buffer starvation and recommend unblockings")
+    p_b_doc = backlog_subs.add_parser("doctor", help="Audit backlog health, dangling dependencies, and index drift with self-healing repair")
+    p_b_doc.add_argument("--fix", action="store_true", help="Automatically repair broken dependencies and PRIORITY.md drift")
+    p_b_doc.add_argument("--repair", action="store_true", help="Alias for --fix")
+    p_b_doc.add_argument("--json", action="store_true", help="Output diagnostic report as structured JSON")
+    p_b_doc.add_argument("--dir", default=None, help="Backlog directory path (defaults to docs/project/backlog)")
 
     # report
     p_report = subparsers.add_parser("report", help="Executive milestone reports, burndown velocity, and presentation decks")

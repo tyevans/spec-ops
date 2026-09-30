@@ -14,6 +14,8 @@ governing_prds:
 governing_stories:
 - US-0024
 target_bc: backlog
+claimed_by: worker-3
+branch: feat/0099-automated-definition-of-ready-gatekeeper
 ---
 
 # TASK-0099: Automated Definition of Ready Gatekeeper and Ticket Health Audit
