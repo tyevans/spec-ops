@@ -84,7 +84,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0086 (Complete)**: [`0086-real-time-graph-event-bus-and-workspace-watcher`](complete/0086-real-time-graph-event-bus-and-workspace-watcher.md)
 - **TASK-0096 (Complete)**: [`0096-core-domain-mutation-testing-quality-gate`](complete/0096-core-domain-mutation-testing-quality-gate.md)
 - **TASK-0065 (Complete)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](complete/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
-- **TASK-0084 (Refined)**: [`0084-zero-dependency-native-git-hook-scaffolding`](refined/0084-zero-dependency-native-git-hook-scaffolding.md)
+- **TASK-0084 (Complete)**: [`0084-zero-dependency-native-git-hook-scaffolding`](complete/0084-zero-dependency-native-git-hook-scaffolding.md)
 - **TASK-0085 (Complete)**: [`0085-bounded-context-diataxis-documentation-scaffolding`](complete/0085-bounded-context-diataxis-documentation-scaffolding.md)
 - **TASK-0070 (Complete)**: [`0070-worker-fleet-telemetry-review-radar-and-burndown-exporter`](complete/0070-worker-fleet-telemetry-review-radar-and-burndown-exporter.md)
 - **TASK-0083 (Refined)**: [`0083-multi-platform-ci-pipeline-scaffolding-github-gitlab`](refined/0083-multi-platform-ci-pipeline-scaffolding-github-gitlab.md)

@@ -26,6 +26,17 @@ def handle_scaffold_command(
         print(f"✨ {msg}")
         return 0
 
+    if action == "hooks":
+        from ..scaffold.native_hooks import scaffold_hooks_command
+
+        res, msg = scaffold_hooks_command(
+            config.root_dir,
+            force=getattr(args, "force", False),
+            native=getattr(args, "native", True),
+        )
+        print(f"✨ {msg}" if res == 0 else f"❌ {msg}")
+        return res
+
     if action in ("docs", "diataxis"):
         bc = getattr(args, "bc", None)
         if not bc:

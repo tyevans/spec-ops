@@ -107,6 +107,14 @@ def create_worktree(
             err = retry_res.stderr.strip() or add_res.stderr.strip()
             raise RuntimeError(f"Failed to create worktree: {err}")
 
+    # Propagate native git hooks to isolated worktree
+    try:
+        from ..scaffold.native_hooks import propagate_hooks_to_worktree
+
+        propagate_hooks_to_worktree(repo_root, worktree_dir)
+    except Exception:
+        pass
+
 
 def cleanup_worktree(
     repo_root: Path,
@@ -168,5 +176,14 @@ def init_worktree_environment(repo_root: Path, worktree_dir: Path) -> list[str]:
             initialized.append(".env")
         except OSError:
             pass
+
+    try:
+        from ..scaffold.native_hooks import propagate_hooks_to_worktree
+
+        res = propagate_hooks_to_worktree(repo_root, worktree_dir)
+        if res is not None:
+            initialized.append("hooks")
+    except Exception:
+        pass
 
     return initialized

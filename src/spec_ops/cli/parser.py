@@ -150,6 +150,9 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Overwrite existing bounded context documentation",
     )
+    p_scaffold_hooks = scaffold_subs.add_parser("hooks", help="Scaffold native, zero-dependency git hooks")
+    p_scaffold_hooks.add_argument("--force", action="store_true", help="Overwrite existing hooks")
+    p_scaffold_hooks.add_argument("--native", action="store_true", default=True, help="Scaffold native POSIX shell git hooks")
 
     # constitution
     p_const = subparsers.add_parser("constitution", help="Living constitution synchronization and drift verification")

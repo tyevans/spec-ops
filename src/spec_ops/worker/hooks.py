@@ -84,36 +84,10 @@ class PreCommitHookEvaluator:
 
 def install_pre_commit_hook(repo_root: Path) -> Path:
     """Installs native git pre-commit hook enforcing SpecOps health invariants."""
-    hooks_dir = repo_root / ".git" / "hooks"
-    if (repo_root / ".git").is_file():
-        try:
-            res = subprocess.run(
-                ["git", "rev-parse", "--git-path", "hooks"],
-                cwd=repo_root,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-            p = Path(res.stdout.strip())
-            hooks_dir = p if p.is_absolute() else (repo_root / p).resolve()
-        except Exception:
-            pass
-    hooks_dir.mkdir(parents=True, exist_ok=True)
-    hook_file = hooks_dir / "pre-commit"
-    content = (
-        "#!/usr/bin/env bash\n"
-        "# SpecOps spec-ops-health pre-commit hook\n"
-        "if command -v spec-ops >/dev/null 2>&1; then\n"
-        "    exec spec-ops health\n"
-        "elif command -v uv >/dev/null 2>&1; then\n"
-        "    exec uv run spec-ops health\n"
-        "else\n"
-        f"    exec {sys.executable} -m spec_ops.cli.main health\n"
-        "fi\n"
-    )
-    hook_file.write_text(content, encoding="utf-8")
-    hook_file.chmod(0o755)
-    return hook_file
+    from ..scaffold.native_hooks import install_native_hooks
+
+    pre_commit, _ = install_native_hooks(repo_root, force=True)
+    return pre_commit
 
 
 def run_spec_ops_health_hook(repo_root: Path | None = None) -> HookEvaluationResult:

@@ -1,6 +1,6 @@
 {
   "event": "task_unblocked",
-  "task_id": "TASK-0104",
-  "target_bc": "rescue",
-  "priority_rank": 99
+  "task_id": "TASK-0117",
+  "target_bc": "scaffold",
+  "priority_rank": 999999
 }
