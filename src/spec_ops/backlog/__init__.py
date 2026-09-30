@@ -29,6 +29,12 @@ from .reconciler import (
 )
 from .reviewer import ReviewResult, TaskReviewEngine
 from .slicer import AutonomousTaskSlicer, TaskSliceResult
+from .unblocker import (
+    CascadeResult,
+    UnblockEvent,
+    UnblockingCascadeEngine,
+    normalize_task_id,
+)
 from .worker import BacklogWorkerEngine, WorkerResult
 
 __all__ = [
@@ -38,6 +44,7 @@ __all__ = [
     "BacklogCurator",
     "BacklogQueue",
     "BacklogWorkerEngine",
+    "CascadeResult",
     "ClaimTask",
     "CompleteTask",
     "CurationResult",
@@ -64,7 +71,10 @@ __all__ = [
     "TaskReviewEngine",
     "TaskSliceResult",
     "TaskState",
+    "UnblockEvent",
+    "UnblockingCascadeEngine",
     "WorkerResult",
+    "normalize_task_id",
     "task_id_to_uuid",
     "write_task_file",
 ]

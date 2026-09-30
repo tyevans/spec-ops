@@ -1,5 +1,5 @@
 ---
-id: '0091'
+id: 0091
 title: Automated Customer-Facing Release Notes and Business Value Changelog Generator
 status: Refined
 dependencies:
@@ -17,6 +17,8 @@ governing_prds:
 governing_stories:
 - US-0049
 target_bc: prd
+claimed_by: worker-3
+branch: feat/0091-automated-customer-facing-release-notes-
 ---
 
 # TASK-0091: Automated Customer-Facing Release Notes and Business Value Changelog Generator

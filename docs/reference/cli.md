@@ -67,7 +67,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops tui` | `[--once] [--view {overview,backlog,tree,health}]` | Launch interactive Terminal UI (TUI) dashboard |
 | `spec-ops queue next` | `[--json]` | Inspect next ready, unblocked backlog task |
 | `spec-ops queue refine` | `<TASK_ID>` | Validate Definition of Ready and promote task to refined |
-| `spec-ops queue complete` | `<TASK_ID> [--base BASE]` | Gate and complete task integration under merge lock |
+| `spec-ops queue complete` | `<TASK_ID> [--base BASE]` | Gate and complete task integration under merge lock with automated unblocking cascade and JIT buffer replenishment |
 | `spec-ops queue tree` | `[--task TASK] [--direction {blocks,blocked-by}] [--reverse] [--waves] [--all] [--json]` | Display task dependency tree, execution waves, and blockers |
 | `spec-ops queue block` | `<TASK_ID> --question QUESTION [--type {unknown,spike_needed,external,dependency}] [--spike] [--timebox TIMEBOX] [--raised-by RAISED_BY]` | Mark a task as blocked by an unknown question or impediment |
 | `spec-ops queue unblock` | `<TASK_ID> --resolution RESOLUTION [--adr ADR]` | Resolve an unknown/blocker and restore ready/proposed state |

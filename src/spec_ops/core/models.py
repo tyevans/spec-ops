@@ -93,6 +93,7 @@ class Task:
     commit_signature_status: str = ""
     blocker: BlockerInfo | None = None
     slice_type: str = "feat"
+    unblocked: bool = False
 
     @property
     def canonical_id(self) -> str:
