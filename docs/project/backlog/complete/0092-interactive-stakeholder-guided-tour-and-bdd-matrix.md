@@ -1,7 +1,7 @@
 ---
 id: 0092
 title: Interactive Stakeholder Guided Tour and Executable BDD Acceptance Matrix
-status: Refined
+status: Complete
 dependencies:
 - TASK-0069
 governing_adrs:

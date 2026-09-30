@@ -1,7 +1,7 @@
 ---
 id: '0094'
 title: Zero-Pollution Worktree Garbage Collection and Orphan Pruning
-status: Proposed
+status: Complete
 dependencies:
 - TASK-0051
 governing_adrs:

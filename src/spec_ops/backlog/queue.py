@@ -323,6 +323,7 @@ class BacklogQueue:
         task: Task,
         repo_root: Path | None = None,
         cached_audit_report: Any | None = None,
+        dry_run: bool = False,
     ) -> tuple[bool, str]:
         """Gates task transition from proposed/ to refined/ by verifying license policy and CVEs."""
         from ..security.audit import run_dependency_audit
@@ -333,6 +334,8 @@ class BacklogQueue:
             err_details = "; ".join(report.errors) if report.errors else "vulnerability or license policy violation"
             return False, f"Refinement gate failed: Dependency audit failed: {err_details}"
 
-        self.refine_task(task)
-        return True, f"Task {task.canonical_id} passed refinement gate and transitioned to Refined."
+        if not dry_run:
+            self.refine_task(task)
+            return True, f"Task {task.canonical_id} passed refinement gate and transitioned to Refined."
+        return True, f"Task {task.canonical_id} passed refinement gate (dry-run)."
 

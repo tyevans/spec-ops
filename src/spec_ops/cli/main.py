@@ -242,11 +242,16 @@ def main() -> int:
             return 0
 
         curator = BacklogCurator(config)
-        res = curator.curate()
-        print("=== Backlog Curation ===")
+        is_dry = getattr(args, "dry_run", False)
+        res = curator.curate(dry_run=is_dry)
+        if is_dry:
+            print("=== Backlog Curation (Dry Run) ===")
+        else:
+            print("=== Backlog Curation ===")
         print(res.message)
         if res.tasks_refined:
-            print("Refined tasks:")
+            header = "Candidate tasks for refinement:" if is_dry else "Refined tasks:"
+            print(header)
             for tid in res.tasks_refined:
                 print(f"   ✓ {tid}")
         return 0
