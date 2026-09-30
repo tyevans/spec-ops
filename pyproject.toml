@@ -52,6 +52,8 @@ only_mutate = [
     "src/spec_ops/security/waivers.py*",
     "src/spec_ops/security/signing.py*",
     "src/spec_ops/security/dual_custody.py*",
+    "src/spec_ops/worker/claimer.py*",
+    "src/spec_ops/worker/guardrails.py*",
 ]
 pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
@@ -81,6 +83,9 @@ pytest_add_cli_args_test_selection = [
     "tests/test_signing_properties.py",
     "tests/test_signing_unit.py",
     "tests/test_bdd_us0055_us0113.py",
+    "tests/test_worker_claimer.py",
+    "tests/test_worker_guardrails.py",
+    "tests/test_bdd_claim_and_guardrails.py",
 ]
 runner = "pytest"
 

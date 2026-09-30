@@ -2,7 +2,7 @@
 id: '0044'
 title: Machine-Readable Task Contracts, Backlog Protection Guardrails, and Autonomous
   Claim Gates
-status: Refined
+status: Complete
 dependencies:
 - TASK-0007
 - TASK-0011

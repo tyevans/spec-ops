@@ -65,6 +65,20 @@ class BacklogWorkerEngine:
         """Removes a worktree and optionally deletes its associated branch."""
         _cleanup_worktree(self.repo_root, worktree_dir, branch, delete_branch=delete_branch)
 
+    def prepare_commit(
+        self,
+        worktree_dir: Path,
+        task: Task | None = None,
+        commit_msg: str = "",
+    ) -> tuple[bool, str]:
+        """Initiates commit preparation with backlog guardrails and staging."""
+        from ..worker.guardrails import prepare_guardrailed_commit
+        msg = commit_msg or (
+            f"feat({task.canonical_id.lower()}): {task.title}\n\nTask-ID: {task.canonical_id}"
+            if task else "feat: worker commit"
+        )
+        return prepare_guardrailed_commit(worktree_dir, msg)
+
     def invoke_agent(
         self,
         task: Task,
@@ -247,24 +261,9 @@ class BacklogWorkerEngine:
                 success = True
                 return WorkerResult(task.canonical_id, True, "Dry-run successful.")
 
-            if self.config.execution.backlog_isolation:
-                docs_dir = str(self.config.project.docs_dir)
-                status = subprocess.run(["git", "status", "--porcelain", docs_dir], cwd=worktree_dir, capture_output=True, text=True)
-                if status.stdout.strip():
-                    subprocess.run(["git", "checkout", "HEAD", "--", docs_dir], cwd=worktree_dir)
-
-            # Clean up task prompt files before checking status and committing
-            prompt_file = worktree_dir / ".task-prompt.md"
-            if prompt_file.exists():
-                prompt_file.unlink()
-            review_prompt_file = worktree_dir / ".task-review-prompt.md"
-            if review_prompt_file.exists():
-                review_prompt_file.unlink()
-
-            diff_res = subprocess.run(["git", "status", "--porcelain"], cwd=worktree_dir, capture_output=True, text=True)
-            if not diff_res.stdout.strip():
-                return WorkerResult(task.canonical_id, False, "No modifications produced by worker.")
-
+            for p in (worktree_dir / ".task-prompt.md", worktree_dir / ".task-review-prompt.md"):
+                if p.exists():
+                    p.unlink()
 
             trailers = (
                 f"Task-ID: {task.canonical_id}\n"
@@ -274,12 +273,9 @@ class BacklogWorkerEngine:
             if task.signed_off_by:
                 trailers += f"\nSpecOps-Signed-By: {task.signed_off_by}"
             commit_msg = f"feat({task.canonical_id.lower()}): {task.title}\n\n{trailers}"
-            subprocess.run(["git", "add", "-A"], cwd=worktree_dir, check=True)
-            subprocess.run(
-                ["git", "commit", "-m", commit_msg],
-                cwd=worktree_dir,
-                check=True,
-            )
+            commit_ok, commit_log = self.prepare_commit(worktree_dir, task=task, commit_msg=commit_msg)
+            if not commit_ok:
+                return WorkerResult(task.canonical_id, False, f"Commit preparation failed: {commit_log}")
 
             if local_merge:
                 lock_mgr = MergeLockManager(self.repo_root)

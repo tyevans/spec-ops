@@ -49,7 +49,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0041 (Proposed)**: [`0041-customer-uat-verification-matrix-and-automated-shipping-gate`](proposed/0041-customer-uat-verification-matrix-and-automated-shipping-gate.md)
 - **TASK-0042 (Proposed)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](proposed/0042-executive-roadmap-exporter-and-release-notes-generator.md)
 - **TASK-0043 (Proposed)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](proposed/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
-- **TASK-0044 (Refined)**: [`0044-machine-readable-task-contracts-backlog-protection-and-claim-gates`](refined/0044-machine-readable-task-contracts-backlog-protection-and-claim-gates.md)
+- **TASK-0044 (Complete)**: [`0044-machine-readable-task-contracts-backlog-protection-and-claim-gates`](complete/0044-machine-readable-task-contracts-backlog-protection-and-claim-gates.md)
 - **TASK-0045 (Proposed)**: [`0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation`](proposed/0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation.md)
 - **TASK-0046 (Proposed)**: [`0046-extensible-preflight-validation-pipeline-and-fast-fail-gates`](proposed/0046-extensible-preflight-validation-pipeline-and-fast-fail-gates.md)
 - **TASK-0047 (Proposed)**: [`0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop`](proposed/0047-targeted-ast-diagnostic-injection-and-ci-failure-repair-loop.md)

@@ -123,9 +123,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     # worker
     p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
-    p_worker.add_argument("action_or_task", nargs="?", default=None, help="Action ('execute') or target task canonical ID (e.g. TASK-0009)")
-    p_worker.add_argument("task_pos", nargs="?", default=None, help="Target task canonical ID when using 'execute'")
+    p_worker.add_argument("action_or_task", nargs="?", default=None, help="Action ('execute', 'claim') or target task canonical ID (e.g. TASK-0009)")
+    p_worker.add_argument("task_pos", nargs="?", default=None, help="Target task canonical ID when using 'execute' or 'claim'")
     p_worker.add_argument("--task", help="Target task canonical ID (e.g. TASK-0009)")
+    p_worker.add_argument("--auto", action="store_true", help="Claim next ready unblocked task automatically in strict priority order")
     p_worker.add_argument("--drain", action="store_true", help="Continuously drain ready tasks until queue is empty")
     p_worker.add_argument("--max-concurrency", "--max-workers", "--concurrency", dest="max_concurrency", type=int, default=1, help="Maximum number of concurrent workers (default: 1)")
     p_worker.add_argument("--max-tasks", type=int, default=None, help="Maximum number of tasks to execute")

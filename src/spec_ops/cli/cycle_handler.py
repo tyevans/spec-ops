@@ -18,6 +18,20 @@ from ..worker import BatchCycleOrchestrator
 
 def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Handles 'spec-ops worker' command execution."""
+    action_or_task = getattr(args, "action_or_task", None)
+    task_pos = getattr(args, "task_pos", None)
+    auto_flag = getattr(args, "auto", False)
+    if (action_or_task and action_or_task.lower() == "claim") or auto_flag:
+        import json
+        from ..worker.claimer import TaskClaimer
+        claimer = TaskClaimer(config)
+        target = task_pos or getattr(args, "task", None)
+        res = claimer.claim_auto() if (auto_flag or not target) else claimer.claim_task(target)
+        if res:
+            print(json.dumps(res, indent=2))
+            return 0
+        return 1
+
     if getattr(args, "drain", False) or getattr(args, "max_tasks", None) is not None or getattr(args, "max_concurrency", 1) > 1:
         orchestrator = BatchCycleOrchestrator(
             config,
