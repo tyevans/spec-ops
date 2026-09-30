@@ -1,10 +1,9 @@
 ---
 id: '0068'
 title: Portable Standalone Visualizer Bundle Export and Unified Multi-Perspective Project Matrix
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
-  - TASK-0067
   - TASK-0008
   - TASK-0017
 governing_adrs:

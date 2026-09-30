@@ -1,10 +1,10 @@
 ---
 id: '0049'
 title: 'Architectural Spike: Multi-Process Transactional File Locking (MERGE_LOCK) and Auto-Rebase Synchronization'
-status: Proposed
+status: Complete
 created: 2026-09-29
 dependencies:
-  - TASK-0048
+  - TASK-0011
 governing_adrs:
   - ADR-0003
   - ADR-0005

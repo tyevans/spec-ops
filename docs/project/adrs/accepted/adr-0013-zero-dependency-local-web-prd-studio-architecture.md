@@ -1,4 +1,4 @@
-# ADR-0012: Zero-Dependency Local Web PRD Studio Architecture
+# ADR-0013: Zero-Dependency Local Web PRD Studio Architecture
 
 ## Status
 Accepted

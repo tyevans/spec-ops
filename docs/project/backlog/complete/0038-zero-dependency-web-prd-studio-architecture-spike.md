@@ -14,8 +14,12 @@ governing_adrs:
 - ADR-0007
 - ADR-0008
 - ADR-0009
+- ADR-0013
 governing_prds:
 - PRD-0003
+governing_stories:
+- US-0043
+- US-0045
 target_bc: prd
 ---
 

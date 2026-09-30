@@ -19,6 +19,7 @@ governing_stories:
   - US-0082
   - US-0028
   - US-0037
+  - US-0115
 target_bc: worker
 ---
 
