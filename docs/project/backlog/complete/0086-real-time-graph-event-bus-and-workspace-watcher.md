@@ -1,7 +1,7 @@
 ---
 id: 0086
 title: Real-Time In-Memory Graph Event Bus and Workspace Change Watcher
-status: Refined
+status: Complete
 dependencies:
 - TASK-0060
 governing_adrs:
@@ -14,8 +14,6 @@ governing_prds:
 governing_stories:
 - US-0065
 target_bc: core
-claimed_by: worker-3
-branch: feat/0086-real-time-in-memory-graph-event-bus-and-
 ---
 
 # TASK-0086: Real-Time In-Memory Graph Event Bus and Workspace Change Watcher

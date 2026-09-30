@@ -378,6 +378,10 @@ def main() -> int:
         from ..core.properties_runner import handle_properties_command
         return handle_properties_command(args, config)
 
+    if args.command == "watch":
+        from .graph_handler import handle_watch_command
+        return handle_watch_command(args, config)
+
     return 0
 
 

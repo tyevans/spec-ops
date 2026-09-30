@@ -319,4 +319,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_verify.add_argument("-k", "--filter", dest="filter_expr", default=None, help="Filter property tests by name")
     p_verify.add_argument("--json", action="store_true", help="Output verification results as structured JSON")
 
+    # watch
+    p_watch = subparsers.add_parser("watch", help="Real-time in-memory graph event bus and workspace change watcher")
+    p_watch.add_argument("--debounce-ms", type=float, default=250.0, help="Debounce window in milliseconds (default: 250)")
+    p_watch.add_argument("--event-stream", action="store_true", help="Emit raw JSON structured event stream")
+    p_watch.add_argument("--dir", default=".", help="Target repository directory (default: current directory)")
+    p_watch.add_argument("--once", action="store_true", help="Run single watcher scan iteration and exit")
+    p_watch.add_argument("--max-iterations", type=int, default=None, help="Maximum number of poll iterations before exit")
+
     return parser

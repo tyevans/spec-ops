@@ -80,7 +80,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0052 (Complete)**: [`0052-preserved-worktree-failure-triage-and-handover-brief-generator`](complete/0052-preserved-worktree-failure-triage-and-handover-brief-generator.md)
 - **TASK-0095 (Complete)**: [`0095-generative-property-invariant-verification-engine`](complete/0095-generative-property-invariant-verification-engine.md)
 - **TASK-0096 (Refined)**: [`0096-core-domain-mutation-testing-quality-gate`](refined/0096-core-domain-mutation-testing-quality-gate.md)
-- **TASK-0086 (Refined)**: [`0086-real-time-graph-event-bus-and-workspace-watcher`](refined/0086-real-time-graph-event-bus-and-workspace-watcher.md)
+- **TASK-0086 (Complete)**: [`0086-real-time-graph-event-bus-and-workspace-watcher`](complete/0086-real-time-graph-event-bus-and-workspace-watcher.md)
 - **TASK-0065 (Refined)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](refined/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
 - **TASK-0076 (Complete)**: [`0076-specification-frontmatter-schema-validation-and-migration`](complete/0076-specification-frontmatter-schema-validation-and-migration.md)
 - **TASK-0042 (Complete)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](complete/0042-executive-roadmap-exporter-and-release-notes-generator.md)
