@@ -100,7 +100,7 @@ LEAD_CONSOLE_CSS = r"""
 
 LEAD_CONSOLE_JS = r"""
   window.takeoverTask = function(taskId, btnElem) {
-    const cmd = "spec-ops rescue inspect " + taskId;
+    const cmd = "spec-ops rescue " + taskId;
     const nav = (typeof window !== "undefined" && window.navigator && window.navigator.clipboard) ? window.navigator : (typeof navigator !== "undefined" ? navigator : null);
     if (nav && nav.clipboard && nav.clipboard.writeText) {
       return nav.clipboard.writeText(cmd).then(() => {
@@ -352,7 +352,7 @@ def harvest_fleet_telemetry(config: SpecOpsConfig) -> list[dict[str, Any]]:
                 "failure_log": failure_log,
                 "prompt_feedback": prompt_feedback,
                 "stalled": stalled or status == "Stalled" or attempt.startswith("3/3"),
-                "rescue_cmd": f"spec-ops rescue inspect {tid}",
+                "rescue_cmd": f"spec-ops rescue {tid}",
             }
         )
 

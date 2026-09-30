@@ -60,11 +60,13 @@ class PreflightPipeline:
         cwd: Path | None = None,
         env: dict[str, str] | None = None,
         sandbox: Any | None = None,
+        config: SpecOpsConfig | None = None,
     ):
         self.stages: list[PreflightStage] = list(stages) if stages is not None else []
         self.cwd = Path(cwd) if cwd is not None else Path.cwd()
         self.env = env
         self.sandbox = sandbox
+        self.config = config
 
     def add_stage(self, stage: PreflightStage) -> None:
         """Appends a new preflight gate stage."""
@@ -77,14 +79,28 @@ class PreflightPipeline:
 
         src_dir = str(Path(__file__).resolve().parent.parent.parent)
         curr_pythonpath = os.environ.get("PYTHONPATH", "")
-        new_pythonpath = f"{src_dir}:{curr_pythonpath}".rstrip(":")
+        cwd_src = self.cwd / "src"
+        if cwd_src.is_dir() and str(cwd_src) != src_dir:
+            new_pythonpath = f"{cwd_src}:{src_dir}:{curr_pythonpath}".rstrip(":")
+        else:
+            new_pythonpath = f"{src_dir}:{curr_pythonpath}".rstrip(":")
         bin_dir = str(Path(sys.executable).parent)
 
-        return {
+        env = {
             **os.environ,
             "PATH": f"{bin_dir}:{os.environ.get('PATH', '')}",
             "PYTHONPATH": new_pythonpath,
         }
+        if self.config:
+            root_venv = self.config.root_dir / ".venv"
+            if root_venv.exists():
+                env["VIRTUAL_ENV"] = str(root_venv)
+        else:
+            venv_dir = Path(sys.executable).parent.parent
+            if (venv_dir / "pyvenv.cfg").exists():
+                env["VIRTUAL_ENV"] = str(venv_dir)
+
+        return env
 
     def execute_stage(self, stage: PreflightStage) -> StageResult:
         """Executes a single preflight stage within its timeout limit."""
@@ -312,7 +328,9 @@ class PreflightPipeline:
                 and shutil.which("uv")
                 and ((cwd / "uv.lock").exists() or (config.root_dir / "uv.lock").exists())
             ):
-                c_str = f"uv run {c_str}"
+                c_str = f"uv run --active {c_str}"
+            elif c_str.startswith("uv run ") and not c_str.startswith("uv run --active "):
+                c_str = c_str.replace("uv run ", "uv run --active ", 1)
             if "lock" in c_str:
                 sname = "lockfile"
             elif "health" in c_str:
@@ -333,7 +351,7 @@ class PreflightPipeline:
 
             sandbox = ExecutionSandbox(worktree_dir=cwd, isolate_network=True)
 
-        return cls(stages=stages, cwd=cwd, sandbox=sandbox)
+        return cls(stages=stages, cwd=cwd, sandbox=sandbox, config=config)
 
 
 def run_worktree_preflight(
