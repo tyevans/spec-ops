@@ -1,5 +1,17 @@
-"""Worker bounded context for multi-worker execution, claiming, and merge locking."""
-
+from .ast_analyzer import (
+    AstNodeSeam,
+    extract_top_level_nodes,
+    find_largest_node,
+    generate_ast_decomposition_hint,
+    scan_worktree_file_length_violations,
+)
+from .ci_repair import (
+    ci_heal_task,
+    extract_failure_trace,
+    fetch_failed_ci_logs,
+    inject_ci_failure_prompt,
+    verify_worktree_diff,
+)
 from .claimer import (
     TaskClaimer,
     hydrate_task_prompt,
@@ -57,6 +69,7 @@ from .worktree import cleanup_worktree, create_worktree
 
 __all__ = [
     "AgentRunner",
+    "AstNodeSeam",
     "BatchCycleOrchestrator",
     "BatchCycleReport",
     "ChangedFileInfo",
@@ -73,15 +86,22 @@ __all__ = [
     "build_agent_cmd",
     "build_commit_subject",
     "build_commit_trailers",
+    "ci_heal_task",
     "cleanup_worktree",
     "create_worktree",
     "derive_conventional_type",
     "detect_backlog_modifications",
     "determine_rebase_command",
+    "extract_failure_trace",
+    "extract_top_level_nodes",
+    "fetch_failed_ci_logs",
+    "find_largest_node",
     "format_task_commit_message",
+    "generate_ast_decomposition_hint",
     "generate_review_brief",
     "hydrate_task_prompt",
     "initialize_worktree",
+    "inject_ci_failure_prompt",
     "install_pre_commit_hook",
     "interpolate_runner_template",
     "is_rebase_in_progress",
@@ -93,7 +113,9 @@ __all__ = [
     "run_spec_ops_health_hook",
     "run_worktree_preflight",
     "sanitize_backlog_modifications",
+    "scan_worktree_file_length_violations",
     "squash_merge_and_commit",
     "stage_legitimate_files",
     "validate_definition_of_ready",
+    "verify_worktree_diff",
 ]

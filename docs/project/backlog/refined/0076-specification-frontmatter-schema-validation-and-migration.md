@@ -2,19 +2,18 @@
 id: '0076'
 title: Specification Frontmatter Schema Validation and Automated In-Place Migration
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0058
+- TASK-0058
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0017
+- US-0017
 target_bc: core
 ---
 

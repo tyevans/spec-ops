@@ -21,6 +21,24 @@ def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     action_or_task = getattr(args, "action_or_task", None)
     task_pos = getattr(args, "task_pos", None)
     auto_flag = getattr(args, "auto", False)
+
+    if action_or_task and action_or_task.lower() in ("ci-heal", "ci_heal"):
+        from ..worker.ci_repair import ci_heal_task
+        target_id = getattr(args, "task", None) or task_pos
+        if not target_id:
+            print("❌ Error: --task <task-id> is required for ci-heal.", file=sys.stderr)
+            return 1
+        ok, msg = ci_heal_task(
+            config,
+            target_id,
+            dry_run=getattr(args, "dry_run", False),
+            no_push=getattr(args, "no_merge", False),
+        )
+        print(f"=== Remote CI Heal ({target_id}) ===")
+        print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
+        print(f"Message: {msg}")
+        return 0 if ok else 1
+
     if (action_or_task and action_or_task.lower() == "claim") or auto_flag:
         import json
         from ..worker.claimer import TaskClaimer
