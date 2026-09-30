@@ -10,9 +10,10 @@ from typing import Any
 
 from ..config.models import SpecOpsConfig
 from ..core.models import Task
-from ..worker.integration import squash_merge_and_commit
+from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
+from ..worker.merge_lock import MergeLockManager
 from .queue import BacklogQueue
-from .worker import MERGE_LOCK, BacklogWorkerEngine
+from .worker import BacklogWorkerEngine
 
 
 @dataclass
@@ -147,13 +148,7 @@ class WorktreeRescueManager:
         if not info or not info.worktree_dir.exists():
             return False, f"Worktree for {task_id_input} not found."
 
-        # 1. Run preflight
-        worker_engine = BacklogWorkerEngine(self.config)
-        ok, log = worker_engine.run_preflight(info.worktree_dir)
-        if not ok:
-            return False, f"Preflight failed in rescued worktree:\n{log}"
-
-        # 2. Find target task
+        # 1. Find target task
         clean_id = f"TASK-{self._normalize_task_id(task_id_input)}"
         target_task = None
         for t in self.queue.list_all_tasks():
@@ -164,7 +159,7 @@ class WorktreeRescueManager:
         if not target_task:
             return False, f"Task {clean_id} not found in backlog."
 
-        # 3. Commit any uncommitted changes
+        # 2. Commit any uncommitted changes in the worktree
         diff_res = subprocess.run(["git", "status", "--porcelain"], cwd=info.worktree_dir, capture_output=True, text=True)
         if diff_res.stdout.strip():
             subprocess.run(["git", "add", "-A"], cwd=info.worktree_dir, check=True)
@@ -174,7 +169,25 @@ class WorktreeRescueManager:
                 check=True,
             )
 
-        # 4. Enforce backlog isolation before merge
+        # 3. Auto-rebase onto main if behind
+        lock_mgr = MergeLockManager(self.repo_root)
+        if lock_mgr.is_branch_behind_main(info.branch):
+            print(f"🔄 Rescued branch '{info.branch}' is behind main. Auto-rebasing onto latest main...")
+            rebase_ok, rebase_msg = rebase_with_inference_healing(
+                info.worktree_dir,
+                target_task,
+                self.config,
+            )
+            if not rebase_ok:
+                return False, f"Rebase conflict against main during rescue: {rebase_msg}"
+
+        # 4. Run preflight
+        worker_engine = BacklogWorkerEngine(self.config)
+        ok, log = worker_engine.run_preflight(info.worktree_dir, task=target_task)
+        if not ok:
+            return False, f"Preflight failed in rescued worktree:\n{log}"
+
+        # 5. Enforce backlog isolation before merge
         if self.config.execution.backlog_isolation:
             status = subprocess.run(
                 ["git", "status", "--porcelain", str(self.config.project.docs_dir)],
@@ -185,9 +198,18 @@ class WorktreeRescueManager:
             if status.stdout.strip():
                 subprocess.run(["git", "checkout", "HEAD", "--", str(self.config.project.docs_dir)], cwd=info.worktree_dir)
 
-        # 5. Merge under MERGE_LOCK
+        # 6. Merge under MERGE_LOCK
         try:
-            with MERGE_LOCK:
+            with lock_mgr.acquire(timeout=120.0):
+                if lock_mgr.is_branch_behind_main(info.branch):
+                    rebase_ok, rebase_msg = rebase_with_inference_healing(
+                        info.worktree_dir,
+                        target_task,
+                        self.config,
+                    )
+                    if not rebase_ok:
+                        return False, f"Rebase conflict against main under merge lock: {rebase_msg}"
+
                 merge_ok, merge_msg = squash_merge_and_commit(
                     self.repo_root,
                     info.branch,
@@ -197,7 +219,7 @@ class WorktreeRescueManager:
                 if not merge_ok:
                     return False, f"Merge failed: {merge_msg}"
 
-            # 6. Cleanup
+            # 7. Cleanup
             worker_engine.cleanup_worktree(info.worktree_dir, info.branch, delete_branch=True)
             return True, f"Successfully verified, merged, and completed {clean_id}."
         except Exception as e:
