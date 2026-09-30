@@ -53,9 +53,13 @@ class BacklogWorkerEngine:
         self.queue = BacklogQueue(config.backlog_dir)
         self.reviewer = TaskReviewEngine(config)
 
-    def run_preflight(self, cwd: Path, task: Task | None = None) -> tuple[bool, str]:
+    def run_preflight(
+        self, cwd: Path, task: Task | None = None, initial: bool = False
+    ) -> tuple[bool, str]:
         """Runs configured preflight verification commands with supply-chain lockfile checks."""
-        return run_worktree_preflight(self.config, cwd, all_tasks=self.queue.list_all_tasks(), task=task)
+        return run_worktree_preflight(
+            self.config, cwd, all_tasks=self.queue.list_all_tasks(), task=task, initial=initial
+        )
 
     def create_worktree(self, branch: str, worktree_dir: Path) -> None:
         """Robustly creates or resets an isolated git worktree branch."""
@@ -282,7 +286,7 @@ class BacklogWorkerEngine:
                 if not sec_ok:
                     sync_security_profile(worktree_dir, sync_worktrees=False)
 
-            preflight_ok, preflight_log = self.run_preflight(worktree_dir, task=task)
+            preflight_ok, preflight_log = self.run_preflight(worktree_dir, task=task, initial=True)
             if not preflight_ok:
                 return WorkerResult(task.canonical_id, False, f"Initial preflight failed: {preflight_log}")
 

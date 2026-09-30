@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import ast
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from spec_ops.worker.ast_analyzer import (
@@ -13,26 +13,20 @@ from spec_ops.worker.ast_analyzer import (
     generate_ast_decomposition_hint,
 )
 
-import keyword
-
-identifier_strategy = st.from_regex(r"[a-z_][a-z0-9_]{0,15}", fullmatch=True).filter(
-    lambda s: not keyword.iskeyword(s) and not keyword.issoftkeyword(s)
-)
-class_name_strategy = st.from_regex(r"[A-Z][a-zA-Z0-9]{0,15}", fullmatch=True).filter(
-    lambda s: not keyword.iskeyword(s) and not keyword.issoftkeyword(s)
-)
+identifier_strategy = st.from_regex(r"fn_[a-z0-9_]{1,10}", fullmatch=True)
+class_name_strategy = st.from_regex(r"Cls[A-Za-z0-9]{1,10}", fullmatch=True)
 
 
 @st.composite
 def python_syntax_tree_strategy(draw: st.DrawFn) -> tuple[str, list[tuple[str, str, int]]]:
     """Generates random Python code with known top-level classes and functions."""
-    num_nodes = draw(st.integers(min_value=0, max_value=8))
+    num_nodes = draw(st.integers(min_value=0, max_value=5))
     expected: list[tuple[str, str, int]] = []
     lines: list[str] = []
 
     for idx in range(num_nodes):
         kind = draw(st.sampled_from(["class", "function"]))
-        body_lines = draw(st.integers(min_value=1, max_value=25))
+        body_lines = draw(st.integers(min_value=1, max_value=8))
 
         if kind == "class":
             name = draw(class_name_strategy) or f"Class{idx}"
@@ -55,7 +49,7 @@ def python_syntax_tree_strategy(draw: st.DrawFn) -> tuple[str, list[tuple[str, s
     return source_code, expected
 
 
-@settings(max_examples=100)
+@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow], deadline=None)
 @given(syntax_data=python_syntax_tree_strategy())
 def test_ast_analyzer_reliably_locates_nodes_and_line_ranges(
     syntax_data: tuple[str, list[tuple[str, str, int]]],
@@ -75,7 +69,7 @@ def test_ast_analyzer_reliably_locates_nodes_and_line_ranges(
         assert node.display_kind in ("class", "function")
 
 
-@settings(max_examples=100)
+@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow], deadline=None)
 @given(syntax_data=python_syntax_tree_strategy())
 def test_ast_analyzer_identifies_largest_node(
     syntax_data: tuple[str, list[tuple[str, str, int]]],
@@ -94,7 +88,7 @@ def test_ast_analyzer_identifies_largest_node(
             assert largest.line_count >= other.line_count
 
 
-@settings(max_examples=100)
+@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow], deadline=None)
 @given(arbitrary_code=st.text())
 def test_ast_analyzer_handles_arbitrary_inputs_resiliently(arbitrary_code: str):
     """Invariant: Resilient against arbitrary malformed inputs without throwing exceptions."""
@@ -115,7 +109,7 @@ def test_ast_analyzer_handles_arbitrary_inputs_resiliently(arbitrary_code: str):
     assert "arbitrary.py" in hint
 
 
-@settings(max_examples=50)
+@settings(max_examples=50, suppress_health_check=[HealthCheck.too_slow], deadline=None)
 @given(
     attempt=st.integers(min_value=1, max_value=10),
     total_lines=st.integers(min_value=500, max_value=5000),

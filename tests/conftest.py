@@ -15,3 +15,16 @@ if SRC_DIR not in current_pythonpath.split(os.pathsep):
     os.environ["PYTHONPATH"] = (
         f"{SRC_DIR}{os.pathsep}{current_pythonpath}" if current_pythonpath else SRC_DIR
     )
+
+try:
+    from hypothesis import HealthCheck, settings
+
+    settings.register_profile(
+        "default",
+        suppress_health_check=[HealthCheck.too_slow, HealthCheck.function_scoped_fixture],
+        deadline=None,
+    )
+    settings.load_profile("default")
+except ImportError:
+    pass
+

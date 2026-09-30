@@ -126,6 +126,16 @@ def test_pipeline_from_config_defaults(tmp_path: Path):
     assert any(s.name == "test" for s in pipeline.stages)
 
 
+def test_pipeline_from_config_initial_skips_tests(tmp_path: Path):
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    cfg.quality.preflight = ["pytest", "spec-ops health"]
+    (tmp_path / "uv.lock").write_text("lockfile", encoding="utf-8")
+    pipeline = PreflightPipeline.from_config(cfg, cwd=tmp_path, initial=True)
+    assert any(s.name == "lockfile" for s in pipeline.stages)
+    assert any(s.name == "health" for s in pipeline.stages)
+    assert not any(s.name == "test" for s in pipeline.stages)
+
+
 def test_pipeline_sandbox_execution(tmp_path: Path):
     class DummySandbox:
         def run_preflight_suite(self, commands, cwd=None):

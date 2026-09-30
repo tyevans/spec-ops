@@ -251,6 +251,7 @@ class PreflightPipeline:
         config: SpecOpsConfig,
         cwd: Path,
         task: Task | None = None,
+        initial: bool = False,
     ) -> PreflightPipeline:
         """Constructs pipeline stages from repository configuration."""
         configured_stages = getattr(config.quality, "stages", None) or getattr(
@@ -259,17 +260,19 @@ class PreflightPipeline:
         if configured_stages is not None and isinstance(configured_stages, list):
             stages = []
             for s in configured_stages:
-                if isinstance(s, PreflightStage):
-                    stages.append(s)
-                elif isinstance(s, dict):
-                    stages.append(
-                        PreflightStage(
-                            name=s.get("name", "gate"),
-                            command=s.get("command", ""),
-                            required=s.get("required", True),
-                            timeout_seconds=float(s.get("timeout_seconds", s.get("timeout", 60.0))),
-                        )
+                stage = (
+                    s
+                    if isinstance(s, PreflightStage)
+                    else PreflightStage(
+                        name=s.get("name", "gate"),
+                        command=s.get("command", ""),
+                        required=s.get("required", True),
+                        timeout_seconds=float(s.get("timeout_seconds", s.get("timeout", 60.0))),
                     )
+                )
+                if initial and any(k in stage.command for k in ("pytest", "test")):
+                    continue
+                stages.append(stage)
             return cls(stages=stages, cwd=cwd)
 
         stages: list[PreflightStage] = []
@@ -277,14 +280,7 @@ class PreflightPipeline:
         # 1. Lockfile stage
         if getattr(config.quality, "enforce_lockfile", True):
             if (cwd / "uv.lock").exists() and "uv lock --check" not in config.quality.preflight:
-                stages.append(
-                    PreflightStage(
-                        name="lockfile",
-                        command="uv lock --check",
-                        required=True,
-                        timeout_seconds=30.0,
-                    )
-                )
+                stages.append(PreflightStage(name="lockfile", command="uv lock --check", required=True, timeout_seconds=30.0))
 
         # 2. Security stage
         sec_active = bool(
@@ -306,14 +302,7 @@ class PreflightPipeline:
                 if (spec_ops_bin.is_file() or shutil.which("spec-ops"))
                 else f"{sys.executable} -m spec_ops.cli.main health --security"
             )
-            stages.append(
-                PreflightStage(
-                    name="security",
-                    command=sec_cmd,
-                    required=True,
-                    timeout_seconds=60.0,
-                )
-            )
+            stages.append(PreflightStage(name="security", command=sec_cmd, required=True, timeout_seconds=60.0))
 
         # 3. Quality & Test stages
         for c in config.quality.preflight:
@@ -332,15 +321,10 @@ class PreflightPipeline:
                 sname = "test"
             else:
                 sname = f"stage-{len(stages) + 1}"
+            if initial and sname == "test":
+                continue
             timeout_val = 600.0 if sname == "test" else 120.0
-            stages.append(
-                PreflightStage(
-                    name=sname,
-                    command=c_str,
-                    required=True,
-                    timeout_seconds=timeout_val,
-                )
-            )
+            stages.append(PreflightStage(name=sname, command=c_str, required=True, timeout_seconds=timeout_val))
 
         sandbox = None
         sandbox_config = getattr(config.execution, "sandbox", None)
@@ -357,6 +341,7 @@ def run_worktree_preflight(
     cwd: Path,
     all_tasks: list[Task] | None = None,
     task: Task | None = None,
+    initial: bool = False,
 ) -> tuple[bool, str]:
     """Runs configured preflight verification commands with supply-chain lockfile checks."""
     from ..security.lockfile import check_worktree_dependency_integrity
@@ -389,6 +374,6 @@ def run_worktree_preflight(
 
         sync_security_profile(cwd, sync_worktrees=False)
 
-    pipeline = PreflightPipeline.from_config(config, cwd, task=target_task)
+    pipeline = PreflightPipeline.from_config(config, cwd, task=target_task, initial=initial)
     result = pipeline.run()
     return result.success, result.logs
