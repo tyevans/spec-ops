@@ -43,11 +43,19 @@ def build_parser() -> argparse.ArgumentParser:
     p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
 
     # audit
-    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies and security policies")
+    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies, compliance manifests, and security policies")
     audit_subs = p_audit_cmd.add_subparsers(dest="audit_action", help="Audit action")
     p_audit_deps = audit_subs.add_parser("dependencies", help="Scan dependencies for CVEs and license allowlist compliance")
     p_audit_deps.add_argument("--path", default=".", help="Directory containing dependencies (default: current directory)")
     p_audit_deps.add_argument("--offline", action="store_true", help="Run in air-gapped/offline mode with local cache")
+
+    p_audit_export = audit_subs.add_parser("export", help="Compile and export tamper-evident Merkle compliance audit manifest")
+    p_audit_export.add_argument("--standard", default="soc2", help="Compliance standard profile (e.g. soc2, iso27001, hipaa)")
+    p_audit_export.add_argument("--output", default="dist/compliance/", help="Output directory for compliance manifest and root hash")
+
+    p_audit_verify = audit_subs.add_parser("verify", help="Verify cryptographic compliance manifest integrity and SDLC traceability")
+    p_audit_verify.add_argument("--manifest", default="dist/compliance/soc2-audit-manifest.json", help="Path to compliance manifest JSON")
+    p_audit_verify.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
 
     # profiles
     p_prof = subparsers.add_parser("profiles", aliases=["profile"], help="Inspect and list architectural profiles and baseline ADRs")

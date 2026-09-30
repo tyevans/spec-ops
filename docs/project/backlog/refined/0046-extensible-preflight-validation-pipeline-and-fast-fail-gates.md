@@ -20,6 +20,8 @@ governing_stories:
 - US-0037
 - US-0115
 target_bc: worker
+claimed_by: worker-3
+branch: feat/0046-extensible-multi-stage-preflight-validat
 ---
 
 # TASK-0046: Extensible Multi-Stage Preflight Validation Pipeline with Early Fast-Fail Gates

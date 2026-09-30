@@ -1,7 +1,7 @@
 ---
 id: '0032'
 title: Tamper-Evident Merkle Compliance Manifest Generator and Verifier Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0031
 governing_adrs:
@@ -16,8 +16,6 @@ governing_stories:
 - US-0056
 - US-0114
 target_bc: security
-claimed_by: worker-3
-branch: feat/0032-tamper-evident-merkle-compliance-manifes
 ---
 
 # TASK-0032: Tamper-Evident Merkle Compliance Manifest Generator and Verifier Engine

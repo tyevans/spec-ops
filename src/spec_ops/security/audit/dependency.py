@@ -6,11 +6,11 @@ import datetime
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..config.loader import load_config
-from ..config.models import SpecOpsConfig
-from .cve.osv_client import Vulnerability, audit_dependencies_cve
-from .licenses.policy import LicenseViolation, audit_dependencies_licenses, extract_repo_dependencies
-from .waivers import Waiver, load_waivers
+from ...config.loader import load_config
+from ...config.models import SpecOpsConfig
+from ..cve.osv_client import Vulnerability, audit_dependencies_cve
+from ..licenses.policy import LicenseViolation, audit_dependencies_licenses, extract_repo_dependencies
+from ..waivers import Waiver, load_waivers
 
 
 @dataclass
