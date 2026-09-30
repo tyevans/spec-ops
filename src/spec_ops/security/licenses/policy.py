@@ -26,6 +26,8 @@ STANDARD_PROFILES: dict[str, list[str]] = {
         "Python-2.0",
         "CC0-1.0",
         "PSF-2.0",
+        "MPL-2.0",
+        "CNRI-Python",
     ],
     "commercial-saas": [
         "MIT",
@@ -44,6 +46,7 @@ KNOWN_PACKAGE_LICENSES: dict[str, str] = {
     "click": "BSD-3-Clause",
     "colorama": "BSD-3-Clause",
     "coverage": "Apache-2.0",
+    "dateparser": "BSD-3-Clause",
     "eventsource-py": "MIT",
     "hypothesis": "MPL-2.0",
     "mutmut": "BSD-3-Clause",
@@ -51,9 +54,13 @@ KNOWN_PACKAGE_LICENSES: dict[str, str] = {
     "pluggy": "MIT",
     "pytest": "MIT",
     "pytest-bdd": "MIT",
+    "python-dateutil": "BSD-3-Clause",
     "pyyaml": "MIT",
     "redstring": "MIT",
+    "regex": "Apache-2.0",
     "rich": "MIT",
+    "spec-ops": "MIT",
+    "tzdata": "CC0-1.0",
 }
 
 LICENSE_SYNONYMS: dict[str, str] = {
@@ -122,9 +129,20 @@ def normalize_license(license_str: str) -> str:
 
 def is_license_allowed(license_name: str, allowed_licenses: list[str]) -> bool:
     """Checks whether normalized license is permitted under allowlist."""
-    norm = normalize_license(license_name).lower()
+    norm = normalize_license(license_name).strip()
     allowed_set = {normalize_license(a).lower() for a in allowed_licenses}
-    return norm in allowed_set
+    if norm.lower() in allowed_set:
+        return True
+    cleaned = re.sub(r"[\(\)]", "", norm)
+    if " or " in cleaned.lower():
+        parts = [p.strip() for p in re.split(r"\s+or\s+", cleaned, flags=re.IGNORECASE) if p.strip()]
+        if parts:
+            return any(is_license_allowed(p, allowed_licenses) for p in parts)
+    if " and " in cleaned.lower():
+        parts = [p.strip() for p in re.split(r"\s+and\s+", cleaned, flags=re.IGNORECASE) if p.strip()]
+        if parts:
+            return all(is_license_allowed(p, allowed_licenses) for p in parts)
+    return False
 
 
 def resolve_package_license(
@@ -139,7 +157,11 @@ def resolve_package_license(
             return normalize_license(raw)
 
     if repo_dir:
-        for candidate_name in ("docs/project/compliance/licenses.json", ".spec-ops/licenses.json"):
+        for candidate_name in (
+            "docs/project/compliance/licenses.json",
+            ".spec-ops/licenses.json",
+            ".specops/licenses.json",
+        ):
             cache_file = repo_dir / candidate_name
             if cache_file.is_file():
                 try:
@@ -152,21 +174,26 @@ def resolve_package_license(
                 except Exception:
                     pass
 
+    pkg_lower = package_name.lower()
+    if pkg_lower in KNOWN_PACKAGE_LICENSES:
+        return KNOWN_PACKAGE_LICENSES[pkg_lower]
+
     try:
         dist = importlib.metadata.distribution(package_name)
+        lic_expr = dist.metadata.get("License-Expression")
+        if lic_expr and lic_expr.upper() != "UNKNOWN":
+            return normalize_license(lic_expr)
         raw_lic = dist.metadata.get("License")
-        if raw_lic and raw_lic.upper() != "UNKNOWN":
+        if raw_lic and raw_lic.upper() not in ("UNKNOWN", "DUAL LICENSE"):
             return normalize_license(raw_lic)
         classifiers = dist.metadata.get_all("Classifier") or []
         for c in classifiers:
             if "License :: OSI Approved :: " in c:
                 return normalize_license(c.split("License :: OSI Approved :: ")[-1].strip())
+        if raw_lic and raw_lic.upper() != "UNKNOWN":
+            return normalize_license(raw_lic)
     except Exception:
         pass
-
-    pkg_lower = package_name.lower()
-    if pkg_lower in KNOWN_PACKAGE_LICENSES:
-        return KNOWN_PACKAGE_LICENSES[pkg_lower]
 
     if "agpl" in pkg_lower:
         return "AGPL-3.0"

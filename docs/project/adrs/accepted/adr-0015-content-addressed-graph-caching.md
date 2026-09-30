@@ -1,7 +1,7 @@
 # ADR-0015: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 As SpecOps repositories expand to hundreds or thousands of user stories, tasks, PRDs, and ADRs, full filesystem re-scanning and naive markdown re-parsing on every CLI invocation degrades interactive CLI latency and CI preflight performance. Furthermore, malformed YAML frontmatter (such as unquoted colons, invalid indentation, or missing delimiters) can cause unhandled parser crashes or catastrophic context drops during autonomous agent execution. SpecOps requires a verified content-addressed caching architecture and resilient AST error handling to achieve sub-50ms graph compilation and deterministic developer diagnostics.

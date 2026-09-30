@@ -44,6 +44,9 @@ class BacklogCurator:
             # Sort proposed by priority rank
             proposed_tasks.sort(key=lambda t: t.priority_rank)
 
+            from ..security.audit import run_dependency_audit
+            audit_report = run_dependency_audit(self.config.root_dir)
+
             for task in proposed_tasks:
                 if str(task.status).startswith("Blocked"):
                     continue
@@ -57,7 +60,11 @@ class BacklogCurator:
                 )
 
                 if deps_satisfied:
-                    ok, _ = self.queue.refine_task_with_gate(task, repo_root=self.config.root_dir)
+                    ok, _ = self.queue.refine_task_with_gate(
+                        task,
+                        repo_root=self.config.root_dir,
+                        cached_audit_report=audit_report,
+                    )
                     if ok:
                         refined_ids.append(task.canonical_id)
 

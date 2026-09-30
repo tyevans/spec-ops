@@ -1,21 +1,20 @@
 ---
 id: '0032'
 title: Tamper-Evident Merkle Compliance Manifest Generator and Verifier Engine
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0031
+- TASK-0031
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0016
+- ADR-0001
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0016
 governing_prds:
-  - PRD-0002
+- PRD-0002
 governing_stories:
-  - US-0056
-  - US-0114
+- US-0056
+- US-0114
 target_bc: security
 ---
 
