@@ -4,7 +4,7 @@ title: Live Autonomous Worker Fleet Telemetry Console, Architectural Review Rada
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0070
+  - TASK-0069
   - TASK-0013
 governing_adrs:
   - ADR-0001

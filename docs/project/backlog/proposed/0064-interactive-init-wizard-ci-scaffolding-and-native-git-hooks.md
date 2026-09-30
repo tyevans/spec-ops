@@ -4,7 +4,7 @@ title: Interactive Guided Initialization Wizard, Multi-Platform CI Scaffolding, 
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0064
+  - TASK-0063
   - TASK-0012
 governing_adrs:
   - ADR-0001
@@ -23,7 +23,7 @@ governing_stories:
 target_bc: scaffold
 ---
 
-# TASK-0065: Interactive Guided Initialization Wizard, Multi-Platform CI Scaffolding, and Zero-Dependency Native Git Hooks
+# TASK-0064: Interactive Guided Initialization Wizard, Multi-Platform CI Scaffolding, and Zero-Dependency Native Git Hooks
 
 ## Summary
 Deliver end-to-end repository onboarding and developer experience scaffolding: author an interactive terminal initialization wizard (`spec-ops init --interactive`) featuring live configuration previews alongside an unattended headless mode (`spec-ops init --headless --profile <p>`), scaffold multi-platform CI pipelines for GitHub Actions and GitLab CI (`spec-ops scaffold ci --platform all`), generate zero-dependency native POSIX git hooks enforcing pre-commit line limits and feature branch backlog isolation (`spec-ops scaffold hooks`), and scaffold Diataxis documentation quadrants for new bounded contexts with embedded living visualizer links (`spec-ops scaffold docs --bc <name>`).

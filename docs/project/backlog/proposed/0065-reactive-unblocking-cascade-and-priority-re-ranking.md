@@ -4,7 +4,7 @@ title: Automated Reactive Unblocking Cascade, JIT Buffer Replenishment, and Dete
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0065
+  - TASK-0064
   - TASK-0007
 governing_adrs:
   - ADR-0001
@@ -21,7 +21,7 @@ governing_stories:
 target_bc: backlog
 ---
 
-# TASK-0066: Automated Reactive Unblocking Cascade, JIT Buffer Replenishment, and Deterministic Priority Re-Ranking
+# TASK-0065: Automated Reactive Unblocking Cascade, JIT Buffer Replenishment, and Deterministic Priority Re-Ranking
 
 ## Summary
 Implement automated reactive backlog unblocking and deterministic multi-criteria priority re-ranking: trigger cascading unblocking upon task completion (`spec-ops queue complete <task-id>`) that automatically moves newly unblocked tasks from `proposed/` to `refined/` while respecting the JIT buffer ceiling (~10 tasks), emit structured unblocking telemetry events for agent dispatchers, implement deterministic topological backlog re-ordering (`spec-ops queue reorder`) using multi-criteria weighted scoring (milestone delivery horizon, downstream blocker count, and architectural risk) while preserving architect manual pin overrides, and enforce an automated Definition of Ready (DoR) gatekeeper (`spec-ops queue refine`) that blocks unrefined tasks lacking Gherkin acceptance criteria.

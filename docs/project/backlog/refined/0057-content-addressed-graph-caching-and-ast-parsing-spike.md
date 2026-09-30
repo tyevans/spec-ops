@@ -1,22 +1,21 @@
 ---
 id: '0057'
-title: 'Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and Resilient AST Parsing'
-status: Proposed
-created: 2026-09-29
+title: 'Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and
+  Resilient AST Parsing'
+status: Refined
 dependencies:
-  - TASK-0004
-  - TASK-0055
+- TASK-0004
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0059
-  - US-0061
+- US-0059
+- US-0061
 target_bc: core
 ---
 

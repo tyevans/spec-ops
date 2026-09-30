@@ -4,7 +4,7 @@ title: Proactive Backlog Health Diagnostics, Dangling Dependency Repair, and Cro
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0066
+  - TASK-0065
 governing_adrs:
   - ADR-0001
   - ADR-0003
@@ -19,7 +19,7 @@ governing_stories:
 target_bc: backlog
 ---
 
-# TASK-0067: Proactive Backlog Health Diagnostics, Dangling Dependency Repair, and Cross-Process Locking
+# TASK-0066: Proactive Backlog Health Diagnostics, Dangling Dependency Repair, and Cross-Process Locking
 
 ## Summary
 Implement proactive backlog health diagnostics and multi-process concurrency safety: deliver a backlog doctor tool (`spec-ops queue doctor [--fix]`) that detects broken dependency references, ghost index entries, and unindexed task files with automated self-healing repair; and implement transactional cross-process file locking (`fcntl.flock` on `.specops/locks/queue.lock`) with two-phase atomic file writes, crash rollback, and stale lock auto-recovery (PID liveness checks) to protect queue operations during parallel multi-agent worker claiming.

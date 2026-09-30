@@ -4,7 +4,7 @@ title: Deterministic Graph Cycle Resolution, Topological Sorting, Reachability P
 status: Proposed
 created: 2026-09-29
 dependencies:
-  - TASK-0060
+  - TASK-0059
 governing_adrs:
   - ADR-0001
   - ADR-0002
@@ -22,7 +22,7 @@ governing_stories:
 target_bc: core
 ---
 
-# TASK-0061: Deterministic Graph Cycle Resolution, Topological Sorting, Reachability Pathfinding, and Orphan Work Item Audit
+# TASK-0060: Deterministic Graph Cycle Resolution, Topological Sorting, Reachability Pathfinding, and Orphan Work Item Audit
 
 ## Summary
 Implement production CLI commands and graph algorithms for deterministic cycle detection (`spec-ops graph cycles [--format json]`), topological backlog execution sorting (`spec-ops graph sort`), terminal reachability pathfinding (`spec-ops graph path --from <src> --to <dst>`), downstream blast-radius analysis (`spec-ops graph blast-radius <entity>`), full bidirectional graph traceability validation (`spec-ops graph audit`), and autonomous backlog bottleneck/deadlock detection. Isolate cyclic dependency traps, detect orphaned tasks or stories lacking parent PRDs, calculate critical-path execution depth, and pinpoint high-fanout dependency choke points.

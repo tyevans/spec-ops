@@ -148,19 +148,22 @@ class ArchitecturalReconciler:
             if full_p.stem == stale_stem:
                 return rel_str
 
-        # 2. Fuzzy match stems or filenames
-        file_keys = list(codebase_files.keys())
-        matches = difflib.get_close_matches(stale_path, file_keys, n=1, cutoff=0.4)
-        if matches:
-            return matches[0]
-
-        # 3. Match without legacy/old prefixes
+        # 2. Match without legacy/old prefixes
         clean_stem = re.sub(r"^(?:legacy_|old_|deprecated_)", "", stale_stem)
         for rel_str, full_p in codebase_files.items():
-            if clean_stem in full_p.stem:
+            if clean_stem == full_p.stem or (len(clean_stem) >= 4 and clean_stem in full_p.stem):
                 return rel_str
 
-        return None
+        # 3. Fuzzy match stems
+        best_match: str | None = None
+        best_ratio = 0.0
+        for rel_str, full_p in codebase_files.items():
+            ratio = difflib.SequenceMatcher(None, stale_stem, full_p.stem).ratio()
+            if ratio >= 0.7 and ratio > best_ratio:
+                best_ratio = ratio
+                best_match = rel_str
+
+        return best_match
 
     def reconcile_task(self, task: Task) -> ReconciliationResult:
         """Audits and reconciles a task against living repository reality."""

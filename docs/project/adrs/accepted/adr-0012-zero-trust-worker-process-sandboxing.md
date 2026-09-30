@@ -1,4 +1,4 @@
-# ADR-0010: Zero-Trust Autonomous Worker Process Sandboxing
+# ADR-0012: Zero-Trust Autonomous Worker Process Sandboxing
 
 ## Status
 Accepted

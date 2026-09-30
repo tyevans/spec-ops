@@ -1,20 +1,19 @@
 ---
 id: '0030'
 title: Cryptographic Commit Verification and Dual-Custody Gate
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0024
-  - TASK-0028
+- TASK-0024
+- TASK-0028
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
+- ADR-0001
+- ADR-0003
+- ADR-0005
 governing_prds:
-  - PRD-0002
+- PRD-0002
 governing_stories:
-  - US-0055
-  - US-0113
+- US-0055
+- US-0113
 target_bc: security
 ---
 

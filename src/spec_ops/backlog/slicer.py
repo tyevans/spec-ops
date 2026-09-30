@@ -51,19 +51,15 @@ class AutonomousTaskSlicer:
         if re.search(r"(?:exceed[s]?|over|>)\s*(?:the\s*)?500\s*(?:-line|lines)", task.body, re.IGNORECASE):
             return 600
 
+        # Check multi-BC indicator
+        if "," in task.target_bc or len(task.target_bc.split()) > 1:
+            return 550
+
         # Count outcomes or requirements
         outcomes = self.extract_task_outcomes(task)
         if len(outcomes) > 4:
             return 120 * len(outcomes)
 
-        # Check multi-BC indicator
-        if "," in task.target_bc or len(task.target_bc.split()) > 1:
-            return 550
-
-        # Fallback to body line estimation
-        body_lines = len(task.body.strip().splitlines())
-        if body_lines > 50:
-            return 450
         return 250
 
     def touches_multiple_bounded_contexts(self, task: Task) -> bool:
@@ -85,8 +81,34 @@ class AutonomousTaskSlicer:
         """Extracts checkable outcomes from governing PRD or task body."""
         outcomes: list[str] = []
 
-        # 1. From governing PRDs
-        if task.governing_prds and self.docs_dir.exists():
+        # 1. From task body specifically under Checkable Outcomes
+        m_sec = re.search(r"##\s*Checkable\s+Outcomes\s*\n(.*?)(?=\n##|\Z)", task.body, re.DOTALL | re.IGNORECASE)
+        if m_sec:
+            matches = re.findall(r"(?:^\s*[-*]|\d+\.)\s+(.+)$", m_sec.group(1), re.MULTILINE)
+            clean_matches = [m.strip() for m in matches if len(m.strip()) > 5]
+            if clean_matches:
+                outcomes.extend(clean_matches)
+
+        # 2. From task body specifically under User Stories & Scenarios Satisfied
+        if not outcomes:
+            m_scen = re.search(r"##\s*User\s+Stories\s*&\s*Scenarios\s+Satisfied\s*\n(.*?)(?=\n##|\Z)", task.body, re.DOTALL | re.IGNORECASE)
+            if m_scen:
+                scenarios = re.findall(r"-\s*\*(?:Scenario|Scenario:)\*?\s*:?\s*(.+)$", m_scen.group(1), re.MULTILINE)
+                if not scenarios:
+                    scenarios = re.findall(r"(?:^\s*[-*]|\d+\.)\s+(.+)$", m_scen.group(1), re.MULTILINE)
+                clean_scen = [s.strip() for s in scenarios if len(s.strip()) > 5 and not s.strip().startswith("**US-")]
+                if clean_scen:
+                    outcomes.extend(clean_scen)
+
+        # 3. Fallback to bullet matches in body
+        if not outcomes:
+            matches = re.findall(r"(?:^\s*[-*]|\d+\.)\s+(.+)$", task.body, re.MULTILINE)
+            clean_matches = [m.strip() for m in matches if len(m.strip()) > 10 and not m.strip().startswith("TASK-")]
+            if clean_matches:
+                outcomes.extend(clean_matches)
+
+        # 4. From governing PRDs (if not found in task body)
+        if not outcomes and task.governing_prds and self.docs_dir.exists():
             for prd_id in task.governing_prds:
                 clean = prd_id.replace("PRD-", "").lstrip("0")
                 target_pat = re.compile(rf"prd-0*{clean}-", re.IGNORECASE)
@@ -98,23 +120,7 @@ class AutonomousTaskSlicer:
                             if prd.outcomes:
                                 outcomes.extend(prd.outcomes)
 
-        # 2. From task body specifically under Checkable Outcomes
-        if not outcomes:
-            m_sec = re.search(r"##\s*Checkable\s+Outcomes\s*\n(.*?)(?=\n##|\Z)", task.body, re.DOTALL | re.IGNORECASE)
-            if m_sec:
-                matches = re.findall(r"(?:^\s*[-*]|\d+\.)\s+(.+)$", m_sec.group(1), re.MULTILINE)
-                clean_matches = [m.strip() for m in matches if len(m.strip()) > 5]
-                if clean_matches:
-                    outcomes.extend(clean_matches)
-
-        # 3. Fallback to bullet matches in body
-        if not outcomes:
-            matches = re.findall(r"(?:^\s*[-*]|\d+\.)\s+(.+)$", task.body, re.MULTILINE)
-            clean_matches = [m.strip() for m in matches if len(m.strip()) > 10 and not m.strip().startswith("TASK-")]
-            if clean_matches:
-                outcomes.extend(clean_matches)
-
-        # 4. Default fallback outcome
+        # 5. Default fallback outcome
         if not outcomes:
             outcomes = [
                 f"Verify core domain logic for {task.title}",

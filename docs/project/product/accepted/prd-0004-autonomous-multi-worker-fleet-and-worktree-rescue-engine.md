@@ -80,6 +80,7 @@ component: worker
 - `US-0091`
 - `US-0092`
 - `US-0093`
+- `US-0115`
 
 ## Implementing Backlog Tasks
 

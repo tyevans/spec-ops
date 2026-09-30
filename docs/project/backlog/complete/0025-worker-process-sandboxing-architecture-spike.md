@@ -19,7 +19,7 @@ target_bc: security
 # TASK-0025: Architectural Spike: Worker Process Sandboxing and Execution Interceptors
 
 ## Summary
-Research, benchmark, and design a zero-trust, unprivileged execution sandbox for autonomous worker sessions across Linux and macOS. Evaluate subprocess command allowlisting, subshell interception, environment isolation, and socket-level network egress restrictions without root privileges or heavyweight VM/Docker dependencies. Author and graduate findings into ADR-0010: Zero-Trust Autonomous Worker Process Sandboxing.
+Research, benchmark, and design a zero-trust, unprivileged execution sandbox for autonomous worker sessions across Linux and macOS. Evaluate subprocess command allowlisting, subshell interception, environment isolation, and socket-level network egress restrictions without root privileges or heavyweight VM/Docker dependencies. Author and graduate findings into ADR-0012: Zero-Trust Autonomous Worker Process Sandboxing.
 
 ## Problem Statement & Context
 Autonomous coding agents executing arbitrary shell commands in git worktrees present severe supply chain and privilege escalation risks. Prompt injection or hallucinations can trick an agent into running destructive commands (`rm -rf /`, `curl`, `wget`, `sudo`, `nc`) or communicating with external networks to exfiltrate private IP. Standard containerization (Docker, Podman) introduces daemon dependencies and latency that degrade fast iterative developer loops. An unprivileged, portable OS-level sandboxing seam must be proven and benchmarked.
@@ -40,6 +40,6 @@ Autonomous coding agents executing arbitrary shell commands in git worktrees pre
 
 ## Definition of Done (Blackbox Frontdoor TDD)
 1. Comparative benchmark completed documenting latency overhead (<5ms) and security guarantees across Linux namespaces/seccomp, macOS sandbox-exec, and Python subshell interceptor shims.
-2. ADR-0010: Zero-Trust Autonomous Worker Process Sandboxing authored and committed to `docs/project/adrs/accepted/adr-0010-zero-trust-worker-process-sandboxing.md` with entry updated in `docs/project/adrs/REGISTRY.md`.
+2. ADR-0012: Zero-Trust Autonomous Worker Process Sandboxing authored and committed to `docs/project/adrs/accepted/adr-0012-zero-trust-worker-process-sandboxing.md` with entry updated in `docs/project/adrs/REGISTRY.md`.
 3. Working prototype demonstrates intercepting prohibited commands (`curl`, `sudo`, `wget`) with exit code 126 and blocking non-loopback network socket attempts without requiring root permissions.
 4. Spike results reviewed and verified via blackbox tests without private mock backdoors (ADR-0003).
