@@ -8,14 +8,37 @@ from ..config.models import SpecOpsConfig
 
 def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Executes the rescue subcommand actions."""
+    is_prune = (getattr(args, "task_id", None) == "prune") or getattr(args, "prune", False)
+    if is_prune:
+        from ..rescue.prune import format_bytes, prune_worktrees
+
+        dry_run = getattr(args, "dry_run", False)
+        candidates, warnings = prune_worktrees(config.root_dir, config.backlog_dir, dry_run=dry_run)
+
+        for w in warnings:
+            print(w)
+
+        if dry_run:
+            print("Candidate Worktrees for Pruning:")
+            print(f"{'Worktree':<26} {'Branch':<20} {'Estimated Space':<18} {'Status'}")
+            print("-" * 75)
+            total_size = sum(c.size_bytes for c in candidates)
+            for c in candidates:
+                rel_wt = f".worktrees/{c.worktree_dir.name}"
+                status_str = c.task_status or "Orphan"
+                size_str = format_bytes(c.size_bytes)
+                print(f"{rel_wt:<26} {c.branch:<20} {size_str:<18} {status_str}")
+            print("-" * 75)
+            print(f"Total estimated reclaimable space: {format_bytes(total_size)}")
+            print("(Dry run mode: no filesystem modifications made)")
+            return 0
+
+        print(f"🧹 Pruned and cleaned up {len(candidates)} worktree(s).")
+        return 0
+
     from ..backlog.rescue import WorktreeRescueManager
 
     mgr = WorktreeRescueManager(config)
-
-    if getattr(args, "prune", False):
-        count = mgr.prune_all_worktrees()
-        print(f"🧹 Pruned and cleaned up {count} worktree(s).")
-        return 0
 
     if args.list or not args.task_id:
         wts = mgr.list_active_worktrees()

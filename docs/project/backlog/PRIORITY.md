@@ -70,7 +70,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0073 (Refined)**: [`0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge`](refined/0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge.md)
 - **TASK-0075 (Refined)**: [`0075-bidirectional-traceability-and-contributor-provenance-engine`](refined/0075-bidirectional-traceability-and-contributor-provenance-engine.md)
 - **TASK-0076 (Refined)**: [`0076-specification-frontmatter-schema-validation-and-migration`](refined/0076-specification-frontmatter-schema-validation-and-migration.md)
-- **TASK-0051 (Refined)**: [`0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning`](refined/0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning.md)
+- **TASK-0051 (Complete)**: [`0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning`](complete/0051-idempotent-worktree-lifecycle-human-sandboxing-and-orphan-pruning.md)
 - **TASK-0087 (Proposed)**: [`0087-terminal-graph-inspection-and-reachability-pathfinding`](proposed/0087-terminal-graph-inspection-and-reachability-pathfinding.md)
 - **TASK-0088 (Proposed)**: [`0088-full-bidirectional-graph-traceability-and-orphan-audit`](proposed/0088-full-bidirectional-graph-traceability-and-orphan-audit.md)
 - **TASK-0089 (Proposed)**: [`0089-autonomous-backlog-bottleneck-and-deadlock-detection`](proposed/0089-autonomous-backlog-bottleneck-and-deadlock-detection.md)

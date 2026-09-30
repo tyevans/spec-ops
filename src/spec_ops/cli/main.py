@@ -299,6 +299,10 @@ def main() -> int:
         from .rescue_handler import handle_rescue_command
         return handle_rescue_command(args, config)
 
+    if args.command == "worktree":
+        from .worktree_handler import handle_worktree_command
+        return handle_worktree_command(args, config)
+
     if args.command == "spike":
         from .spike_handler import handle_spike_command
         return handle_spike_command(args, config)

@@ -1,7 +1,7 @@
 ---
 id: '0051'
 title: Idempotent Worktree Lifecycle Management and Collision Recovery
-status: Refined
+status: Complete
 dependencies:
 - TASK-0018
 - TASK-0044
