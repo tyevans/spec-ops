@@ -1,7 +1,7 @@
 ---
 id: '0052'
 title: Interactive Preserved Worktree Failure Triage and Diagnostic Takeover
-status: Refined
+status: Complete
 dependencies:
 - TASK-0047
 - TASK-0051
@@ -18,8 +18,6 @@ governing_stories:
 - US-0087
 - US-0035
 target_bc: rescue
-claimed_by: worker-3
-branch: feat/0052-interactive-preserved-worktree-failure-t
 ---
 
 # TASK-0052: Interactive Preserved Worktree Failure Triage and Diagnostic Takeover

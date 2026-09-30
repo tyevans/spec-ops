@@ -1,7 +1,7 @@
 ---
 id: '0096'
 title: Core Domain Mutation Testing Invariant and Mutant Kill Score Quality Gate
-status: Proposed
+status: Refined
 dependencies:
   - TASK-0060
 governing_adrs:

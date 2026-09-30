@@ -35,4 +35,25 @@ __all__ = [
     "scan_worktree_candidates",
     "start_human_worktree",
     "finish_human_worktree",
+    "TriageFinding",
+    "FileDiffMetric",
+    "classify_log_snippet",
+    "parse_feedback_diagnostics",
+    "analyze_worktree",
+    "format_triage_table",
+    "get_targeted_recommendation",
+    "calculate_file_diff",
+    "takeover_task",
 ]
+
+from .triage import (
+    FileDiffMetric,
+    TriageFinding,
+    analyze_worktree,
+    calculate_file_diff,
+    classify_log_snippet,
+    format_triage_table,
+    get_targeted_recommendation,
+    parse_feedback_diagnostics,
+    takeover_task,
+)

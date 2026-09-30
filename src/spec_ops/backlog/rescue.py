@@ -170,7 +170,7 @@ class WorktreeRescueManager:
         if diff_res.stdout.strip():
             commit_ok, commit_msg = prepare_guardrailed_commit(
                 info.worktree_dir,
-                commit_msg=f"fix({clean_id.lower()}): human rescue and completion",
+                commit_msg=f"fix({clean_id.lower()}): human rescue and completion\n\nSpecOps-Task: {clean_id}",
                 allows_dependencies=getattr(target_task, "allows_dependencies", False),
             )
             if not commit_ok and "No modifications staged" not in commit_msg:

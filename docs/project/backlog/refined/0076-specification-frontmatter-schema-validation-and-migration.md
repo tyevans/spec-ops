@@ -15,6 +15,8 @@ governing_prds:
 governing_stories:
 - US-0017
 target_bc: core
+claimed_by: worker-3
+branch: feat/0076-specification-frontmatter-schema-validat
 ---
 
 # TASK-0076: Specification Frontmatter Schema Validation and Automated In-Place Migration

@@ -1,6 +1,6 @@
 ---
 id: '0066'
-title: Proactive Backlog Health Diagnostics, Dangling Dependency Repair, and Cross-Process Locking
+title: Proactive Backlog Health Diagnostics and Self-Healing Dependency Repair
 status: Proposed
 created: 2026-09-29
 dependencies:
@@ -15,37 +15,38 @@ governing_prds:
   - PRD-0005
 governing_stories:
   - US-0075
-  - US-0076
 target_bc: backlog
 ---
 
-# TASK-0066: Proactive Backlog Health Diagnostics, Dangling Dependency Repair, and Cross-Process Locking
+# TASK-0066: Proactive Backlog Health Diagnostics and Self-Healing Dependency Repair
 
 ## Summary
-Implement proactive backlog health diagnostics and multi-process concurrency safety: deliver a backlog doctor tool (`spec-ops queue doctor [--fix]`) that detects broken dependency references, ghost index entries, and unindexed task files with automated self-healing repair; and implement transactional cross-process file locking (`fcntl.flock` on `.specops/locks/queue.lock`) with two-phase atomic file writes, crash rollback, and stale lock auto-recovery (PID liveness checks) to protect queue operations during parallel multi-agent worker claiming.
+Implement proactive backlog health diagnostics and automated self-healing repair: deliver a dedicated backlog doctor tool (`spec-ops queue doctor [--fix]`) that detects broken dependency references, ghost index entries, unindexed task files, and broken links across `docs/project/backlog/`, providing automated in-place repair.
 
 ## Problem Statement & Context
-When multiple autonomous workers execute in parallel across isolated worktrees, concurrent claims (`spec-ops queue claim`) or completions (`spec-ops queue complete`) can cause race conditions on `PRIORITY.md` and task frontmatter files. Unprotected concurrent writes risk dirty index states, corrupted files, and double-assigned tasks. Furthermore, deleted or renamed task files often leave dangling dependency pointers in other tasks, causing silent build failures. SpecOps requires a cross-process concurrency lock and a self-healing backlog diagnostic doctor.
+As autonomous agents and human developers create, rename, and complete tasks across dozens of git worktrees, structural drift inevitably creeps into the backlog. Deleted task files leave dangling dependency pointers in remaining tasks, while manually created task files often fail to register in `PRIORITY.md`. SpecOps requires a self-healing backlog diagnostic doctor to automatically discover and resolve these discrepancies.
 
 ## User Stories & Scenarios Satisfied
 - **US-0075: Proactive Backlog Health Diagnostics, Dangling Dependency Auditing, and Self-Healing Repair**
   - *Scenario: Detecting Broken and Dangling Dependency Pointers*
+    - Given task documents referencing dependencies that do not exist on disk
+    - When the architect runs `spec-ops queue doctor`
+    - Then dangling dependency IDs are reported with file line numbers and exit code 1.
   - *Scenario: Detecting Ghost Entries and Unindexed Files in PRIORITY.md*
+    - Given a task file present in `proposed/` but missing from `PRIORITY.md`
+    - When `spec-ops queue doctor` audits the index
+    - Then the discrepancy is flagged as an unindexed task error.
   - *Scenario: Automated Self-Healing Repair*
-- **US-0076: Cross-Process File Locking and Transactional Concurrency Protection for Parallel Workers**
-  - *Scenario: Mutual Exclusion During Concurrent Task Claiming*
-  - *Scenario: Two-Phase Atomic Write and Rollback on Interrupted Index Updates*
-  - *Scenario: Stale Lock Auto-Recovery on Worker Process Crash*
+    - Given detected ghost entries and unindexed task files
+    - When the architect runs `spec-ops queue doctor --fix`
+    - Then `PRIORITY.md` is rebuilt atomically and dangling dependencies are cleaned up.
 
 ## Architectural Invariants & Seams
-- **File Length Limit (<500 lines)**: Backlog doctor in `src/spec_ops/backlog/doctor.py` and transactional lock manager in `src/spec_ops/backlog/lock.py` must stay strictly under 400 lines (ADR-0002).
-- **Hypothesis Invariant Property (ADR-0009)**: Generative property tests using `@given(...)` across concurrent simulated worker threads and processes assert that exactly one worker acquires a contested task claim, zero deadlocks occur under timeout backoff, and corrupted index states automatically trigger transaction rollbacks.
-- **Mutmut Mutation Scope**: Lock acquisition and stale-process detection in `src/spec_ops/backlog/lock.py` and dependency repair logic in `src/spec_ops/backlog/doctor.py` achieve >=80% mutant kill score under `mutmut`.
+- **File Length Limit (<500 lines)**: Backlog doctor implementation in `src/spec_ops/backlog/doctor.py` stays strictly under 400 lines (ADR-0002).
+- **Hypothesis Invariant Property (ADR-0009)**: Generative property tests using `@given(...)` across arbitrary corrupted backlog trees assert that `queue doctor --fix` idempotently restores a valid, zero-error state without data loss.
+- **Mutmut Mutation Scope**: Dependency repair and index reconciliation logic in `src/spec_ops/backlog/doctor.py` achieves >=80% mutant kill score under `mutmut`.
 
 ## Definition of Done (Blackbox Frontdoor TDD)
 1. Executing `spec-ops queue doctor` audits all tasks and `PRIORITY.md`, reporting any dangling dependencies to non-existent tasks, unindexed task files on disk, or ghost entries in `PRIORITY.md`.
 2. Executing `spec-ops queue doctor --fix` repairs missing `PRIORITY.md` references, cleans up ghost entries, and updates broken dependency pointers atomically.
-3. Concurrent invocation of `spec-ops queue claim` across 4 simultaneous processes executes with mutual exclusion; one process claims the top ready task while others receive the subsequent tasks without race conditions.
-4. Process termination during two-phase index writes leaves zero partial writes or corrupted files, restoring the previous index state on next invocation.
-5. Crashed worker processes holding a lock file are detected via dead PID inspection, and the stale lock is reclaimed after a configurable timeout without manual intervention.
-6. All acceptance criteria verified via public frontdoor `pytest-bdd` tests without mock backdoors (ADR-0003, ADR-0006).
+3. All acceptance criteria verified via public frontdoor `pytest-bdd` tests without mock backdoors (ADR-0003, ADR-0006).

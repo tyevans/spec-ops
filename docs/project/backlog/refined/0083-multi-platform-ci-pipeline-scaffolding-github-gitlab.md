@@ -1,7 +1,7 @@
 ---
 id: '0083'
 title: Multi-Platform CI/CD Pipeline Scaffolding Across GitHub Actions and GitLab CI
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0064

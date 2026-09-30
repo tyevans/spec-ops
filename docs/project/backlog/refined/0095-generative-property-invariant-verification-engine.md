@@ -1,7 +1,7 @@
 ---
 id: '0095'
 title: Generative Property-Based Invariant Verification Engine
-status: Proposed
+status: Refined
 dependencies:
   - TASK-0060
 governing_adrs:

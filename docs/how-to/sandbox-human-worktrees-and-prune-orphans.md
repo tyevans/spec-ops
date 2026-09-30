@@ -91,3 +91,24 @@ spec-ops rescue prune
 - **Dirty State Guard**: Any worktree containing uncommitted modifications or untracked files is skipped with a protective warning.
 - **Human Claim Guard**: Worktrees claimed by human developers (`claimed_by: human` or active developer handles) are never pruned automatically.
 - **Git Prune Sync**: Automatically invokes `git worktree prune` to keep git internal metadata clean.
+
+---
+
+## Step 5: Triage and Takeover Preserved Agent Worktrees
+
+When an autonomous worker session exhausts its self-healing retries, its isolated worktree is preserved under `.worktrees/task-<id>`.
+
+1. **Interactive Failure Triage**: Inspect categorized root causes (file length invariants, test suite failures, lockfile drift, git status) and AST diffs:
+   ```bash
+   spec-ops rescue triage TASK-0012
+   ```
+
+2. **Diagnostic Human Takeover**: Transfer task claim from autonomous worker to human developer and provision workspace:
+   ```bash
+   spec-ops rescue takeover TASK-0012
+   ```
+
+3. **Verify and Finalize**: Implement fixes inside `.worktrees/task-0012`, then verify preflight and squash-merge into `main`:
+   ```bash
+   spec-ops rescue TASK-0012 --complete
+   ```

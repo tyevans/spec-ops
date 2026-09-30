@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 from ..config.models import SpecOpsConfig
 
 
@@ -40,7 +41,25 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
     mgr = WorktreeRescueManager(config)
 
-    if args.list or not args.task_id:
+    raw_task_id = getattr(args, "task_id", None)
+    target = getattr(args, "target", None)
+
+    action: str | None = None
+    task_id: str | None = None
+
+    known_actions = {"triage", "takeover", "inspect", "shell"}
+    if raw_task_id in known_actions:
+        action = raw_task_id
+        task_id = target
+    elif target in known_actions:
+        action = target
+        task_id = raw_task_id
+    else:
+        task_id = raw_task_id
+        if task_id and not args.complete and not args.discard and not args.list:
+            action = "inspect"
+
+    if args.list or not task_id:
         wts = mgr.list_active_worktrees()
         print("=== Active / Stalled Worktrees (.worktrees/) ===")
         if not wts:
@@ -54,26 +73,88 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         return 0
 
     if args.complete:
-        ok, msg = mgr.complete_rescue(args.task_id)
-        print(f"=== Worktree Rescue: {args.task_id} ===")
+        ok, msg = mgr.complete_rescue(task_id)
+        print(f"=== Worktree Rescue: {task_id} ===")
         print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
         print(msg)
         return 0 if ok else 1
 
     if args.discard:
-        ok, msg = mgr.discard_worktree(args.task_id)
+        ok, msg = mgr.discard_worktree(task_id)
         print(msg)
         return 0 if ok else 1
 
-    info = mgr.inspect_task(args.task_id)
+    if action == "takeover":
+        from ..rescue.triage import takeover_task
+
+        ok, msg = takeover_task(config, task_id)
+        print(msg)
+        return 0 if ok else 1
+
+    if action == "shell":
+        info = mgr.inspect_task(task_id)
+        if not info or not info.worktree_dir.exists():
+            print(f"❌ No worktree found for {task_id}.")
+            return 1
+        print(f"Entering shell for {info.task_id} at {info.worktree_dir}")
+        print(f"Run 'spec-ops rescue {info.task_id} --complete' after completing your fixes.")
+        return 0
+
+    if action == "triage":
+        from ..rescue.triage import (
+            analyze_worktree,
+            calculate_file_diff,
+            format_triage_table,
+            get_targeted_recommendation,
+        )
+
+        info = mgr.inspect_task(task_id)
+        if not info or not info.worktree_dir.exists():
+            print(f"❌ No worktree found for {task_id}.")
+            return 1
+
+        findings = analyze_worktree(info.worktree_dir, info.failure_feedback)
+        print(f"=== Preserved Worktree Failure Triage: {info.task_id} ===")
+        print("Categorized Diagnostic Summary:")
+        print(format_triage_table(findings))
+        print()
+        print(get_targeted_recommendation(findings, info.task_id))
+        print("Interactive triage menu with options: [d]iff, [p]atch, [s]hell, [r]eset, [c]omplete, [q]uit")
+
+        triage_action = getattr(args, "action", None)
+        target_file = getattr(args, "file", None)
+        if triage_action == "diff" or target_file:
+            diff_file = target_file or (findings[0].file_path if findings and findings[0].file_path else "")
+            if diff_file:
+                metrics = calculate_file_diff(info.worktree_dir, diff_file)
+                delta_str = f"+{metrics.net_delta} lines" if metrics.net_delta >= 0 else f"{metrics.net_delta} lines"
+                hr = metrics.headroom
+                hr_desc = f"{hr} lines headroom, VIOLATION" if hr < 0 else (f"+{hr} lines headroom, WARNING" if hr <= 100 else f"+{hr} lines headroom, COMPLIANT")
+                print(f"\n--- File Diff: {metrics.file_path} ---")
+                print(f"Syntax-highlighted diff comparing the worktree file against HEAD:")
+                if metrics.diff_text:
+                    print(metrics.diff_text)
+                print(f"Net line delta ({delta_str}) and headroom to the 500-line invariant limit ({hr_desc}).")
+                print(f"AST Structural Diff:\n{metrics.ast_diff_summary}")
+        return 0
+
+    info = mgr.inspect_task(task_id)
     if not info:
-        print(f"❌ No worktree found for {args.task_id}.")
+        print(f"❌ No worktree found for {task_id}.")
         return 1
 
+    last_commit_res = subprocess.run(["git", "log", "-1", "--oneline"], cwd=info.worktree_dir, capture_output=True, text=True)
+    last_commit = last_commit_res.stdout.strip() or "No commits yet"
+
+    diff_stat_res = subprocess.run(["git", "diff", "--stat", "HEAD"], cwd=info.worktree_dir, capture_output=True, text=True)
+    diff_stat = diff_stat_res.stdout.strip() or "(No file diffs against HEAD)"
+
     print(f"=== Stalled Worktree: {info.task_id} ===")
-    print(f"Directory: {info.worktree_dir}")
-    print(f"Branch:    {info.branch}")
-    print(f"Dirty:     {info.is_dirty}")
+    print(f"Directory:   {info.worktree_dir}")
+    print(f"Branch:      {info.branch}")
+    print(f"Dirty:       {info.is_dirty}")
+    print(f"Last commit: {last_commit}")
+    print(f"\nFile diffs:\n{diff_stat}")
     if info.failure_feedback:
         print(f"\nLast Diagnostics:\n{info.failure_feedback}\n")
     print("👉 To finish and integrate: run 'spec-ops rescue <task-id> --complete'")
