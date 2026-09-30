@@ -16,9 +16,9 @@ if SRC_DIR not in current_pythonpath.split(os.pathsep):
         f"{SRC_DIR}{os.pathsep}{current_pythonpath}" if current_pythonpath else SRC_DIR
     )
 
-# Isolate git commands in tests from user global ~/.gitconfig (e.g. commit.gpgsign = true)
-if "GIT_CONFIG_GLOBAL" not in os.environ:
-    os.environ["GIT_CONFIG_GLOBAL"] = "/dev/null"
+# Ensure hermetic git environment for test isolation (ignore host commit.gpgsign, etc.)
+os.environ.setdefault("GIT_CONFIG_GLOBAL", "/dev/null")
+os.environ.setdefault("GIT_CONFIG_NOSYSTEM", "1")
 
 try:
     from hypothesis import HealthCheck, settings

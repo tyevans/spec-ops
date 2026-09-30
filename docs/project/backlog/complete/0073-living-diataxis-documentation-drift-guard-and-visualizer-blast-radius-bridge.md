@@ -1,7 +1,7 @@
 ---
 id: '0073'
 title: Living Diataxis Documentation Drift Guard and Visualizer Blast Radius CLI Bridge
-status: Refined
+status: Complete
 dependencies:
 - TASK-0015
 - TASK-0023
@@ -18,8 +18,6 @@ governing_stories:
 - US-0040
 - US-0041
 target_bc: visualizer
-claimed_by: worker-3
-branch: feat/0073-living-diataxis-documentation-drift-guar
 ---
 
 # TASK-0073: Living Diataxis Documentation Drift Guard and Visualizer Blast Radius CLI Bridge

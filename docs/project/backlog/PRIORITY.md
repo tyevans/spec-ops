@@ -78,7 +78,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0052 (Refined)**: [`0052-preserved-worktree-failure-triage-and-handover-brief-generator`](refined/0052-preserved-worktree-failure-triage-and-handover-brief-generator.md)
 - **TASK-0065 (Refined)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](refined/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
 - **TASK-0042 (Refined)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](refined/0042-executive-roadmap-exporter-and-release-notes-generator.md)
-- **TASK-0073 (Refined)**: [`0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge`](refined/0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge.md)
+- **TASK-0073 (Complete)**: [`0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge`](complete/0073-living-diataxis-documentation-drift-guard-and-visualizer-blast-radius-bridge.md)
 - **TASK-0075 (Refined)**: [`0075-bidirectional-traceability-and-contributor-provenance-engine`](refined/0075-bidirectional-traceability-and-contributor-provenance-engine.md)
 - **TASK-0076 (Refined)**: [`0076-specification-frontmatter-schema-validation-and-migration`](refined/0076-specification-frontmatter-schema-validation-and-migration.md)
 - **TASK-0084 (Refined)**: [`0084-zero-dependency-native-git-hook-scaffolding`](refined/0084-zero-dependency-native-git-hook-scaffolding.md)

@@ -55,7 +55,12 @@ def main() -> int:
         return handle_init_command(args)
 
     if args.command == "docs":
-        if args.docs_action == "audit":
+        if args.docs_action == "check":
+            from ..docs.checker import run_docs_check
+
+            docs_dir = Path(args.dir).resolve() if getattr(args, "dir", None) else config.docs_dir
+            return run_docs_check(docs_dir, parser=parser)
+        elif args.docs_action == "audit":
             from ..docs.auditor import DocsAuditor
             docs_dir = Path(args.dir).resolve() if getattr(args, "dir", None) else config.docs_dir
             auditor = DocsAuditor(docs_dir, parser=parser)
@@ -257,20 +262,9 @@ def main() -> int:
         return 0
 
     if args.command == "visualizer":
-        from ..visualizer.bundle import export_bundle
+        from ..visualizer.cli_bridge import handle_visualizer_command
 
-        if getattr(args, "viz_action", None) == "export":
-            target = getattr(args, "out_pos", None) or getattr(args, "output", "dist/index.html")
-            out_file = export_bundle(config, output_path=target)
-            print(f"✅ Exported standalone visualizer bundle to {out_file}")
-            return 0
-        elif args.build:
-            out_file = export_bundle(config, output_path=args.build)
-            print(f"✅ Exported standalone visualizer bundle to {out_file}")
-            return 0
-        else:
-            serve_visualizer(config, port=args.port)
-            return 0
+        return handle_visualizer_command(args, config)
 
     if args.command == "worker":
         from .cycle_handler import handle_worker_command

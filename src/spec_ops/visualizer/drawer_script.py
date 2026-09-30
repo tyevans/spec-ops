@@ -64,11 +64,26 @@ DRAWER_JS = r"""
       <div class="card-box">
         <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
           <span style="padding:3px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; border:1px solid; background:${statusBg}">${t.status}</span>
-          ${t.target_bc ? `<span class="entity-pill pill-bc" onclick="openDrawer('${t.target_bc}')">BC: ${t.target_bc}</span>` : ""}
+          ${t.target_bc ? `<button class="entity-pill pill-bc" onclick="window.filterByBc('${t.target_bc}')">BC: ${t.target_bc}</button>` : ""}
           ${t.target_release ? `<span class="entity-pill pill-prd">Release ${t.target_release}</span>` : ""}
           ${t.priority_rank < 900000 ? `<span class="entity-pill" style="color:#94a3b8">Rank #${t.priority_rank}</span>` : ""}
         </div>
       </div>
+      ${t.target_bc ? `
+      <div class="card-box" id="task-bc-field">
+        <div class="card-box-title" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Target Bounded Context</span>
+          <button class="entity-pill pill-bc" onclick="window.filterByBc('${t.target_bc}')" title="Filter graph by ${t.target_bc}">BC: ${t.target_bc}</button>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Related tasks in ${t.target_bc}:</div>
+        <div class="pills-container" id="related-bc-tasks">
+          ${(function() {
+            const rel = (data.tasks || []).filter(o => (o.target_bc === t.target_bc || o.bc === t.target_bc) && o.id !== t.id);
+            if (!rel.length) return '<span style="color:var(--text-muted); font-size:0.75rem;">None</span>';
+            return rel.map(r => `<button class="entity-pill pill-task" onclick="openDrawer('${r.id}')">${r.id}</button>`).join("");
+          })()}
+        </div>
+      </div>` : ""}
       <div class="card-box">
         <div class="card-box-title"><span>Git Commits & Pull Requests</span><span>${commits.length} commits / ${prs.length} PRs</span></div>
         ${prs.length > 0 ? `<div class="pills-container"><span style="font-size:0.75rem; color:var(--text-muted); align-self:center;">Pull Requests:</span>${prs.map(p => `<span class="entity-pill pill-story">🔀 ${p}</span>`).join("")}</div>` : ""}

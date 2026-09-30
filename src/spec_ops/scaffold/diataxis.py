@@ -104,7 +104,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
 | `spec-ops prd studio` | `[--open] [--port PORT] [--host HOST]` | Run interactive Web PRD Studio and Low-Code Story Assistant |
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
-| `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
+| `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT] [--entity ENTITY]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review]` | Execute backlog task in isolated worktree with concurrent review |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
@@ -139,6 +139,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops review` | `[TASK_ID] [--identity IDENTITY] [--provenance]` | Generate structured architectural review brief or cryptographically sign review |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL] [--include-visualizer]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
+| `spec-ops docs check` | `[--dir DIR]` | Living Diataxis documentation drift guard auditing CLI commands against docs |
 """
 
 DEFAULT_EXPLANATION_PMAC = """# Project Management as Code (PMaC)
