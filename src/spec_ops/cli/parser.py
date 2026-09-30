@@ -68,7 +68,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_health.add_argument("--security", action="store_true", help="Check security profile policies and guardrails")
 
     # stats
-    subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
+    p_stats = subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
+    p_stats.add_argument("--cache", action="store_true", help="Accelerate graph compilation with content-addressed cache")
+
+    # parse
+    p_parse = subparsers.add_parser("parse", help="Parse specification file with resilient AST diagnostics")
+    p_parse.add_argument("path", help="Path to markdown specification file to parse")
 
     # prd
     p_prd = subparsers.add_parser("prd", help="PRD management commands")

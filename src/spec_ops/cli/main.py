@@ -152,14 +152,12 @@ def main() -> int:
         return 0 if report.is_healthy else 1
 
     if args.command == "stats":
-        p_data = SpecOpsParser(config.project_docs_dir).parse_all()
-        process_project_graph(p_data, target_buffer=config.architecture.buffer_target)
-        m = p_data.health_metrics
-        print(f"=== SpecOps Project Statistics ({config.project.name}) ===")
-        print(f"Total Tasks: {m['total_tasks']} ({m['complete_tasks']} Complete, {m['refined_tasks']} Refined, {m['proposed_tasks']} Proposed)")
-        print(f"User Stories: {m['total_stories']} | PRDs: {m['total_prds']} | ADRs: {m['total_adrs']} | Personas: {m['total_personas']}")
-        print(f"Traceability Edges: {m['total_edges']} | Ready Buffer Health: {m['ready_buffer_health']}")
-        return 0
+        from .parse_handler import handle_stats_command
+        return handle_stats_command(args, config)
+
+    if args.command == "parse":
+        from .parse_handler import handle_parse_command
+        return handle_parse_command(args, config)
 
     if args.command == "prd":
         from .prd_handler import handle_prd_command

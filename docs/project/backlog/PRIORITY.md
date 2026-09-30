@@ -35,7 +35,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0050 (Complete)**: [`0050-concurrent-multi-worker-batch-orchestration-and-merge-locking`](complete/0050-concurrent-multi-worker-batch-orchestration-and-merge-locking.md)
 - **TASK-0029 (Complete)**: [`0029-dependency-vulnerability-and-license-policy-gating`](complete/0029-dependency-vulnerability-and-license-policy-gating.md)
 - **TASK-0030 (Complete)**: [`0030-cryptographic-commit-verification-and-dual-custody-gate`](complete/0030-cryptographic-commit-verification-and-dual-custody-gate.md)
-- **TASK-0057 (Refined)**: [`0057-content-addressed-graph-caching-and-ast-parsing-spike`](refined/0057-content-addressed-graph-caching-and-ast-parsing-spike.md)
+- **TASK-0057 (Complete)**: [`0057-content-addressed-graph-caching-and-ast-parsing-spike`](complete/0057-content-addressed-graph-caching-and-ast-parsing-spike.md)
 - **TASK-0031 (Proposed)**: [`0031-merkle-compliance-manifest-architecture-spike`](proposed/0031-merkle-compliance-manifest-architecture-spike.md)
 - **TASK-0032 (Proposed)**: [`0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier`](proposed/0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier.md)
 - **TASK-0033 (Proposed)**: [`0033-living-security-posture-and-compliance-radar-dashboard`](proposed/0033-living-security-posture-and-compliance-radar-dashboard.md)

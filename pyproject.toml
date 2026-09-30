@@ -54,6 +54,7 @@ only_mutate = [
     "src/spec_ops/security/dual_custody.py*",
     "src/spec_ops/worker/claimer.py*",
     "src/spec_ops/worker/guardrails.py*",
+    "src/spec_ops/core/spikes/cache_spike.py*",
 ]
 pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
@@ -86,6 +87,7 @@ pytest_add_cli_args_test_selection = [
     "tests/test_worker_claimer.py",
     "tests/test_worker_guardrails.py",
     "tests/test_bdd_claim_and_guardrails.py",
+    "tests/test_cache_spike.py",
 ]
 runner = "pytest"
 

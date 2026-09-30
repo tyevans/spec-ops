@@ -2,7 +2,7 @@
 id: '0057'
 title: 'Architectural Spike: Content-Addressed SHA-256 Relational Graph Caching and
   Resilient AST Parsing'
-status: Refined
+status: Complete
 dependencies:
 - TASK-0004
 governing_adrs:

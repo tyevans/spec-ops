@@ -72,7 +72,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops health` | `[--security]` | Verify file length limits and PRIORITY sync |
-| `spec-ops stats` | None | Report project statistics and entity counts |
+| `spec-ops stats` | `[--cache]` | Report project statistics and entity counts |
+| `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
 | `spec-ops prd new` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--friction FRICTION] [--good GOOD] [--anti-goals ANTI_GOALS] [--outcomes OUTCOMES] [--non-interactive]` | Interactively scaffold a new PRD specification in idea stage |
 | `spec-ops prd lint` | `[PATH]` | Lint PRD markdown files for mandatory sections and falsifiable outcomes |
