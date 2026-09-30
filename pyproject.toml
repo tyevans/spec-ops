@@ -48,6 +48,8 @@ only_mutate = [
     "src/spec_ops/prd/studio.py*",
     "src/spec_ops/prd/step_assistant.py*",
     "src/spec_ops/spike/graduate.py*",
+    "src/spec_ops/security/licenses/policy.py*",
+    "src/spec_ops/security/waivers.py*",
 ]
 pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
@@ -71,6 +73,9 @@ pytest_add_cli_args_test_selection = [
     "tests/test_prd_studio_properties.py",
     "tests/test_spike_unit.py",
     "tests/test_spike_graduate.py",
+    "tests/test_dependency_audit.py",
+    "tests/test_security_waivers_properties.py",
+    "tests/test_bdd_us0057_us0112.py",
 ]
 runner = "pytest"
 

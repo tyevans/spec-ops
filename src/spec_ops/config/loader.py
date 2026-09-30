@@ -15,6 +15,7 @@ from .models import (
     ArchitectureSettings,
     ComponentConfig,
     ExecutionSettings,
+    LicenseSettings,
     ProjectSettings,
     QualitySettings,
     SandboxSettings,
@@ -139,8 +140,20 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
 
     # Parse security
     sec_data = data.get("security")
+    top_allowed = data.get("allowed_licenses")
     security = None
     if sec_data is not None and isinstance(sec_data, dict):
+        lic_data = sec_data.get("licenses", {})
+        if not isinstance(lic_data, dict):
+            lic_data = {}
+        allowed = list(lic_data.get("allowed", []))
+        if not allowed and "allowed_licenses" in sec_data:
+            allowed = list(sec_data.get("allowed_licenses", []))
+        if not allowed and top_allowed:
+            allowed = list(top_allowed)
+        profile = str(lic_data.get("profile", "permissive"))
+        license_settings = LicenseSettings(allowed=allowed, profile=profile)
+
         security = SecuritySettings(
             secret_scanning=sec_data.get("secret_scanning", True),
             lockfile_immutability=sec_data.get("lockfile_immutability", True),
@@ -149,6 +162,14 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
             allowed_commands=list(sec_data.get("allowed_commands", ["pytest", "git", "uv"])),
             reporting_contact=sec_data.get("reporting_contact", "security@example.com"),
             pgp_fingerprint=sec_data.get("pgp_fingerprint", "ABCD 1234 EF56 7890 ABCD 1234 EF56 7890 SPEC OPS1"),
+            licenses=license_settings,
+            allowed_licenses=allowed,
+        )
+    elif top_allowed:
+        license_settings = LicenseSettings(allowed=list(top_allowed), profile="permissive")
+        security = SecuritySettings(
+            licenses=license_settings,
+            allowed_licenses=list(top_allowed),
         )
 
     return SpecOpsConfig(

@@ -42,6 +42,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_audit.add_argument("--dir", help="Documentation directory (default: docs/)")
     p_audit.add_argument("--strict", action="store_true", help="Fail if any warnings or drift are detected")
 
+    # audit
+    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies and security policies")
+    audit_subs = p_audit_cmd.add_subparsers(dest="audit_action", help="Audit action")
+    p_audit_deps = audit_subs.add_parser("dependencies", help="Scan dependencies for CVEs and license allowlist compliance")
+    p_audit_deps.add_argument("--path", default=".", help="Directory containing dependencies (default: current directory)")
+    p_audit_deps.add_argument("--offline", action="store_true", help="Run in air-gapped/offline mode with local cache")
+
     # profiles
     p_prof = subparsers.add_parser("profiles", aliases=["profile"], help="Inspect and list architectural profiles and baseline ADRs")
     prof_subs = p_prof.add_subparsers(dest="profile_action", help="Profile action")

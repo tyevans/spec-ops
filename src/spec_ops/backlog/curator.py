@@ -57,8 +57,9 @@ class BacklogCurator:
                 )
 
                 if deps_satisfied:
-                    self.queue.refine_task(task)
-                    refined_ids.append(task.canonical_id)
+                    ok, _ = self.queue.refine_task_with_gate(task, repo_root=self.config.root_dir)
+                    if ok:
+                        refined_ids.append(task.canonical_id)
 
         msg = (
             f"Refined {len(refined_ids)} task(s). Ready buffer now at "

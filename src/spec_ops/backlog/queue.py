@@ -239,7 +239,29 @@ class BacklogQueue:
                 v_ok, v_errors = verify_lockfile(target_dir, run_uv=True)
                 if not v_ok:
                     return False, f"Integration gate failed: Cryptographic lockfile verification failed: {'; '.join(v_errors)}"
+                from ..security.audit import run_dependency_audit
+                audit_rep = run_dependency_audit(target_dir)
+                if not audit_rep.ok:
+                    err_msg = "; ".join(audit_rep.errors)
+                    return False, f"Integration gate failed: Dependency audit failed: {err_msg}"
 
             self.complete_task(task)
             return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
+
+    def refine_task_with_gate(
+        self,
+        task: Task,
+        repo_root: Path | None = None,
+    ) -> tuple[bool, str]:
+        """Gates task transition from proposed/ to refined/ by verifying license policy and CVEs."""
+        from ..security.audit import run_dependency_audit
+
+        root = (repo_root or self.backlog_dir.parent.parent).resolve()
+        report = run_dependency_audit(root)
+        if not report.ok:
+            err_details = "; ".join(report.errors) if report.errors else "vulnerability or license policy violation"
+            return False, f"Refinement gate failed: Dependency audit failed: {err_details}"
+
+        self.refine_task(task)
+        return True, f"Task {task.canonical_id} passed refinement gate and transitioned to Refined."
 

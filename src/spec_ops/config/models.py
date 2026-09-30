@@ -71,6 +71,12 @@ class ExecutionSettings:
 
 
 @dataclass
+class LicenseSettings:
+    allowed: list[str] = field(default_factory=list)
+    profile: str = "permissive"
+
+
+@dataclass
 class SecuritySettings:
     secret_scanning: bool = True
     lockfile_immutability: bool = True
@@ -79,6 +85,8 @@ class SecuritySettings:
     allowed_commands: list[str] = field(default_factory=lambda: ["pytest", "git", "uv"])
     reporting_contact: str = "security@example.com"
     pgp_fingerprint: str = "ABCD 1234 EF56 7890 ABCD 1234 EF56 7890 SPEC OPS1"
+    licenses: LicenseSettings = field(default_factory=LicenseSettings)
+    allowed_licenses: list[str] = field(default_factory=list)
 
 
 @dataclass
