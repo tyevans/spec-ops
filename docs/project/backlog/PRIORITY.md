@@ -46,7 +46,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0040 (Complete)**: [`0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike`](complete/0040-tamper-evident-uat-receipt-and-release-signing-architecture-spike.md)
 - **TASK-0058 (Complete)**: [`0058-content-addressed-graph-caching-and-ast-parsing`](complete/0058-content-addressed-graph-caching-and-ast-parsing.md)
 - **TASK-0045 (Complete)**: [`0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation`](complete/0045-pluggable-agent-runners-inspection-json-and-dry-run-simulation.md)
-- **TASK-0036 (Refined)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](refined/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
+- **TASK-0036 (Complete)**: [`0036-continuous-outcome-coverage-audit-and-traceability-matrix`](complete/0036-continuous-outcome-coverage-audit-and-traceability-matrix.md)
 - **TASK-0039 (Complete)**: [`0039-interactive-web-prd-studio-and-low-code-gherkin-assistant`](complete/0039-interactive-web-prd-studio-and-low-code-gherkin-assistant.md)
 - **TASK-0062 (Complete)**: [`0062-brownfield-codebase-adoption-and-ast-seam-extraction`](complete/0062-brownfield-codebase-adoption-and-ast-seam-extraction.md)
 - **TASK-0082 (Complete)**: [`0082-resilient-worktree-profile-synchronization-and-rescue-guardrails`](complete/0082-resilient-worktree-profile-synchronization-and-rescue-guardrails.md)

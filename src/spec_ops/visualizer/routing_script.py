@@ -15,7 +15,8 @@ ROUTING_JS = r"""
     let tab = (params.get("tab") || "graph").toLowerCase();
     if (!validTabs.includes(tab)) tab = "graph";
 
-    const q = params.get("q") || params.get("query") || "";
+    const filter = params.get("filter") || "";
+    const q = params.get("q") || params.get("query") || filter;
 
     const rawStatus = (params.get("status") || "all").toLowerCase();
     let status = "all";

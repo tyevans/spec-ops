@@ -75,7 +75,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
 | `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
-| `spec-ops stats` | `[--cache]` | Report project statistics and entity counts |
+| `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
@@ -83,7 +83,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd lint` | `[PATH]` | Lint PRD markdown files for mandatory sections and falsifiable outcomes |
 | `spec-ops prd promote` | `<PRD_ID> --stage STAGE` | Advance PRD through lifecycle stage gates |
 | `spec-ops prd ship` | `<PRD_ID>` | Transition accepted PRD to shipped upon backlog completion |
-| `spec-ops prd audit` | None | Audit PRD lifecycle statuses |
+| `spec-ops prd audit` | `[PRD_ID] [--deep]` | Audit PRD lifecycle statuses |
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
 | `spec-ops prd studio` | `[--open] [--port PORT] [--host HOST]` | Run interactive Web PRD Studio and Low-Code Story Assistant |
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |

@@ -99,6 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
     # stats
     p_stats = subparsers.add_parser("stats", help="Inspect entity counts, graph metrics, and buffer state")
     p_stats.add_argument("--cache", action="store_true", help="Accelerate graph compilation with content-addressed cache")
+    p_stats.add_argument("--persona-coverage", action="store_true", help="Audit task and story distribution across customer personas")
 
     # parse
     p_parse = subparsers.add_parser("parse", help="Parse specification file with resilient AST diagnostics")
@@ -143,7 +144,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_ship = prd_subs.add_parser("ship", help="Archive accepted PRD to shipped upon backlog completion")
     p_ship.add_argument("prd_id", help="PRD canonical ID (e.g. PRD-0001)")
 
-    prd_subs.add_parser("audit", help="Audit PRD decomposition state and buffer readiness")
+    p_audit_prd = prd_subs.add_parser("audit", help="Audit PRD decomposition state and buffer readiness")
+    p_audit_prd.add_argument("prd_id", nargs="?", default=None, help="PRD canonical identifier (e.g. PRD-0001)")
+    p_audit_prd.add_argument("--deep", action="store_true", help="Perform continuous deep outcome coverage audit")
 
     p_decompose = prd_subs.add_parser("decompose", help="Decompose a PRD into vertical slices and stories")
     p_decompose.add_argument("prd_id", help="PRD canonical identifier (e.g. PRD-0001 or 0001)")

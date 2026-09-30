@@ -1,7 +1,7 @@
 ---
 id: '0001'
 title: SpecOps Autonomous Project Management Engine
-status: Accepted
+status: Shipped
 created: 2026-09-29
 target_persona: Alex
 component: core

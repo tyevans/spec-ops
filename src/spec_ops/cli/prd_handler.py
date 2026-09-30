@@ -91,6 +91,10 @@ def handle_prd_command(
         return 0
 
     if action == "audit":
+        if getattr(args, "deep", False):
+            from ..prd.audit import run_deep_audit
+            return run_deep_audit(config, prd_id=getattr(args, "prd_id", None))
+
         mgr = PRDManager(config)
         res = mgr.audit()
         print("=== PRD Audit ===")

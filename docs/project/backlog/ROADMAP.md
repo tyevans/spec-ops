@@ -22,3 +22,7 @@
 - Multi-agent platform adapters (Claude, Cursor, Antigravity) (`TASK-0014`).
 - Visualizer tab and filter URL state synchronization (`TASK-0022`).
 - Entity permalinks, canvas focal targeting, and shareable URL actions (`TASK-0023`).
+
+- Milestone completion date: 2026-09-29 (Horizon closed for PRD-0001 — SpecOps Autonomous Project Management Engine).
+
+- Milestone completion date: 2026-09-29 (Horizon closed for PRD-0002 — Enterprise Security, Supply-Chain & Compliance Engine).
