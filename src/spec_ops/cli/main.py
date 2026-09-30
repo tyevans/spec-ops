@@ -366,6 +366,10 @@ def main() -> int:
         from .test_handler import handle_test_command
         return handle_test_command(args, config, parser)
 
+    if args.command == "schema":
+        from .schema_handler import handle_schema_command
+        return handle_schema_command(args, config)
+
     return 0
 
 

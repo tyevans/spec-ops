@@ -11,6 +11,7 @@ from .parser_subcommands import (
     register_prd_subparsers,
     register_profile_subparsers,
     register_queue_subparsers,
+    register_schema_subparsers,
     register_spike_subparsers,
     register_test_subparsers,
 )
@@ -301,5 +302,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     # test
     register_test_subparsers(subparsers)
+
+    # schema
+    register_schema_subparsers(subparsers)
 
     return parser

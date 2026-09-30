@@ -145,6 +145,9 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops docs check` | `[--dir DIR]` | Living Diataxis documentation drift guard auditing CLI commands against docs |
 | `spec-ops test audit-anti-mock` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Audit test ASTs for prohibited mock backdoors and verify ADR-0003 frontdoor compliance |
 | `spec-ops test verify-frontdoors` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Verify blackbox frontdoors, audit anti-mock AST violations, and enforce mutation score invariants |
+| `spec-ops schema check` | `[PATH] [--path OPT_PATH]` | Audit specification documents against schema v2.0 Pydantic models with compiler-grade diagnostic pointers |
+| `spec-ops schema validate` | `[PATH] [--path OPT_PATH]` | Alias for schema check auditing specification frontmatter against active Pydantic models |
+| `spec-ops schema migrate` | `[PATH] [--path OPT_PATH] [--dry-run] [--in-place]` | Safely migrate legacy specification frontmatter fields to schema v2.0 while preserving Markdown body byte-for-byte |
 """
 
 DEFAULT_EXPLANATION_PMAC = """# Project Management as Code (PMaC)

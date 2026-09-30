@@ -82,7 +82,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0096 (Refined)**: [`0096-core-domain-mutation-testing-quality-gate`](refined/0096-core-domain-mutation-testing-quality-gate.md)
 - **TASK-0086 (Refined)**: [`0086-real-time-graph-event-bus-and-workspace-watcher`](refined/0086-real-time-graph-event-bus-and-workspace-watcher.md)
 - **TASK-0065 (Refined)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](refined/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
-- **TASK-0076 (Refined)**: [`0076-specification-frontmatter-schema-validation-and-migration`](refined/0076-specification-frontmatter-schema-validation-and-migration.md)
+- **TASK-0076 (Complete)**: [`0076-specification-frontmatter-schema-validation-and-migration`](complete/0076-specification-frontmatter-schema-validation-and-migration.md)
 - **TASK-0042 (Refined)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](refined/0042-executive-roadmap-exporter-and-release-notes-generator.md)
 - **TASK-0084 (Refined)**: [`0084-zero-dependency-native-git-hook-scaffolding`](refined/0084-zero-dependency-native-git-hook-scaffolding.md)
 - **TASK-0085 (Refined)**: [`0085-bounded-context-diataxis-documentation-scaffolding`](refined/0085-bounded-context-diataxis-documentation-scaffolding.md)

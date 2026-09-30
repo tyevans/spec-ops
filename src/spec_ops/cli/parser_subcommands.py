@@ -250,3 +250,21 @@ def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:
         p_sub.add_argument("--strict-mutation", action="store_true", help="Enforce >=80%% Mutmut mutation score invariant")
         p_sub.add_argument("--threshold", type=float, default=80.0, help="Mutation kill score threshold percentage (default: 80.0)")
         p_sub.add_argument("--json", action="store_true", help="Output audit results as structured JSON")
+
+
+def register_schema_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers specification schema validation and migration commands."""
+    p_schema = subparsers.add_parser("schema", help="Specification frontmatter schema validation and automated in-place migration")
+    schema_subs = p_schema.add_subparsers(dest="schema_action", help="Schema action")
+
+    for name in ("check", "validate"):
+        p_chk = schema_subs.add_parser(name, help="Audit specification frontmatter against active Pydantic models")
+        p_chk.add_argument("path", nargs="?", default=None, help="Target file or directory to audit (default: docs/project/)")
+        p_chk.add_argument("--path", dest="opt_path", default=None, help="Target file or directory to audit")
+
+    p_mig = schema_subs.add_parser("migrate", help="Safely migrate specification frontmatter to current schema")
+    p_mig.add_argument("path", nargs="?", default=None, help="Target file or directory to migrate (default: docs/project/)")
+    p_mig.add_argument("--path", dest="opt_path", default=None, help="Target file or directory to migrate")
+    p_mig.add_argument("--dry-run", action="store_true", default=False, help="Display unified diff of projected transformations without modifying disk")
+    p_mig.add_argument("--in-place", action="store_true", default=False, help="Rewrite outdated frontmatter in-place preserving Markdown body byte-for-byte")
+
