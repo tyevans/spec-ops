@@ -7,7 +7,12 @@ import subprocess
 from pathlib import Path
 
 
-def create_worktree(repo_root: Path, branch: str, worktree_dir: Path) -> None:
+def create_worktree(
+    repo_root: Path,
+    branch: str,
+    worktree_dir: Path,
+    base_ref: str | None = None,
+) -> None:
     """Robustly creates or resets an isolated git worktree branch."""
     # 1. Force remove worktree from git tracking if already registered
     subprocess.run(
@@ -25,7 +30,7 @@ def create_worktree(repo_root: Path, branch: str, worktree_dir: Path) -> None:
     # 4. Prune again to ensure git recognizes the directory is gone
     subprocess.run(["git", "worktree", "prune"], cwd=repo_root, capture_output=True)
 
-    # 5. Delete existing branch if it exists so we can start clean from HEAD
+    # 5. Delete existing branch if it exists so we can start clean from target base
     chk = subprocess.run(
         ["git", "show-ref", "--verify", "--quiet", f"refs/heads/{branch}"],
         cwd=repo_root,
@@ -33,9 +38,17 @@ def create_worktree(repo_root: Path, branch: str, worktree_dir: Path) -> None:
     if chk.returncode == 0:
         subprocess.run(["git", "branch", "-D", branch], cwd=repo_root, capture_output=True)
 
-    # 6. Add worktree with -B to create or reset branch cleanly from HEAD
+    target_base = base_ref
+    if not target_base:
+        chk_main = subprocess.run(
+            ["git", "show-ref", "--verify", "--quiet", "refs/heads/main"],
+            cwd=repo_root,
+        )
+        target_base = "main" if chk_main.returncode == 0 else "HEAD"
+
+    # 6. Add worktree with -B to create or reset branch cleanly from target base
     add_res = subprocess.run(
-        ["git", "worktree", "add", "-B", branch, str(worktree_dir), "HEAD"],
+        ["git", "worktree", "add", "-B", branch, str(worktree_dir), target_base],
         cwd=repo_root,
         capture_output=True,
         text=True,
@@ -43,7 +56,7 @@ def create_worktree(repo_root: Path, branch: str, worktree_dir: Path) -> None:
     if add_res.returncode != 0:
         subprocess.run(["git", "worktree", "prune"], cwd=repo_root, capture_output=True)
         retry_res = subprocess.run(
-            ["git", "worktree", "add", "-B", branch, str(worktree_dir), "HEAD"],
+            ["git", "worktree", "add", "-B", branch, str(worktree_dir), target_base],
             cwd=repo_root,
             capture_output=True,
             text=True,
