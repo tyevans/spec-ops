@@ -266,12 +266,14 @@ class BacklogWorkerEngine:
                 return WorkerResult(task.canonical_id, False, "No modifications produced by worker.")
 
 
-            commit_msg = (
-                f"feat({task.canonical_id.lower()}): {task.title}\n\n"
+            trailers = (
                 f"Task-ID: {task.canonical_id}\n"
                 f"Governing-ADRs: {', '.join(task.governing_adrs) or 'None'}\n"
                 f"Provenance: spec-ops autonomous worker"
             )
+            if task.signed_off_by:
+                trailers += f"\nSpecOps-Signed-By: {task.signed_off_by}"
+            commit_msg = f"feat({task.canonical_id.lower()}): {task.title}\n\n{trailers}"
             subprocess.run(["git", "add", "-A"], cwd=worktree_dir, check=True)
             subprocess.run(
                 ["git", "commit", "-m", commit_msg],
@@ -281,7 +283,6 @@ class BacklogWorkerEngine:
 
             if local_merge:
                 lock_mgr = MergeLockManager(self.repo_root)
-
                 # 1. Rebase and preflight in isolated worktree WITHOUT holding MERGE_LOCK
                 if lock_mgr.is_branch_behind_main(branch):
                     print(f"🔄 Task branch '{branch}' is behind main. Auto-rebasing onto latest main...")
@@ -312,6 +313,12 @@ class BacklogWorkerEngine:
 
                 # 2. Acquire MERGE_LOCK strictly for the atomic integration step (<1s)
                 with lock_mgr.acquire(timeout=120.0):
+                    from ..security.dual_custody import verify_worker_integration_gates
+                    gate_ok, gate_msg = verify_worker_integration_gates(self.repo_root, branch, task, self.config)
+                    if not gate_ok:
+                        print(f"❌ {gate_msg}")
+                        return WorkerResult(task.canonical_id, False, gate_msg)
+
                     if lock_mgr.is_branch_behind_main(branch):
                         rebase_ok, rebase_msg = rebase_with_inference_healing(
                             worktree_dir,
@@ -326,10 +333,7 @@ class BacklogWorkerEngine:
                             )
 
                     merge_ok, merge_msg = squash_merge_and_commit(
-                        self.repo_root,
-                        branch,
-                        commit_msg,
-                        on_staged=lambda: self.queue.complete_task(task),
+                        self.repo_root, branch, commit_msg, on_staged=lambda: self.queue.complete_task(task)
                     )
                     if not merge_ok:
                         return WorkerResult(task.canonical_id, False, f"Integration failed: {merge_msg}")

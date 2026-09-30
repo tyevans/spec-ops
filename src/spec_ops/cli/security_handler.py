@@ -110,9 +110,12 @@ def handle_queue_command(args: argparse.Namespace, config: SpecOpsConfig, parser
             return 1
 
         base = getattr(args, "base", "main")
-        ok, msg = queue.complete_task_with_gate(target_task, base_branch=base, repo_root=config.root_dir)
+        ok, msg = queue.complete_task_with_gate(
+            target_task, base_branch=base, repo_root=config.root_dir, config=config
+        )
         if not ok:
             print(f"❌ {msg}", file=sys.stderr)
+            print(msg)
             return 1
         print(f"✅ {msg}")
         return 0

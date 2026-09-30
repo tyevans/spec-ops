@@ -44,6 +44,10 @@ def write_task_file(task: Task) -> Path:
         meta["hypothesis"] = task.hypothesis
     if getattr(task, "timebox", ""):
         meta["timebox"] = task.timebox
+    if task.signed_off_by:
+        meta["signed_off_by"] = task.signed_off_by
+    if task.signed_off_at:
+        meta["signed_off_at"] = task.signed_off_at
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()
@@ -155,9 +159,11 @@ class BacklogQueue:
         task: Task,
         base_branch: str = "main",
         repo_root: Path | None = None,
+        config: Any | None = None,
     ) -> tuple[bool, str]:
-        """Integration gate verifying zero unauthorized lockfile alterations under merge lock."""
+        """Integration gate verifying supply-chain, commit signatures, and dual-custody under merge lock."""
         import subprocess
+        from ..config.loader import load_config
         from ..worker.merge_lock import MergeLockManager
         from ..security.lockfile import (
             PROTECTED_DEPENDENCY_FILES,
@@ -166,6 +172,7 @@ class BacklogQueue:
         )
 
         root = (repo_root or self.backlog_dir.parent.parent).resolve()
+        cfg = config or load_config(root_dir=root)
         lock_mgr = MergeLockManager(root)
         with lock_mgr.acquire():
             wt_dir = root / ".worktrees" / f"task-{task.id}"
@@ -201,8 +208,21 @@ class BacklogQueue:
                     capture_output=True,
                     text=True,
                 ).stdout.strip()
-                if cur_b != base_branch and (task.id.lower() in cur_b.lower() or task.canonical_id.lower() in cur_b.lower()):
+                if cur_b != base_branch:
                     target_branch = cur_b
+            if not target_branch:
+                b_all = subprocess.run(
+                    ["git", "branch", "--format=%(refname:short)"],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                )
+                if b_all.returncode == 0:
+                    for b in b_all.stdout.splitlines():
+                        b = b.strip()
+                        if b != base_branch and (task.id.lower() in b.lower() or task.canonical_id.lower() in b.lower()):
+                            target_branch = b
+                            break
 
             changed_files: set[str] = set()
             if target_branch:
@@ -244,6 +264,47 @@ class BacklogQueue:
                 if not audit_rep.ok:
                     err_msg = "; ".join(audit_rep.errors)
                     return False, f"Integration gate failed: Dependency audit failed: {err_msg}"
+
+            # Gate: Cryptographic commit signatures
+            if cfg.require_signed_commits and target_branch and target_branch != base_branch:
+                from ..security.signing import verify_branch_commit_signatures
+                sig_ok, unsigned_sha, sig_msg = verify_branch_commit_signatures(
+                    root, base_branch=base_branch, target_branch=target_branch
+                )
+                if not sig_ok:
+                    return False, sig_msg
+
+            # Gate: Dual-custody review sign-off
+            from ..security.dual_custody import evaluate_dual_custody_gate
+            dc_ok, dc_msg = evaluate_dual_custody_gate(task, config=cfg)
+            if not dc_ok:
+                return False, dc_msg
+
+            # Integration merge with structured trailers
+            if target_branch and target_branch != base_branch:
+                from ..security.signing import format_commit_message
+                from ..worker.integration import squash_merge_and_commit
+
+                trailers: dict[str, str] = {"SpecOps-Task": task.canonical_id}
+                if task.signed_off_by:
+                    trailers["SpecOps-Signed-By"] = task.signed_off_by
+                if task.governing_adrs:
+                    trailers["Governing-ADRs"] = ", ".join(task.governing_adrs)
+
+                commit_msg = format_commit_message(
+                    f"feat({task.target_bc or 'backlog'}): Complete {task.canonical_id} - {task.title}",
+                    trailers=trailers,
+                )
+                merge_ok, merge_msg = squash_merge_and_commit(
+                    root,
+                    target_branch,
+                    commit_msg,
+                    on_staged=lambda: self.complete_task(task),
+                    main_branch=base_branch,
+                )
+                if not merge_ok:
+                    return False, f"Integration gate failed: {merge_msg}"
+                return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
 
             self.complete_task(task)
             return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."

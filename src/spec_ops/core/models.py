@@ -75,6 +75,8 @@ class Task:
     allows_dependencies: bool = False
     hypothesis: str = ""
     timebox: str = ""
+    signed_off_by: str = ""
+    signed_off_at: str = ""
 
     @property
     def canonical_id(self) -> str:

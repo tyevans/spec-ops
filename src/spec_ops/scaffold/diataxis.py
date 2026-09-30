@@ -97,6 +97,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops spike graduate` | `<SPIKE_ID> --result {{proven,disproven}} [--title TITLE] [--notes NOTES] [--findings FINDINGS] [--status STATUS]` | Graduate empirical spike findings into an Architectural Decision Record |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
+| `spec-ops review sign` | `<TASK_ID> --identity IDENTITY` | Cryptographically verify reviewer identity against keyring and record dual-custody review sign-off |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
 """

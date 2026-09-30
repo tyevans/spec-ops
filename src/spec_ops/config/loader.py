@@ -13,6 +13,7 @@ else:
 
 from .models import (
     ArchitectureSettings,
+    ComplianceSettings,
     ComponentConfig,
     ExecutionSettings,
     LicenseSettings,
@@ -141,6 +142,7 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
     # Parse security
     sec_data = data.get("security")
     top_allowed = data.get("allowed_licenses")
+    comp_data = data.get("compliance")
     security = None
     if sec_data is not None and isinstance(sec_data, dict):
         lic_data = sec_data.get("licenses", {})
@@ -154,6 +156,16 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
         profile = str(lic_data.get("profile", "permissive"))
         license_settings = LicenseSettings(allowed=allowed, profile=profile)
 
+        raw_comp = sec_data.get("compliance", comp_data if isinstance(comp_data, dict) else {})
+        if not isinstance(raw_comp, dict):
+            raw_comp = {}
+        compliance = ComplianceSettings(
+            require_signed_commits=bool(raw_comp.get("require_signed_commits", False)),
+            dual_custody=bool(raw_comp.get("dual_custody", False)),
+            allowed_signers_file=str(raw_comp.get("allowed_signers_file", ".ssh/allowed_signers")),
+            authorized_signers=list(raw_comp.get("authorized_signers", [])),
+        )
+
         security = SecuritySettings(
             secret_scanning=sec_data.get("secret_scanning", True),
             lockfile_immutability=sec_data.get("lockfile_immutability", True),
@@ -164,12 +176,24 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
             pgp_fingerprint=sec_data.get("pgp_fingerprint", "ABCD 1234 EF56 7890 ABCD 1234 EF56 7890 SPEC OPS1"),
             licenses=license_settings,
             allowed_licenses=allowed,
+            compliance=compliance,
         )
-    elif top_allowed:
-        license_settings = LicenseSettings(allowed=list(top_allowed), profile="permissive")
+    elif top_allowed or (comp_data is not None and isinstance(comp_data, dict)):
+        allowed = list(top_allowed) if top_allowed else []
+        license_settings = LicenseSettings(allowed=allowed, profile="permissive")
+        if comp_data is not None and isinstance(comp_data, dict):
+            compliance = ComplianceSettings(
+                require_signed_commits=bool(comp_data.get("require_signed_commits", False)),
+                dual_custody=bool(comp_data.get("dual_custody", False)),
+                allowed_signers_file=str(comp_data.get("allowed_signers_file", ".ssh/allowed_signers")),
+                authorized_signers=list(comp_data.get("authorized_signers", [])),
+            )
+        else:
+            compliance = ComplianceSettings()
         security = SecuritySettings(
             licenses=license_settings,
-            allowed_licenses=list(top_allowed),
+            allowed_licenses=allowed,
+            compliance=compliance,
         )
 
     return SpecOpsConfig(

@@ -127,6 +127,8 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         allows_dependencies=bool(meta.get("allows_dependencies", False)),
         hypothesis=str(meta.get("hypothesis", "")),
         timebox=str(meta.get("timebox", "")),
+        signed_off_by=str(meta.get("signed_off_by", "")),
+        signed_off_at=str(meta.get("signed_off_at", "")),
     )
 
 

@@ -199,4 +199,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_vlock = sec_subs.add_parser("verify-lock", help="Verify supply-chain lockfile cryptographic hashes and pinning")
     p_vlock.add_argument("--path", default=".", help="Directory containing uv.lock (default: current directory)")
 
+    # review
+    p_rev = subparsers.add_parser("review", help="Architectural review and dual-custody human sign-offs")
+    rev_subs = p_rev.add_subparsers(dest="review_action", help="Review action")
+    p_r_sign = rev_subs.add_parser("sign", help="Cryptographically sign off on task review")
+    p_r_sign.add_argument("task_id", help="Canonical task ID (e.g. TASK-0042 or 0042)")
+    p_r_sign.add_argument("--identity", required=True, help="Authorized reviewer identity or key ID (e.g. 'Riley <riley@example.com>')")
+
     return parser

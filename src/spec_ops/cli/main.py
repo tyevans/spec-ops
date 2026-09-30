@@ -258,6 +258,10 @@ def main() -> int:
         from .spike_handler import handle_spike_command
         return handle_spike_command(args, config)
 
+    if args.command == "review":
+        from .review_handler import handle_review_command
+        return handle_review_command(args, config, parser)
+
     return 0
 
 

@@ -50,6 +50,8 @@ only_mutate = [
     "src/spec_ops/spike/graduate.py*",
     "src/spec_ops/security/licenses/policy.py*",
     "src/spec_ops/security/waivers.py*",
+    "src/spec_ops/security/signing.py*",
+    "src/spec_ops/security/dual_custody.py*",
 ]
 pytest_add_cli_args_test_selection = [
     "tests/test_backlog_health_and_curator.py",
@@ -76,6 +78,9 @@ pytest_add_cli_args_test_selection = [
     "tests/test_dependency_audit.py",
     "tests/test_security_waivers_properties.py",
     "tests/test_bdd_us0057_us0112.py",
+    "tests/test_signing_properties.py",
+    "tests/test_signing_unit.py",
+    "tests/test_bdd_us0055_us0113.py",
 ]
 runner = "pytest"
 

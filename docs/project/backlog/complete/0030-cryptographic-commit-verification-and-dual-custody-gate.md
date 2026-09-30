@@ -1,7 +1,7 @@
 ---
 id: '0030'
 title: Cryptographic Commit Verification and Dual-Custody Gate
-status: Refined
+status: Complete
 dependencies:
 - TASK-0024
 - TASK-0028

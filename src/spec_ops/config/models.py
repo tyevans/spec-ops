@@ -77,6 +77,14 @@ class LicenseSettings:
 
 
 @dataclass
+class ComplianceSettings:
+    require_signed_commits: bool = False
+    dual_custody: bool = False
+    allowed_signers_file: str = ".ssh/allowed_signers"
+    authorized_signers: list[str] = field(default_factory=list)
+
+
+@dataclass
 class SecuritySettings:
     secret_scanning: bool = True
     lockfile_immutability: bool = True
@@ -87,6 +95,7 @@ class SecuritySettings:
     pgp_fingerprint: str = "ABCD 1234 EF56 7890 ABCD 1234 EF56 7890 SPEC OPS1"
     licenses: LicenseSettings = field(default_factory=LicenseSettings)
     allowed_licenses: list[str] = field(default_factory=list)
+    compliance: ComplianceSettings = field(default_factory=ComplianceSettings)
 
 
 @dataclass
@@ -98,6 +107,12 @@ class SpecOpsConfig:
     execution: ExecutionSettings = field(default_factory=ExecutionSettings)
     security: SecuritySettings | None = None
     root_dir: Path = field(default_factory=Path.cwd)
+
+    @property
+    def require_signed_commits(self) -> bool:
+        if self.security and self.security.compliance:
+            return self.security.compliance.require_signed_commits
+        return False
 
     @property
     def project_docs_dir(self) -> Path:
