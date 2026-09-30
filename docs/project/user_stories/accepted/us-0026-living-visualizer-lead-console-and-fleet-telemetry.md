@@ -44,7 +44,7 @@ And clicking "Inspect Worktree" displays the agent's failure log and ".task-prom
 Scenario: One-Click Rescue Launch
 Given a stalled task displayed in the rescue panel of the Lead Console
 When the lead clicks "Takeover Task"
-Then the console copies the exact command "spec-ops rescue inspect TASK-0014" to the clipboard
+Then the console copies the exact command "spec-ops rescue TASK-0014" to the clipboard
 And provides a deep link directly to the task specification and failure diff.
 ```
 

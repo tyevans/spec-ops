@@ -45,7 +45,7 @@ And the dashboard displays the exact diagnostic failure excerpt and the last gen
 Scenario: One-Click Rescue Launch and Diagnostic Handshake
 Given a stalled worker task displayed in the visualizer Lead Console
 When Jordan clicks the "🚀 Launch Rescue Takeover" button on the task card
-Then the console copies the exact terminal command "spec-ops rescue inspect TASK-0015" to the system clipboard
+Then the console copies the exact terminal command "spec-ops rescue TASK-0015" to the system clipboard
 And opens an inspection drawer showing the file diff, last preflight terminal output, and instructions for developer handover.
 ```
 
