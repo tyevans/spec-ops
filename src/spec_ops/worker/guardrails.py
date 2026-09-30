@@ -86,15 +86,70 @@ def stage_legitimate_files(
     return [line.strip() for line in diff_cached.stdout.splitlines() if line.strip()]
 
 
+def has_dependency_section_changes(worktree_path: Path, base_ref: str = "HEAD") -> bool:
+    """Checks whether pyproject.toml modifications touch dependency definitions."""
+    diff_res = subprocess.run(
+        ["git", "diff", base_ref, "--", "pyproject.toml"],
+        cwd=worktree_path,
+        capture_output=True,
+        text=True,
+    )
+    if diff_res.returncode != 0 or not diff_res.stdout.strip():
+        return False
+    dep_headers = (
+        "[project.dependencies]",
+        "dependencies =",
+        "[project.optional-dependencies]",
+        "[dependency-groups]",
+        "[build-system",
+    )
+    for line in diff_res.stdout.splitlines():
+        if line.startswith("+") and not line.startswith("+++"):
+            stripped = line[1:].strip()
+            if any(h in stripped for h in dep_headers):
+                return True
+    return False
+
+
+def sanitize_unauthorized_dependency_modifications(
+    worktree_dir: Path | str,
+    allows_dependencies: bool = False,
+) -> bool:
+    """Reverts accidental non-dependency modifications to pyproject.toml if unauthorized."""
+    if allows_dependencies:
+        return False
+
+    worktree_path = Path(worktree_dir).resolve()
+    st = subprocess.run(
+        ["git", "status", "--porcelain", "--", "pyproject.toml"],
+        cwd=worktree_path,
+        capture_output=True,
+        text=True,
+    )
+    if not st.stdout.strip():
+        return False
+
+    # If actual dependencies were touched, leave it dirty so preflight correctly fails
+    if has_dependency_section_changes(worktree_path):
+        return False
+
+    # Only non-dependency sections (e.g. [tool.mutmut]) were touched; revert to HEAD
+    subprocess.run(["git", "checkout", "HEAD", "--", "pyproject.toml"], cwd=worktree_path, capture_output=True)
+    subprocess.run(["git", "reset", "HEAD", "--", "pyproject.toml"], cwd=worktree_path, capture_output=True)
+    return True
+
+
 def prepare_guardrailed_commit(
     worktree_dir: Path | str,
     commit_msg: str,
     allowed_dirs: Sequence[str] | None = None,
+    allows_dependencies: bool = False,
 ) -> tuple[bool, str]:
     """Sanitizes backlog modifications, stages legitimate files, and commits safely."""
     worktree_path = Path(worktree_dir).resolve()
 
     sanitize_backlog_modifications(worktree_path, stage_legitimate=False)
+    sanitize_unauthorized_dependency_modifications(worktree_path, allows_dependencies=allows_dependencies)
     staged = stage_legitimate_files(worktree_path, allowed_dirs=allowed_dirs)
     if not staged:
         return False, "No modifications staged to commit."

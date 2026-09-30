@@ -112,6 +112,7 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
         f"- File Length Invariant: Every new or edited source file must contain fewer than {limit} lines (500-line file length limit invariant governed by ADR-0002).",
         "- Testing Invariant: Features must be verified blackbox style through public entry points without private backdoors (blackbox frontdoor verification rules with zero private mocks governed by ADR-0003).",
         "- Backlog Isolation: Files under docs/project/backlog/ must not be modified on feature branches. Accidental edits will be intercepted and discarded (ADR-0005).",
+        "- Dependency Immutability Invariant: You must NOT edit `pyproject.toml` or `uv.lock` unless `allows_dependencies: true` is explicitly declared in task frontmatter (US-0111). Modifying `pyproject.toml` without authorization triggers an immediate security failure. Do not edit `pyproject.toml` for `[tool.mutmut]`; mutation coverage already scans `src/spec_ops/`.",
         "",
         "## Task Specification",
         task.body.strip(),

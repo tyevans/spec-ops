@@ -77,7 +77,8 @@ class BacklogWorkerEngine:
             f"feat({task.canonical_id.lower()}): {task.title}\n\nTask-ID: {task.canonical_id}"
             if task else "feat: worker commit"
         )
-        return prepare_guardrailed_commit(worktree_dir, msg)
+        allows_dep = getattr(task, "allows_dependencies", False) if task else False
+        return prepare_guardrailed_commit(worktree_dir, msg, allows_dependencies=allows_dep)
 
     def invoke_agent(
         self,

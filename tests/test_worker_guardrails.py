@@ -9,8 +9,10 @@ import pytest
 
 from spec_ops.worker.guardrails import (
     detect_backlog_modifications,
+    has_dependency_section_changes,
     prepare_guardrailed_commit,
     sanitize_backlog_modifications,
+    sanitize_unauthorized_dependency_modifications,
     stage_legitimate_files,
 )
 
@@ -22,6 +24,8 @@ def git_guard_repo(tmp_path: Path) -> Path:
     subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Tester"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.email", "tester@test.com"], cwd=repo, check=True, capture_output=True)
+
+    (repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\n\n[tool.mutmut]\npaths_to_mutate = "src/"\n', encoding="utf-8")
 
     backlog = repo / "docs" / "project" / "backlog"
     backlog.mkdir(parents=True, exist_ok=True)
@@ -146,3 +150,57 @@ def test_prepare_guardrailed_commit_git_failure(git_guard_repo: Path, monkeypatc
     ok, msg = prepare_guardrailed_commit(git_guard_repo, commit_msg="feat: will fail")
     assert ok is False
     assert "Git commit failed:" in msg
+
+
+def test_has_dependency_section_changes(git_guard_repo: Path):
+    assert has_dependency_section_changes(git_guard_repo) is False
+
+    # Non-dependency edit
+    (git_guard_repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\n\n[tool.mutmut]\npaths_to_mutate = "src/"\nrunner = "pytest"\n', encoding="utf-8")
+    assert has_dependency_section_changes(git_guard_repo) is False
+
+    # Dependency edit
+    (git_guard_repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\ndependencies = ["requests>=2.0"]\n', encoding="utf-8")
+    assert has_dependency_section_changes(git_guard_repo) is True
+
+
+def test_sanitize_unauthorized_dependency_modifications_allowed(git_guard_repo: Path):
+    (git_guard_repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\n\n[tool.mutmut]\npaths_to_mutate = "src/"\nrunner = "pytest"\n', encoding="utf-8")
+    reverted = sanitize_unauthorized_dependency_modifications(git_guard_repo, allows_dependencies=True)
+    assert reverted is False
+    # File remains modified
+    st = subprocess.run(["git", "status", "--porcelain", "pyproject.toml"], cwd=git_guard_repo, capture_output=True, text=True)
+    assert "M pyproject.toml" in st.stdout or " M pyproject.toml" in st.stdout
+
+
+def test_sanitize_unauthorized_dependency_modifications_reverts_non_dep(git_guard_repo: Path):
+    (git_guard_repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\n\n[tool.mutmut]\npaths_to_mutate = "src/"\nrunner = "pytest"\n', encoding="utf-8")
+    reverted = sanitize_unauthorized_dependency_modifications(git_guard_repo, allows_dependencies=False)
+    assert reverted is True
+    # File is restored to clean state
+    st = subprocess.run(["git", "status", "--porcelain", "pyproject.toml"], cwd=git_guard_repo, capture_output=True, text=True)
+    assert st.stdout.strip() == ""
+
+
+def test_sanitize_unauthorized_dependency_modifications_leaves_real_dep_dirty(git_guard_repo: Path):
+    (git_guard_repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\ndependencies = ["malicious-pkg"]\n', encoding="utf-8")
+    reverted = sanitize_unauthorized_dependency_modifications(git_guard_repo, allows_dependencies=False)
+    assert reverted is False
+    # File remains modified so preflight failure triggers
+    st = subprocess.run(["git", "status", "--porcelain", "pyproject.toml"], cwd=git_guard_repo, capture_output=True, text=True)
+    assert "M pyproject.toml" in st.stdout or " M pyproject.toml" in st.stdout
+
+
+def test_prepare_guardrailed_commit_sanitizes_non_dep_pyproject(git_guard_repo: Path):
+    (git_guard_repo / "src" / "app.py").write_text("def run(): return 123\n", encoding="utf-8")
+    (git_guard_repo / "pyproject.toml").write_text('[project]\nname = "test-pkg"\nversion = "0.1.0"\n\n[tool.mutmut]\npaths_to_mutate = "src/"\nrunner = "pytest"\n', encoding="utf-8")
+
+    ok, msg = prepare_guardrailed_commit(git_guard_repo, commit_msg="feat: code with mutmut config", allows_dependencies=False)
+    assert ok is True
+    assert msg == "Commit created cleanly with zero backlog modifications."
+
+    diff = subprocess.run(["git", "diff", "--name-only", "HEAD~1", "HEAD"], cwd=git_guard_repo, capture_output=True, text=True)
+    files = [f.strip() for f in diff.stdout.splitlines() if f.strip()]
+    assert files == ["src/app.py"]
+    assert "pyproject.toml" not in files
+
