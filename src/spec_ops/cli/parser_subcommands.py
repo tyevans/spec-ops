@@ -236,3 +236,17 @@ def register_audit_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_audit_prov.add_argument("--strict", action="store_true", help="Fail with exit code 1 if any unanchored commits, orphaned tasks, or missing tasks exist")
     p_audit_prov.add_argument("--contributions", action="store_true", help="Break down delivered tasks and merged commits by contributor provenance")
     p_audit_prov.add_argument("--repo", default=".", help="Repository root path (default: current directory)")
+
+
+def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers test quality gates, anti-mock audit, and frontdoor verification commands."""
+    p_test = subparsers.add_parser("test", help="Test quality gates, anti-mock audit, and frontdoor verification")
+    test_subs = p_test.add_subparsers(dest="test_action", help="Test action")
+
+    for name in ("audit-anti-mock", "verify-frontdoors"):
+        p_sub = test_subs.add_parser(name, help="Audit test ASTs for prohibited mock backdoors and verify ADR-0003 frontdoor compliance")
+        p_sub.add_argument("path", nargs="?", default=None, help="Target test file or directory to scan (default: tests/)")
+        p_sub.add_argument("--path", dest="opt_path", default=None, help="Target test file or directory to scan")
+        p_sub.add_argument("--strict-mutation", action="store_true", help="Enforce >=80%% Mutmut mutation score invariant")
+        p_sub.add_argument("--threshold", type=float, default=80.0, help="Mutation kill score threshold percentage (default: 80.0)")
+        p_sub.add_argument("--json", action="store_true", help="Output audit results as structured JSON")

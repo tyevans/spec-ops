@@ -362,6 +362,10 @@ def main() -> int:
         from ..rescue.doctor import handle_doctor_command
         return handle_doctor_command(args, config)
 
+    if args.command == "test":
+        from .test_handler import handle_test_command
+        return handle_test_command(args, config, parser)
+
     return 0
 
 

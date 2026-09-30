@@ -74,7 +74,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0093 (Complete)**: [`0093-human-developer-worktree-sandboxing-and-context-preservation`](complete/0093-human-developer-worktree-sandboxing-and-context-preservation.md)
 - **TASK-0094 (Complete)**: [`0094-zero-pollution-worktree-garbage-collection-and-pruning`](complete/0094-zero-pollution-worktree-garbage-collection-and-pruning.md)
 - **TASK-0090 (Complete)**: [`0090-living-constitution-synchronization-and-ci-drift-gate`](complete/0090-living-constitution-synchronization-and-ci-drift-gate.md)
-- **TASK-0061 (Refined)**: [`0061-property-invariants-mutation-quality-gate-and-anti-mock`](refined/0061-property-invariants-mutation-quality-gate-and-anti-mock.md)
+- **TASK-0061 (Complete)**: [`0061-property-invariants-mutation-quality-gate-and-anti-mock`](complete/0061-property-invariants-mutation-quality-gate-and-anti-mock.md)
 - **TASK-0052 (Refined)**: [`0052-preserved-worktree-failure-triage-and-handover-brief-generator`](refined/0052-preserved-worktree-failure-triage-and-handover-brief-generator.md)
 - **TASK-0065 (Refined)**: [`0065-reactive-unblocking-cascade-and-priority-re-ranking`](refined/0065-reactive-unblocking-cascade-and-priority-re-ranking.md)
 - **TASK-0042 (Refined)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](refined/0042-executive-roadmap-exporter-and-release-notes-generator.md)

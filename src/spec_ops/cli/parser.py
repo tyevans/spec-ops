@@ -12,6 +12,7 @@ from .parser_subcommands import (
     register_profile_subparsers,
     register_queue_subparsers,
     register_spike_subparsers,
+    register_test_subparsers,
 )
 
 
@@ -294,5 +295,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_doctor = subparsers.add_parser("doctor", help="Audit and repair local developer workspace and tooling")
     p_doctor.add_argument("--fix", action="store_true", help="Automatically repair missing hooks and workspace configuration")
     p_doctor.add_argument("--json", action="store_true", help="Output diagnostic results as structured JSON")
+
+    # test
+    register_test_subparsers(subparsers)
 
     return parser

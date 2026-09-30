@@ -143,6 +143,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL] [--include-visualizer]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
 | `spec-ops docs check` | `[--dir DIR]` | Living Diataxis documentation drift guard auditing CLI commands against docs |
+| `spec-ops test audit-anti-mock` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Audit test ASTs for prohibited mock backdoors and verify ADR-0003 frontdoor compliance |
+| `spec-ops test verify-frontdoors` | `[PATH] [--path OPT_PATH] [--strict-mutation] [--threshold THRESHOLD] [--json]` | Verify blackbox frontdoors, audit anti-mock AST violations, and enforce mutation score invariants |
 """
 
 DEFAULT_EXPLANATION_PMAC = """# Project Management as Code (PMaC)
