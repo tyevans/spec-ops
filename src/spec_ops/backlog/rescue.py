@@ -160,14 +160,21 @@ class WorktreeRescueManager:
             return False, f"Task {clean_id} not found in backlog."
 
         # 2. Commit any uncommitted changes in the worktree
+        for p in (info.worktree_dir / ".task-prompt.md", info.worktree_dir / ".task-review-prompt.md"):
+            if p.exists():
+                p.unlink()
+
+        from ..worker.guardrails import prepare_guardrailed_commit
+
         diff_res = subprocess.run(["git", "status", "--porcelain"], cwd=info.worktree_dir, capture_output=True, text=True)
         if diff_res.stdout.strip():
-            subprocess.run(["git", "add", "-A"], cwd=info.worktree_dir, check=True)
-            subprocess.run(
-                ["git", "commit", "-m", f"fix({clean_id.lower()}): human rescue and completion"],
-                cwd=info.worktree_dir,
-                check=True,
+            commit_ok, commit_msg = prepare_guardrailed_commit(
+                info.worktree_dir,
+                commit_msg=f"fix({clean_id.lower()}): human rescue and completion",
+                allows_dependencies=getattr(target_task, "allows_dependencies", False),
             )
+            if not commit_ok and "No modifications staged" not in commit_msg:
+                return False, f"Failed to commit changes in rescued worktree: {commit_msg}"
 
         # 3. Auto-rebase onto main if behind
         lock_mgr = MergeLockManager(self.repo_root)
