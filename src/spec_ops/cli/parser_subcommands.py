@@ -268,6 +268,14 @@ def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_prop.add_argument("-k", "--filter", dest="filter_expr", default=None, help="Filter property tests by name")
     p_prop.add_argument("--json", action="store_true", help="Output property verification results as structured JSON")
 
+    p_mut = test_subs.add_parser("mutation", help="Run Mutmut mutation testing quality gate on domain modules per ADR-0009")
+    p_mut.add_argument("path", nargs="?", default=None, help="Target module or file to mutate")
+    p_mut.add_argument("--path", dest="opt_path", default=None, help="Target module or file to mutate")
+    p_mut.add_argument("--threshold", type=float, default=80.0, help="Mutation kill score threshold percentage (default: 80.0)")
+    p_mut.add_argument("--bc", dest="target_bc", default="core", help="Target bounded context (default: core)")
+    p_mut.add_argument("--json", action="store_true", help="Output mutation results as structured JSON")
+    p_mut.add_argument("--force-run", action="store_true", help="Force re-running Mutmut even if previous results exist")
+
 
 def register_schema_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers specification schema validation and migration commands."""
@@ -285,6 +293,7 @@ def register_schema_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_mig.add_argument("--dry-run", action="store_true", default=False, help="Display unified diff of projected transformations without modifying disk")
     p_mig.add_argument("--in-place", action="store_true", default=False, help="Rewrite outdated frontmatter in-place preserving Markdown body byte-for-byte")
 
+
 def register_export_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers export commands for executive roadmaps and stakeholder presentations."""
     p_exp = subparsers.add_parser("export", help="Export executive roadmaps and stakeholder presentations")
@@ -295,4 +304,3 @@ def register_export_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rd.add_argument("-o", "--out", "--output", dest="output", default=None, help="Output file path (default: dist/roadmap.<format>)")
     p_rd.add_argument("--audience", default="Leadership / Non-Technical", help="Target audience (default: Leadership / Non-Technical)")
     p_rd.add_argument("--granularity", default="Milestones & PRD Outcomes", help="Delivery granularity (default: Milestones & PRD Outcomes)")
-

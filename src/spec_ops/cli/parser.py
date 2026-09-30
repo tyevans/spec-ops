@@ -319,6 +319,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_verify.add_argument("-k", "--filter", dest="filter_expr", default=None, help="Filter property tests by name")
     p_verify.add_argument("--json", action="store_true", help="Output verification results as structured JSON")
 
+    # invariants
+    p_invariants = subparsers.add_parser("invariants", help="Enforce architectural and quality invariants")
+    inv_subs = p_invariants.add_subparsers(dest="invariants_action", help="Invariants action")
+    p_inv_mut = inv_subs.add_parser("verify-mutations", help="Verify mutation testing kill score quality gate per ADR-0009")
+    p_inv_mut.add_argument("path", nargs="?", default=None, help="Target module or file to mutate")
+    p_inv_mut.add_argument("--path", dest="opt_path", default=None, help="Target module or file to mutate")
+    p_inv_mut.add_argument("--threshold", type=float, default=80.0, help="Mutation kill score threshold percentage (default: 80.0)")
+    p_inv_mut.add_argument("--bc", dest="target_bc", default="core", help="Target bounded context (default: core)")
+    p_inv_mut.add_argument("--json", action="store_true", help="Output mutation results as structured JSON")
+    p_inv_mut.add_argument("--force-run", action="store_true", help="Force re-running Mutmut even if previous results exist")
+
     # watch
     p_watch = subparsers.add_parser("watch", help="Real-time in-memory graph event bus and workspace change watcher")
     p_watch.add_argument("--debounce-ms", type=float, default=250.0, help="Debounce window in milliseconds (default: 250)")

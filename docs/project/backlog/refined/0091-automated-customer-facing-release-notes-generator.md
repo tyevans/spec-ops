@@ -1,7 +1,7 @@
 ---
 id: '0091'
 title: Automated Customer-Facing Release Notes and Business Value Changelog Generator
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0042
 governing_adrs:

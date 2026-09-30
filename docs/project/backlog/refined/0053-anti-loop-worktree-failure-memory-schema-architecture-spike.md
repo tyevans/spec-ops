@@ -1,7 +1,7 @@
 ---
 id: '0053'
 title: 'Architectural Spike: Anti-Loop Worktree Failure Memory Schema and Negative Prompt Synthesis'
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0052

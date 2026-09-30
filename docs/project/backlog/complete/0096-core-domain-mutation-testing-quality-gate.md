@@ -1,7 +1,7 @@
 ---
 id: 0096
 title: Core Domain Mutation Testing Invariant and Mutant Kill Score Quality Gate
-status: Refined
+status: Complete
 dependencies:
 - TASK-0060
 governing_adrs:
@@ -15,8 +15,6 @@ governing_prds:
 governing_stories:
 - US-0064
 target_bc: core
-claimed_by: worker-3
-branch: feat/0096-core-domain-mutation-testing-invariant-a
 ---
 
 # TASK-0096: Core Domain Mutation Testing Invariant and Mutant Kill Score Quality Gate

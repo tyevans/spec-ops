@@ -382,6 +382,13 @@ def main() -> int:
         from .graph_handler import handle_watch_command
         return handle_watch_command(args, config)
 
+    if args.command == "invariants":
+        from .test_handler import handle_mutation_command
+        if getattr(args, "invariants_action", None) == "verify-mutations":
+            return handle_mutation_command(args, config)
+        parser.parse_args(["invariants", "--help"])
+        return 0
+
     return 0
 
 

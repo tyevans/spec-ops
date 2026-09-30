@@ -1,6 +1,6 @@
 ---
 id: '0079'
-title: External Issue Tracker Ingestion and Bidirectional Synchronization Bridge
+title: External Issue Tracker Ingestion Bridge
 status: Proposed
 created: 2026-09-29
 dependencies:
@@ -8,9 +8,11 @@ dependencies:
   - TASK-0072
 governing_adrs:
   - ADR-0001
+  - ADR-0002
   - ADR-0003
   - ADR-0005
   - ADR-0007
+  - ADR-0009
 governing_prds:
   - PRD-0005
 governing_stories:
@@ -18,13 +20,13 @@ governing_stories:
 target_bc: backlog
 ---
 
-# TASK-0079: External Issue Tracker Ingestion and Bidirectional Synchronization Bridge
+# TASK-0079: External Issue Tracker Ingestion Bridge
 
 ## Summary
-Implement bidirectional synchronization tooling between SpecOps Git-versioned task specifications and enterprise issue tracking systems (`spec-ops bridge import --source github|jira|linear`, `spec-ops bridge export --target roadmap|linear`). Ingest external issues into schema-compliant proposed task files in `docs/project/backlog/proposed/` with proper metadata mapping, assign non-colliding numeric IDs, and export git task delivery progress back to external trackers.
+Implement issue tracker ingestion (`spec-ops bridge import --source github|jira|linear [--file <path>] [--repo <org/repo>]`) to import external issues into schema-compliant proposed task files in `docs/project/backlog/proposed/` with mapped titles, non-colliding numeric IDs, and reference links.
 
 ## Problem Statement & Context
-While autonomous coding assistants and engineering architects work directly against Git-versioned specifications in `docs/project/backlog/`, external stakeholders, product managers, and enterprise executives often use external platforms such as GitHub Issues, Jira, or Linear. Without automated bridging tools, specifications must be manually copied between systems, introducing data drift and double-entry overhead. SpecOps requires an automated bridge to ingest external issues into valid PMaC tasks and sync delivery status back to external trackers.
+While autonomous coding assistants and engineering architects work directly against Git-versioned specifications in `docs/project/backlog/`, external stakeholders, product managers, and enterprise executives often file issues in GitHub Issues, Jira, or Linear. Without automated import tooling, specifications must be manually copied, introducing transcription errors. SpecOps requires an automated bridge to ingest external issues into valid proposed task files.
 
 ## User Stories & Scenarios Satisfied
 - **US-0079: Brownfield Issue Ingestion and External Backlog Synchronization Bridge**
@@ -36,18 +38,13 @@ While autonomous coding assistants and engineering architects work directly agai
     - Given an exported JSON or CSV export file from Jira or Linear
     - When the developer executes "spec-ops bridge import --file export.json"
     - Then tasks are parsed, validated against the task schema, and placed in "proposed/" without overwriting existing tasks.
-  - *Scenario: Bi-directional Export of Backlog Status for Executive Roadmaps*
-    - Given active and completed tasks in the SpecOps repository
-    - When "spec-ops bridge export --target github --sync-status" is run
-    - Then external GitHub issues are updated with corresponding status labels and commit references.
 
 ## Architectural Invariants & Seams
-- **File Length Limit (<500 lines)**: External bridge importer in `src/spec_ops/backlog/bridge/importer.py` and exporter in `src/spec_ops/backlog/bridge/exporter.py` must stay strictly under 400 lines (ADR-0002).
+- **File Length Limit (<500 lines)**: External bridge importer in `src/spec_ops/backlog/bridge/importer.py` must stay strictly under 400 lines (ADR-0002).
 - **Hypothesis Invariant Property (ADR-0009)**: Generative property tests using `@given(...)` across randomized issue payloads assert that imported issues strictly generate valid proposed task Markdown with non-colliding IDs and valid frontmatter schemas.
 - **Mutmut Mutation Scope**: Schema mapping and frontmatter serialization in `src/spec_ops/backlog/bridge/importer.py` achieve >=80% mutant kill score under `mutmut`.
 
 ## Definition of Done (Blackbox Frontdoor TDD)
 1. Executing `spec-ops bridge import` generates valid proposed task markdown files with non-colliding IDs.
 2. Ingested tasks pass `spec-ops schema validate` and conform to Definition of Ready metadata standards.
-3. Executing `spec-ops bridge export` synchronizes completion status cleanly to external formats.
-4. All acceptance criteria verified via public CLI frontdoors with `pytest-bdd` (ADR-0003, ADR-0006).
+3. All acceptance criteria verified via public CLI frontdoors with `pytest-bdd` (ADR-0003, ADR-0006).
