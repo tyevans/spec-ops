@@ -9,8 +9,9 @@ from typing import Any
 from ..config.models import SpecOpsConfig
 from ..core.git_metadata import GitMetadataHarvester
 from ..core.graph import build_graph_data, process_project_graph
-from ..core.parser import SpecOpsParser
+from ..core.parser import SpecOpsParser, extract_frontmatter
 from .lead_console import harvest_fleet_telemetry
+from .security_metrics import harvest_security_posture
 from .template import VISUALIZER_HTML_TEMPLATE
 
 
@@ -39,6 +40,46 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             task.prs = list(dict.fromkeys(task.prs + prs))
 
     graph = build_graph_data(data)
+
+    tasks_payload = []
+    for t in data.tasks:
+        t_meta, _ = extract_frontmatter(t.raw_markdown) if t.raw_markdown else ({}, "")
+        has_signed = t_meta.get("has_signed_commits")
+        sig_status = str(t_meta.get("commit_signature_status") or "")
+        tasks_payload.append(
+            {
+                "id": t.canonical_id,
+                "title": t.title,
+                "status": t.status,
+                "dependencies": t.dependencies,
+                "governing_adrs": t.governing_adrs,
+                "governing_prds": t.governing_prds,
+                "governing_stories": t.governing_stories,
+                "target_bc": t.target_bc,
+                "target_release": t.target_release,
+                "prs": t.prs,
+                "pr_url": t.pr_url,
+                "priority_rank": t.priority_rank,
+                "body": t.body,
+                "raw_markdown": t.raw_markdown,
+                "signed_off_by": t.signed_off_by or str(t_meta.get("signed_off_by") or ""),
+                "signed_off_at": t.signed_off_at or str(t_meta.get("signed_off_at") or ""),
+                "has_signed_commits": has_signed,
+                "commit_signature_status": sig_status,
+                "file_path": _rel_path(config.root_dir, t.file_path),
+                "commits": [
+                    {
+                        "hash": c.hash,
+                        "author": c.author,
+                        "date": c.date,
+                        "subject": c.subject,
+                        "prs": c.prs,
+                    }
+                    for c in t.commits
+                ],
+            }
+        )
+    security_posture = harvest_security_posture(config, tasks=tasks_payload)
 
     return {
         "project": {
@@ -71,36 +112,7 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             }
             for e in graph.edges
         ],
-        "tasks": [
-            {
-                "id": t.canonical_id,
-                "title": t.title,
-                "status": t.status,
-                "dependencies": t.dependencies,
-                "governing_adrs": t.governing_adrs,
-                "governing_prds": t.governing_prds,
-                "governing_stories": t.governing_stories,
-                "target_bc": t.target_bc,
-                "target_release": t.target_release,
-                "prs": t.prs,
-                "pr_url": t.pr_url,
-                "priority_rank": t.priority_rank,
-                "body": t.body,
-                "raw_markdown": t.raw_markdown,
-                "file_path": _rel_path(config.root_dir, t.file_path),
-                "commits": [
-                    {
-                        "hash": c.hash,
-                        "author": c.author,
-                        "date": c.date,
-                        "subject": c.subject,
-                        "prs": c.prs,
-                    }
-                    for c in t.commits
-                ],
-            }
-            for t in data.tasks
-        ],
+        "tasks": tasks_payload,
         "personas": [
             {
                 "id": p.id,
@@ -173,6 +185,7 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             for bc in sorted({t.target_bc for t in data.tasks if t.target_bc})
         ],
         "telemetry": harvest_fleet_telemetry(config),
+        "security": security_posture,
     }
 
 

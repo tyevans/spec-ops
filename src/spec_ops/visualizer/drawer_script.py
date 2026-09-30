@@ -85,6 +85,7 @@ DRAWER_JS = r"""
         </div>
       </div>
       <div class="card-box"><div class="card-box-title">Specification Content</div><div class="markdown-box">${renderMarkdown(t.body || t.raw_markdown)}</div></div>
+      ${typeof window.renderTaskComplianceCard === "function" ? window.renderTaskComplianceCard(t) : ""}
     `;
   }
 

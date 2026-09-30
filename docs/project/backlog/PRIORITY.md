@@ -53,7 +53,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0068 (Complete)**: [`0068-portable-visualizer-bundle-and-multi-perspective-matrix`](complete/0068-portable-visualizer-bundle-and-multi-perspective-matrix.md)
 - **TASK-0059 (Complete)**: [`0059-tarjan-scc-cycle-resolution-and-blast-radius-spike`](complete/0059-tarjan-scc-cycle-resolution-and-blast-radius-spike.md)
 - **TASK-0032 (Complete)**: [`0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier`](complete/0032-tamper-evident-merkle-compliance-manifest-generator-and-verifier.md)
-- **TASK-0033 (Refined)**: [`0033-living-security-posture-and-compliance-radar-dashboard`](refined/0033-living-security-posture-and-compliance-radar-dashboard.md)
+- **TASK-0033 (Complete)**: [`0033-living-security-posture-and-compliance-radar-dashboard`](complete/0033-living-security-posture-and-compliance-radar-dashboard.md)
 - **TASK-0041 (Proposed)**: [`0041-customer-uat-verification-matrix-and-automated-shipping-gate`](proposed/0041-customer-uat-verification-matrix-and-automated-shipping-gate.md)
 - **TASK-0042 (Proposed)**: [`0042-executive-roadmap-exporter-and-release-notes-generator`](proposed/0042-executive-roadmap-exporter-and-release-notes-generator.md)
 - **TASK-0043 (Proposed)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](proposed/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
