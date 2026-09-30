@@ -20,7 +20,7 @@ target_bc: rescue
 # TASK-0053: Architectural Spike: Anti-Loop Worktree Failure Memory Schema and Negative Prompt Synthesis
 
 ## Summary
-Conduct an architectural spike to design, evaluate, and benchmark a lossless YAML frontmatter schema for capturing failure post-mortems (`failure_history`, `failed_invariants`, `reason`) inside PMaC task specifications when a worktree is reset. Prototype round-trip markdown parsing to ensure zero formatting corruption, evaluate automated queue demotion mechanics from `refined/` to `proposed/`, and design the synthesis of explicit negative prompt constraints (`## Prior Attempt Failures & Anti-Patterns (DO NOT REPEAT)`) during `.task-prompt.md` hydration. Author findings into ADR-0011: Version-Controlled Failure Post-Mortems and Anti-Loop Memory.
+Conduct an architectural spike to design, evaluate, and benchmark a lossless YAML frontmatter schema for capturing failure post-mortems (`failure_history`, `failed_invariants`, `reason`) inside PMaC task specifications when a worktree is reset. Prototype round-trip markdown parsing to ensure zero formatting corruption, evaluate automated queue demotion mechanics from `refined/` to `proposed/`, and design the synthesis of explicit negative prompt constraints (`## Prior Attempt Failures & Anti-Patterns (DO NOT REPEAT)`) during `.task-prompt.md` hydration. Author findings into ADR-0020: Version-Controlled Failure Post-Mortems and Anti-Loop Memory.
 
 ## Problem Statement & Context
 When human developers wipe an irreparably broken agent worktree (`spec-ops rescue reset`), the lessons of that failure are discarded. If the task is reset to `refined/` without memory, the next autonomous agent pulls the task and attempts the exact same flawed approach (e.g. creating private test mocks violating ADR-0003, monkey-patching libraries, or hallucinating files). SpecOps requires an institutional memory schema embedded directly in the task's markdown frontmatter to synthesize negative prompt constraints that break repetitive failure loops.
@@ -41,4 +41,4 @@ When human developers wipe an irreparably broken agent worktree (`spec-ops rescu
 2. Prototype verifies automated demotion logic: passing `--demote` moves the task file from `refined/` to `proposed/` and updates `PRIORITY.md` safely.
 3. Prototype validates negative prompt generation: reading `failure_history` produces a structured section `## Prior Attempt Failures & Anti-Patterns (DO NOT REPEAT)` in `.task-prompt.md` with explicit prohibitions.
 4. Benchmark demonstrates frontmatter update executes in under 15ms.
-5. Findings and final frontmatter schema specification published into `docs/project/adrs/proposed/adr-0011-version-controlled-failure-post-mortems-and-anti-loop-memory.md`.
+5. Findings and final frontmatter schema specification published into `docs/project/adrs/proposed/adr-0020-version-controlled-failure-post-mortems-and-anti-loop-memory.md`.

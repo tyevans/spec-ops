@@ -30,6 +30,7 @@ INVARIANT_MANDATES: dict[str, str] = {
     "ADR-0012": "You must execute worker commands only within sandboxed environments.",
     "ADR-0018": "You must not edit lockfiles or dependencies without explicit authorization.",
     "ADR-0019": "You must never hardcode credentials, secrets, or high-entropy tokens.",
+    "ADR-0020": "You must capture failure history and inject anti-loop negative constraints when resetting tasks.",
 }
 
 DEFAULT_MANDATE = "You must avoid repeating the described failure pattern and strictly adhere to project invariants."

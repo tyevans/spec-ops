@@ -1,4 +1,4 @@
-# ADR-0011: Version-Controlled Failure Post-Mortems and Anti-Loop Memory
+# ADR-0020: Version-Controlled Failure Post-Mortems and Anti-Loop Memory
 
 ## Status
 Proposed

@@ -84,7 +84,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops scaffold docs` | `[--bc BC] [--bounded-context BC] [--title TITLE] [--force] [--overwrite]` | Scaffold 4-quadrant Diataxis documentation for a bounded context (alias: diataxis) |
 | `spec-ops constitution sync` | `[--repo PATH]` | Synchronize AGENTS.md constitution and docs/operating-manual.md while preserving human custom sections |
 | `spec-ops constitution check` | `[--repo PATH]` | CI drift detection gate comparing specops.toml settings against AGENTS.md |
-| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--check-uat] [--json]` | Verify file length limits, architecture boundaries, and security profile guardrails |
+| `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--check-uat] [--numbering] [--json]` | Verify file length limits, artifact numbering uniqueness, architecture boundaries, and security profile guardrails |
 | `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |

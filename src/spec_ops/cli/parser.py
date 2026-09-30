@@ -167,6 +167,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_health.add_argument("--emit-task", action="store_true", help="Emit proposed refactoring task into backlog for split suggestions")
     p_health.add_argument("--generate-refactor-tasks", action="store_true", help="Generate backlog refactoring tasks for all grandfathered debt files")
     p_health.add_argument("--check-uat", action="store_true", help="Verify PM UAT sign-off for all checkable outcomes")
+    p_health.add_argument("--numbering", action="store_true", help="Audit numbering uniqueness across ADRs, PRDs, Tasks, and User Stories")
     p_health.add_argument("--json", action="store_true", help="Output health inspection results as structured JSON")
 
 

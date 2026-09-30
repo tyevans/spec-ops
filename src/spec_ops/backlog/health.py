@@ -73,10 +73,16 @@ class HealthCheckReport:
     sync_errors: list[str] = field(default_factory=list)
     constitution_drift_warnings: list[str] = field(default_factory=list)
     superseded_adr_warnings: list[str] = field(default_factory=list)
+    numbering_collisions: list[Any] = field(default_factory=list)
 
     @property
     def is_healthy(self) -> bool:
-        return len(self.violations) == 0 and self.priority_sync_ok and len(self.constitution_drift_warnings) == 0
+        return (
+            len(self.violations) == 0
+            and self.priority_sync_ok
+            and len(self.constitution_drift_warnings) == 0
+            and len(self.numbering_collisions) == 0
+        )
 
 
 class HealthChecker:
@@ -220,11 +226,18 @@ class HealthChecker:
                     warnings.append(msg)
         return warnings
 
+    def check_numbering(self) -> list[Any]:
+        from ..core.numbering import audit_numbering_uniqueness
+
+        report = audit_numbering_uniqueness(self.config)
+        return report.collisions
+
     def run_check(self) -> HealthCheckReport:
         violations, warnings, top_files = self.scan_file_lengths()
         sync_ok, sync_errors = self.check_priority_sync()
         constitution_warnings = self.check_constitution()
         superseded_adr_warnings = self.check_superseded_adrs()
+        numbering_collisions = self.check_numbering()
 
         complete_count = 0
         refined_count = 0
@@ -263,4 +276,5 @@ class HealthChecker:
             sync_errors=sync_errors,
             constitution_drift_warnings=constitution_warnings,
             superseded_adr_warnings=superseded_adr_warnings,
+            numbering_collisions=numbering_collisions,
         )

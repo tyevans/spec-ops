@@ -41,6 +41,9 @@ jobs:
       - name: Verify dependency lockfile integrity
         run: uv lock --check
 
+      - name: Verify artifact numbering uniqueness (ADRs, PRDs, Tasks, Stories)
+        run: uv run spec-ops health --numbering
+
       - name: Verify SpecOps health & file length invariants (<500 lines)
         run: uv run spec-ops health
 
@@ -70,6 +73,7 @@ specops-quality-gate:
     - uv sync
   script:
     - uv lock --check
+    - uv run spec-ops health --numbering
     - uv run spec-ops health
     - uv run pytest
 """
