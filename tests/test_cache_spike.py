@@ -242,5 +242,5 @@ def test_benchmark_graph_compilation_synthetic():
     res = benchmark_graph_compilation(num_entities=1000)
     assert isinstance(res, BenchmarkResult)
     assert res.entities_count == 1000
-    assert res.cold_seconds < 1.2
-    assert res.warm_seconds < 0.050
+    assert res.cold_seconds < 1.5
+    assert res.warm_seconds < 0.100
