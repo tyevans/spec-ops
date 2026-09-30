@@ -15,6 +15,7 @@ governing_stories:
 - US-0055
 - US-0113
 target_bc: security
+allows_dependencies: true
 ---
 
 # TASK-0030: Cryptographic Commit Verification and Dual-Custody Gate

@@ -21,6 +21,7 @@ governing_stories:
 target_bc: prd
 claimed_by: worker-3
 branch: feat/0037-governed-worktree-spike-lifecycle-and-em
+allows_dependencies: true
 ---
 
 # TASK-0037: Governed Worktree Spike Lifecycle and Empirical ADR Synthesis
