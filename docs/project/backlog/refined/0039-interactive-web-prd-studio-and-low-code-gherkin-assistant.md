@@ -1,7 +1,7 @@
 ---
 id: '0039'
 title: Interactive Web PRD Studio and Low-Code Gherkin BDD Authoring Assistant
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0035
@@ -14,6 +14,7 @@ governing_adrs:
   - ADR-0007
   - ADR-0008
   - ADR-0009
+  - ADR-0013
 governing_prds:
   - PRD-0003
 governing_stories:
