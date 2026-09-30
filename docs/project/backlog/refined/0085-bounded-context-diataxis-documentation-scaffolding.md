@@ -1,7 +1,7 @@
 ---
 id: '0085'
 title: Bounded-Context Diataxis Documentation Scaffolding and Living Spec Linking
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0064

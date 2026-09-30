@@ -28,7 +28,7 @@ class BacklogCurator:
         self.queue = BacklogQueue(config.backlog_dir)
         self.target_buffer = config.architecture.buffer_target
 
-    def curate(self) -> CurationResult:
+    def curate(self, dry_run: bool = False) -> CurationResult:
         all_tasks = self.queue.list_all_tasks()
         refined_tasks = [t for t in all_tasks if t.status in ("Refined", "Ready")]
         proposed_tasks = [
@@ -64,6 +64,7 @@ class BacklogCurator:
                         task,
                         repo_root=self.config.root_dir,
                         cached_audit_report=audit_report,
+                        dry_run=dry_run,
                     )
                     if ok:
                         refined_ids.append(task.canonical_id)

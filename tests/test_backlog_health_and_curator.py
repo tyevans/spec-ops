@@ -67,6 +67,33 @@ def test_backlog_curator_jit_refinement(tmp_path: Path):
     assert len(refined_after) > 1
 
 
+def test_backlog_curator_dry_run(tmp_path: Path):
+    init_project(tmp_path, name="CuratorDryRunTest")
+    config = load_config(root_dir=tmp_path)
+
+    mgr = PRDManager(config)
+    mgr.create_prd(title="Search Engine", persona="User", component="core")
+    decomposer = PRDDecomposer(config)
+    decomposer.decompose("PRD-0001", include_spike=True)
+
+    queue = BacklogQueue(config.backlog_dir)
+    refined_before = len([t for t in queue.list_all_tasks() if t.status == "Refined"])
+
+    curator = BacklogCurator(config)
+    res_dry = curator.curate(dry_run=True)
+    assert len(res_dry.tasks_refined) > 0
+
+    # Ensure disk state was NOT modified
+    refined_after_dry = len([t for t in queue.list_all_tasks() if t.status == "Refined"])
+    assert refined_after_dry == refined_before
+
+    # Now execute actual curation
+    res_real = curator.curate(dry_run=False)
+    assert len(res_real.tasks_refined) > 0
+    refined_after_real = len([t for t in queue.list_all_tasks() if t.status == "Refined"])
+    assert refined_after_real > refined_before
+
+
 def test_worker_preflight_lockfile_check(tmp_path: Path):
     from spec_ops.backlog.worker import BacklogWorkerEngine
     init_project(tmp_path, name="PreflightTest")

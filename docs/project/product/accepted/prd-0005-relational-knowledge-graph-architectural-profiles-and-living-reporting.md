@@ -134,3 +134,7 @@ component: core
 - `TASK-0089`
 - `TASK-0090`
 - `TASK-0092`
+- `TASK-0095`
+- `TASK-0096`
+- `TASK-0098`
+- `TASK-0099`

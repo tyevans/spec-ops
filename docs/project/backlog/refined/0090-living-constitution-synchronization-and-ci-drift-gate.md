@@ -1,7 +1,7 @@
 ---
 id: '0090'
 title: Living Constitution Synchronization, Extension Preservation, and CI Drift Gate
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0078
 governing_adrs:

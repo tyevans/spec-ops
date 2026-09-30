@@ -1,7 +1,7 @@
 ---
 id: '0093'
 title: Zero-Toil Human Worktree Sandboxing for Focused Feature Development
-status: Proposed
+status: Complete
 dependencies:
 - TASK-0051
 governing_adrs:

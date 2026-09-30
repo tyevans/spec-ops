@@ -1,7 +1,7 @@
 ---
 id: '0084'
 title: Zero-Dependency Native Git Hook Scaffolding and Autonomous Worktree Guardrails
-status: Proposed
+status: Refined
 created: 2026-09-29
 dependencies:
   - TASK-0064

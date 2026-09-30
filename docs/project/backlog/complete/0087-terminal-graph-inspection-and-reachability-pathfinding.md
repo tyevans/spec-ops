@@ -1,7 +1,7 @@
 ---
 id: 0087
 title: Terminal Graph Inspection, Reachability Pathfinding, and Blast-Radius Traversal
-status: Refined
+status: Complete
 dependencies:
 - TASK-0060
 governing_adrs:
