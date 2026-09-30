@@ -99,6 +99,7 @@ def main() -> int:
         if report.violations:
             print(f"❌ {len(report.violations)} File Length Violation(s):")
             for v in report.violations:
+                print(f"File Length Violation: {v.path} ({v.lines} lines > {v.limit} line limit)")
                 print(f"   {v.path}: {v.lines} lines (limit: {v.limit})")
         else:
             print("✅ Invariant Met: Zero source files exceed length limit.")
@@ -106,6 +107,7 @@ def main() -> int:
         if report.warnings:
             print(f"\n⚠️ {len(report.warnings)} Proactive Refactoring Warning(s) (approaching limit):")
             for w in report.warnings:
+                print(f"⚠️ Proactive Refactoring Warning: {w.path} ({w.lines} lines >= {w.threshold} line warning threshold)")
                 print(f"   {w.path}: {w.lines} lines (warning threshold: {w.threshold}, limit: {w.limit})")
 
         if report.constitution_drift_warnings:

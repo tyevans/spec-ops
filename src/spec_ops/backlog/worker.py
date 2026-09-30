@@ -253,6 +253,7 @@ class BacklogWorkerEngine:
         worktree_dir = self.repo_root / ".worktrees" / f"task-{clean_id}"
         success = False
         worktree_created = False
+        agent_log = ""
 
         print(f"🚀 Starting worker for {task.canonical_id}: '{task.title}'")
         try:
@@ -366,7 +367,13 @@ class BacklogWorkerEngine:
         finally:
             if not success and not dry_run:
                 if worktree_created and worktree_dir.exists() and any(worktree_dir.iterdir()):
+                    diag_file = worktree_dir / ".failure.log"
+                    diag_file.write_text(
+                        f"Autonomous Worker Execution Failure Report\nTask: {task.canonical_id}\n\nLast Failure Log:\n{agent_log or 'Preflight verification failed'}\n",
+                        encoding="utf-8",
+                    )
                     print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
+                    print(f"spec-ops rescue {task.canonical_id}")
             else:
                 self.cleanup_worktree(worktree_dir, branch, delete_branch=dry_run or local_merge)
                 if dry_run:
