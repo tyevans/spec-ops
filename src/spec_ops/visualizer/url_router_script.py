@@ -47,6 +47,8 @@ def parse_url_hash(hash_str: str) -> VisualizerUrlState:
     raw_tab = get_first("tab", "graph").lower()
     if raw_tab == "canvas":
         raw_tab = "graph"
+    elif raw_tab in ("fleet", "telemetry"):
+        raw_tab = "lead"
     valid_tabs = {"graph", "matrix", "gantt", "kanban", "prds", "adrs", "personas", "lead", "security"}
     tab = raw_tab if raw_tab in valid_tabs else "graph"
 
@@ -163,6 +165,7 @@ URL_ROUTER_JS = r"""
     const validTabs = ["graph", "matrix", "gantt", "kanban", "prds", "adrs", "personas", "lead", "security"];
     let rawTab = (params.get("tab") || "graph").toLowerCase();
     if (rawTab === "canvas") rawTab = "graph";
+    else if (rawTab === "fleet" || rawTab === "telemetry") rawTab = "lead";
     let tab = validTabs.includes(rawTab) ? rawTab : "graph";
 
     let q = params.get("q") || params.get("query") || "";

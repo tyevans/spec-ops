@@ -2,24 +2,25 @@
 id: '0043'
 title: Non-Technical PMaC Onboarding Tutorial, Interactive Tour, and Discovery Sandbox
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0015
-  - TASK-0039
-  - TASK-0042
+- TASK-0015
+- TASK-0039
+- TASK-0042
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0003
+- PRD-0003
 governing_stories:
-  - US-0050
+- US-0050
 target_bc: prd
+claimed_by: worker-3
+branch: feat/0043-non-technical-pmac-onboarding-tutorial--
 ---
 
 # TASK-0043: Non-Technical PMaC Onboarding Tutorial, Interactive Tour, and Discovery Sandbox

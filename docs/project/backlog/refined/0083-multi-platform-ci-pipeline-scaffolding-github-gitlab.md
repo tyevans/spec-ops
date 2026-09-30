@@ -1,21 +1,21 @@
 ---
-id: '0083'
-title: Multi-Platform CI/CD Pipeline Scaffolding Across GitHub Actions and GitLab CI
+id: 0083
+title: Multi-Platform CI/CD Pipeline Scaffolding Across GitHub Actions and GitLab
+  CI
 status: Refined
-created: 2026-09-29
 dependencies:
-  - TASK-0064
-  - TASK-0012
+- TASK-0064
+- TASK-0012
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0004
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0003
+- ADR-0004
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0069
+- US-0069
 target_bc: scaffold
 ---
 

@@ -1,0 +1,6 @@
+{
+  "event": "task_unblocked",
+  "task_id": "TASK-0100",
+  "target_bc": "visualizer",
+  "priority_rank": 93
+}

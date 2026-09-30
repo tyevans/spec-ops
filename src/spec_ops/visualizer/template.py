@@ -66,7 +66,7 @@ _BASE_SHELL = """<!DOCTYPE html>
     <button class="tab-btn" data-tab="prds" onclick="switchTab('prds')">🎯 PRDs & Features</button>
     <button class="tab-btn" data-tab="adrs" onclick="switchTab('adrs')">🏛️ ADR Architecture</button>
     <button class="tab-btn" data-tab="personas" onclick="switchTab('personas')">👥 Personas & Stories</button>
-    <button class="tab-btn" data-tab="lead" onclick="switchTab('lead')">⚡ Lead Console</button>
+    <button class="tab-btn" data-tab="lead" onclick="switchTab('lead')" title="Live Autonomous Worker Fleet Telemetry and Lead Operations Console">⚡ Lead Console / Fleet Telemetry</button>
     <button class="tab-btn" data-tab="security" onclick="switchTab('security')">🛡️ Security &amp; Compliance</button>
     <button class="tab-btn" data-tab="uat" onclick="switchTab('uat')">📋 UAT Readiness</button>
   </nav>

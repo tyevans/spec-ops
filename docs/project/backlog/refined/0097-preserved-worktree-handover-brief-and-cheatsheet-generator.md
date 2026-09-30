@@ -1,22 +1,24 @@
 ---
-id: '0097'
+id: 0097
 title: Preserved Worktree AI-to-Human Handover Brief and Debug Cheatsheet Generator
 status: Refined
 dependencies:
-  - TASK-0052
+- TASK-0052
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0004
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0004
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0090
+- US-0090
 target_bc: rescue
+claimed_by: worker-3
+branch: feat/0097-preserved-worktree-ai-to-human-handover-
 ---
 
 # TASK-0097: Preserved Worktree AI-to-Human Handover Brief and Debug Cheatsheet Generator

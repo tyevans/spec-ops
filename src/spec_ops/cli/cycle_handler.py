@@ -18,6 +18,59 @@ from ..worker import BatchCycleOrchestrator
 
 def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Handles 'spec-ops worker' command execution."""
+    if getattr(args, "telemetry", False):
+        import json
+        from ..visualizer.telemetry_script import aggregate_fleet_telemetry, harvest_fleet_telemetry
+
+        records = harvest_fleet_telemetry(config)
+        aggregated = aggregate_fleet_telemetry(records)
+
+        if getattr(args, "json", False):
+            print(json.dumps(aggregated, indent=2))
+            return 0
+
+        from rich.console import Console
+        from rich.table import Table
+
+        console = Console(width=180)
+        table = Table(title=f"SpecOps Worker Fleet Telemetry ({config.project.name})")
+        table.add_column("Task ID", style="bold cyan")
+        table.add_column("Worktree Directory", style="dim")
+        table.add_column("Branch", style="green")
+        table.add_column("Status", style="bold", no_wrap=True)
+        table.add_column("Retries", justify="center")
+        table.add_column("Preflight Hook", style="yellow")
+        table.add_column("Elapsed", justify="right")
+        table.add_column("Memory", justify="right")
+        table.add_column("Rescue Command", style="magenta")
+
+        for r in records:
+            st = r.get("status", "Running")
+            st_style = "red bold" if r.get("stalled") else ("yellow" if "healing" in st.lower() else "green")
+            table.add_row(
+                r.get("task_id", ""),
+                r.get("worktree_path", ""),
+                r.get("branch", ""),
+                f"[{st_style}]{st}[/{st_style}]",
+                r.get("retries") or r.get("attempt") or "0/3",
+                r.get("current_preflight_hook") or r.get("active_preflight_check") or "",
+                r.get("elapsed_runtime", "0s"),
+                r.get("memory_usage", "0 MB"),
+                r.get("rescue_cmd", ""),
+            )
+
+        console.print(table)
+        summary = (
+            f"Total: {aggregated['total']} | Active: {aggregated['active']} | "
+            f"Stalled: {aggregated['stalled']} | Rescued: {aggregated['rescued']} | "
+            f"Completed: {aggregated['completed']} | Memory: {aggregated['total_memory_mb']} MB"
+        )
+        console.print(f"[bold]{summary}[/bold]")
+        if aggregated["stalled"] > 0:
+            console.print(f"[bold red]⚠️  Alert: {aggregated['stalled']} worker(s) stalled: {', '.join(aggregated['stalled_tasks'])}[/bold red]")
+            console.print("[dim]Run 'spec-ops rescue <task-id>' to take over.[/dim]")
+        return 0
+
     action_or_task = getattr(args, "action_or_task", None)
     task_pos = getattr(args, "task_pos", None)
     auto_flag = getattr(args, "auto", False)

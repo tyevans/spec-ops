@@ -39,9 +39,12 @@ VIEWS_JS = r"""
   };
 
   function internalSwitchTab(tabName) {
+    if (tabName === "fleet" || tabName === "telemetry") {
+      tabName = "lead";
+    }
     activeTab = tabName;
     document.querySelectorAll(".tab-btn").forEach(btn => {
-      if (btn.dataset.tab === tabName) btn.classList.add("active");
+      if (btn.dataset.tab === tabName || (tabName === "lead" && (btn.dataset.tab === "fleet" || btn.dataset.tab === "telemetry"))) btn.classList.add("active");
       else btn.classList.remove("active");
     });
 
