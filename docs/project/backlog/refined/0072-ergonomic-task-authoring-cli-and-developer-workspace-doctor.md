@@ -1,23 +1,22 @@
 ---
 id: '0072'
 title: Ergonomic Task Authoring CLI and Developer Workspace Onboarding Doctor
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0007
-  - TASK-0044
+- TASK-0007
+- TASK-0044
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0039
-  - US-0042
+- US-0039
+- US-0042
 target_bc: worker
 ---
 

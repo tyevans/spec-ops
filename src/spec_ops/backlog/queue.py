@@ -329,12 +329,13 @@ class BacklogQueue:
         self,
         task: Task,
         repo_root: Path | None = None,
+        cached_audit_report: Any | None = None,
     ) -> tuple[bool, str]:
         """Gates task transition from proposed/ to refined/ by verifying license policy and CVEs."""
         from ..security.audit import run_dependency_audit
 
         root = (repo_root or self.backlog_dir.parent.parent).resolve()
-        report = run_dependency_audit(root)
+        report = cached_audit_report if cached_audit_report is not None else run_dependency_audit(root)
         if not report.ok:
             err_details = "; ".join(report.errors) if report.errors else "vulnerability or license policy violation"
             return False, f"Refinement gate failed: Dependency audit failed: {err_details}"

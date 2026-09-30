@@ -1,21 +1,21 @@
 ---
-id: '0059'
-title: 'Architectural Spike: Tarjan Strongly Connected Components (SCC) Cycle Resolution, Topological Sorting, and Blast-Radius Traversal'
-status: Proposed
-created: 2026-09-29
+id: 0059
+title: 'Architectural Spike: Tarjan Strongly Connected Components (SCC) Cycle Resolution,
+  Topological Sorting, and Blast-Radius Traversal'
+status: Refined
 dependencies:
-  - TASK-0058
+- TASK-0058
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0060
-  - US-0063
+- US-0060
+- US-0063
 target_bc: core
 ---
 
@@ -47,4 +47,4 @@ Complex project backlogs and specification networks frequently develop accidenta
 2. Prototype returns deterministic, human-readable cycle path tracebacks (e.g. `TASK-0010 -> TASK-0015 -> TASK-0020 -> TASK-0010`) identifying the exact feedback edges.
 3. Topological sort produces valid execution tiers for all acyclic nodes, isolating cyclic components into a quarantined deadlock partition.
 4. Blast radius calculation computes the complete transitive downstream dependent set of any entity in under 5ms on a 1,000-node graph.
-5. Algorithmic trade-offs, benchmarks, and formal mathematical proofs are compiled into `docs/project/adrs/proposed/adr-0011-deterministic-dag-topology-and-cycle-resolution.md`.
+5. Algorithmic trade-offs, benchmarks, and formal mathematical proofs are compiled into `docs/project/adrs/proposed/adr-0017-deterministic-dag-topology-and-cycle-resolution.md`.
