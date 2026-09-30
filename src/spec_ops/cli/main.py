@@ -8,9 +8,6 @@ from pathlib import Path
 from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
 from ..config.loader import load_config
-from ..scaffold.init import init_project
-from ..visualizer.generator import generate_standalone_html
-from ..visualizer.server import serve_visualizer
 from .parser import build_parser
 
 
@@ -207,6 +204,10 @@ def main() -> int:
     if args.command == "export":
         from .export_handler import handle_export_command
         return handle_export_command(args, config, parser)
+
+    if args.command == "release":
+        from .release_handler import handle_release_command
+        return handle_release_command(args, config, parser)
 
     if args.command == "curate":
         if getattr(args, "curate_action", None) == "next":

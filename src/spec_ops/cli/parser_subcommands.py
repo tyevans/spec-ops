@@ -304,3 +304,15 @@ def register_export_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rd.add_argument("-o", "--out", "--output", dest="output", default=None, help="Output file path (default: dist/roadmap.<format>)")
     p_rd.add_argument("--audience", default="Leadership / Non-Technical", help="Target audience (default: Leadership / Non-Technical)")
     p_rd.add_argument("--granularity", default="Milestones & PRD Outcomes", help="Delivery granularity (default: Milestones & PRD Outcomes)")
+
+
+def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers release notes and customer-facing changelog commands."""
+    p_rel = subparsers.add_parser("release", help="Customer-facing release notes and changelog generation")
+    rel_subs = p_rel.add_subparsers(dest="release_action", help="Release action")
+    p_notes = rel_subs.add_parser("notes", help="Generate customer-facing release notes")
+    p_notes.add_argument("--milestone", required=True, help="Target milestone identifier (e.g. M1, Milestone 1)")
+    p_notes.add_argument("--format", choices=["markdown", "html"], default="markdown", help="Output format (markdown, html)")
+    p_notes.add_argument("--branded", action="store_true", default=False, help="Include branded styling and visualizer links")
+    p_notes.add_argument("-o", "--output", default=None, help="Output file path")
+

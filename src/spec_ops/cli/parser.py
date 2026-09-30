@@ -12,6 +12,7 @@ from .parser_subcommands import (
     register_prd_subparsers,
     register_profile_subparsers,
     register_queue_subparsers,
+    register_release_subparsers,
     register_schema_subparsers,
     register_spike_subparsers,
     register_test_subparsers,
@@ -196,6 +197,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     # export
     register_export_subparsers(subparsers)
+
+    # release
+    register_release_subparsers(subparsers)
 
     # curate
     p_curate = subparsers.add_parser("curate", help="Perform JIT backlog refinement to target buffer size")

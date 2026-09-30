@@ -88,7 +88,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0085 (Complete)**: [`0085-bounded-context-diataxis-documentation-scaffolding`](complete/0085-bounded-context-diataxis-documentation-scaffolding.md)
 - **TASK-0070 (Complete)**: [`0070-worker-fleet-telemetry-review-radar-and-burndown-exporter`](complete/0070-worker-fleet-telemetry-review-radar-and-burndown-exporter.md)
 - **TASK-0083 (Refined)**: [`0083-multi-platform-ci-pipeline-scaffolding-github-gitlab`](refined/0083-multi-platform-ci-pipeline-scaffolding-github-gitlab.md)
-- **TASK-0091 (Refined)**: [`0091-automated-customer-facing-release-notes-generator`](refined/0091-automated-customer-facing-release-notes-generator.md)
+- **TASK-0091 (Complete)**: [`0091-automated-customer-facing-release-notes-generator`](complete/0091-automated-customer-facing-release-notes-generator.md)
 - **TASK-0043 (Refined)**: [`0043-non-technical-pmac-onboarding-tutorial-and-guided-tour`](refined/0043-non-technical-pmac-onboarding-tutorial-and-guided-tour.md)
 - **TASK-0097 (Refined)**: [`0097-preserved-worktree-handover-brief-and-cheatsheet-generator`](refined/0097-preserved-worktree-handover-brief-and-cheatsheet-generator.md)
 - **TASK-0053 (Refined)**: [`0053-anti-loop-worktree-failure-memory-schema-architecture-spike`](refined/0053-anti-loop-worktree-failure-memory-schema-architecture-spike.md)
