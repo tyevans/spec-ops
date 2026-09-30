@@ -114,13 +114,14 @@ class ExecutionSandbox:
         self,
         commands: list[str],
         cwd: Path | None = None,
+        env: dict[str, str] | None = None,
     ) -> tuple[bool, str]:
         """Executes preflight verification commands with socket-level egress isolation."""
         exec_cwd = Path(cwd or self.worktree_dir).resolve()
         logs: list[str] = []
 
         for cmd in commands:
-            res = self.run(cmd, cwd=exec_cwd, shell=True)
+            res = self.run(cmd, cwd=exec_cwd, env=env, shell=True)
             if res.returncode != 0:
                 err = res.stderr.strip() or res.stdout.strip()
                 logs.append(f"Command '{cmd}' failed (code {res.returncode}):\n{err}")

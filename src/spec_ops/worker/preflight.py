@@ -92,7 +92,10 @@ class PreflightPipeline:
         env = self._build_env()
 
         if self.sandbox:
-            ok, log = self.sandbox.run_preflight_suite([stage.command], cwd=self.cwd)
+            try:
+                ok, log = self.sandbox.run_preflight_suite([stage.command], cwd=self.cwd, env=env)
+            except TypeError:
+                ok, log = self.sandbox.run_preflight_suite([stage.command], cwd=self.cwd)
             duration = time.monotonic() - start_time
             code = 0 if ok else 1
             return StageResult(
@@ -315,6 +318,12 @@ class PreflightPipeline:
         # 3. Quality & Test stages
         for c in config.quality.preflight:
             c_str = str(c)
+            if (
+                (c_str == "pytest" or c_str.startswith("pytest "))
+                and shutil.which("uv")
+                and ((cwd / "uv.lock").exists() or (config.root_dir / "uv.lock").exists())
+            ):
+                c_str = f"uv run {c_str}"
             if "lock" in c_str:
                 sname = "lockfile"
             elif "health" in c_str:

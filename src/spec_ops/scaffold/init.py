@@ -33,7 +33,7 @@ slices = [
 testing_style = "blackbox-frontdoor"
 require_bdd = true
 preflight = [
-  "pytest"
+  "uv run pytest"
 ]
 
 [execution]
