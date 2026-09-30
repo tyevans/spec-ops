@@ -1,20 +1,19 @@
 ---
 id: '0104'
 title: Safe Worktree Discard with Anti-Loop Failure Memory and Task Reset
-status: Proposed
-created: 2026-09-30
+status: Refined
 dependencies:
-  - TASK-0053
+- TASK-0053
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0089
+- US-0089
 target_bc: rescue
 ---
 

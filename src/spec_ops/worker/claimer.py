@@ -113,6 +113,23 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
         "- Testing Invariant: Features must be verified blackbox style through public entry points without private backdoors (blackbox frontdoor verification rules with zero private mocks governed by ADR-0003).",
         "- Backlog Isolation: Files under docs/project/backlog/ must not be modified on feature branches. Accidental edits will be intercepted and discarded (ADR-0005).",
         "- Dependency Immutability Invariant: You must NOT edit `pyproject.toml` or `uv.lock` unless `allows_dependencies: true` is explicitly declared in task frontmatter (US-0111). Modifying `pyproject.toml` without authorization triggers an immediate security failure. Do not edit `pyproject.toml` for `[tool.mutmut]`; mutation coverage already scans `src/spec_ops/`.",
+    ]
+
+    failure_history = getattr(task, "failure_history", None)
+    if not failure_history and getattr(task, "raw_markdown", ""):
+        from ..rescue.memory_spike import parse_task_memory
+
+        _, _, failure_history = parse_task_memory(task.raw_markdown)
+
+    if failure_history:
+        from ..rescue.memory_spike import synthesize_negative_constraints
+
+        neg_block = synthesize_negative_constraints(failure_history)
+        if neg_block.strip():
+            lines.append("")
+            lines.append(neg_block.strip())
+
+    lines.extend([
         "",
         "## Task Specification",
         task.body.strip(),
@@ -120,7 +137,7 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
         "## Acceptance Criteria & Preflight",
         f"Your modifications must pass the exact preflight command chain: `{preflight_chain}`",
         "Ensure all tests pass cleanly before completing.",
-    ]
+    ])
     return "\n".join(lines) + "\n"
 
 

@@ -11,9 +11,9 @@ from ..config.loader import load_config
 from .parser import build_parser
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if not args.command:
         parser.print_help()
@@ -341,6 +341,11 @@ def main() -> int:
         return handle_trace_command(args, config)
 
     if args.command == "backlog":
+        if getattr(args, "backlog_action", None) == "doctor":
+            from .queue_handler import handle_queue_command
+            setattr(args, "queue_action", "doctor")
+            return handle_queue_command(args, config, parser)
+
         if getattr(args, "backlog_action", None) == "bottlenecks":
             from .graph_handler import handle_backlog_command
             return handle_backlog_command(args, config)

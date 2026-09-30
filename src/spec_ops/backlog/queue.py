@@ -72,6 +72,8 @@ def write_task_file(task: Task) -> Path:
         if b.adr_id:
             b_dict["adr_id"] = b.adr_id
         meta["blocker"] = b_dict
+    if getattr(task, "failure_history", None):
+        meta["failure_history"] = task.failure_history
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()

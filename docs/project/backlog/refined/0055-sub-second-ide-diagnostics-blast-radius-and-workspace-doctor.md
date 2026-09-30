@@ -1,23 +1,22 @@
 ---
 id: '0055'
 title: Sub-Second IDE Invariant Diagnostics and Real-Time Editor Feedback
-status: Proposed
-created: 2026-09-29
+status: Refined
 dependencies:
-  - TASK-0013
-  - TASK-0046
-  - TASK-0052
+- TASK-0013
+- TASK-0046
+- TASK-0052
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0004
+- PRD-0004
 governing_stories:
-  - US-0091
+- US-0091
 target_bc: rescue
 ---
 

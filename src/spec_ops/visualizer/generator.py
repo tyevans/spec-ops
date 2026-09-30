@@ -11,6 +11,7 @@ from ..core.git_metadata import GitMetadataHarvester
 from ..core.graph import build_graph_data, process_project_graph
 from ..core.parser import SpecOpsParser, extract_frontmatter
 from .lead_console import harvest_fleet_telemetry
+from .radar_script import harvest_architecture_radar
 from .security_metrics import harvest_security_posture
 from .template import VISUALIZER_HTML_TEMPLATE
 
@@ -82,6 +83,31 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             }
         )
     security_posture = harvest_security_posture(config, tasks=tasks_payload)
+    architecture_radar = harvest_architecture_radar(config, data)
+    superseded_map = architecture_radar.get("superseded_map", {})
+    adr_titles = {a.id: a.title for a in data.adrs}
+
+    adrs_payload = []
+    for a in data.adrs:
+        a_meta, _ = extract_frontmatter(a.raw_markdown) if a.raw_markdown else ({}, "")
+        sup_by = str(a_meta.get("superseded_by") or superseded_map.get(a.id) or "")
+        sup_title = adr_titles.get(sup_by, "")
+        status = "Superseded" if (sup_by or a.status == "Superseded" or a_meta.get("status") == "Superseded") else (a.status or "Accepted")
+        adrs_payload.append({
+            "id": a.id,
+            "title": a.title,
+            "status": status,
+            "domain": a.domain,
+            "context": a.context,
+            "decision": a.decision,
+            "consequences": a.consequences,
+            "implementing_tasks": a.implementing_tasks,
+            "raw_markdown": a.raw_markdown,
+            "superseded_by": sup_by,
+            "superseded_by_title": sup_title,
+            "supersedes": str(a_meta.get("supersedes") or ""),
+            "file_path": _rel_path(config.root_dir, a.file_path),
+        })
 
     return {
         "project": {
@@ -163,21 +189,7 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             }
             for p in data.prds
         ],
-        "adrs": [
-            {
-                "id": a.id,
-                "title": a.title,
-                "status": a.status,
-                "domain": a.domain,
-                "context": a.context,
-                "decision": a.decision,
-                "consequences": a.consequences,
-                "implementing_tasks": a.implementing_tasks,
-                "raw_markdown": a.raw_markdown,
-                "file_path": _rel_path(config.root_dir, a.file_path),
-            }
-            for a in data.adrs
-        ],
+        "adrs": adrs_payload,
         "bounded_contexts": [
             {
                 "id": bc,
@@ -189,6 +201,7 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
         "telemetry": harvest_fleet_telemetry(config),
         "security": security_posture,
         "uat": _harvest_uat(config),
+        "architecture": architecture_radar,
     }
 
 

@@ -47,19 +47,33 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     action: str | None = None
     task_id: str | None = None
 
-    known_actions = {"triage", "takeover", "inspect", "shell"}
+    known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset"}
     if raw_task_id in known_actions:
         action = raw_task_id
         task_id = target
     elif target in known_actions:
         action = target
         task_id = raw_task_id
+    elif getattr(args, "step", None) or getattr(args, "only_failed", False):
+        action = "test"
+        task_id = raw_task_id
     else:
         task_id = raw_task_id
-        if task_id and not args.complete and not args.discard and not args.list:
+        if task_id and not args.complete and not args.discard and not getattr(args, "reset", False) and not args.list:
             action = "inspect"
 
+    if action == "test":
+        from ..rescue.incremental_runner import run_incremental_rescue_test
+
+        return run_incremental_rescue_test(
+            config=config,
+            task_id=task_id,
+            step=getattr(args, "step", None),
+            only_failed=getattr(args, "only_failed", False),
+        )
+
     if args.list or not task_id:
+
         wts = mgr.list_active_worktrees()
         print("=== Active / Stalled Worktrees (.worktrees/) ===")
         if not wts:
@@ -81,6 +95,21 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
     if args.discard:
         ok, msg = mgr.discard_worktree(task_id)
+        print(msg)
+        return 0 if ok else 1
+
+    if getattr(args, "reset", False) or action == "reset":
+        from ..rescue.memory_spike import reset_worktree_with_memory
+
+        reason = getattr(args, "reason", "") or ""
+        demote = getattr(args, "demote", False)
+        ok, msg = reset_worktree_with_memory(
+            config.root_dir,
+            config.backlog_dir,
+            task_id,
+            reason=reason,
+            demote=demote,
+        )
         print(msg)
         return 0 if ok else 1
 

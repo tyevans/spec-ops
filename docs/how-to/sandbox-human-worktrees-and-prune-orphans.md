@@ -112,3 +112,48 @@ When an autonomous worker session exhausts its self-healing retries, its isolate
    ```bash
    spec-ops rescue TASK-0012 --complete
    ```
+
+---
+
+## Step 6: Rapid Iteration with Fast Incremental Preflight Runner
+
+When troubleshooting a rescued worktree, rerunning the entire multi-minute preflight suite for each small change introduces significant latency. Use the incremental test runner to isolate broken checks:
+
+1. **Re-run Only Failed Steps**:
+   Rerun only the previously failed check (skipping cached passes like lockfile validation and invariant checks):
+   ```bash
+   spec-ops rescue test --only-failed
+   ```
+
+2. **Isolate a Specific Preflight Step**:
+   Target an individual gate or check for sub-second feedback during iterative fixes:
+   ```bash
+   spec-ops rescue test --step lint
+   ```
+
+3. **Mandatory Full Revalidation on Completion**:
+   When completing rescue with `spec-ops rescue <task-id> --complete`, incremental caches are automatically bypassed to enforce an un-truncated, full preflight run before merging into `main`.
+
+---
+
+## Step 7: Reset Broken Worktrees with Anti-Loop Failure Memory
+
+If an agent's approach was fundamentally flawed (e.g. attempting internal mock backdoors violating ADR-0003 or monkey-patching libraries), wipe the worktree while capturing the failure post-mortem directly into task frontmatter:
+
+```bash
+spec-ops rescue reset TASK-0024 --reason "Agent attempted internal mock backdoors violating ADR-0003 instead of public CLI testing"
+```
+
+This safely deletes `.worktrees/task-0024` and its feature branch, while appending a `failure_history` entry to the task file in `refined/`. Subsequent autonomous worker sessions will have their `.task-prompt.md` hydrated with explicit negative constraints:
+```markdown
+## Prior Attempt Failures & Anti-Patterns (DO NOT REPEAT)
+- Previous failure: Agent attempted internal mock backdoors violating ADR-0003 instead of public CLI testing.
+- Mandate: You must strictly use public frontdoor entrypoints with zero mock backdoors.
+```
+
+### Demoting Ambiguous Specifications
+If the failure was caused by contradictory acceptance criteria or missing requirements, add `--demote` to move the task from `refined/` back to `proposed/` and update `PRIORITY.md`:
+
+```bash
+spec-ops rescue reset TASK-0030 --demote --reason "Contradictory Gherkin criteria in Scenario 2"
+```

@@ -163,6 +163,7 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         blocker=blocker_info,
         slice_type=str(meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat").lower(),
         unblocked=bool(meta.get("unblocked", False)),
+        failure_history=list(meta.get("failure_history", []) or []),
     )
 
 
@@ -236,10 +237,16 @@ def parse_prd(file_path: Path) -> PRD:
 def parse_adr(file_path: Path) -> ADR:
     """Parses an ADR markdown file."""
     content = file_path.read_text(encoding="utf-8")
+    meta, body = extract_frontmatter(content)
     num_match = re.search(r"adr-(\d+)", file_path.stem, re.IGNORECASE)
-    raw_id = f"ADR-{num_match.group(1).zfill(4)}" if num_match else file_path.stem.upper()
-    title_line = content.splitlines()[0] if content else file_path.stem
-    clean_title = re.sub(r"^#\s*(ADR-\d+:\s*)?", "", title_line).strip()
+    raw_id = f"ADR-{num_match.group(1).zfill(4)}" if num_match else str(meta.get("id", file_path.stem.upper()))
+    clean_title = str(meta.get("title", ""))
+    if not clean_title:
+        title_line = body.strip().splitlines()[0] if body.strip() else (content.splitlines()[0] if content else file_path.stem)
+        clean_title = re.sub(r"^#\s*(ADR-\d+:\s*)?", "", title_line).strip()
+
+    status = str(meta.get("status", "Accepted"))
+    domain = str(meta.get("domain", "Architecture"))
 
     ctx_m = re.search(r"## Context\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
     dec_m = re.search(r"## Decision\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
@@ -248,8 +255,8 @@ def parse_adr(file_path: Path) -> ADR:
     return ADR(
         id=raw_id,
         title=clean_title,
-        status="Accepted",
-        domain="Architecture",
+        status=status,
+        domain=domain,
         context=ctx_m.group(1).strip() if ctx_m else "",
         decision=dec_m.group(1).strip() if dec_m else "",
         consequences=con_m.group(1).strip() if con_m else "",

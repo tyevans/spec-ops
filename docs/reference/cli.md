@@ -57,7 +57,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops release notes` | `--milestone MILESTONE [--format {markdown,html}] [--branded] [-o OUTPUT] [--output OUTPUT]` | Generate customer-facing release notes from shipped PRD capabilities and passed user stories |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review] [--telemetry] [--json]` | Execute backlog task in isolated worktree with concurrent review, or monitor fleet telemetry |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
-| `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--prune] [--dry-run] [--action ACTION] [--file FILE]` | Inspect, triage, and recover stalled or failed autonomous worktrees |
+| `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--reset] [--reason REASON] [--demote] [--prune] [--dry-run] [--action ACTION] [--file FILE] [--step STEP] [--only-failed]` | Inspect, triage, and recover stalled or failed autonomous worktrees, or reset worktree with failure memory |
 | `spec-ops worktree start` | `<TASK_ID>` | Spawn an isolated development worktree for a task |
 | `spec-ops worktree finish` | `[--task-id TASK_ID]` | Verify preflight, merge into main under MERGE_LOCK, and clean up worktree |
 | `spec-ops spike create` | `--name NAME --question QUESTION [--timebox TIMEBOX] [--task TASK_ID] [--prd PRD_ID]` | Author a new architectural spike task and isolated test harness |
@@ -74,9 +74,11 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops queue unblock` | `<TASK_ID> --resolution RESOLUTION [--adr ADR]` | Resolve an unknown/blocker and restore ready/proposed state |
 | `spec-ops queue blockers` | `[--json]` | List all currently blocked tasks, open questions, and linked spikes |
 | `spec-ops queue monitor` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
+| `spec-ops queue doctor` | `[--fix] [--repair] [--json] [--dir DIR]` | Audit backlog health, dangling dependencies, and index drift with automated self-healing repair |
 | `spec-ops backlog` | `[--once]` | Backlog flow monitor, buffer telemetry, and bottleneck detection |
 | `spec-ops backlog flow` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |
+| `spec-ops backlog doctor` | `[--fix] [--repair] [--json] [--dir DIR]` | Audit backlog health, dangling dependencies, and index drift with automated self-healing repair |
 | `spec-ops report burndown` | `[--milestone MILESTONE] [--format {deck,html,digest}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone burndown velocity and presentation slide deck export |
 | `spec-ops report milestone` | `[--milestone MILESTONE] [--format {digest,deck,html}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone executive briefing digest and scope alignment |
 | `spec-ops task create` | `[--title TITLE] [--bc TARGET_BC] [--prd PRD] [--story STORY] [--adr ADR] [--dependencies/--deps DEPS] [--stage STAGE] [--non-interactive]` | Scaffold a new PMaC task with Definition of Ready scaffolding |

@@ -10,6 +10,12 @@ from .commands import (
 )
 from .curator import BacklogCurator, CurationResult
 from .decider import TaskDecider, TaskState
+from .doctor import (
+    BacklogDefect,
+    BacklogDoctor,
+    BacklogDoctorReport,
+    run_backlog_doctor,
+)
 from .events import (
     TaskClaimed,
     TaskCompleted,
@@ -42,6 +48,9 @@ __all__ = [
     "AutonomousTaskSlicer",
     "BacklogCommand",
     "BacklogCurator",
+    "BacklogDefect",
+    "BacklogDoctor",
+    "BacklogDoctorReport",
     "BacklogQueue",
     "BacklogWorkerEngine",
     "CascadeResult",
@@ -61,6 +70,7 @@ __all__ = [
     "RefineTask",
     "ReleaseTask",
     "ReviewResult",
+    "run_backlog_doctor",
     "TaskClaimed",
     "TaskCompleted",
     "TaskDecider",

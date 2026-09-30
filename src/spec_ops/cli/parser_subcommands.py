@@ -184,6 +184,15 @@ def register_queue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_q_mon = queue_subs.add_parser("monitor", help="Interactive terminal backlog flow monitor and JIT buffer telemetry")
     p_q_mon.add_argument("--once", action="store_true", help="Render dashboard snapshot without interactive loop")
 
+    p_q_doc = queue_subs.add_parser(
+        "doctor",
+        help="Audit backlog health, dangling dependencies, and index drift with self-healing repair",
+    )
+    p_q_doc.add_argument("--fix", action="store_true", help="Automatically repair broken dependencies and PRIORITY.md drift")
+    p_q_doc.add_argument("--repair", action="store_true", help="Alias for --fix")
+    p_q_doc.add_argument("--json", action="store_true", help="Output diagnostic report as structured JSON")
+    p_q_doc.add_argument("--dir", default=None, help="Backlog directory path (defaults to docs/project/backlog)")
+
 
 def register_spike_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural spike lifecycle commands."""

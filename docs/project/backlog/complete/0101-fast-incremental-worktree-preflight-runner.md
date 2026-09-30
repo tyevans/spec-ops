@@ -1,7 +1,7 @@
 ---
 id: '0101'
 title: Fast Incremental In-Worktree Preflight Runner with Targeted Step Isolation
-status: Refined
+status: Complete
 dependencies:
 - TASK-0052
 - TASK-0046
@@ -17,8 +17,6 @@ governing_prds:
 governing_stories:
 - US-0093
 target_bc: rescue
-claimed_by: worker-3
-branch: feat/0101-fast-incremental-in-worktree-preflight-r
 ---
 
 # TASK-0101: Fast Incremental In-Worktree Preflight Runner with Targeted Step Isolation
