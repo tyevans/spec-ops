@@ -172,15 +172,55 @@ We enforce **Domain-Driven Design (DDD) and Bounded Contexts**:
 """,
 )
 
+# ADR-0008 for Core Profile v2
+CORE_ADR_0008 = BaselineADR(
+    number=8,
+    slug="generative-property-and-mutation-testing",
+    title="Generative Property-Based Testing and Mutation Testing",
+    content="""# ADR-0008: Generative Property-Based Testing and Mutation Testing
+
+## Status
+Accepted
+
+## Context
+Fixed-example unit tests fail to expose subtle boundary conditions and state machine edge cases in complex domain models.
+
+## Decision
+We mandate **Generative Property-Based Testing (Hypothesis) and Mutation Testing (mutmut)**:
+1. Pure domain functions, graph algorithms, and state machines must maintain generative Hypothesis property tests.
+2. Core domain modules must maintain a minimum 80% mutation kill score under mutmut.
+
+## Consequences
+- **Positive**: Exhaustive edge-case exploration, verified invariant resilience, and regression prevention.
+- **Negative**: Increases test execution duration in continuous integration pipelines.
+""",
+)
+
 from .security import SECURITY_PROFILE
 
+CORE_PROFILE_V1 = Profile(
+    id="core",
+    name="SpecOps Core Baseline",
+    description="The foundational 5 SDLC invariants: Spec as Code, <500 lines limit, Frontdoors only, Self-healing CI, and Backlog Isolation.",
+    version="1.0.0",
+    adrs=[CORE_ADR_0001, CORE_ADR_0002, CORE_ADR_0003, CORE_ADR_0004, CORE_ADR_0005],
+)
+
+CORE_PROFILE_V2 = Profile(
+    id="core",
+    name="SpecOps Core Baseline",
+    description="The enhanced SDLC invariants: Spec as Code, strict <350 lines limit, Frontdoors only, Self-healing CI, Backlog Isolation, and Property/Mutation Testing.",
+    version="2.0.0",
+    adrs=[CORE_ADR_0001, CORE_ADR_0002, CORE_ADR_0003, CORE_ADR_0004, CORE_ADR_0005, CORE_ADR_0008],
+    overrides={"architecture": {"file_length_limit": 350}, "quality": {"require_mutation_testing": True}},
+    invariants=[
+        "Generative Property-Based Testing (Hypothesis) mandated for domain state machines",
+        "Target minimum 80% mutation kill score under mutmut",
+    ],
+)
+
 PROFILES: dict[str, Profile] = {
-    "core": Profile(
-        id="core",
-        name="SpecOps Core Baseline",
-        description="The foundational 5 SDLC invariants: Spec as Code, <500 lines limit, Frontdoors only, Self-healing CI, and Backlog Isolation.",
-        adrs=[CORE_ADR_0001, CORE_ADR_0002, CORE_ADR_0003, CORE_ADR_0004, CORE_ADR_0005],
-    ),
+    "core": CORE_PROFILE_V1,
     "bdd": Profile(
         id="bdd",
         name="Behavior-Driven Development (BDD)",
@@ -196,12 +236,71 @@ PROFILES: dict[str, Profile] = {
     "security": SECURITY_PROFILE,
 }
 
+PROFILE_RELEASES: dict[str, dict[str, Profile]] = {
+    "core": {
+        "1.0.0": CORE_PROFILE_V1,
+        "1.0": CORE_PROFILE_V1,
+        "2.0.0": CORE_PROFILE_V2,
+        "2.0": CORE_PROFILE_V2,
+    },
+    "base": {
+        "1.0.0": CORE_PROFILE_V1,
+        "1.0": CORE_PROFILE_V1,
+        "2.0.0": CORE_PROFILE_V2,
+        "2.0": CORE_PROFILE_V2,
+    },
+    "specops/base": {
+        "1.0.0": CORE_PROFILE_V1,
+        "1.0": CORE_PROFILE_V1,
+        "2.0.0": CORE_PROFILE_V2,
+        "2.0": CORE_PROFILE_V2,
+    },
+    "specops/core": {
+        "1.0.0": CORE_PROFILE_V1,
+        "1.0": CORE_PROFILE_V1,
+        "2.0.0": CORE_PROFILE_V2,
+        "2.0": CORE_PROFILE_V2,
+    },
+}
 
-def get_profile(profile_id: str) -> Profile | None:
-    lowered = profile_id.lower()
+
+def register_profile_release(profile: Profile, version: str | None = None) -> None:
+    """Registers an available profile release in memory."""
+    ver = (version or profile.version).lstrip("v")
+    pid = profile.id.lower()
+    if pid not in PROFILE_RELEASES:
+        PROFILE_RELEASES[pid] = {}
+    PROFILE_RELEASES[pid][ver] = profile
+
+
+def get_profile(profile_id: str, version: str | None = None) -> Profile | None:
+    lowered = profile_id.lower().strip()
+    ver = version.strip().lstrip("v") if version else None
+    if "@" in lowered:
+        parts = lowered.split("@", 1)
+        lowered = parts[0].strip()
+        ver = parts[1].strip().lstrip("v")
+
+    if lowered.startswith("specops/"):
+        lowered = lowered[len("specops/") :]
     if lowered == "base":
         lowered = "core"
-    return PROFILES.get(lowered)
+
+    # Check release registry if version specified
+    if ver and lowered in PROFILE_RELEASES:
+        releases = PROFILE_RELEASES[lowered]
+        if ver in releases:
+            return releases[ver]
+        for r_ver, prof in releases.items():
+            if r_ver.startswith(ver) or ver.startswith(r_ver):
+                return prof
+
+    # Check standard PROFILES
+    prof = PROFILES.get(lowered)
+    if prof:
+        return prof
+    return None
+
 
 
 def list_profiles() -> list[Profile]:
@@ -225,7 +324,6 @@ def resolve_adrs_for_profiles(profile_ids: list[str]) -> list[BaselineADR]:
     # Renumber sequentially
     result: list[BaselineADR] = []
     for idx, adr in enumerate(combined, start=1):
-        # Update title line in content if needed
         old_id = f"ADR-{adr.number:04d}"
         new_id = f"ADR-{idx:04d}"
         new_content = adr.content.replace(old_id, new_id)
@@ -240,3 +338,4 @@ def resolve_adrs_for_profiles(profile_ids: list[str]) -> list[BaselineADR]:
             )
         )
     return result
+

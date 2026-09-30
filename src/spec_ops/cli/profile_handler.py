@@ -132,6 +132,127 @@ def handle_profile_command(args: Any, config: Any) -> int:
         print("Preflight Chain: " + " && ".join(config.quality.preflight or ["pytest"]))
         return 0
 
+    elif action == "diff":
+        import json
+        from ..profiles.composer import load_profile_definition
+        from ..profiles.diff import compute_profile_diff
+
+        installed_name = "core"
+        installed_ver = "1.0.0"
+        toml_file = config.root_dir / "specops.toml"
+        if toml_file.is_file():
+            try:
+                import tomllib
+                t_data = tomllib.loads(toml_file.read_text(encoding="utf-8"))
+                installed_list = t_data.get("profiles", {}).get("installed", [])
+                p_ver = t_data.get("profiles", {}).get("version", "")
+                if installed_list:
+                    first = installed_list[0]
+                    if "@" in first:
+                        installed_name, installed_ver = first.split("@", 1)
+                    else:
+                        installed_name = first
+                        if p_ver:
+                            installed_ver = p_ver
+                elif p_ver:
+                    installed_ver = p_ver
+            except Exception:
+                pass
+
+        p1_arg = getattr(args, "profile", None)
+        p2_arg = getattr(args, "target", None)
+
+        try:
+            if p1_arg and p2_arg:
+                source_prof = load_profile_definition(p1_arg, base_dir=config.root_dir)
+                target_prof = load_profile_definition(p2_arg, base_dir=config.root_dir)
+            elif p1_arg and not p2_arg:
+                norm_p1 = p1_arg.lower().removeprefix("specops/")
+                if norm_p1 in (installed_name.lower().removeprefix("specops/"), "base", "core") and "@" not in p1_arg:
+                    source_spec = f"{installed_name}@{installed_ver}"
+                    target_spec = f"{norm_p1}@2.0.0"
+                    source_prof = load_profile_definition(source_spec, base_dir=config.root_dir)
+                    target_prof = load_profile_definition(target_spec, base_dir=config.root_dir)
+                else:
+                    source_spec = f"{installed_name}@{installed_ver}"
+                    source_prof = load_profile_definition(source_spec, base_dir=config.root_dir)
+                    target_prof = load_profile_definition(p1_arg, base_dir=config.root_dir)
+            else:
+                source_spec = f"{installed_name}@{installed_ver}"
+                target_spec = f"{installed_name}@2.0.0"
+                source_prof = load_profile_definition(source_spec, base_dir=config.root_dir)
+                target_prof = load_profile_definition(target_spec, base_dir=config.root_dir)
+
+            diff_result = compute_profile_diff(source_prof, target_prof)
+            if getattr(args, "json", False):
+                print(json.dumps(diff_result.to_dict(), indent=2))
+            else:
+                print(diff_result.render_text())
+            return 0
+        except ProfileError as err:
+            print(f"❌ {err}", file=sys.stderr)
+            return 1
+
+    elif action == "upgrade":
+        from ..profiles.composer import load_profile_definition
+        from ..profiles.migration import execute_profile_migration
+
+        installed_name = "core"
+        installed_ver = "1.0.0"
+        toml_file = config.root_dir / "specops.toml"
+        if toml_file.is_file():
+            try:
+                import tomllib
+                t_data = tomllib.loads(toml_file.read_text(encoding="utf-8"))
+                installed_list = t_data.get("profiles", {}).get("installed", [])
+                p_ver = t_data.get("profiles", {}).get("version", "")
+                if installed_list:
+                    first = installed_list[0]
+                    if "@" in first:
+                        installed_name, installed_ver = first.split("@", 1)
+                    else:
+                        installed_name = first
+                        if p_ver:
+                            installed_ver = p_ver
+                elif p_ver:
+                    installed_ver = p_ver
+            except Exception:
+                pass
+
+        target_arg = getattr(args, "profile", None)
+        if not target_arg:
+            target_arg = f"{installed_name}@2.0.0"
+        elif "@" not in target_arg:
+            target_arg = f"{target_arg}@2.0.0"
+
+        try:
+            base_spec = f"{installed_name}@{installed_ver}"
+            base_prof = None
+            try:
+                base_prof = load_profile_definition(base_spec, base_dir=config.root_dir)
+            except Exception:
+                pass
+
+            target_prof = load_profile_definition(target_arg, base_dir=config.root_dir)
+
+            res = execute_profile_migration(
+                target_profile=target_prof,
+                repo_root=config.root_dir,
+                base_profile=base_prof,
+                force=getattr(args, "force", False),
+                action=getattr(args, "action", None),
+            )
+            if not res.success:
+                if res.aborted:
+                    print(f"🛑 {res.message}", file=sys.stderr)
+                return 1
+
+            print(res.message)
+            return 0
+        except ProfileError as err:
+            print(f"❌ {err}", file=sys.stderr)
+            return 1
+
     else:
         from ..profiles.registry import list_profiles
 
@@ -144,3 +265,4 @@ def handle_profile_command(args: Any, config: Any) -> int:
             for adr in p.adrs:
                 print(f"     • {adr.canonical_id}: {adr.title}")
         return 0
+

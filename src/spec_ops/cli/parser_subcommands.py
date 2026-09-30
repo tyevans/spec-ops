@@ -81,3 +81,14 @@ def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
 
     p_prof_insp = prof_subs.add_parser("inspect", help="Inspect resolved profile inheritance, merged ADRs and invariant constraints")
     p_prof_insp.add_argument("profile_target", nargs="?", default=".", help="Profile directory or name to inspect (default: current project)")
+
+    p_prof_diff = prof_subs.add_parser("diff", help="Semantic diff of profile invariant and baseline ADR changes")
+    p_prof_diff.add_argument("profile", nargs="?", default=None, help="Target profile or source profile (e.g. core@2.0.0 or specops/base@v2.0)")
+    p_prof_diff.add_argument("target", nargs="?", default=None, help="Optional target profile if source profile is specified")
+    p_prof_diff.add_argument("--json", action="store_true", help="Output machine-readable semantic diff in JSON format")
+
+    p_prof_up = prof_subs.add_parser("upgrade", help="Upgrade architectural profile version and migrate baseline ADRs")
+    p_prof_up.add_argument("profile", nargs="?", default=None, help="Target profile to upgrade to (default: current installed profile)")
+    p_prof_up.add_argument("--force", action="store_true", help="Force upgrade and overwrite conflicting local ADR modifications")
+    p_prof_up.add_argument("--action", choices=["keep-local", "accept-upstream", "custom", "diff", "abort"], default=None, help="Conflict resolution action")
+

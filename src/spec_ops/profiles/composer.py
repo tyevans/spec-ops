@@ -165,14 +165,6 @@ def parse_profile_toml(toml_content: str, base_dir: Path | None = None) -> Profi
 
 def load_profile_definition(identifier_or_path: str | Path, base_dir: Path | None = None) -> Profile:
     """Loads a profile definition from built-in registry, filesystem path, or bundle."""
-    # Check if string matches registered profile or base alias
-    if isinstance(identifier_or_path, str):
-        lowered = identifier_or_path.lower()
-        if lowered == "base":
-            lowered = "core"
-        if lowered in PROFILES:
-            return PROFILES[lowered]
-
     path = Path(identifier_or_path)
     if not path.is_absolute() and base_dir:
         candidate = base_dir / path
@@ -180,12 +172,21 @@ def load_profile_definition(identifier_or_path: str | Path, base_dir: Path | Non
             path = candidate
 
     if not path.exists():
-        # Check profiles/<name> or profiles/<name>/profile.toml
-        cand = Path("profiles") / identifier_or_path
-        if cand.exists():
-            path = cand
-        elif (Path("profiles") / f"{identifier_or_path}-profile").exists():
-            path = Path("profiles") / f"{identifier_or_path}-profile"
+        # Check profiles/<name> or base_dir/profiles/<name>
+        prefixes = [base_dir] if base_dir else []
+        prefixes.append(Path("."))
+        for prefix in prefixes:
+            for cand in [
+                prefix / "profiles" / identifier_or_path,
+                prefix / "profiles" / str(identifier_or_path).replace("@", "-"),
+                prefix / "profiles" / f"{identifier_or_path}-profile",
+                prefix / "upstream" / identifier_or_path,
+            ]:
+                if cand.exists():
+                    path = cand
+                    break
+            if path.exists():
+                break
 
     if path.is_file():
         if path.name.endswith((".tar.gz", ".sop", ".tar")):
@@ -209,6 +210,12 @@ def load_profile_definition(identifier_or_path: str | Path, base_dir: Path | Non
                 except OSError:
                     pass
             return Profile(id=path.name, name=path.name, description="", adrs=adrs)
+
+    # Check built-in and release registry
+    if isinstance(identifier_or_path, str):
+        reg_p = get_profile(identifier_or_path)
+        if reg_p is not None:
+            return reg_p
 
     raise ProfileError(f"Unknown profile: '{identifier_or_path}'")
 # pragma: no mutate end
