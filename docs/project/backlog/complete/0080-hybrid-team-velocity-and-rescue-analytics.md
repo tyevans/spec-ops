@@ -1,7 +1,7 @@
 ---
 id: 0080
 title: Hybrid Team Delivery Velocity and Rescue Telemetry Reporter
-status: Refined
+status: Complete
 dependencies:
 - TASK-0067
 - TASK-0070

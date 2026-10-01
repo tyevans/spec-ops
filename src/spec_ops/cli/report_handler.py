@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from rich.console import Console
@@ -27,6 +28,37 @@ def handle_report_command(
     if not action:
         parser.parse_args(["report", "--help"])
         return 1
+
+    if action == "velocity":
+        from ..backlog.velocity import calculate_hybrid_velocity, save_velocity_snapshot
+        from ..backlog.velocity_format import format_rescues_table, format_velocity_table
+
+        window = getattr(args, "window", "14d") or "14d"
+        include_rescues = getattr(args, "rescues", False)
+        as_json = getattr(args, "json", False)
+
+        report = calculate_hybrid_velocity(
+            config.root_dir,
+            window=window,
+            include_rescues=include_rescues,
+        )
+        save_velocity_snapshot(report, config.root_dir)
+
+        if as_json:
+            print(json.dumps(report.to_dict(), indent=2))
+            return 0
+
+        console = Console()
+        console.print(format_velocity_table(report))
+        if include_rescues and report.rescues:
+            console.print()
+            console.print(format_rescues_table(report))
+            burden_pct = f"{report.rescues.rescue_burden_ratio * 100.0:.1f}%"
+            console.print(
+                f"[bold cyan]Rescue Burden Ratio:[/] {burden_pct}  "
+                f"[bold cyan]Mean Time to Unblock:[/] {report.rescues.mean_time_to_unblock_minutes} minutes"
+            )
+        return 0
 
     check_align = getattr(args, "check_alignment", False)
     if check_align:

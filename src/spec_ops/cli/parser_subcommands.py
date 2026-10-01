@@ -356,6 +356,7 @@ def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_notes.add_argument("--branded", action="store_true", default=False, help="Include branded styling and visualizer links")
     p_notes.add_argument("-o", "--output", default=None, help="Output file path")
 from .parser_scaffold import register_scaffold_subparsers
+from .parser_report import register_report_subparsers
 
 
 
