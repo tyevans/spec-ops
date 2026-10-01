@@ -20,17 +20,22 @@ def _resolve_git_dir(repo_root: Path) -> Path:
     if git_path.is_file():
         with contextlib.suppress(Exception):
             content = git_path.read_text(encoding="utf-8").strip()
-            if content.startswith("gitdir:"):
-                target = content.split("gitdir:", 1)[1].strip()
-                target_path = Path(target)
-                if not target_path.is_absolute():
-                    target_path = (repo_root / target_path).resolve()
-                if target_path.exists():
-                    return target_path
+            for line in content.splitlines():
+                line = line.strip()
+                if line.startswith("gitdir:"):
+                    target = line.split("gitdir:", 1)[1].strip()
+                    if not target:
+                        continue
+                    target_path = Path(target)
+                    if not target_path.is_absolute():
+                        target_path = (repo_root / target_path).resolve()
+                    if target_path.exists() and target_path.is_dir():
+                        return target_path
     elif git_path.is_dir():
         return git_path
-    fallback = repo_root / ".spec-ops"
-    fallback.mkdir(parents=True, exist_ok=True)
+    fallback = (repo_root / ".spec-ops").resolve()
+    with contextlib.suppress(Exception):
+        fallback.mkdir(parents=True, exist_ok=True)
     return fallback
 
 
@@ -40,7 +45,10 @@ class MergeLockManager:
     def __init__(self, repo_root: Path, lock_file: Path | None = None):
         self.repo_root = repo_root.resolve()
         if lock_file:
-            self.lock_file = lock_file
+            self.lock_file = lock_file.resolve()
+            if self.lock_file.parent.is_file():
+                resolved_dir = _resolve_git_dir(self.lock_file.parent.parent)
+                self.lock_file = resolved_dir / self.lock_file.name
         else:
             git_dir = _resolve_git_dir(self.repo_root)
             self.lock_file = git_dir / "spec_ops_merge.lock"
@@ -56,7 +64,12 @@ class MergeLockManager:
         acquired_file = False
         start_time = time.monotonic()
         try:
-            self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+            except (FileExistsError, NotADirectoryError, OSError):
+                fallback_dir = (self.repo_root / ".spec-ops").resolve()
+                fallback_dir.mkdir(parents=True, exist_ok=True)
+                self.lock_file = fallback_dir / self.lock_file.name
             while time.monotonic() - start_time < timeout:
                 try:
                     # Open file for locking

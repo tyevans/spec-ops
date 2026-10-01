@@ -1,7 +1,7 @@
 ---
 id: '0116'
 title: Fix Git Worktree Merge Lock Resolution and FileExistsError
-status: Refined
+status: Complete
 dependencies:
 - TASK-0109
 governing_adrs:
