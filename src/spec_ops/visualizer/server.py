@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
+import queue
 import urllib.parse
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
@@ -81,6 +82,59 @@ class VisualizerHandler(BaseHTTPRequestHandler):
                 self._send_response_bytes(200, "text/html; charset=utf-8", html_doc.encode("utf-8"))
             else:
                 self._send_json(200, report.to_dict())
+        elif path == "/api/events/stream":
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            limit_val = query_params.get("limit", ["50"])[0]
+            since_val = query_params.get("since", query_params.get("since_sequence", ["0"]))[0]
+            live_val = query_params.get("live", ["true"])[0].lower()
+            live = live_val not in ("false", "0", "no")
+
+            try:
+                limit = int(limit_val)
+            except ValueError:
+                limit = 50
+            try:
+                since_seq = int(since_val)
+            except ValueError:
+                since_seq = 0
+
+            root = getattr(self.config, "root_dir", Path.cwd())
+            from ..core.event_streamer import get_event_streamer
+
+            streamer = get_event_streamer(root)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Connection", "keep-alive" if live else "close")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+
+            replayed = streamer.replay_events(limit=limit, since_sequence=since_seq)
+            for ev in replayed:
+                chunk = streamer.format_sse(ev)
+                self.wfile.write(chunk.encode("utf-8"))
+            self.wfile.flush()
+
+            if not live:
+                self.close_connection = True
+                return
+
+            sub_queue = streamer.subscribe_sync()
+            try:
+                while True:
+                    try:
+                        ev = sub_queue.get(timeout=0.5)
+                        chunk = streamer.format_sse(ev)
+                        self.wfile.write(chunk.encode("utf-8"))
+                        self.wfile.flush()
+                    except queue.Empty:
+                        if getattr(self.server, "_shutdown_event", False):
+                            break
+            except (BrokenPipeError, ConnectionResetError, OSError):
+                pass
+            finally:
+                streamer.unsubscribe_sync(sub_queue)
         else:
             self.send_response(404)
             self.end_headers()
@@ -198,7 +252,7 @@ def serve_visualizer(
     handler = VisualizerHandler
     handler.config = config
     handler.default_view = default_view
-    server = HTTPServer((host, port), handler)
+    server = ThreadingHTTPServer((host, port), handler)
     label = "SpecOps PRD Studio" if default_view == "studio" else "SpecOps Visualizer"
     print(f"⚡ {label} running at http://{host}:{port}/ (Ctrl+C to stop)")
     try:

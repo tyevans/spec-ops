@@ -60,6 +60,7 @@ from .cycle_resolver import (
 )
 from .decider import TaskDecider, TaskState
 from .event_store import SQLiteEventLedger, append_events, get_stream, project_task_event_to_filesystem, replay_task_state
+from .event_streamer import EventEnvelope, EventStreamer, get_event_streamer, reset_event_streamers
 from .watcher import WorkspaceWatcher
 from .dag_cache import (
     CyclePreCheckResult,
@@ -132,6 +133,10 @@ __all__ = [
     "get_stream",
     "project_task_event_to_filesystem",
     "replay_task_state",
+    "EventEnvelope",
+    "EventStreamer",
+    "get_event_streamer",
+    "reset_event_streamers",
     "DAGCacheEngine",
     "DAGCachePayload",
     "CyclePreCheckResult",

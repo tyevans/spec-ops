@@ -269,6 +269,15 @@ class SQLiteEventLedger:
             for event in persisted_events:
                 project_task_event_to_filesystem(event, self.project_root)
 
+        try:
+            from .event_streamer import get_event_streamer
+
+            streamer = get_event_streamer(self.project_root, db_path=self.db_path)
+            for event in persisted_events:
+                streamer.publish_event(event)
+        except Exception:
+            pass
+
         return persisted_events
 
     def get_stream(self, stream_id: str) -> list[DomainEvent]:
