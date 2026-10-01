@@ -21,6 +21,7 @@ from .parser_subcommands import (
     register_schema_subparsers,
     register_security_subparsers,
     register_spike_subparsers,
+    register_story_subparsers,
     register_test_subparsers,
 )
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
@@ -358,5 +359,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     # persona
     register_persona_subparsers(subparsers)
+
+    # story
+    register_story_subparsers(subparsers)
 
     return parser

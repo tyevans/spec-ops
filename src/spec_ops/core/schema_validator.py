@@ -57,6 +57,7 @@ class TaskFrontmatter(BaseModel):
     failure_history: list[Any] = Field(default_factory=list)
     external_ref: Optional[str] = None
     issue_url: Optional[str] = None
+    mutation_scope: Optional[str] = None
 
 
 class UserStoryFrontmatter(BaseModel):
@@ -69,8 +70,10 @@ class UserStoryFrontmatter(BaseModel):
     status: str = "Accepted"
     created: Any = None
     persona: str
-    feature: str
+    feature: Optional[str] = None
+    target_bc: Optional[str] = None
     governing_prd: str
+    scenarios: Optional[list[str]] = None
 
 
 class PRDFrontmatter(BaseModel):

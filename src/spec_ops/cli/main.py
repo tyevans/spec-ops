@@ -325,6 +325,10 @@ def main(argv: list[str] | None = None) -> int:
         from .persona_handler import handle_persona_command
         return handle_persona_command(args, config, parser)
 
+    if args.command == "story":
+        from .story_handler import handle_story_command
+        return handle_story_command(args, config, parser)
+
     return 0
 
 

@@ -1,7 +1,7 @@
 ---
 id: '0111'
 title: Multi-Faceted BDD User Story Generation and Cross-Cutting Traceability
-status: Refined
+status: Complete
 dependencies:
 - TASK-0109
 - TASK-0110

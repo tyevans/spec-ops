@@ -127,4 +127,6 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops schema migrate` | `[PATH] [--path OPT_PATH] [--dry-run] [--in-place]` | Safely migrate legacy specification frontmatter fields to schema v2.0 while preserving Markdown body byte-for-byte |
 | `spec-ops persona audit` | `[--json]` | Inspect accepted PRDs, stories, and git commits against PERSONAS.md, identify uncovered or emerging archetypes, and report coverage statistics |
 | `spec-ops persona sync` | `[--diff] [--apply] [--json]` | Generate synthesized persona profile additions for emerging archetypes, preview diff, or apply updates to PERSONAS.md |
+| `spec-ops story create` | `[--title TITLE] [--prd PRD] [--persona PERSONA] [--bc/--target-bc BC] [--id ID] [--feature FEATURE] [--scenarios SCENARIOS] [--dry-run]` | Scaffold a new BDD user story specification with Gherkin acceptance criteria |
+| `spec-ops story trace` | `[--story STORY] [--prd PRD] [--json]` | Audit end-to-end bidirectional traceability across Personas, PRDs, Stories, Tasks, and Commits |
 
