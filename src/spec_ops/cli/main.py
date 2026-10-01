@@ -321,7 +321,9 @@ def main(argv: list[str] | None = None) -> int:
         if getattr(args, "invariants_action", None) == "verify-mutations":
             return handle_mutation_command(args, config)
         parser.parse_args(["invariants", "--help"])
-        return 0
+    if args.command == "persona":
+        from .persona_handler import handle_persona_command
+        return handle_persona_command(args, config, parser)
 
     return 0
 

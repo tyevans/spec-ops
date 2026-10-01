@@ -182,6 +182,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops schema check` | `[PATH] [--path OPT_PATH]` | Audit specification documents against schema v2.0 Pydantic models with compiler-grade diagnostic pointers |
 | `spec-ops schema validate` | `[PATH] [--path OPT_PATH]` | Alias for schema check auditing specification frontmatter against active Pydantic models |
 | `spec-ops schema migrate` | `[PATH] [--path OPT_PATH] [--dry-run] [--in-place]` | Safely migrate legacy specification frontmatter fields to schema v2.0 while preserving Markdown body byte-for-byte |
+| `spec-ops persona audit` | `[--json]` | Inspect accepted PRDs, stories, and git commits against PERSONAS.md, identify uncovered or emerging archetypes, and report coverage statistics |
+| `spec-ops persona sync` | `[--diff] [--apply] [--json]` | Generate synthesized persona profile additions for emerging archetypes, preview diff, or apply updates to PERSONAS.md |
 """
 
 DEFAULT_EXPLANATION_PMAC = """# Project Management as Code (PMaC)

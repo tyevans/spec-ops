@@ -24,6 +24,7 @@ from .parser_subcommands import (
     register_test_subparsers,
 )
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
+from .parser_persona import register_persona_subparsers
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -354,5 +355,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_watch.add_argument("--dir", default=".", help="Target repository directory (default: current directory)")
     p_watch.add_argument("--once", action="store_true", help="Run single watcher scan iteration and exit")
     p_watch.add_argument("--max-iterations", type=int, default=None, help="Maximum number of poll iterations before exit")
+
+    # persona
+    register_persona_subparsers(subparsers)
 
     return parser
