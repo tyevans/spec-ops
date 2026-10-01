@@ -16,6 +16,10 @@ governing_stories:
 - US-0080
 - US-0083
 target_bc: worker
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0147: Autonomous Worktree Auto-Rebase and Optimistic Merge Conflict Resolver

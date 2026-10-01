@@ -3,6 +3,13 @@
 from __future__ import annotations
 
 from .benchmark import run_comparative_benchmark
+from .entropy_plugins import (
+    EntropyFinding,
+    EntropyRule,
+    EntropyScannerConfig,
+    ShannonEntropyScanner,
+    calculate_entropy,
+)
 from .git_hooks import (
     HOOK_END_MARKER,
     HOOK_START_MARKER,
@@ -86,13 +93,15 @@ from .sandbox import ExecutionSandbox
 
 __all__ = [
     "AuthorizedSigner",
-
-    "FORBIDDEN_UTILITIES",
     "BenchmarkReport",
     "BenchmarkResult",
     "ComplianceDeliverable",
     "ComplianceManifest",
+    "EntropyFinding",
+    "EntropyRule",
+    "EntropyScannerConfig",
     "ExecutionSandbox",
+    "FORBIDDEN_UTILITIES",
     "HOOK_END_MARKER",
     "HOOK_START_MARKER",
     "HookSentinelResult",
@@ -109,7 +118,9 @@ __all__ = [
     "ProofStep",
     "ReleaseVerificationResult",
     "SecurityViolationEvent",
+    "ShannonEntropyScanner",
     "build_merkle_manifest",
+    "calculate_entropy",
     "canonical_json_encode",
     "check_diff_for_dependency_modifications",
     "check_worktree_dependency_integrity",

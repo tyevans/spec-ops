@@ -125,6 +125,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops doctor` | `[--fix] [--json]` | Audit and repair local developer workspace and tooling |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops security sentinel` | `[--path PATH] [--fix] [--json]` | Inspect and enforce supply-chain lockfile mutation immutability |
+| `spec-ops security scan` | `[--path PATH] [--entropy] [--threshold THRESHOLD] [--json]` | Scan source files using Shannon entropy analysis and custom rule plugins |
 | `spec-ops security scan-secrets` | `[--path PATH] [--staged] [--threshold THRESHOLD] [--json]` | Scan worktree diffs and source files for high-entropy secrets and credential leaks |
 | `spec-ops security hook install` | `[--path PATH] [--force]` | Install automated pre-commit hook into git repository |
 | `spec-ops security hook uninstall` | `[--path PATH]` | Uninstall automated pre-commit hook from git repository |

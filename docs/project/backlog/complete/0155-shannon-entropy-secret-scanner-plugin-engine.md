@@ -1,7 +1,7 @@
 ---
 id: '0155'
 title: Shannon Entropy Secret Scanner Rule Plugin Engine and Custom Token Defenses
-status: Refined
+status: Complete
 dependencies:
 - TASK-0053
 - TASK-0130

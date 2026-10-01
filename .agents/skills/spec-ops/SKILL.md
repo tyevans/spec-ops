@@ -90,15 +90,23 @@ Continuously audit the repository across four critical vectors to maintain portf
    - Use structured RFC 822 commit trailers (`SpecOps-Task: TASK-XXXX`).
 4. If blocked, rescue immediately via `uv run spec-ops rescue inspect TASK-XXXX` or reset with anti-loop memory.
 
-### Stage 4: Preflight Verification & Integration Gate
+### Stage 4: Preflight Verification, Review Hold & Integration Gate
 1. Execute full verification suite inside the branch:
    ```bash
    uv run spec-ops health
    uv run pytest
    uv lock --check
    ```
-2. Open pull request or perform merge under `MERGE_LOCK`.
-3. Mark task complete and atomically sync `docs/project/backlog/PRIORITY.md` on `main`.
+2. **Review Hold & Dual-Custody Sign-Off**:
+   - Verify all commits are cryptographically signed: `git log --format="%h %G? %s"`.
+   - Generate architectural review brief: `uv run spec-ops review TASK-XXXX`.
+   - Await human architect sign-off: `uv run spec-ops review sign TASK-XXXX --identity "Ty Evans <tyler@poorlythoughtout.com>"`.
+   - Autonomous agents are strictly forbidden from merging to `main` without human review approval.
+3. Once signed off, execute integration merge under `MERGE_LOCK`:
+   ```bash
+   uv run spec-ops queue complete TASK-XXXX
+   ```
+   This verifies commit signatures, asserts dual-custody authorization, squash-merges cleanly, stamps `has_signed_commits: true` and `signed_off_by`, and atomically updates `PRIORITY.md`.
 
 ### Stage 5: Diataxis Documentation Sync & Next Cycle
 1. Update corresponding Diataxis guides (`docs/how-to/`, `docs/reference/`, `docs/explanation/`, `docs/tutorials/`).

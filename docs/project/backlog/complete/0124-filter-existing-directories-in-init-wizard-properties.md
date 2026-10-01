@@ -14,6 +14,8 @@ target_bc: scaffold
 signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
 signed_off_at: '2026-10-01T00:52:11.623827+00:00'
 mutation_scope: src/spec_ops/scaffold/wizard.py
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0124: Filter Existing Filesystem Directories in Init Wizard Property Tests

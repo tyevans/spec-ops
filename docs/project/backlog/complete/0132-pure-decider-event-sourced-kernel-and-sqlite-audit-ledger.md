@@ -20,6 +20,10 @@ governing_stories:
 - US-0030
 - US-0081
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0132: Pure Decider Event-Sourced Kernel and SQLite Audit Ledger

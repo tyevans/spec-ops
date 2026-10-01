@@ -16,6 +16,8 @@ target_bc: backlog
 signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
 signed_off_at: '2026-10-01T00:22:51.342065+00:00'
 mutation_scope: src/spec_ops/scaffold/diataxis.py
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0120: Document spec-ops queue digest and backlog sweep in Diataxis CLI Reference

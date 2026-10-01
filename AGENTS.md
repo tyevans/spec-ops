@@ -39,6 +39,10 @@ These rules are non-negotiable. Autonomous agents and human contributors must fo
 9. **Security & Supply-Chain Hard Invariants**:
    - Autonomous agents are strictly forbidden from hardcoding credentials, modifying unapproved lockfiles, or executing non-allowlisted shell commands.
    - Enforced by `uv run spec-ops health --security` and preflight secret scanners. Governed by ADR-0010, ADR-0011, and ADR-0012.
+10. **Dual-Custody Human Review Gate & Cryptographic Commit Signing**:
+   - All commits on task branches must be cryptographically signed with authorized SSH/GPG keys (`commit.gpgsign = true`).
+   - Autonomous agents and CI bots are strictly forbidden from merging task branches into `main` without verified human review sign-off.
+   - When preflight verification passes, tasks enter a **Review Hold**; an authorized human architect must inspect the review brief (`spec-ops review <task-id>`) and execute `spec-ops review sign <task-id> --identity <key-id>` before integration. Governed by ADR-0016, US-0055, and US-0113.
 
 ---
 
@@ -123,6 +127,7 @@ Work is complete and ready for integration into `main` only when:
    - Documentation builds cleanly (`uv run spec-ops docs build`).
 8. **Strict Backlog Progression**: Task is moved from `refined/` to `complete/` (or via `spec-ops queue complete <task-id>`) and `PRIORITY.md` updated atomically upon integration (ADR-0005).
 9. **Commit Provenance**: Commits include structured trailers referencing governing tasks and stories (`SpecOps-Task: TASK-XXXX`).
+10. **Dual-Custody Human Sign-Off**: Task frontmatter contains verified `signed_off_by` and `signed_off_at` recorded via `spec-ops review sign <task-id> --identity <key-id>`. Integration gate `spec-ops queue complete <task-id>` verifies valid commit signatures and authorized human sign-off before merge (ADR-0016, US-0055, US-0113).
 
 ---
 
@@ -138,4 +143,11 @@ When picking up engineering work:
    - Run `uv run pytest` (verify 100% test pass rate across unit, BDD, and Hypothesis property tests).
    - Run `uv run mutmut run` (verify mutant kill score on mutated domain modules).
    - Run `uv lock --check` (verify lockfile synchronization).
-5. **Complete**: Verify all Definition of Done (DoD) criteria; move task to `complete/` or use `spec-ops queue complete <task-id>`, update `PRIORITY.md`, and link commit or PR.
+5. **Review Hold & Human Sign-Off Gate**:
+   - Verify all commits on branch are cryptographically signed (`git log --format="%h %G? %s"`).
+   - Generate architectural review brief: `uv run spec-ops review <task-id>`.
+   - Present the brief and verification report for human review. Autonomous agents are strictly forbidden from merging without human authorization.
+   - Authorized human reviewer signs off: `uv run spec-ops review sign <task-id> --identity "Ty Evans <tyler@poorlythoughtout.com>"`.
+6. **Integration & Complete**:
+   - Run `uv run spec-ops queue complete <task-id>` under `MERGE_LOCK`. The integration gate cryptographically validates commit signatures and human sign-off.
+   - Task transitions to `complete/` with `has_signed_commits: true`, `commit_signature_status: SIGNED`, and `signed_off_by` preserved, atomically syncing `docs/project/backlog/PRIORITY.md`.

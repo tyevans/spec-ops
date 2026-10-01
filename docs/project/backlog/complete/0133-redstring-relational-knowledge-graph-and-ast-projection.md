@@ -21,6 +21,10 @@ governing_stories:
 - US-0016
 - US-0059
 target_bc: graph
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0133: Redstring Relational Knowledge Graph and AST Projection

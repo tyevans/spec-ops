@@ -156,4 +156,4 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0152 (Complete)**: [`0152-web-prd-studio-client-sync-and-autosave`](complete/0152-web-prd-studio-client-sync-and-autosave.md)
 - **TASK-0153 (Complete)**: [`0153-modularity-debt-scoring-and-growth-telemetry`](complete/0153-modularity-debt-scoring-and-growth-telemetry.md)
 - **TASK-0154 (Complete)**: [`0154-orchestration-event-streaming-bridge`](complete/0154-orchestration-event-streaming-bridge.md)
-- **TASK-0155 (Refined)**: [`0155-shannon-entropy-secret-scanner-plugin-engine`](refined/0155-shannon-entropy-secret-scanner-plugin-engine.md)
+- **TASK-0155 (Complete)**: [`0155-shannon-entropy-secret-scanner-plugin-engine`](complete/0155-shannon-entropy-secret-scanner-plugin-engine.md)

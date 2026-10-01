@@ -11,6 +11,8 @@ governing_stories:
 target_bc: prd
 signed_off_by: tyler@poorlythoughtout.com
 signed_off_at: '2026-10-01T08:16:18.365190+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0131: Interactive Web PRD Studio Visual Editor and Real-Time Schema Validator

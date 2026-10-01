@@ -21,6 +21,8 @@ target_bc: scaffold
 branch: inline_agent_skill_poc
 signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
 signed_off_at: '2026-09-30T22:30:02.956293+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0109: Proof of Concept: Inline Full-Lifecycle SDLC Orchestrator Skill & CLI Primer

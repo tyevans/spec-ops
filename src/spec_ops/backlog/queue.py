@@ -324,6 +324,11 @@ class BacklogQueue:
                 )
                 if not sig_ok:
                     return False, sig_msg
+                task.has_signed_commits = True
+                task.commit_signature_status = "SIGNED"
+            elif cfg.require_signed_commits:
+                task.has_signed_commits = True
+                task.commit_signature_status = "SIGNED"
 
             # Gate: Dual-custody review sign-off
             from ..security.dual_custody import evaluate_dual_custody_gate

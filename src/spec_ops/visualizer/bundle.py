@@ -12,8 +12,8 @@ from .generator import serialize_project_data
 from .lead_console import harvest_fleet_telemetry
 from .template import VISUALIZER_HTML_TEMPLATE
 
-# 2MB size limit invariant for standalone air-gapped bundle
-MAX_BUNDLE_BYTES: int = 2 * 1024 * 1024
+# 5MB size limit invariant for standalone air-gapped bundle
+MAX_BUNDLE_BYTES: int = 5 * 1024 * 1024
 
 
 def validate_airgap_integrity(html_content: str) -> bool:
@@ -62,7 +62,7 @@ def export_bundle(
     size_bytes = out_file.stat().st_size
     if size_bytes > MAX_BUNDLE_BYTES:
         raise ValueError(
-            f"Exported visualizer bundle size ({size_bytes} bytes) exceeds {MAX_BUNDLE_BYTES} byte (2MB) limit."
+            f"Exported visualizer bundle size ({size_bytes} bytes) exceeds {MAX_BUNDLE_BYTES} byte (5MB) limit."
         )
 
     return out_file

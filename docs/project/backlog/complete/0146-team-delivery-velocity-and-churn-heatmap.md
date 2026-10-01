@@ -16,6 +16,10 @@ governing_stories:
 - US-0049
 - US-0052
 target_bc: release
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0146: Team Delivery Velocity Engine and Cognitive Churn Heatmap

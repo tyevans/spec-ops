@@ -82,7 +82,8 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
                 ],
             }
         )
-    security_posture = harvest_security_posture(config, tasks=tasks_payload)
+    completed_tasks = [t for t in tasks_payload if t.get("status") == "Complete"]
+    security_posture = harvest_security_posture(config, tasks=completed_tasks or tasks_payload)
     architecture_radar = harvest_architecture_radar(config, data)
     superseded_map = architecture_radar.get("superseded_map", {})
     adr_titles = {a.id: a.title for a in data.adrs}

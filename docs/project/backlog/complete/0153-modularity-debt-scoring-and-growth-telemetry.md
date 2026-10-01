@@ -16,6 +16,10 @@ governing_stories:
 - US-0017
 - US-0018
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0153: Modularity Debt Scoring and Source File Growth Proactive Telemetry

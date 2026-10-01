@@ -15,6 +15,10 @@ governing_prds:
 governing_stories:
 - US-0017
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0076: Specification Frontmatter Schema Validation and Automated In-Place Migration

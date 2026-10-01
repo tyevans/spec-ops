@@ -308,8 +308,8 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
     p_sentinel.add_argument("--json", action="store_true", help="Output sentinel evaluation as structured JSON")
 
     p_scan = sec_subs.add_parser(
-        "scan-secrets",
-        help="Scan worktree diffs and source files for high-entropy secrets and credential leaks",
+        "scan",
+        help="Scan source files using Shannon entropy analysis and custom rule plugins",
     )
     p_scan.add_argument(
         "--path",
@@ -317,17 +317,40 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
         help="Directory or file path to scan (default: current directory)",
     )
     p_scan.add_argument(
+        "--entropy",
+        action="store_true",
+        default=False,
+        help="Enable Shannon entropy secret scanning",
+    )
+    p_scan.add_argument(
+        "--threshold",
+        type=float,
+        default=4.5,
+        help="Shannon entropy threshold (default: 4.5)",
+    )
+    p_scan.add_argument("--json", action="store_true", help="Output results as structured JSON")
+
+    p_scan_sec = sec_subs.add_parser(
+        "scan-secrets",
+        help="Scan worktree diffs and source files for high-entropy secrets and credential leaks",
+    )
+    p_scan_sec.add_argument(
+        "--path",
+        default=".",
+        help="Directory or file path to scan (default: current directory)",
+    )
+    p_scan_sec.add_argument(
         "--staged",
         action="store_true",
         help="Scan only git staged changes",
     )
-    p_scan.add_argument(
+    p_scan_sec.add_argument(
         "--threshold",
         type=float,
         default=3.7,
         help="Shannon entropy threshold (default: 3.7)",
     )
-    p_scan.add_argument("--json", action="store_true", help="Output results as structured JSON")
+    p_scan_sec.add_argument("--json", action="store_true", help="Output results as structured JSON")
 
     p_hook = sec_subs.add_parser("hook", help="Automated pre-commit git hook installer and supply-chain sentinel")
     hook_subs = p_hook.add_subparsers(dest="hook_action", help="Hook action")

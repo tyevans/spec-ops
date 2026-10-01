@@ -16,6 +16,10 @@ governing_stories:
 - US-0055
 - US-0056
 target_bc: security
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0149: Cryptographic Release Verification and Public Keyring Validator

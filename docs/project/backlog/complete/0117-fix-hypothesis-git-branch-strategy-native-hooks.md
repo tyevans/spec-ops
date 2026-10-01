@@ -15,6 +15,8 @@ governing_stories:
 target_bc: scaffold
 signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
 signed_off_at: '2026-10-01T00:22:04.525759+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0117: Constrain Hypothesis Git Branch Strategy in Native Hooks Property Tests

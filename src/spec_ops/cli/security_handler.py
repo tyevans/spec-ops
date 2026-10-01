@@ -237,6 +237,51 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
             print("✅ Lockfile Sentinel passed: zero unauthorized lockfile mutations detected.")
         return 0
 
+    if args.security_action == "scan":
+        import json
+        from ..security.entropy_plugins import (
+            EntropyScannerConfig,
+            ShannonEntropyScanner,
+        )
+
+        target_arg = getattr(args, "path", ".")
+        target_path = Path(target_arg)
+        if not target_path.is_absolute():
+            if (config.root_dir / target_arg).exists():
+                target_path = (config.root_dir / target_arg).resolve()
+            else:
+                target_path = target_path.resolve()
+
+        threshold = float(getattr(args, "threshold", 4.5))
+        as_json = bool(getattr(args, "json", False))
+
+        cfg_dir = target_path if target_path.is_dir() else target_path.parent
+        scanner_config = EntropyScannerConfig.load_from_project(cfg_dir)
+        if getattr(args, "threshold", None) is not None:
+            for r in scanner_config.rules:
+                r.threshold = threshold
+
+        scanner = ShannonEntropyScanner(scanner_config)
+        findings = scanner.scan_file(target_path) if target_path.is_file() else scanner.scan_directory(target_path)
+
+        if as_json:
+            result = {
+                "is_clean": len(findings) == 0,
+                "findings_count": len(findings),
+                "findings": [f.to_dict() for f in findings],
+            }
+            print(json.dumps(result, indent=2))
+            return 0 if len(findings) == 0 else 1
+
+        if findings:
+            print(f"❌ Security violation: {len(findings)} credential leak risk(s) detected:", file=sys.stderr)
+            for f in findings:
+                print(f"   [{f.rule_name}] {f.file_path}:{f.line_number}: {f.reason} (token: {f.masked_token})", file=sys.stderr)
+            return 1
+
+        print("✅ Security Invariant Met: 0 credential leaks detected.")
+        return 0
+
     if args.security_action == "scan-secrets":
         import json
         from ..security.secrets.scanner import scan_file, scan_worktree

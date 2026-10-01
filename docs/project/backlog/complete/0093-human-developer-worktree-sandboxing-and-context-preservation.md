@@ -1,5 +1,5 @@
 ---
-id: '0093'
+id: 0093
 title: Zero-Toil Human Worktree Sandboxing for Focused Feature Development
 status: Complete
 dependencies:
@@ -15,6 +15,10 @@ governing_prds:
 governing_stories:
 - US-0038
 target_bc: rescue
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0093: Zero-Toil Human Worktree Sandboxing for Focused Feature Development

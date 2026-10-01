@@ -23,6 +23,10 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: worker
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T11:00:00+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0114: Multi-Agent In-Worktree Implementation, Peer Consultation, and Verification Loop
