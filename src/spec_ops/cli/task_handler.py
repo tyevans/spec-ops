@@ -229,6 +229,53 @@ def handle_task_command(
         print(f"✨ Scaffolding complete: Created task {cid} under {created_file}")
         return 0
 
+    if action == "decompose":
+        from ..prd.invest_decomposer import INVESTDecomposer
+
+        raw_prd = getattr(args, "opt_prd", None) or getattr(args, "prd_id", None)
+        if not raw_prd:
+            print("❌ Error: PRD ID is required (--prd <PRD_ID> or positional PRD_ID).", file=sys.stderr)
+            return 1
+
+        output_dir = getattr(args, "output_dir", None)
+        dry_run = getattr(args, "dry_run", False)
+
+        decomposer = INVESTDecomposer(config)
+        try:
+            results = decomposer.decompose(raw_prd, output_dir=output_dir, dry_run=dry_run)
+            prefix = "[DRY-RUN] " if dry_run else ""
+            print(f"✨ {prefix}INVEST decomposition complete: {len(results)} task(s)/spike(s) processed.")
+            for r in results:
+                spike_tag = " [SPIKE]" if r.get("is_spike") else ""
+                print(f"   • {r['id']}{spike_tag}: {r['title']}")
+            return 0
+        except Exception as err:
+            print(f"❌ Error during INVEST decomposition: {err}", file=sys.stderr)
+            return 1
+
+    if action == "synthesize-dor":
+        from ..backlog.dor_synthesizer import DORSynthesizer
+
+        raw_task = getattr(args, "opt_task", None) or getattr(args, "task_id", None)
+        if not raw_task:
+            print("❌ Error: Task ID is required (--task <TASK_ID> or positional TASK_ID).", file=sys.stderr)
+            return 1
+
+        dry_run = getattr(args, "dry_run", False)
+        synthesizer = DORSynthesizer(config)
+        try:
+            ok, msg, details = synthesizer.synthesize(raw_task, dry_run=dry_run)
+            if not ok:
+                print(f"❌ Error: {msg}", file=sys.stderr)
+                return 1
+            print(f"✨ {msg}")
+            for change in details.get("changes", []):
+                print(f"   • Synthesized: {change}")
+            return 0
+        except Exception as err:
+            print(f"❌ Error during DoR contract synthesis: {err}", file=sys.stderr)
+            return 1
+
     try:
         parser.parse_args(["task", "--help"])
     except SystemExit:

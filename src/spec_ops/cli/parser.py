@@ -26,6 +26,7 @@ from .parser_subcommands import (
 )
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
 from .parser_persona import register_persona_subparsers
+from .parser_task import register_task_subparsers
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -303,17 +304,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_rev.add_argument("--provenance", action="store_true", help="Audit commit provenance trailers and author distinction")
 
     # task
-    p_task = subparsers.add_parser("task", help="Ergonomic PMaC task authoring and Definition of Ready scaffolding")
-    task_subs = p_task.add_subparsers(dest="task_action", help="Task action")
-    p_task_create = task_subs.add_parser("create", help="Scaffold a new PMaC task with Definition of Ready scaffolding")
-    p_task_create.add_argument("--title", help="Task title")
-    p_task_create.add_argument("--bc", dest="target_bc", help="Target bounded context")
-    p_task_create.add_argument("--prd", action="append", help="Governing PRD (repeatable or comma-separated)")
-    p_task_create.add_argument("--story", action="append", help="Governing BDD user story (repeatable or comma-separated)")
-    p_task_create.add_argument("--adr", action="append", help="Governing ADR (repeatable or comma-separated)")
-    p_task_create.add_argument("--deps", "--dependencies", dest="dependencies", action="append", help="Task dependencies (repeatable or comma-separated)")
-    p_task_create.add_argument("--stage", choices=["proposed", "refined"], default="proposed", help="Task backlog stage (default: proposed)")
-    p_task_create.add_argument("--non-interactive", action="store_true", help="Do not prompt interactively")
+    register_task_subparsers(subparsers)
 
     # doctor
     p_doctor = subparsers.add_parser("doctor", help="Audit and repair local developer workspace and tooling")

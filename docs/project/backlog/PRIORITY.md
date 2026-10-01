@@ -114,7 +114,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0110 (Complete)**: [`0110-autonomous-persona-discovery-and-living-maintenance-engine`](complete/0110-autonomous-persona-discovery-and-living-maintenance-engine.md)
 - **TASK-0111 (Complete)**: [`0111-multi-faceted-bdd-user-story-generation-and-cross-cutting-traceability`](complete/0111-multi-faceted-bdd-user-story-generation-and-cross-cutting-traceability.md)
 - **TASK-0112 (Complete)**: [`0112-continuous-product-discovery-and-living-prd-synthesis-workflow`](complete/0112-continuous-product-discovery-and-living-prd-synthesis-workflow.md)
-- **TASK-0113 (Refined)**: [`0113-invest-task-decomposition-and-automated-dor-contract-synthesis`](refined/0113-invest-task-decomposition-and-automated-dor-contract-synthesis.md)
+- **TASK-0113 (Complete)**: [`0113-invest-task-decomposition-and-automated-dor-contract-synthesis`](complete/0113-invest-task-decomposition-and-automated-dor-contract-synthesis.md)
 - **TASK-0114 (Refined)**: [`0114-multi-agent-in-worktree-implementation-peer-consultation-and-verification`](refined/0114-multi-agent-in-worktree-implementation-peer-consultation-and-verification.md)
 - **TASK-0115 (Refined)**: [`0115-universal-multi-platform-skill-distribution-and-package-scaffolding`](refined/0115-universal-multi-platform-skill-distribution-and-package-scaffolding.md)
 - **TASK-0116 (Complete)**: [`0116-fix-worktree-git-merge-lock-resolution`](complete/0116-fix-worktree-git-merge-lock-resolution.md)
