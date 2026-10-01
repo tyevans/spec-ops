@@ -98,7 +98,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops bridge import` | `[--source {github,jira,linear,auto}] [--file FILE] [--repo REPO] [--label LABEL] [--bc/--target-bc BC]` | Ingest issues from GitHub Issues, Jira, or Linear into schema-compliant proposed task files |
 | `spec-ops bridge export` | `[--format {markdown,json}] [--out/--output OUT] [--target {github,jira,linear}] [--sync-status] [--dry-run]` | Export structured backlog status snapshot and external tracker sync |
 | `spec-ops report burndown` | `[--milestone MILESTONE] [--format {deck,html,digest}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone burndown velocity and presentation slide deck export |
-| `spec-ops report milestone` | `[--milestone MILESTONE] [--format {digest,deck,html}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone executive briefing digest and scope alignment |
+| `spec-ops report milestone` | `[milestone] [--milestone MILESTONE] [--audit-scope] [--check-alignment] [--export {html,markdown}] [--format {digest,deck,html}] [-o OUTPUT] [--output OUTPUT] [--out OUTPUT]` | Milestone executive briefing digest, scope alignment, and HTML export |
 | `spec-ops report velocity` | `[--window WINDOW] [--rescues] [--json] [--export EXPORT] [--format {table,json,html}] [-o OUTPUT] [--out OUTPUT] [--output OUTPUT]` | Hybrid delivery velocity and autonomous worker rescue analytics |
 | `spec-ops task create` | `[--title TITLE] [--bc TARGET_BC] [--prd PRD] [--story STORY] [--adr ADR] [--dependencies/--deps DEPS] [--stage STAGE] [--non-interactive]` | Scaffold a new PMaC task with Definition of Ready scaffolding |
 | `spec-ops doctor` | `[--fix] [--json]` | Audit and repair local developer workspace and tooling |

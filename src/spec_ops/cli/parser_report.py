@@ -20,11 +20,14 @@ def register_report_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rep_bd.add_argument("-o", "--output", help="Output file path (default: dist/<milestone>-executive-briefing.html)")
     p_rep_bd.add_argument("--check-alignment", action="store_true", help="Audit completed tasks unanchored from ROADMAP.md")
 
-    p_rep_ms = report_subs.add_parser("milestone", help="Milestone executive briefing digest and scope alignment")
-    p_rep_ms.add_argument("--milestone", default="M1-MVP", help="Target milestone name or ID (default: M1-MVP)")
-    p_rep_ms.add_argument("--format", choices=["digest", "deck", "html"], default="digest", help="Report format (default: digest)")
-    p_rep_ms.add_argument("-o", "--output", help="Output file path")
+    p_rep_ms = report_subs.add_parser("milestone", help="Milestone executive briefing digest, scope alignment, and HTML export")
+    p_rep_ms.add_argument("pos_milestone", nargs="?", default=None, metavar="milestone", help="Target milestone name or ID (default: M1-MVP)")
+    p_rep_ms.add_argument("--milestone", default=None, help="Target milestone name or ID (default: M1-MVP)")
+    p_rep_ms.add_argument("--audit-scope", action="store_true", help="Audit unanchored tasks lacking links to roadmap deliverables or PRDs")
     p_rep_ms.add_argument("--check-alignment", action="store_true", help="Audit completed tasks unanchored from ROADMAP.md")
+    p_rep_ms.add_argument("--export", choices=["html", "markdown"], default=None, help="Export format for milestone briefing (html, markdown)")
+    p_rep_ms.add_argument("--format", choices=["digest", "deck", "html"], default=None, help="Report format (digest, deck, html; default: digest)")
+    p_rep_ms.add_argument("-o", "--output", "--out", dest="output", help="Output file path")
 
     p_rep_vel = report_subs.add_parser("velocity", help="Hybrid delivery velocity and autonomous worker rescue analytics")
     p_rep_vel.add_argument("--window", default="14d", help="Evaluation time window (e.g. 14d, 30d; default: 14d)")

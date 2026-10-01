@@ -78,43 +78,59 @@ def handle_report_command(
             )
         return 0
 
-    check_align = getattr(args, "check_alignment", False)
+    check_align = getattr(args, "check_alignment", False) or getattr(args, "audit_scope", False)
     if check_align:
-        unanchored_count, unanchored_tasks = check_scope_alignment(config)
+        from ..backlog.milestone_briefing import audit_milestone_scope
+        unanchored_count, unanchored_tasks = audit_milestone_scope(config)
         if unanchored_count > 0:
             console = Console()
             console.print(f"⚠️ Scope Alignment Warning: {unanchored_count} completed tasks unanchored from ROADMAP.md", style="bold yellow")
+            console.print(f"Roadmap Alignment Warning: {unanchored_count} completed tasks have no milestone association (potential scope creep)")
             table = Table(title="Unanchored Completed Backlog Tasks", expand=True, border_style="dim")
             table.add_column("Task ID", style="bold cyan", width=12)
             table.add_column("Title", style="white")
             table.add_column("Target BC", style="green", width=14)
             table.add_column("Authoring Commit", style="dim", width=16)
             for t in unanchored_tasks:
-                table.add_row(t["id"], t["title"], t["target_bc"], t["commit"])
+                table.add_row(t["id"], t["title"], t["target_bc"], t.get("commit", "HEAD"))
             console.print(table)
             return 0
         else:
             print("✅ All completed tasks are anchored to documented milestones in ROADMAP.md.")
             return 0
 
-    milestone_id = getattr(args, "milestone", None) or "M1-MVP"
-    fmt = getattr(args, "format", "deck")
+    milestone_id = (
+        getattr(args, "milestone", None)
+        or getattr(args, "pos_milestone", None)
+        or "M1-MVP"
+    )
+    export_fmt = getattr(args, "export", None)
+    fmt = getattr(args, "format", None)
     out_path = getattr(args, "output", None)
 
-    if fmt == "digest":
-        burndown = calculate_milestone_burndown(milestone_id, config)
-        digest = format_milestone_digest(burndown)
-        if out_path:
-            dest = Path(out_path)
-            if not dest.is_absolute():
-                dest = config.root_dir / dest
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_text(digest, encoding="utf-8")
-            print(f"✅ Exported milestone briefing digest to {dest}")
-        else:
-            print(digest)
+    if fmt == "deck":
+        dest = export_burndown_deck(milestone_id, config, output_path=out_path, format="deck")
+        print(f"✅ Exported presentation slide deck to {dest}")
         return 0
 
-    dest = export_burndown_deck(milestone_id, config, output_path=out_path, format=fmt)
-    print(f"✅ Exported presentation slide deck to {dest}")
+    from ..backlog.milestone_briefing import (
+        export_milestone_briefing,
+        generate_milestone_briefing,
+        render_briefing_markdown,
+    )
+
+    briefing = generate_milestone_briefing(milestone_id, config)
+
+    if export_fmt == "html" or fmt == "html":
+        dest = export_milestone_briefing(briefing, export_format="html", output_path=out_path, config=config)
+        print(f"✅ Exported executive HTML briefing to {dest}")
+        return 0
+
+    if export_fmt == "markdown" or out_path:
+        dest = export_milestone_briefing(briefing, export_format="markdown", output_path=out_path, config=config)
+        print(f"✅ Exported milestone briefing digest to {dest}")
+        return 0
+
+    digest = render_briefing_markdown(briefing)
+    print(digest)
     return 0
