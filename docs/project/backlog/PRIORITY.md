@@ -147,5 +147,5 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0143 (Complete)**: [`0143-pre-commit-git-hook-and-supply-chain-sentinel`](complete/0143-pre-commit-git-hook-and-supply-chain-sentinel.md)
 - **TASK-0144 (Complete)**: [`0144-failure-clustering-and-prompt-anti-loop-memory`](complete/0144-failure-clustering-and-prompt-anti-loop-memory.md)
 - **TASK-0145 (Complete)**: [`0145-persona-customer-journey-map-visualizer`](complete/0145-persona-customer-journey-map-visualizer.md)
-- **TASK-0146 (Refined)**: [`0146-team-delivery-velocity-and-churn-heatmap`](refined/0146-team-delivery-velocity-and-churn-heatmap.md)
+- **TASK-0146 (Complete)**: [`0146-team-delivery-velocity-and-churn-heatmap`](complete/0146-team-delivery-velocity-and-churn-heatmap.md)
 - **TASK-0147 (Refined)**: [`0147-worktree-auto-rebase-and-merge-conflict-resolver`](refined/0147-worktree-auto-rebase-and-merge-conflict-resolver.md)

@@ -7,6 +7,7 @@ import argparse
 from ..config.models import SpecOpsConfig
 from ..prd.release_notes import generate_release_notes
 from ..release.customer_notes import generate_customer_release_notes
+from ..release.velocity_heatmap import generate_velocity_heatmap
 
 
 def handle_release_command(
@@ -16,6 +17,20 @@ def handle_release_command(
 ) -> int:
     """Dispatches release subcommands."""
     action = getattr(args, "release_action", None)
+    if action == "velocity":
+        format_type = "json" if getattr(args, "json", False) else getattr(args, "format", "markdown").lower()
+        out_path = getattr(args, "output", None)
+        dest, content = generate_velocity_heatmap(
+            config=config,
+            format_type=format_type,
+            output_path=out_path,
+        )
+        if out_path:
+            print(f"✅ Generated velocity and churn heatmap report at {dest}")
+        else:
+            print(content)
+        return 0
+
     if action not in ("notes", None):
         try:
             parser.parse_args(["release", "notes", "--help"])
