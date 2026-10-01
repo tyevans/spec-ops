@@ -51,7 +51,22 @@ if [ -n "$STAGED_TESTS" ]; then
     done
 fi
 
-# 4. SpecOps Invariant & Health Gate (<500 lines per ADR-0002)
+# 4. Real-Time Secret Scanning Gate (ADR-0019)
+if command -v spec-ops >/dev/null 2>&1; then
+    spec-ops security scan-secrets --staged >/dev/null 2>&1 || {
+        echo "Security Violation (ADR-0019): Exposed secrets or credentials detected in staged diff." >&2
+        spec-ops security scan-secrets --staged
+        exit 1
+    }
+elif command -v uv >/dev/null 2>&1; then
+    uv run spec-ops security scan-secrets --staged >/dev/null 2>&1 || {
+        echo "Security Violation (ADR-0019): Exposed secrets or credentials detected in staged diff." >&2
+        uv run spec-ops security scan-secrets --staged
+        exit 1
+    }
+fi
+
+# 5. SpecOps Invariant & Health Gate (<500 lines per ADR-0002)
 if command -v uv >/dev/null 2>&1; then
     exec uv run spec-ops health
 elif command -v spec-ops >/dev/null 2>&1; then
@@ -60,6 +75,7 @@ else
     exec python3 -m spec_ops.cli.main health
 fi
 """
+
 
 PRE_PUSH_SCRIPT = """#!/bin/sh
 # SpecOps native pre-push hook (ADR-0002, ADR-0011)

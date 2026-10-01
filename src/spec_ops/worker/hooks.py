@@ -91,15 +91,28 @@ class PreCommitHookEvaluator:
             is_healthy = False
             sentinel_violations = len(sentinel_res.violations)
 
+        from ..security.secrets.scanner import scan_worktree
+
+        sec_report = scan_worktree(self.root_dir)
+        sec_violations = 0
+        if not sec_report.is_clean:
+            output_lines.append("\n❌ Secret Scanning & Credential Leak Violations:")
+            output_lines.append(sec_report.format_diagnostics())
+            is_healthy = False
+            sec_violations = len(sec_report.secret_violations) + len(sec_report.dotfile_violations)
+        else:
+            output_lines.append("✅ Security Invariant Met: 0 credential leaks detected in working tree.")
+
         output = "\n".join(output_lines)
         exit_code = 0 if is_healthy else 1
         return HookEvaluationResult(
             success=is_healthy,
             exit_code=exit_code,
             output=output,
-            violations_count=len(report.violations) + (0 if excl_ok else 1) + sentinel_violations,
+            violations_count=len(report.violations) + (0 if excl_ok else 1) + sentinel_violations + sec_violations,
             warnings_count=len(report.warnings),
         )
+
 
 
 def install_pre_commit_hook(repo_root: Path) -> Path:

@@ -189,8 +189,35 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
             print("✅ Lockfile Sentinel passed: zero unauthorized lockfile mutations detected.")
         return 0
 
+    if args.security_action == "scan-secrets":
+        import json
+        from ..security.secrets.scanner import scan_file, scan_worktree
+
+        target = Path(getattr(args, "path", ".")).resolve()
+        staged = bool(getattr(args, "staged", False))
+        threshold = float(getattr(args, "threshold", 3.7))
+        as_json = bool(getattr(args, "json", False))
+
+        if target.is_file():
+            report = scan_file(target, threshold=threshold)
+        else:
+            report = scan_worktree(target, staged_only=staged, threshold=threshold)
+
+        if as_json:
+            print(json.dumps(report.to_dict(), indent=2))
+            return 0 if report.is_clean else 1
+
+        if not report.is_clean:
+            print(report.format_diagnostics(), file=sys.stderr)
+            return 1
+
+        scope = "staged changes" if staged else "working tree"
+        print(f"✅ Security Invariant Met: 0 credential leaks detected in {scope}.")
+        return 0
+
     parser.parse_args(["security", "--help"])
     return 0
+
 
 
 def handle_queue_command(args: argparse.Namespace, config: SpecOpsConfig, parser: argparse.ArgumentParser) -> int:

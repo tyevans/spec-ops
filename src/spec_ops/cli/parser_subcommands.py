@@ -346,6 +346,32 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
     p_sentinel.add_argument("--fix", action="store_true", help="Automatically revert unauthorized lockfile modifications")
     p_sentinel.add_argument("--json", action="store_true", help="Output sentinel evaluation as structured JSON")
 
+    p_scan = sec_subs.add_parser(
+        "scan-secrets",
+        help="Scan worktree diffs and source files for high-entropy secrets and credential leaks",
+    )
+    p_scan.add_argument(
+        "--path",
+        default=".",
+        help="Directory or file path to scan (default: current directory)",
+    )
+    p_scan.add_argument(
+        "--staged",
+        action="store_true",
+        help="Scan only git staged changes",
+    )
+    p_scan.add_argument(
+        "--threshold",
+        type=float,
+        default=3.7,
+        help="Shannon entropy threshold (default: 3.7)",
+    )
+    p_scan.add_argument(
+        "--json",
+        action="store_true",
+        help="Output results as structured JSON",
+    )
+
 
 from .parser_scaffold import register_scaffold_subparsers
 from .parser_report import register_report_subparsers

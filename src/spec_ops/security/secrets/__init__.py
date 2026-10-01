@@ -1,13 +1,12 @@
 """Secret and high-entropy credential detection package."""
 
 from .entropy import is_high_entropy, mask_secret, shannon_entropy
+from .models import DotfileViolation, SecretScanReport, SecretViolation
 from .patterns import is_sensitive_dotfile
 from .scanner import (
-    DotfileViolation,
-    SecretScanReport,
-    SecretViolation,
     scan_diff,
     scan_dotfiles,
+    scan_file,
     scan_line,
     scan_text,
     scan_worktree,
@@ -22,6 +21,7 @@ __all__ = [
     "mask_secret",
     "scan_diff",
     "scan_dotfiles",
+    "scan_file",
     "scan_line",
     "scan_text",
     "scan_worktree",

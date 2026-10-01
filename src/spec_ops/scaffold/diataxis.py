@@ -163,6 +163,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops doctor` | `[--fix] [--json]` | Audit and repair local developer workspace and tooling |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops security sentinel` | `[--path PATH] [--fix] [--json]` | Inspect and enforce supply-chain lockfile mutation immutability |
+| `spec-ops security scan-secrets` | `[--path PATH] [--staged] [--threshold THRESHOLD] [--json]` | Scan worktree diffs and source files for high-entropy secrets and credential leaks |
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
 | `spec-ops audit verify` | `[--manifest MANIFEST] [--repo REPO]` | Verify cryptographic compliance manifest integrity and SDLC traceability |

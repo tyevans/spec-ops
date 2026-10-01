@@ -5,10 +5,11 @@ from __future__ import annotations
 import os
 import re
 import subprocess
-from dataclasses import dataclass, field
 from pathlib import Path
 
+from .dotfiles import EXCLUDED_SCAN_DIRS, scan_dotfiles
 from .entropy import is_high_entropy, mask_secret, shannon_entropy
+from .models import DotfileViolation, SecretScanReport, SecretViolation
 from .patterns import (
     ASSIGNMENT_CANDIDATE_PATTERN,
     AWS_ACCESS_KEY_ID_PATTERN,
@@ -21,61 +22,36 @@ from .patterns import (
     is_sensitive_dotfile,
 )
 
-EXCLUDED_SCAN_DIRS = frozenset({
-    ".git",
-    ".venv",
-    "venv",
-    "node_modules",
-    "dist",
-    "site",
-    ".pytest_cache",
-    ".hypothesis",
-    "__pycache__",
-    ".worktrees",
-})
+__all__ = [
+    "DotfileViolation",
+    "EXCLUDED_SCAN_DIRS",
+    "INLINE_IGNORE_PATTERN",
+    "SecretScanReport",
+    "SecretViolation",
+    "scan_diff",
+    "scan_dotfiles",
+    "scan_file",
+    "scan_line",
+    "scan_text",
+    "scan_worktree",
+]
+
+INLINE_IGNORE_PATTERN = re.compile(
+    r"(?:#|//|/\*)\s*(?:spec-ops:\s*ignore[-_]secret|pragma:\s*allowlist[-_\s]secret)",
+    re.IGNORECASE,
+)
 
 
-@dataclass
-class SecretViolation:
-    file_path: str
-    line_number: int | None
-    secret_type: str
-    masked_token: str
-    raw_snippet: str = ""
-
-
-@dataclass
-class DotfileViolation:
-    file_path: str
-    action_instructions: str
-
-
-@dataclass
-class SecretScanReport:
-    secret_violations: list[SecretViolation] = field(default_factory=list)
-    dotfile_violations: list[DotfileViolation] = field(default_factory=list)
-
-    @property
-    def is_clean(self) -> bool:
-        return len(self.secret_violations) == 0 and len(self.dotfile_violations) == 0
-
-    def format_diagnostics(self) -> str:
-        lines: list[str] = []
-        if self.dotfile_violations:
-            for dv in self.dotfile_violations:
-                lines.append(f"❌ Unignored sensitive file detected: {dv.file_path}")
-                lines.append(f"   {dv.action_instructions}")
-        if self.secret_violations:
-            for sv in self.secret_violations:
-                loc = f"{sv.file_path}:{sv.line_number}" if sv.line_number is not None else sv.file_path
-                lines.append(f"❌ High-entropy secret or credential leak detected at {loc}")
-                lines.append(f"   Type: {sv.secret_type}")
-                lines.append(f"   Masked Snippet: {sv.masked_token}")
-        return "\n".join(lines)
-
-
-def scan_line(line: str, line_number: int | None = None, file_path: str = "") -> list[SecretViolation]:
+def scan_line(
+    line: str,
+    line_number: int | None = None,
+    file_path: str = "",
+    threshold: float | None = None,
+) -> list[SecretViolation]:
     """Scans a single source line for hardcoded secrets, API keys, and high-entropy tokens."""
+    if INLINE_IGNORE_PATTERN.search(line):
+        return []
+
     violations: list[SecretViolation] = []
     seen_tokens: set[str] = set()
 
@@ -119,9 +95,10 @@ def scan_line(line: str, line_number: int | None = None, file_path: str = "") ->
             seen_tokens.add(token)
 
     # 4. AWS Secret Access Key Pattern
+    aws_th = threshold if threshold is not None else 3.5
     for m in AWS_SECRET_KEY_PATTERN.finditer(line):
         token = m.group(1)
-        if token not in seen_tokens and is_high_entropy(token, threshold=3.5, min_length=30):
+        if token not in seen_tokens and is_high_entropy(token, threshold=aws_th, min_length=30):
             violations.append(SecretViolation(
                 file_path=file_path,
                 line_number=line_number,
@@ -158,9 +135,10 @@ def scan_line(line: str, line_number: int | None = None, file_path: str = "") ->
             seen_tokens.add(token)
 
     # 7. Assignment of High-Entropy Token
+    assign_th = threshold if threshold is not None else 3.6
     for m in ASSIGNMENT_CANDIDATE_PATTERN.finditer(line):
         token = m.group(1)
-        if token not in seen_tokens and is_high_entropy(token, threshold=3.6, min_length=16):
+        if token not in seen_tokens and is_high_entropy(token, threshold=assign_th, min_length=16):
             violations.append(SecretViolation(
                 file_path=file_path,
                 line_number=line_number,
@@ -170,10 +148,11 @@ def scan_line(line: str, line_number: int | None = None, file_path: str = "") ->
             ))
             seen_tokens.add(token)
 
-    # 8. Standalone Quoted High-Entropy Token (length >= 32, entropy >= 4.2)
+    # 8. Standalone Quoted High-Entropy Token
+    quoted_th = max(threshold, 4.0) if threshold is not None else 4.2
     for m in QUOTED_TOKEN_PATTERN.finditer(line):
         token = m.group(1)
-        if token not in seen_tokens and is_high_entropy(token, threshold=4.2, min_length=32):
+        if token not in seen_tokens and is_high_entropy(token, threshold=quoted_th, min_length=32):
             violations.append(SecretViolation(
                 file_path=file_path,
                 line_number=line_number,
@@ -186,15 +165,19 @@ def scan_line(line: str, line_number: int | None = None, file_path: str = "") ->
     return violations
 
 
-def scan_text(text: str, file_path: str = "") -> list[SecretViolation]:
+def scan_text(
+    text: str,
+    file_path: str = "",
+    threshold: float | None = None,
+) -> list[SecretViolation]:
     """Scans multi-line source text for hardcoded secrets and credentials."""
     violations: list[SecretViolation] = []
     for line_idx, line in enumerate(text.splitlines(), start=1):
-        violations.extend(scan_line(line, line_number=line_idx, file_path=file_path))
+        violations.extend(scan_line(line, line_number=line_idx, file_path=file_path, threshold=threshold))
     return violations
 
 
-def scan_diff(diff_text: str) -> list[SecretViolation]:
+def scan_diff(diff_text: str, threshold: float | None = None) -> list[SecretViolation]:
     """Parses unified git diff output and scans newly added lines for credentials."""
     violations: list[SecretViolation] = []
     current_file = ""
@@ -204,7 +187,6 @@ def scan_diff(diff_text: str) -> list[SecretViolation]:
 
     for raw_line in diff_text.splitlines():
         if raw_line.startswith("diff --git"):
-            # Reset
             current_line = 0
         elif raw_line.startswith("+++ b/"):
             current_file = raw_line[6:].strip()
@@ -214,7 +196,9 @@ def scan_diff(diff_text: str) -> list[SecretViolation]:
                 current_line = int(m.group(1))
         elif raw_line.startswith("+") and not raw_line.startswith("+++"):
             added_content = raw_line[1:]
-            violations.extend(scan_line(added_content, line_number=current_line, file_path=current_file))
+            violations.extend(
+                scan_line(added_content, line_number=current_line, file_path=current_file, threshold=threshold)
+            )
             current_line += 1
         elif raw_line.startswith(" "):
             current_line += 1
@@ -222,65 +206,78 @@ def scan_diff(diff_text: str) -> list[SecretViolation]:
     return violations
 
 
-def scan_dotfiles(root_dir: Path) -> list[DotfileViolation]:
-    """Identifies sensitive dotfiles and private keys that are not ignored by .gitignore."""
-    violations: list[DotfileViolation] = []
+def scan_file(file_path: Path, threshold: float | None = None) -> SecretScanReport:
+    """Scans a single file on disk for credentials and sensitive dotfile naming."""
+    dotfile_violations: list[DotfileViolation] = []
+    if is_sensitive_dotfile(file_path.name):
+        dotfile_violations.append(
+            DotfileViolation(
+                file_path=str(file_path),
+                action_instructions=f"Action: Add '{file_path.name}' to .gitignore and remove it from git staging.",
+            )
+        )
+    try:
+        content = file_path.read_text(encoding="utf-8", errors="ignore")
+        secret_violations = scan_text(content, file_path=str(file_path), threshold=threshold)
+    except OSError:
+        secret_violations = []
+
+    return SecretScanReport(secret_violations=secret_violations, dotfile_violations=dotfile_violations)
+
+
+def _scan_staged_git(
+    root_dir: Path,
+    threshold: float | None = None,
+) -> tuple[list[SecretViolation], list[DotfileViolation]]:
+    """Scans git staged changes only."""
+    sec_violations: list[SecretViolation] = []
+    dot_violations: list[DotfileViolation] = []
+
+    staged_diff = subprocess.run(
+        ["git", "diff", "--cached"],
+        cwd=root_dir,
+        capture_output=True,
+        text=True,
+    )
+    if staged_diff.returncode == 0 and staged_diff.stdout:
+        sec_violations.extend(scan_diff(staged_diff.stdout, threshold=threshold))
+
+    staged_names = subprocess.run(
+        ["git", "diff", "--cached", "--name-only"],
+        cwd=root_dir,
+        capture_output=True,
+        text=True,
+    )
+    if staged_names.returncode == 0 and staged_names.stdout:
+        for rel_file in staged_names.stdout.splitlines():
+            f_name = Path(rel_file.strip()).name
+            if is_sensitive_dotfile(f_name):
+                dot_violations.append(
+                    DotfileViolation(
+                        file_path=rel_file.strip(),
+                        action_instructions=f"Action: Remove staged '{rel_file.strip()}' and add to .gitignore.",
+                    )
+                )
+
+    return sec_violations, dot_violations
+
+
+def scan_worktree(
+    root_dir: Path,
+    staged_only: bool = False,
+    threshold: float | None = None,
+) -> SecretScanReport:
+    """Scans worktree changes (staged or full worktree diffs) for credentials."""
     is_git_repo = (root_dir / ".git").exists()
 
-    for p in root_dir.rglob("*"):
-        if not p.is_file():
-            continue
-        if any(part in EXCLUDED_SCAN_DIRS for part in p.parts):
-            continue
-        if not is_sensitive_dotfile(p.name):
-            continue
+    if staged_only and is_git_repo:
+        sec_list, dot_list = _scan_staged_git(root_dir, threshold=threshold)
+        return SecretScanReport(secret_violations=sec_list, dotfile_violations=dot_list)
 
-        rel_path = p.relative_to(root_dir)
-
-        if is_git_repo:
-            chk = subprocess.run(
-                ["git", "check-ignore", "-q", str(rel_path)],
-                cwd=root_dir,
-                capture_output=True,
-            )
-            # If returncode != 0, it is NOT ignored in .gitignore
-            if chk.returncode != 0:
-                instructions = f"Action: Add '{rel_path}' to .gitignore and remove it from git staging."
-                violations.append(DotfileViolation(file_path=str(rel_path), action_instructions=instructions))
-            else:
-                # Even if ignored, check if it's already tracked in git staging
-                tracked = subprocess.run(
-                    ["git", "ls-files", str(rel_path)],
-                    cwd=root_dir,
-                    capture_output=True,
-                    text=True,
-                )
-                if tracked.stdout.strip():
-                    instructions = f"Action: Remove tracked '{rel_path}' from git staging."
-                    violations.append(DotfileViolation(file_path=str(rel_path), action_instructions=instructions))
-        else:
-            gitignore_path = root_dir / ".gitignore"
-            ignored = False
-            if gitignore_path.exists():
-                gi_content = gitignore_path.read_text(encoding="utf-8")
-                if p.name in gi_content:
-                    ignored = True
-            if not ignored:
-                instructions = f"Action: Add '{rel_path}' to .gitignore."
-                violations.append(DotfileViolation(file_path=str(rel_path), action_instructions=instructions))
-
-    return violations
-
-
-def scan_worktree(root_dir: Path) -> SecretScanReport:
-    """Scans worktree changes (unstaged, staged, untracked, and branch diffs) for credentials."""
     dotfile_violations = scan_dotfiles(root_dir)
     secret_violations: list[SecretViolation] = []
 
-    is_git_repo = (root_dir / ".git").exists()
-
     if is_git_repo:
-        # 1. Unstaged + staged diff vs HEAD
         diff_cmd = subprocess.run(
             ["git", "diff", "HEAD"],
             cwd=root_dir,
@@ -288,17 +285,15 @@ def scan_worktree(root_dir: Path) -> SecretScanReport:
             text=True,
         )
         if diff_cmd.returncode == 0 and diff_cmd.stdout:
-            secret_violations.extend(scan_diff(diff_cmd.stdout))
+            secret_violations.extend(scan_diff(diff_cmd.stdout, threshold=threshold))
         else:
-            # If repo has no commits yet (initial worktree), diff against empty tree or staged diff
             staged = subprocess.run(["git", "diff", "--cached"], cwd=root_dir, capture_output=True, text=True)
             if staged.returncode == 0 and staged.stdout:
-                secret_violations.extend(scan_diff(staged.stdout))
+                secret_violations.extend(scan_diff(staged.stdout, threshold=threshold))
             unstaged = subprocess.run(["git", "diff"], cwd=root_dir, capture_output=True, text=True)
             if unstaged.returncode == 0 and unstaged.stdout:
-                secret_violations.extend(scan_diff(unstaged.stdout))
+                secret_violations.extend(scan_diff(unstaged.stdout, threshold=threshold))
 
-        # 2. Untracked files that are not ignored
         untracked = subprocess.run(
             ["git", "ls-files", "--others", "--exclude-standard"],
             cwd=root_dir,
@@ -311,11 +306,12 @@ def scan_worktree(root_dir: Path) -> SecretScanReport:
                 if f_path.is_file() and not any(part in EXCLUDED_SCAN_DIRS for part in f_path.parts):
                     try:
                         content = f_path.read_text(encoding="utf-8", errors="ignore")
-                        secret_violations.extend(scan_text(content, file_path=rel_file.strip()))
+                        secret_violations.extend(
+                            scan_text(content, file_path=rel_file.strip(), threshold=threshold)
+                        )
                     except OSError:
                         continue
 
-        # 3. Branch diff against main if HEAD is on a feature branch
         branch_check = subprocess.run(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
             cwd=root_dir,
@@ -337,21 +333,18 @@ def scan_worktree(root_dir: Path) -> SecretScanReport:
                     text=True,
                 )
                 if branch_diff.returncode == 0 and branch_diff.stdout:
-                    secret_violations.extend(scan_diff(branch_diff.stdout))
+                    secret_violations.extend(scan_diff(branch_diff.stdout, threshold=threshold))
     else:
         for p in root_dir.rglob("*"):
-            if not p.is_file():
-                continue
-            if any(part in EXCLUDED_SCAN_DIRS for part in p.parts):
+            if not p.is_file() or any(part in EXCLUDED_SCAN_DIRS for part in p.parts):
                 continue
             try:
                 content = p.read_text(encoding="utf-8", errors="ignore")
                 rel = str(p.relative_to(root_dir))
-                secret_violations.extend(scan_text(content, file_path=rel))
+                secret_violations.extend(scan_text(content, file_path=rel, threshold=threshold))
             except OSError:
                 continue
 
-    # Deduplicate secret violations by file_path, line_number, masked_token
     deduped_secrets: list[SecretViolation] = []
     seen_sec: set[tuple[str, int | None, str]] = set()
     for sv in secret_violations:
