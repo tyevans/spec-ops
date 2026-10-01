@@ -74,27 +74,18 @@ def handle_queue_command(
         return 1
 
     if action == "refine":
-        clean_id = args.task_id.upper()
-        if not clean_id.startswith("TASK-") and clean_id.isdigit():
-            clean_id = f"TASK-{clean_id.zfill(4)}"
-
-        target_task = None
-        for t in queue.list_all_tasks():
-            if t.canonical_id == clean_id:
-                target_task = t
-                break
-
+        target_task = _find_task_in_queue(queue, args.task_id, config)
         if not target_task:
             print(f"❌ Task {args.task_id} not found in backlog.", file=sys.stderr)
             return 1
 
-        from ..backlog.dor import validate_task_dor
+        from ..backlog.dor_gate import audit_task_health
 
-        dor_ok, dor_errors = validate_task_dor(target_task, config)
-        if not dor_ok:
+        strict_mode = getattr(args, "strict", False)
+        report = audit_task_health(target_task, config, strict=strict_mode)
+        if not report.is_ready:
             print("❌ Definition of Ready (DoR) validation failed:")
-            for err in dor_errors:
-                print(f"   • {err}")
+            print(report.format_report())
             return 1
 
         dest = queue.refine_task(target_task)
@@ -309,3 +300,69 @@ def handle_queue_command(
     parser.parse_args(["queue", "--help"])
 
     return 0
+
+
+def _find_task_in_queue(
+    queue: BacklogQueue, task_ref: str, config: SpecOpsConfig | None = None
+) -> Any:
+    """Finds a task in the backlog queue by canonical ID, raw number, filename, or disk path."""
+    task_ref_str = str(task_ref).strip()
+    task_file_stem = Path(task_ref_str).stem.upper()
+    task_file_name = Path(task_ref_str).name.lower()
+
+    clean_id = task_ref_str.upper()
+    if not clean_id.startswith("TASK-") and not clean_id.startswith("SPIKE-") and clean_id.isdigit():
+        clean_id = f"TASK-{clean_id.zfill(4)}"
+
+    for t in queue.list_all_tasks():
+        if (
+            t.canonical_id == clean_id
+            or t.canonical_id == task_ref_str.upper()
+            or t.id == task_ref_str
+            or t.file_path.name.lower() == task_file_name
+            or task_file_stem in t.canonical_id
+            or t.canonical_id in task_file_stem
+            or t.file_path.stem.upper() == task_file_stem
+        ):
+            return t
+
+    candidate = Path(task_ref_str)
+    if not candidate.is_absolute() and config:
+        candidate = config.root_dir / candidate
+    if candidate.is_file():
+        from ..core.parser import parse_task
+
+        return parse_task(candidate)
+    return None
+
+
+def handle_verify_dor_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+    """Audits backlog tasks against the 7 Definition of Ready (DoR) criteria."""
+    queue = BacklogQueue(config.backlog_dir)
+    strict_mode = getattr(args, "strict", False)
+    task_ref = getattr(args, "task_id", None)
+    from ..backlog.dor_gate import audit_task_health
+
+    if task_ref:
+        target_task = _find_task_in_queue(queue, task_ref, config)
+        if not target_task:
+            print(f"❌ Task {task_ref} not found in backlog.", file=sys.stderr)
+            return 1
+        report = audit_task_health(target_task, config, strict=strict_mode)
+        print(report.format_report())
+        return 0 if report.is_ready else 1
+
+    all_tasks = queue.list_all_tasks()
+    proposed = [t for t in all_tasks if t.status == "Proposed"]
+    if not proposed:
+        print("ℹ️ No proposed tasks found in backlog to audit.")
+        return 0
+
+    all_ready = True
+    for t in proposed:
+        report = audit_task_health(t, config, strict=strict_mode)
+        print(report.format_report())
+        if not report.is_ready:
+            all_ready = False
+
+    return 0 if all_ready else 1

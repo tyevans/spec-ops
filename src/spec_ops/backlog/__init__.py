@@ -25,6 +25,12 @@ from .events import (
     TaskRefined,
     TaskReleased,
 )
+from .dor_gate import (
+    ALL_DOR_RULES,
+    DoRAuditReport,
+    audit_task_health,
+    validate_task_dor,
+)
 from .health import FileLengthViolation, HealthChecker, HealthCheckReport
 from .inference_curator import InferenceCurationResult, InferenceCurator
 from .queue import BacklogQueue, write_task_file
@@ -53,7 +59,9 @@ from .unblocker import (
 from .worker import BacklogWorkerEngine, WorkerResult
 
 __all__ = [
+    "ALL_DOR_RULES",
     "ArchitecturalReconciler",
+    "audit_task_health",
     "AutonomousTaskSlicer",
     "BacklogCommand",
     "BacklogCurator",
@@ -68,6 +76,7 @@ __all__ = [
     "CompleteTask",
     "CurationResult",
     "DailyStandupDigestGenerator",
+    "DoRAuditReport",
     "FileLengthViolation",
     "HealthCheckReport",
     "HealthChecker",
@@ -104,6 +113,7 @@ __all__ = [
     "WorkerResult",
     "normalize_task_id",
     "task_id_to_uuid",
+    "validate_task_dor",
     "write_task_file",
 ]
 

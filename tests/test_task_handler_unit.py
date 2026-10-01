@@ -238,11 +238,14 @@ def test_handle_queue_refine_command(tmp_path: Path, capsys: pytest.CaptureFixtu
 
     stories_dir = tmp_path / "docs" / "project" / "user_stories" / "accepted"
     stories_dir.mkdir(parents=True, exist_ok=True)
-    (stories_dir / "us-0002-story.md").write_text("---\nid: '0002'\nstatus: Accepted\n---\n", encoding="utf-8")
+    (stories_dir / "us-0002-story.md").write_text(
+        "---\nid: '0002'\nstatus: Accepted\npersona: Jordan\n---\nGiven a legacy system\nWhen migrated\nThen success\n",
+        encoding="utf-8",
+    )
 
     prd_dir = tmp_path / "docs" / "project" / "product" / "accepted"
     prd_dir.mkdir(parents=True, exist_ok=True)
-    (prd_dir / "0001-prd.md").write_text("---\nid: '0001'\nstatus: Accepted\n---\n", encoding="utf-8")
+    (prd_dir / "0001-prd.md").write_text("---\nid: '0001'\nstatus: Accepted\ntarget_persona: Jordan\n---\n", encoding="utf-8")
 
     t_file.write_text(
         """---
@@ -256,6 +259,7 @@ governing_stories:
 - US-0002
 governing_prds:
 - PRD-0001
+mutation_scope: src/spec_ops/worker
 ---
 # TASK-0025
 """,

@@ -100,6 +100,9 @@ class Task:
     timestamp: str = ""
     pinned: bool = False
     priority_pin: int | None = None
+    persona: str = ""
+    mutation_scope: str = ""
+    expected_lines: int = 0
 
     @property
     def canonical_id(self) -> str:

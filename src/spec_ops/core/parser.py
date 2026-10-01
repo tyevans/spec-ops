@@ -177,6 +177,9 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
                 else None
             )
         ),
+        persona=str(meta.get("persona") or meta.get("target_persona") or ""),
+        mutation_scope=str(meta.get("mutation_scope", "")),
+        expected_lines=int(meta.get("expected_lines", 0) or 0),
     )
 
 

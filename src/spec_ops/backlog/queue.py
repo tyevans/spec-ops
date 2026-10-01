@@ -28,62 +28,43 @@ def write_task_file(task: Task) -> Path:
         meta["governing_prds"] = task.governing_prds
     if task.governing_stories:
         meta["governing_stories"] = task.governing_stories
-    if task.target_bc:
-        meta["target_bc"] = task.target_bc
-    if task.target_release:
-        meta["target_release"] = task.target_release
-    if task.pr_url:
-        meta["pr_url"] = task.pr_url
-    if task.claimed_by:
-        meta["claimed_by"] = task.claimed_by
-    if task.branch:
-        meta["branch"] = task.branch
-    if task.allows_dependencies:
+    simple_str_fields = [
+        "target_bc", "target_release", "pr_url", "claimed_by", "branch",
+        "hypothesis", "timebox", "signed_off_by", "signed_off_at",
+        "commit_signature_status", "persona", "mutation_scope",
+        "completed_at", "claimed_at", "timestamp",
+    ]
+    for key in simple_str_fields:
+        val = getattr(task, key, "")
+        if val:
+            meta[key] = val
+
+    if getattr(task, "allows_dependencies", False):
         meta["allows_dependencies"] = True
-    if getattr(task, "hypothesis", ""):
-        meta["hypothesis"] = task.hypothesis
-    if getattr(task, "timebox", ""):
-        meta["timebox"] = task.timebox
-    if task.signed_off_by:
-        meta["signed_off_by"] = task.signed_off_by
-    if task.signed_off_at:
-        meta["signed_off_at"] = task.signed_off_at
     if getattr(task, "has_signed_commits", None) is not None:
         meta["has_signed_commits"] = task.has_signed_commits
-    if getattr(task, "commit_signature_status", ""):
-        meta["commit_signature_status"] = task.commit_signature_status
     if getattr(task, "slice_type", "") and getattr(task, "slice_type", "") != "feat":
         meta["slice_type"] = task.slice_type
     if getattr(task, "unblocked", False):
         meta["unblocked"] = True
-    if getattr(task, "blocker", None):
-        b = task.blocker
-        b_dict: dict[str, Any] = {"type": b.type, "question": b.question}
-        if b.raised_by:
-            b_dict["raised_by"] = b.raised_by
-        if b.raised_at:
-            b_dict["raised_at"] = b.raised_at
-        if b.spike_id:
-            b_dict["spike_id"] = b.spike_id
-        if b.resolution:
-            b_dict["resolution"] = b.resolution
-        if b.resolved_at:
-            b_dict["resolved_at"] = b.resolved_at
-        if b.adr_id:
-            b_dict["adr_id"] = b.adr_id
-        meta["blocker"] = b_dict
-    if getattr(task, "failure_history", None):
-        meta["failure_history"] = task.failure_history
-    if getattr(task, "completed_at", ""):
-        meta["completed_at"] = task.completed_at
-    if getattr(task, "claimed_at", ""):
-        meta["claimed_at"] = task.claimed_at
-    if getattr(task, "timestamp", ""):
-        meta["timestamp"] = task.timestamp
+    if getattr(task, "expected_lines", 0):
+        meta["expected_lines"] = task.expected_lines
     if getattr(task, "pinned", False):
         meta["pinned"] = True
     if getattr(task, "priority_pin", None) is not None:
         meta["priority_pin"] = task.priority_pin
+    if getattr(task, "failure_history", None):
+        meta["failure_history"] = task.failure_history
+    if getattr(task, "blocker", None):
+        b = task.blocker
+        b_dict = {
+            k: v for k, v in [
+                ("type", b.type), ("question", b.question), ("raised_by", b.raised_by),
+                ("raised_at", b.raised_at), ("spike_id", b.spike_id),
+                ("resolution", b.resolution), ("resolved_at", b.resolved_at), ("adr_id", b.adr_id),
+            ] if v
+        }
+        meta["blocker"] = b_dict
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()
