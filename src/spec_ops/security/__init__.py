@@ -49,6 +49,16 @@ from .merkle import (
     verify_compliance_manifest,
     verify_inclusion_proof,
 )
+from .merkle_manifest import (
+    MerkleManifest,
+    MerkleVerificationResult,
+    build_merkle_manifest,
+    collect_project_artifacts,
+    generate_file_proof,
+    generate_merkle_manifest,
+    verify_file_proof,
+    verify_merkle_manifest,
+)
 from .models import BenchmarkReport, BenchmarkResult, SecurityViolationEvent
 from .network_guard import generate_network_isolation_sitecustomize, is_loopback_address, isolated_network
 from .sandbox import ExecutionSandbox
@@ -65,20 +75,26 @@ __all__ = [
     "LockfileSentinelResult",
     "MerkleInclusionProof",
     "MerkleLeaf",
+    "MerkleManifest",
     "MerkleTree",
+    "MerkleVerificationResult",
     "PROTECTED_DEPENDENCY_FILES",
     "PROTECTED_LOCKFILES",
     "ProofStep",
     "SecurityViolationEvent",
+    "build_merkle_manifest",
     "canonical_json_encode",
     "check_diff_for_dependency_modifications",
     "check_worktree_dependency_integrity",
+    "collect_project_artifacts",
     "compile_compliance_manifest",
     "create_interceptor_shims",
     "detect_lockfile_mutations",
     "extract_executables",
     "extract_executables_with_context",
     "extract_repo_compliance_deliverables",
+    "generate_file_proof",
+    "generate_merkle_manifest",
     "generate_network_isolation_sitecustomize",
     "hash_internal_node",
     "hash_leaf",
@@ -97,7 +113,9 @@ __all__ = [
     "validate_package_name",
     "validate_package_pinning",
     "verify_compliance_manifest",
+    "verify_file_proof",
     "verify_inclusion_proof",
     "verify_lockfile",
+    "verify_merkle_manifest",
     "verify_uv_lock",
 ]

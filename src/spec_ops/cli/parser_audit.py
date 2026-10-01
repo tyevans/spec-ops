@@ -46,3 +46,26 @@ def register_audit_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_audit_vproof.add_argument("proof_file", help="Path to inclusion proof JSON file")
     p_audit_vproof.add_argument("--root", required=True, help="Trusted Merkle root hash for verification")
     p_audit_vproof.add_argument("--json", action="store_true", help="Output verification result as JSON")
+
+    p_audit_merkle = audit_subs.add_parser(
+        "merkle",
+        help="Compile, output, or verify tamper-evident Merkle compliance manifest for repository artifacts",
+    )
+    p_audit_merkle.add_argument(
+        "--verify",
+        metavar="VERIFY",
+        default=None,
+        help="Path to Merkle compliance manifest JSON to verify against repository artifacts",
+    )
+    p_audit_merkle.add_argument(
+        "--output",
+        metavar="OUTPUT",
+        default=None,
+        help="Output path for generated Merkle compliance manifest JSON",
+    )
+    p_audit_merkle.add_argument(
+        "--json",
+        action="store_true",
+        help="Output Merkle manifest or verification result as JSON",
+    )
+

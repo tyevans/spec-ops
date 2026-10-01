@@ -89,6 +89,54 @@ def handle_audit_command(args: argparse.Namespace, config: SpecOpsConfig, parser
 
         return handle_audit_verify_proof(args, config)
 
+    if action == "merkle":
+        import json
+        from ..security.merkle_manifest import (
+            generate_merkle_manifest,
+            verify_merkle_manifest,
+        )
+
+        verify_target = getattr(args, "verify", None)
+        as_json = bool(getattr(args, "json", False))
+        out_target = getattr(args, "output", None)
+        repo_target = config.root_dir
+
+        if verify_target:
+            manifest_p = Path(verify_target)
+            if not manifest_p.is_absolute():
+                manifest_p = repo_target / manifest_p
+
+            result = verify_merkle_manifest(manifest_path=manifest_p, repo_root=repo_target)
+            if as_json:
+                print(json.dumps(result.to_dict(), indent=2))
+                return 0 if result.ok else 1
+
+            if not result.ok:
+                print("❌ Merkle compliance verification failed: digest mismatch detected.", file=sys.stderr)
+                for f in result.tampered_files:
+                    print(f"   Tampered file: {f}", file=sys.stderr)
+                for err in result.errors:
+                    print(f"   - {err}", file=sys.stderr)
+                return 1
+
+            print("✅ Merkle Compliance Manifest PASSED: all artifacts verified.")
+            print(f"   Manifest:     {manifest_p}")
+            print(f"   Merkle Root:  {result.root_hash}")
+            print(f"   Artifacts:    {result.artifacts_checked}")
+            return 0
+
+        manifest = generate_merkle_manifest(repo_root=repo_target, output_path=out_target)
+        if as_json:
+            print(manifest.to_json())
+            return 0
+
+        print("✨ Generated Merkle compliance manifest:")
+        print(f"   Merkle Root:  {manifest.root_hash}")
+        print(f"   Artifacts:    {manifest.tree_size}")
+        if out_target:
+            print(f"   Manifest:     {out_target}")
+        return 0
+
     if action in ("dependencies", None):
         target = Path(getattr(args, "path", ".")).resolve()
         offline = getattr(args, "offline", False)

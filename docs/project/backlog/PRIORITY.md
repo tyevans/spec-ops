@@ -142,7 +142,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0138 (Complete)**: [`0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning`](complete/0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning.md)
 - **TASK-0139 (Complete)**: [`0139-multi-agent-collaborative-review-radar`](complete/0139-multi-agent-collaborative-review-radar.md)
 - **TASK-0140 (Complete)**: [`0140-zero-trust-worker-process-sandboxing`](complete/0140-zero-trust-worker-process-sandboxing.md)
-- **TASK-0141 (Refined)**: [`0141-tamper-evident-merkle-compliance-manifest`](refined/0141-tamper-evident-merkle-compliance-manifest.md)
+- **TASK-0141 (Complete)**: [`0141-tamper-evident-merkle-compliance-manifest`](complete/0141-tamper-evident-merkle-compliance-manifest.md)
 - **TASK-0142 (Refined)**: [`0142-dag-topological-cache-and-tarjan-precheck`](refined/0142-dag-topological-cache-and-tarjan-precheck.md)
 - **TASK-0143 (Refined)**: [`0143-pre-commit-git-hook-and-supply-chain-sentinel`](refined/0143-pre-commit-git-hook-and-supply-chain-sentinel.md)
 - **TASK-0144 (Refined)**: [`0144-failure-clustering-and-prompt-anti-loop-memory`](refined/0144-failure-clustering-and-prompt-anti-loop-memory.md)
