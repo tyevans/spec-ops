@@ -8,18 +8,23 @@ This guide explains how to use the SpecOps inline orchestrator skill (`.agents/s
 
 The SpecOps skill turns an AI coding assistant into a **Lead SDLC Orchestrator** ("Company in a Box"). Unlike legacy workers that spawn detached external shell processes, the inline orchestrator operates directly in the active agent session, delegating tasks to specialized subagents while retaining full visibility, interactive steering, and conversational context.
 
-### Scaffolding the Skill
+### Scaffolding Universal Multi-Platform Skills
 
-To generate the skill in any SpecOps project:
+To package and scaffold the universal orchestrator skill across platforms:
 
 ```bash
-uv run spec-ops scaffold agents
+# Scaffold for all supported platforms (Antigravity, Claude Code, Cursor)
+uv run spec-ops scaffold skill --target all
+
+# Or scaffold for a specific platform
+uv run spec-ops scaffold skill --target antigravity
 ```
 
 This scaffolds:
-- `.agents/skills/spec-ops/SKILL.md` (Main instruction runbook)
-- `.agents/skills/spec-ops/references/cli_primer.md` (Full CLI command reference)
-- `.agents/skills/spec-ops/references/orchestration_protocol.md` (Multi-agent coordination protocol)
+- **Antigravity**: `.agents/skills/spec-ops/SKILL.md` and complete reference runbooks in `.agents/skills/spec-ops/references/` (`cli_primer.md`, `balancing_loop.md`, `orchestration_protocol.md`).
+- **Claude Code**: `CLAUDE.md`, `.claude/skills/spec-ops/SKILL.md`, `.claude/skills/spec-ops/references/`, and `.claude/commands/spec-ops.md`.
+- **Cursor**: `.cursorrules`, `.cursor/rules/spec-ops.mdc`, and `.cursor/rules/references/`.
+
 
 ---
 

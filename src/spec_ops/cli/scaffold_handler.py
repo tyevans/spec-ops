@@ -77,5 +77,22 @@ def handle_scaffold_command(
             project_name=config.project.name,
         )
 
+    if action == "skill":
+        from ..scaffold.skill_packager import scaffold_skill_command
+
+        target = getattr(args, "target", "all")
+        output_dir = getattr(args, "output_dir", None)
+        dry_run = bool(getattr(args, "dry_run", False))
+        force = bool(getattr(args, "force", False))
+        return scaffold_skill_command(
+            root_dir=config.root_dir,
+            target=target,
+            output_dir=output_dir,
+            dry_run=dry_run,
+            force=force,
+            project_name=config.project.name,
+        )
+
     parser.parse_args(["scaffold", "--help"])
     return 0
+

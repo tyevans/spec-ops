@@ -116,7 +116,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0112 (Complete)**: [`0112-continuous-product-discovery-and-living-prd-synthesis-workflow`](complete/0112-continuous-product-discovery-and-living-prd-synthesis-workflow.md)
 - **TASK-0113 (Complete)**: [`0113-invest-task-decomposition-and-automated-dor-contract-synthesis`](complete/0113-invest-task-decomposition-and-automated-dor-contract-synthesis.md)
 - **TASK-0114 (Complete)**: [`0114-multi-agent-in-worktree-implementation-peer-consultation-and-verification`](complete/0114-multi-agent-in-worktree-implementation-peer-consultation-and-verification.md)
-- **TASK-0115 (Refined)**: [`0115-universal-multi-platform-skill-distribution-and-package-scaffolding`](refined/0115-universal-multi-platform-skill-distribution-and-package-scaffolding.md)
+- **TASK-0115 (Complete)**: [`0115-universal-multi-platform-skill-distribution-and-package-scaffolding`](complete/0115-universal-multi-platform-skill-distribution-and-package-scaffolding.md)
 - **TASK-0116 (Complete)**: [`0116-fix-worktree-git-merge-lock-resolution`](complete/0116-fix-worktree-git-merge-lock-resolution.md)
 - **TASK-0125 (Complete)**: [`0125-autonomous-continuous-balancing-loop-and-tri-direc`](complete/0125-autonomous-continuous-balancing-loop-and-tri-direc.md)
 - **TASK-0126 (Complete)**: [`0126-cryptographic-customer-uat-receipt-generation-and-`](complete/0126-cryptographic-customer-uat-receipt-generation-and-.md)

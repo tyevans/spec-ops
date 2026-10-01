@@ -65,3 +65,33 @@ def register_scaffold_subparsers(subparsers: argparse._SubParsersAction) -> None
     p_scaffold_hooks = scaffold_subs.add_parser("hooks", help="Scaffold native, zero-dependency git hooks")
     p_scaffold_hooks.add_argument("--force", action="store_true", help="Overwrite existing hooks")
     p_scaffold_hooks.add_argument("--native", action="store_true", default=True, help="Scaffold native POSIX shell git hooks")
+
+    p_scaffold_skill = scaffold_subs.add_parser(
+        "skill",
+        help="Package and scaffold universal multi-platform skill bundles across agent platforms",
+    )
+    p_scaffold_skill.add_argument(
+        "--target",
+        choices=["antigravity", "claude", "cursor", "all"],
+        default="all",
+        help="Target agent platform (antigravity, claude, cursor, all; default: all)",
+    )
+    p_scaffold_skill.add_argument(
+        "--output-dir",
+        dest="output_dir",
+        default=None,
+        help="Destination directory for scaffolded skill bundles (default: repository root)",
+    )
+    p_scaffold_skill.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Simulate skill packaging without writing files to disk",
+    )
+    p_scaffold_skill.add_argument(
+        "--force",
+        action="store_true",
+        default=False,
+        help="Overwrite existing skill definitions and rule files",
+    )
+
