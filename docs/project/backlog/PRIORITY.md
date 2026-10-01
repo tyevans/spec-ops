@@ -137,3 +137,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0133 (Refined)**: [`0133-redstring-relational-knowledge-graph-and-ast-projection`](refined/0133-redstring-relational-knowledge-graph-and-ast-projection.md)
 - **TASK-0134 (Refined)**: [`0134-continuous-orchestration-retrospective-and-self-healing-engine`](refined/0134-continuous-orchestration-retrospective-and-self-healing-engine.md)
 - **TASK-0135 (Refined)**: [`0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio`](refined/0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio.md)
+- **TASK-0136 (Refined)**: [`0136-selective-worktree-patch-takeover-and-partial-file-salvage`](refined/0136-selective-worktree-patch-takeover-and-partial-file-salvage.md)
+- **TASK-0137 (Refined)**: [`0137-living-release-notes-generator-and-changelog-publisher`](refined/0137-living-release-notes-generator-and-changelog-publisher.md)
+- **TASK-0138 (Refined)**: [`0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning`](refined/0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning.md)
+- **TASK-0139 (Refined)**: [`0139-multi-agent-collaborative-review-radar`](refined/0139-multi-agent-collaborative-review-radar.md)
