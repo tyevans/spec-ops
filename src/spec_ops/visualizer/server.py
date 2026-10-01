@@ -35,6 +35,13 @@ class VisualizerHandler(BaseHTTPRequestHandler):
         elif path == "/api/data":
             data = serialize_project_data(self.config)
             self._send_json(200, data)
+        elif path in ("/api/prd/draft", "/api/prd/status"):
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            root = getattr(self.config, "root_dir", Path.cwd())
+            from .prd_sync import handle_prd_draft_get
+
+            code, res = handle_prd_draft_get(root, query_params)
+            self._send_json(code, res)
         elif path == "/api/telemetry":
             from .lead_console import harvest_fleet_telemetry
 
@@ -93,10 +100,21 @@ class VisualizerHandler(BaseHTTPRequestHandler):
 
         root = getattr(self.config, "root_dir", Path.cwd())
 
-        if path == "/api/prd/draft":
-            res = create_prd_draft(root, payload)
-            code = 201 if res.get("success") else 400
+        if path == "/api/prd/save":
+            from .prd_sync import handle_prd_save_post
+
+            code, res = handle_prd_save_post(root, payload)
             self._send_json(code, res)
+        elif path == "/api/prd/draft":
+            if payload.get("content") is not None and (payload.get("file_path") or payload.get("path")):
+                from .prd_sync import handle_prd_save_post
+
+                code, res = handle_prd_save_post(root, payload)
+                self._send_json(code, res)
+            else:
+                res = create_prd_draft(root, payload)
+                code = 201 if res.get("success") else 400
+                self._send_json(code, res)
         elif path == "/api/prd/commit":
             file_path = payload.get("file_path")
             content = payload.get("content")

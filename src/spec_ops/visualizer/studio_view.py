@@ -69,12 +69,12 @@ def render_studio_html() -> str:
 
       <div class="form-group">
         <label for="prdTitle">PRD Title *</label>
-        <input type="text" id="prdTitle" placeholder="Self-Service Customer Billing Portal" oninput="updatePreview()">
+        <input type="text" id="prdTitle" placeholder="Self-Service Customer Billing Portal" oninput="triggerAutoSave()">
       </div>
 
       <div class="form-group">
         <label for="prdPersona">Target Persona *</label>
-        <select id="prdPersona" onchange="updatePreview()">
+        <select id="prdPersona" onchange="triggerAutoSave()">
           <option value="">-- Select Persona --</option>
           <option value="Alex">Alex (The Agentic Systems Architect)</option>
           <option value="Jordan">Jordan (The Full-Stack Engineer)</option>
@@ -87,17 +87,17 @@ def render_studio_html() -> str:
 
       <div class="form-group">
         <label for="prdComponent">Component</label>
-        <input type="text" id="prdComponent" value="billing" oninput="updatePreview()">
+        <input type="text" id="prdComponent" value="billing" oninput="triggerAutoSave()">
       </div>
 
       <div class="form-group">
         <label for="prdProblem">Problem Statement *</label>
-        <textarea id="prdProblem" placeholder="Customers cannot update payment methods self-serve" oninput="updatePreview()"></textarea>
+        <textarea id="prdProblem" placeholder="Customers cannot update payment methods self-serve" oninput="triggerAutoSave()"></textarea>
       </div>
 
       <div class="form-group">
         <label for="prdOutcomes">Checkable Outcomes (1 per line) *</label>
-        <textarea id="prdOutcomes" placeholder="User updates credit card via web dashboard&#10;Stripe webhook confirms card update with 200 OK" oninput="updatePreview()"></textarea>
+        <textarea id="prdOutcomes" placeholder="User updates credit card via web dashboard&#10;Stripe webhook confirms card update with 200 OK" oninput="triggerAutoSave()"></textarea>
       </div>
 
       <div class="btn-row">
@@ -168,7 +168,47 @@ def render_studio_html() -> str:
 
   <script>
     let currentPrdFilePath = "";
+    let currentDraftHash = null;
+    let autoSaveTimer = null;
     let frontdoorSteps = [];
+
+    function triggerAutoSave() {
+      updatePreview();
+      if (!currentPrdFilePath) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(autoSaveDraft, 500);
+    }
+
+    async function autoSaveDraft() {
+      if (!currentPrdFilePath) return;
+      const title = document.getElementById("prdTitle").value || "Untitled PRD";
+      const persona = document.getElementById("prdPersona").value || "Taylor";
+      const component = document.getElementById("prdComponent").value || "core";
+      const problem = document.getElementById("prdProblem").value || "";
+      const outcomes = document.getElementById("prdOutcomes").value.split("\\n").filter(o => o.trim());
+      const body = `---\\nid: PRD-DRAFT\\ntitle: ${title}\\nstatus: Idea\\ntarget_persona: ${persona}\\ncomponent: ${component}\\n---\\n\\n# PRD: ${title}\\n\\n## Problem Statement\\n${problem}\\n\\n## Checkable Outcomes\\n` + outcomes.map(o => `- ${o}`).join("\\n") + "\\n";
+
+      try {
+        const res = await fetch("/api/prd/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file_path: currentPrdFilePath, content: body, expected_hash: currentDraftHash })
+        });
+        const data = await res.json();
+        if (data.status === "saved") {
+          currentDraftHash = data.revision_digest;
+          const success = document.getElementById("successAlert");
+          success.style.display = "block";
+          success.innerText = "Draft auto-saved (" + data.revision_digest.slice(0, 8) + ")";
+        } else if (data.status === "conflict") {
+          const alert = document.getElementById("validationAlert");
+          alert.style.display = "block";
+          alert.innerText = data.message;
+        }
+      } catch (err) {
+        console.error("Auto-save failed", err);
+      }
+    }
 
     function parseMarkdown(md) {
       if (!md) return "";
@@ -275,6 +315,7 @@ def render_studio_html() -> str:
         success.style.display = "block";
         success.innerText = data.message;
         currentPrdFilePath = data.file_path;
+        currentDraftHash = data.revision_digest || null;
       }
     }
 
