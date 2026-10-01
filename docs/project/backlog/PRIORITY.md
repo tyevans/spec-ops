@@ -109,7 +109,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0080 (Complete)**: [`0080-hybrid-team-velocity-and-rescue-analytics`](complete/0080-hybrid-team-velocity-and-rescue-analytics.md)
 - **TASK-0108 (Complete)**: [`0108-interactive-html-velocity-dashboard-exporter`](complete/0108-interactive-html-velocity-dashboard-exporter.md)
 - **TASK-0081 (Complete)**: [`0081-interactive-milestone-planning-and-executive-briefing`](complete/0081-interactive-milestone-planning-and-executive-briefing.md)
-- **TASK-0103 (Refined)**: [`0103-interactive-milestone-planning-studio`](refined/0103-interactive-milestone-planning-studio.md)
+- **TASK-0103 (Complete)**: [`0103-interactive-milestone-planning-studio`](complete/0103-interactive-milestone-planning-studio.md)
 - **TASK-0109 (Complete)**: [`0109-poc-inline-full-lifecycle-sdlc-orchestrator-skill`](complete/0109-poc-inline-full-lifecycle-sdlc-orchestrator-skill.md)
 - **TASK-0110 (Refined)**: [`0110-autonomous-persona-discovery-and-living-maintenance-engine`](refined/0110-autonomous-persona-discovery-and-living-maintenance-engine.md)
 - **TASK-0111 (Refined)**: [`0111-multi-faceted-bdd-user-story-generation-and-cross-cutting-traceability`](refined/0111-multi-faceted-bdd-user-story-generation-and-cross-cutting-traceability.md)

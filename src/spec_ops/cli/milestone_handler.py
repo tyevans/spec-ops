@@ -1,6 +1,6 @@
-"""CLI command handler for milestone scope transitions and rollover.
+"""CLI command handler for milestone scope transitions, planning studio, and rollover.
 
-Governed by ADR-0001, ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0009; PRD-0005; US-0077.
+Governed by ADR-0001, ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0009; PRD-0005; US-0025, US-0077.
 Deals strictly with public CLI frontdoors and keeps source under 400 lines.
 """
 
@@ -62,8 +62,32 @@ def handle_milestone_command(
 
         return 0
 
+    if action == "plan":
+        simulate = bool(getattr(args, "simulate", False))
+        assign = list(getattr(args, "assign", []) or [])
+        save = bool(getattr(args, "save", False))
+        as_json = bool(getattr(args, "json", False))
+        non_interactive = bool(getattr(args, "non_interactive", False))
+
+        from ..backlog.milestone_studio import MilestoneStudio
+
+        studio = MilestoneStudio(config)
+        result = studio.execute(
+            simulate=simulate,
+            assignments=assign,
+            save=save,
+            non_interactive=non_interactive,
+        )
+
+        if as_json:
+            print(json.dumps(result.to_dict(), indent=2))
+            return 0
+
+        studio.render(result)
+        return 0
+
     if parser:
         parser.parse_args(["milestone", "--help"])
     else:
-        print("Usage: spec-ops milestone <rollover> [options]")
+        print("Usage: spec-ops milestone <rollover|plan> [options]")
     return 0
