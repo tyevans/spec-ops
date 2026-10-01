@@ -1,7 +1,7 @@
 ---
 id: '0122'
 title: Document spec-ops check in Diataxis CLI Reference
-status: Refined
+status: Complete
 dependencies:
 - TASK-0055
 governing_adrs:
@@ -14,6 +14,8 @@ governing_prds:
 governing_stories:
 - US-0091
 target_bc: rescue
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:22:58.704400+00:00'
 ---
 
 # TASK-0122: Document spec-ops check in Diataxis CLI Reference

@@ -1,7 +1,7 @@
 ---
 id: '0121'
 title: Resolve Variable Scoping Shadowing in Queue Command Handler
-status: Refined
+status: Complete
 dependencies:
 - TASK-0098
 governing_adrs:
@@ -13,6 +13,8 @@ governing_prds:
 governing_stories:
 - US-0074
 target_bc: backlog
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:22:55.193508+00:00'
 ---
 
 # TASK-0121: Resolve Variable Scoping Shadowing in Queue Command Handler

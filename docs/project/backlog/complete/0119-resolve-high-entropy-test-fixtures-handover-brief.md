@@ -2,7 +2,7 @@
 id: 0119
 title: Resolve High-Entropy Test Fixtures Triggering Security Scanner in Handover
   Brief Tests
-status: Refined
+status: Complete
 dependencies:
 - TASK-0097
 governing_adrs:
@@ -15,6 +15,8 @@ governing_prds:
 governing_stories:
 - US-0090
 target_bc: rescue
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:22:47.024255+00:00'
 ---
 
 # TASK-0119: Resolve High-Entropy Test Fixtures Triggering Security Scanner in Handover Brief Tests

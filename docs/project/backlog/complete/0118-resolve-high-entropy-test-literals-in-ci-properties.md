@@ -2,7 +2,7 @@
 id: 0118
 title: Resolve High-Entropy Test Literals Triggering Security Health Scanner in Multi-Platform
   CI Properties
-status: Refined
+status: Complete
 dependencies:
 - TASK-0083
 governing_adrs:
@@ -15,6 +15,8 @@ governing_prds:
 governing_stories:
 - US-0069
 target_bc: scaffold
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:22:42.585672+00:00'
 ---
 
 # TASK-0118: Resolve High-Entropy Test Literals Triggering Security Health Scanner in Multi-Platform CI Properties
