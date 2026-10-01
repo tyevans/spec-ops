@@ -355,9 +355,21 @@ def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_notes.add_argument("--format", choices=["markdown", "html"], default="markdown", help="Output format (markdown, html)")
     p_notes.add_argument("--branded", action="store_true", default=False, help="Include branded styling and visualizer links")
     p_notes.add_argument("-o", "--output", default=None, help="Output file path")
+def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers supply-chain security, verification, and sentinel commands."""
+    p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")
+    sec_subs = p_sec.add_subparsers(dest="security_action", help="Security action")
+    p_vlock = sec_subs.add_parser("verify-lock", help="Verify supply-chain lockfile cryptographic hashes and pinning")
+    p_vlock.add_argument("--path", default=".", help="Directory containing uv.lock (default: current directory)")
+
+    p_sentinel = sec_subs.add_parser("sentinel", help="Inspect and enforce supply-chain lockfile mutation immutability")
+    p_sentinel.add_argument("--path", default=".", help="Directory to inspect for lockfile mutations (default: current directory)")
+    p_sentinel.add_argument("--fix", action="store_true", help="Automatically revert unauthorized lockfile modifications")
+    p_sentinel.add_argument("--json", action="store_true", help="Output sentinel evaluation as structured JSON")
+
+
 from .parser_scaffold import register_scaffold_subparsers
 from .parser_report import register_report_subparsers
-
 
 
 def register_check_subparsers(subparsers: argparse._SubParsersAction) -> None:

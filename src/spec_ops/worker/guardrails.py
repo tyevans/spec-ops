@@ -139,6 +139,23 @@ def sanitize_unauthorized_dependency_modifications(
     return True
 
 
+def sanitize_unauthorized_lockfile_mutations(
+    worktree_dir: Path | str,
+    allows_dependencies: bool = False,
+) -> list[str]:
+    """Reverts unauthorized modifications to protected lockfiles."""
+    if allows_dependencies:
+        return []
+    from ..security.lockfile_sentinel import inspect_lockfile_sentinel
+
+    result = inspect_lockfile_sentinel(
+        worktree_dir,
+        fix=True,
+        task_allows_dependencies=allows_dependencies,
+    )
+    return result.remediated
+
+
 def prepare_guardrailed_commit(
     worktree_dir: Path | str,
     commit_msg: str,
@@ -150,6 +167,7 @@ def prepare_guardrailed_commit(
 
     sanitize_backlog_modifications(worktree_path, stage_legitimate=False)
     sanitize_unauthorized_dependency_modifications(worktree_path, allows_dependencies=allows_dependencies)
+    sanitize_unauthorized_lockfile_mutations(worktree_path, allows_dependencies=allows_dependencies)
     handover = worktree_path / "HANDOVER.md"
     if handover.exists():
         handover.unlink()

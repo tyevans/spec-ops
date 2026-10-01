@@ -80,13 +80,24 @@ class PreCommitHookEvaluator:
         else:
             is_healthy = report.is_healthy
 
+        from ..security.lockfile_sentinel import inspect_lockfile_sentinel
+
+        sentinel_res = inspect_lockfile_sentinel(self.root_dir, config=self.config)
+        sentinel_violations = 0
+        if not sentinel_res.ok:
+            output_lines.append("\n❌ Supply-Chain Lockfile Sentinel Violations:")
+            for err in sentinel_res.violations:
+                output_lines.append(f"   - {err}")
+            is_healthy = False
+            sentinel_violations = len(sentinel_res.violations)
+
         output = "\n".join(output_lines)
         exit_code = 0 if is_healthy else 1
         return HookEvaluationResult(
             success=is_healthy,
             exit_code=exit_code,
             output=output,
-            violations_count=len(report.violations) + (0 if excl_ok else 1),
+            violations_count=len(report.violations) + (0 if excl_ok else 1) + sentinel_violations,
             warnings_count=len(report.warnings),
         )
 

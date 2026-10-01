@@ -19,6 +19,7 @@ from .parser_subcommands import (
     register_rescue_subparsers,
     register_scaffold_subparsers,
     register_schema_subparsers,
+    register_security_subparsers,
     register_spike_subparsers,
     register_test_subparsers,
 )
@@ -290,10 +291,7 @@ def build_parser() -> argparse.ArgumentParser:
     register_spike_subparsers(subparsers)
 
     # security
-    p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")
-    sec_subs = p_sec.add_subparsers(dest="security_action", help="Security action")
-    p_vlock = sec_subs.add_parser("verify-lock", help="Verify supply-chain lockfile cryptographic hashes and pinning")
-    p_vlock.add_argument("--path", default=".", help="Directory containing uv.lock (default: current directory)")
+    register_security_subparsers(subparsers)
 
     # review
     p_rev = subparsers.add_parser("review", help="Architectural review and dual-custody human sign-offs")

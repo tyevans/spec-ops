@@ -1,7 +1,7 @@
 ---
 id: '0127'
 title: Supply-Chain Lockfile Mutation Sentinel and Pre-Execution Hook
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0018
 governing_prds:
@@ -23,4 +23,3 @@ Task TASK-0127 implements Supply-Chain Lockfile Mutation Sentinel and Pre-Execut
 1. Public interfaces or standard domain contracts implemented.
 2. Verified via automated blackbox tests without private backdoor manipulation.
 3. All new source files strictly under 500 lines.
-

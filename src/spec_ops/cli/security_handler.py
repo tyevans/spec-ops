@@ -151,6 +151,34 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
         print("✅ Lockfile verified: cryptographic hashes and package pins valid.")
         return 0
 
+    if args.security_action == "sentinel":
+        import json
+        from ..security.lockfile_sentinel import inspect_lockfile_sentinel
+
+        target = Path(getattr(args, "path", ".")).resolve()
+        fix = bool(getattr(args, "fix", False))
+        as_json = bool(getattr(args, "json", False))
+
+        result = inspect_lockfile_sentinel(target, fix=fix, config=config)
+
+        if as_json:
+            print(json.dumps(result.to_dict(), indent=2))
+            return 0 if result.ok else 1
+
+        if not result.ok:
+            print("❌ Supply-Chain Lockfile Mutation Sentinel Violation:", file=sys.stderr)
+            for err in result.violations:
+                print(f"   - {err}", file=sys.stderr)
+            return 1
+
+        if result.waiver_applied:
+            print(f"ℹ️ Lockfile mutation authorized by waiver: {result.waiver_details}")
+        elif result.remediated:
+            print(f"✅ Remediated unauthorized lockfile modification(s): {', '.join(result.remediated)}")
+        else:
+            print("✅ Lockfile Sentinel passed: zero unauthorized lockfile mutations detected.")
+        return 0
+
     parser.parse_args(["security", "--help"])
     return 0
 
