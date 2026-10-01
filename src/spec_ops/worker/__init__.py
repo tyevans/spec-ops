@@ -77,15 +77,26 @@ from .runners import (
     interpolate_runner_template,
     prepare_runner_environment,
 )
+from .sandbox_env import (
+    APPROVED_COMMAND_PREFIXES,
+    DEFAULT_TOOLCHAIN_ENV_VARS,
+    SandboxedWorkerRunner,
+    SecurityViolationError,
+    is_command_approved,
+    is_sensitive_key,
+    sanitize_environment,
+)
 from .worktree import cleanup_worktree, create_worktree
 
 __all__ = [
+    "APPROVED_COMMAND_PREFIXES",
     "AgentRunner",
     "AstNodeSeam",
     "BatchCycleOrchestrator",
     "BatchCycleReport",
     "ChangedFileInfo",
     "CommitProvenanceInfo",
+    "DEFAULT_TOOLCHAIN_ENV_VARS",
     "HookEvaluationResult",
     "MergeLockManager",
     "PipelineResult",
@@ -93,6 +104,8 @@ __all__ = [
     "PreflightPipeline",
     "PreflightStage",
     "ReviewBrief",
+    "SandboxedWorkerRunner",
+    "SecurityViolationError",
     "SpecConsultationReport",
     "StageResult",
     "TaskClaimer",
@@ -121,7 +134,9 @@ __all__ = [
     "inject_ci_failure_prompt",
     "install_pre_commit_hook",
     "interpolate_runner_template",
+    "is_command_approved",
     "is_rebase_in_progress",
+    "is_sensitive_key",
     "parse_commit_trailers",
     "prepare_guardrailed_commit",
     "prepare_runner_environment",
@@ -130,6 +145,7 @@ __all__ = [
     "run_spec_ops_health_hook",
     "run_worktree_preflight",
     "sanitize_backlog_modifications",
+    "sanitize_environment",
     "scan_worktree_file_length_violations",
     "squash_merge_and_commit",
     "stage_legitimate_files",

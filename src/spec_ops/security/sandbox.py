@@ -27,16 +27,24 @@ class ExecutionSandbox:
         allowed_commands: list[str] | None = None,
         isolate_network: bool = False,
         prohibited_commands: list[str] | None = None,
+        scrub_environment: bool = True,
     ):
         self.worktree_dir = Path(worktree_dir).resolve()
         self.allowed_commands = list(allowed_commands) if allowed_commands is not None else None
         self.isolate_network = isolate_network
         self.prohibited_commands = list(prohibited_commands or FORBIDDEN_UTILITIES)
+        self.scrub_environment = scrub_environment
         self.audit_log_path = resolve_audit_log_path(self.worktree_dir)
 
     def prepare_environment(self, base_env: dict[str, str] | None = None) -> dict[str, str]:
         """Configures PATH shims and PYTHONPATH network isolation in the child execution environment."""
         env = dict(base_env or os.environ).copy()
+        if self.scrub_environment:
+            from ..worker.sandbox_env import sanitize_environment
+            env = sanitize_environment(
+                env,
+                extra_allowed={"PYTHONPATH", "PYTEST_CURRENT_TEST", "SPEC_OPS_WORKTREE", "PWD"},
+            )
 
         # 1. Setup PATH interceptor shims
         shims_dir = self.worktree_dir / ".specops" / "sandbox_shims"

@@ -89,9 +89,13 @@ def interpolate_runner_template(
 def prepare_runner_environment(
     worktree_dir: Path,
     base_env: dict[str, str] | None = None,
+    sanitize: bool = False,
 ) -> dict[str, str]:
     """Constructs environment mapping setting SPEC_OPS_WORKTREE and PWD."""
     env = dict(base_env if base_env is not None else os.environ)
+    if sanitize:
+        from .sandbox_env import sanitize_environment
+        env = sanitize_environment(env, extra_allowed={"SPEC_OPS_WORKTREE", "PWD"})
     resolved_wt = str(worktree_dir.resolve())
     env["SPEC_OPS_WORKTREE"] = resolved_wt
     env["PWD"] = resolved_wt
@@ -125,9 +129,27 @@ class AgentRunner:
         self,
         worktree_dir: Path,
         base_env: dict[str, str] | None = None,
+        sanitize: bool = False,
     ) -> dict[str, str]:
         """Prepares worker execution environment with SPEC_OPS_WORKTREE and PWD."""
-        return prepare_runner_environment(worktree_dir, base_env=base_env)
+        return prepare_runner_environment(worktree_dir, base_env=base_env, sanitize=sanitize)
+
+    def get_sandboxed_runner(
+        self,
+        worktree_dir: Path | None = None,
+        timeout_seconds: float | None = None,
+        memory_limit_mb: int | None = None,
+    ) -> Any:
+        """Returns a configured SandboxedWorkerRunner for zero-trust worker execution."""
+        from .sandbox_env import SandboxedWorkerRunner
+        sandbox_config = getattr(self.config.execution, "sandbox", None)
+        allowed_cmds = sandbox_config.allowed_commands if sandbox_config else None
+        return SandboxedWorkerRunner(
+            worktree_dir=worktree_dir,
+            allowed_commands=allowed_cmds,
+            timeout_seconds=timeout_seconds,
+            memory_limit_mb=memory_limit_mb,
+        )
 
 
 def build_agent_cmd(

@@ -1,7 +1,7 @@
 ---
 id: '0140'
 title: Zero-Trust Autonomous Worker Process Sandboxing and Environment Scrubbing
-status: Refined
+status: Complete
 dependencies:
 - TASK-0051
 - TASK-0114
