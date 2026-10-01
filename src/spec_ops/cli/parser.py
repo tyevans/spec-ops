@@ -23,6 +23,7 @@ from .parser_subcommands import (
     register_spike_subparsers,
     register_story_subparsers,
     register_test_subparsers,
+    register_worker_subparsers,
 )
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
 from .parser_persona import register_persona_subparsers
@@ -209,20 +210,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_export.add_argument("-o", "--output", default="dist/index.html", help="Output file path (default: dist/index.html)")
 
     # worker
-    p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
-    p_worker.add_argument("action_or_task", nargs="?", default=None, help="Action ('execute', 'claim', 'ci-heal') or target task canonical ID (e.g. TASK-0009)")
-    p_worker.add_argument("task_pos", nargs="?", default=None, help="Target task canonical ID when using 'execute' or 'claim'")
-    p_worker.add_argument("--task", help="Target task canonical ID (e.g. TASK-0009)")
-    p_worker.add_argument("--auto", action="store_true", help="Claim next ready unblocked task automatically in strict priority order")
-    p_worker.add_argument("--drain", action="store_true", help="Continuously drain ready tasks until queue is empty")
-    p_worker.add_argument("--max-concurrency", "--max-workers", "--concurrency", dest="max_concurrency", type=int, default=1, help="Maximum number of concurrent workers (default: 1)")
-    p_worker.add_argument("--max-tasks", type=int, default=None, help="Maximum number of tasks to execute")
-    p_worker.add_argument("--dry-run", action="store_true", help="Generate prompt without invoking agent")
-    p_worker.add_argument("--no-merge", action="store_true", help="Do not merge branch to main on completion")
-    p_worker.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
-    p_worker.add_argument("--worker-id", "--claimant", dest="worker_id", default=None, help="Worker or claimant identifier")
-    p_worker.add_argument("--telemetry", action="store_true", help="Display live autonomous worker fleet telemetry and worktree operations")
-    p_worker.add_argument("--json", action="store_true", help="Output telemetry as JSON")
+    register_worker_subparsers(subparsers)
 
     # cycle
     p_cycle = subparsers.add_parser("cycle", help="Execute end-to-end autonomous development cycle")

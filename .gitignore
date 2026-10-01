@@ -12,6 +12,7 @@ mutants/
 .task-prompt.md
 .task-review-prompt.md
 .task-conflict-prompt.md
+.spec-consultation.md
 .specops/
 .agents/*
 !.agents/skills/

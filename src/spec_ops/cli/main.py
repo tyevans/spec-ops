@@ -195,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
         return handle_visualizer_command(args, config)
 
     if args.command == "worker":
-        from .cycle_handler import handle_worker_command
+        from .worker_handler import handle_worker_command
         return handle_worker_command(args, config)
 
     if args.command == "cycle":

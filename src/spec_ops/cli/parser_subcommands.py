@@ -372,4 +372,5 @@ def register_check_subparsers(subparsers: argparse._SubParsersAction) -> None:
 
 from .parser_milestone import register_milestone_subparsers
 from .parser_story import register_story_subparsers
+from .parser_worker import register_worker_subparsers
 

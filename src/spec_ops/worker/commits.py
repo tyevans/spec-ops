@@ -121,6 +121,21 @@ def build_commit_trailers(
         "SpecOps-Slice": c_type,
     }
 
+    # Governing Stories
+    stories = (
+        getattr(task_or_meta, "governing_stories", None)
+        or getattr(task_or_meta, "governing_story", None)
+        or (task_or_meta.get("governing_stories") if isinstance(task_or_meta, dict) else None)
+        or (task_or_meta.get("governing_story") if isinstance(task_or_meta, dict) else None)
+    )
+    if stories:
+        if isinstance(stories, str):
+            val = stories.strip()
+        else:
+            val = ", ".join(str(s).strip() for s in stories if str(s).strip())
+        if val:
+            trailers["SpecOps-Story"] = val
+
     # Governing PRDs
     prds = (
         getattr(task_or_meta, "governing_prds", None)
