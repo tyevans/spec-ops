@@ -119,6 +119,7 @@ def test_inspect_sentinel_remediates_with_fix(git_worktree: Path):
 
 
 def test_waiver_via_task_frontmatter(git_worktree: Path):
+    subprocess.run(["git", "checkout", "-b", "task/0099-dependency-update"], cwd=git_worktree, check=True, capture_output=True)
     task_dir = git_worktree / "docs" / "project" / "backlog" / "refined"
     task_dir.mkdir(parents=True, exist_ok=True)
     (task_dir / "0099-dependency-update.md").write_text(
@@ -131,6 +132,20 @@ def test_waiver_via_task_frontmatter(git_worktree: Path):
     assert res.ok is True
     assert res.waiver_applied is True
     assert "allows_dependencies: true" in (res.waiver_details or "")
+
+
+def test_waiver_not_applied_outside_task_branch(git_worktree: Path):
+    task_dir = git_worktree / "docs" / "project" / "backlog" / "refined"
+    task_dir.mkdir(parents=True, exist_ok=True)
+    (task_dir / "0099-dependency-update.md").write_text(
+        "---\nid: '0099'\ntitle: Dep Update\nstatus: Refined\nallows_dependencies: true\n---\n# Task\n",
+        encoding="utf-8",
+    )
+
+    (git_worktree / "uv.lock").write_text("# Unauthorized change\n", encoding="utf-8")
+    res = inspect_lockfile_sentinel(git_worktree)
+    assert res.ok is False
+    assert res.waiver_applied is False
 
 
 def test_waiver_via_specops_toml(git_worktree: Path):

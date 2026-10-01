@@ -97,7 +97,8 @@ def test_gitlab_ci_generative_manifest_schema_invariants(
     parsed = yaml.safe_load(manifest)
     assert isinstance(parsed, dict)
     assert parsed["stages"] == ["lint", "health", "test", "security"]
-    assert parsed["variables"]["UV_CACHE_DIR"] == ".uv-cache/"
+    expected_cache_dir = custom_env.get("UV_CACHE_DIR", ".uv-cache/") if custom_env else ".uv-cache/"
+    assert parsed["variables"]["UV_CACHE_DIR"] == expected_cache_dir
     assert parsed["cache"]["paths"] == [".uv-cache/"]
 
     test_job = parsed["specops-test"]
