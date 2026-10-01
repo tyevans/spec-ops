@@ -288,6 +288,13 @@ def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_vel.add_argument("--format", choices=["markdown", "html", "json"], default="markdown", help="Output format")
     p_vel.add_argument("-o", "--output", default=None, help="Output file path")
     p_vel.add_argument("--json", action="store_true", default=False, help="Output results as structured JSON")
+
+    p_verify = rel_subs.add_parser("verify", help="Verify cryptographic release manifest integrity and authorized signer signatures")
+    p_verify.add_argument("--manifest", required=True, help="Path to release manifest JSON file")
+    p_verify.add_argument("--keyring", default=None, help="Path to authorized signers keyring file (default: .allowed_signers)")
+    p_verify.add_argument("--strict", action="store_true", default=False, help="Enforce strict verification of tree digest and UAT approval")
+    p_verify.add_argument("--json", action="store_true", default=False, help="Output verification report as structured JSON")
+
 def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers supply-chain security, verification, and sentinel commands."""
     p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")

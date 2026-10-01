@@ -74,9 +74,19 @@ from .merkle_manifest import (
 )
 from .models import BenchmarkReport, BenchmarkResult, SecurityViolationEvent
 from .network_guard import generate_network_isolation_sitecustomize, is_loopback_address, isolated_network
+from .release_verifier import (
+    AuthorizedSigner,
+    ReleaseVerificationResult,
+    parse_allowed_signers,
+    sign_release_manifest,
+    verify_release_manifest_data,
+    verify_release_manifest_file,
+)
 from .sandbox import ExecutionSandbox
 
 __all__ = [
+    "AuthorizedSigner",
+
     "FORBIDDEN_UTILITIES",
     "BenchmarkReport",
     "BenchmarkResult",
@@ -97,6 +107,7 @@ __all__ = [
     "PROTECTED_DEPENDENCY_FILES",
     "PROTECTED_LOCKFILES",
     "ProofStep",
+    "ReleaseVerificationResult",
     "SecurityViolationEvent",
     "build_merkle_manifest",
     "canonical_json_encode",
@@ -123,12 +134,14 @@ __all__ = [
     "is_loopback_address",
     "is_protected_lockfile",
     "isolated_network",
+    "parse_allowed_signers",
     "record_security_violation",
     "remediate_lockfile_mutations",
     "resolve_audit_log_path",
     "resolve_hooks_dir",
     "run_comparative_benchmark",
     "run_hook_sentinel",
+    "sign_release_manifest",
     "strip_sentinel_block",
     "uninstall_hook",
     "validate_command",
@@ -141,5 +154,8 @@ __all__ = [
     "verify_inclusion_proof",
     "verify_lockfile",
     "verify_merkle_manifest",
+    "verify_release_manifest_data",
+    "verify_release_manifest_file",
     "verify_uv_lock",
 ]
+

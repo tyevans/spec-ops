@@ -1,7 +1,7 @@
 ---
 id: 0149
 title: Cryptographic Release Verification and Public Keyring Validator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0126
 - TASK-0141

@@ -31,6 +31,28 @@ def handle_release_command(
             print(content)
         return 0
 
+    if action == "verify":
+        manifest_path = getattr(args, "manifest", None)
+        keyring_path = getattr(args, "keyring", None)
+        strict = getattr(args, "strict", False)
+        json_mode = getattr(args, "json", False)
+
+        from ..security.release_verifier import verify_release_manifest_file
+
+        result = verify_release_manifest_file(
+            manifest_path=manifest_path,
+            keyring_path=keyring_path,
+            repo_root=config.root_dir,
+            strict=strict,
+        )
+        if json_mode:
+            import json
+
+            print(json.dumps(result.to_dict(), indent=2))
+        else:
+            print(result.format_report())
+        return 0 if result.valid else 1
+
     if action not in ("notes", None):
         try:
             parser.parse_args(["release", "notes", "--help"])
