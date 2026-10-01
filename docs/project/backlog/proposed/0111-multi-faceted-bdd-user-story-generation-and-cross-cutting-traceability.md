@@ -3,19 +3,19 @@ id: '0111'
 title: Multi-Faceted BDD User Story Generation and Cross-Cutting Traceability
 status: Proposed
 dependencies:
-  - TASK-0109
-  - TASK-0110
+- TASK-0109
+- TASK-0110
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0006
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: core
 ---
 
@@ -46,3 +46,17 @@ User stories frequently suffer from single-dimensional framing: either written p
 2. CLI command `spec-ops story trace` audits bidirectional links between PRDs, personas, stories, and tasks.
 3. Automatically formats and updates `docs/project/user_stories/REGISTRY.md`.
 4. 100% test pass rate verifying observable contracts without private mock backdoors.
+
+## Acceptance Criteria
+
+### Scenario 1: Multi-Faceted BDD Story Generation*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Multi-Faceted BDD User Story Generation and Cross-Cutting Traceability"
+Then Multi-Faceted BDD Story Generation*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+## Hypothesis Invariant Properties
+
+- `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.

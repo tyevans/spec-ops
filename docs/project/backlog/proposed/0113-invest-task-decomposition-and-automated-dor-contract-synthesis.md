@@ -3,21 +3,21 @@ id: '0113'
 title: INVEST Task Decomposition and Automated DoR Contract Synthesis
 status: Proposed
 dependencies:
-  - TASK-0109
-  - TASK-0111
-  - TASK-0112
+- TASK-0109
+- TASK-0111
+- TASK-0112
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
 governing_prds:
-  - PRD-0006
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: backlog
 ---
 
@@ -38,7 +38,7 @@ Tasks drafted during initial planning frequently lack concrete acceptance criter
     - And generates executable Gherkin scenarios and property test targets for each task.
 
 ## Architectural Invariants & Seams
-- **File Length Limit (<500 lines)**: Task decomposition module in `src/spec_ops/backlog/invest_decomposer.py` must stay strictly under 400 lines (ADR-0002).
+- **File Length Limit (<500 lines)**: Task decomposition module in `src/spec_ops/prd/decomposer.py` must stay strictly under 400 lines (ADR-0002).
 - **INVEST Compliance**: Every generated task must be scoped to a single bounded context and estimated under 400 lines of implementation diff.
 - **Mutmut Mutation Scope**: AST seam decomposition heuristics achieve >=80% mutant kill score under `mutmut`.
 
@@ -47,3 +47,17 @@ Tasks drafted during initial planning frequently lack concrete acceptance criter
 2. Generates tasks in `docs/project/backlog/proposed/` satisfying all Definition of Ready (DoR) criteria.
 3. Automatically identifies and scaffolds architectural spikes (`SPIKE-XXXX`) when architectural uncertainty is detected.
 4. 100% test pass rate verifying observable contracts without private mock backdoors.
+
+## Acceptance Criteria
+
+### Scenario 1: INVEST Slicing and DoR Synthesis*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "INVEST Task Decomposition and Automated DoR Contract Synthesis"
+Then INVEST Slicing and DoR Synthesis*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+## Hypothesis Invariant Properties
+
+- `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.

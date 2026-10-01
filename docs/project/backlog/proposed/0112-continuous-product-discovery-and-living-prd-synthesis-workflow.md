@@ -3,18 +3,18 @@ id: '0112'
 title: Continuous Product Discovery and Living PRD Synthesis Workflow
 status: Proposed
 dependencies:
-  - TASK-0109
-  - TASK-0110
+- TASK-0109
+- TASK-0110
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0006
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: prd
 ---
 
@@ -45,3 +45,17 @@ While SpecOps has PRD linting commands (`spec-ops prd lint`), the workflow for t
 2. Enforces mandatory sections and checkable outcomes before allowing transition to `accepted/`.
 3. Updates `docs/project/product/REGISTRY.md` automatically.
 4. 100% test pass rate verifying observable contracts without private mock backdoors.
+
+## Acceptance Criteria
+
+### Scenario 1: Autonomous PRD Discovery and Lifecycle Advancement*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Continuous Product Discovery and Living PRD Synthesis Workflow"
+Then Autonomous PRD Discovery and Lifecycle Advancement*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+## Hypothesis Invariant Properties
+
+- `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.

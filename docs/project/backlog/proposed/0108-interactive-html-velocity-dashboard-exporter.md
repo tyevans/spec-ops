@@ -1,21 +1,20 @@
 ---
-id: '0108'
+id: 0108
 title: Interactive HTML Velocity Dashboard and Executive Forecast Exporter
 status: Proposed
-created: 2026-09-30
 dependencies:
-  - TASK-0080
+- TASK-0080
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0007
-  - ADR-0009
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0007
+- ADR-0009
 governing_prds:
-  - PRD-0005
+- PRD-0005
 governing_stories:
-  - US-0022
+- US-0022
 target_bc: backlog
 ---
 
@@ -43,3 +42,13 @@ Engineering directors, product leaders, and executive sponsors require presentat
 1. Executing `spec-ops report velocity --export html` produces a valid, standalone HTML report with embedded styles and SVGs.
 2. The HTML artifact operates entirely offline without external CDN script references.
 3. All acceptance criteria verified via public CLI frontdoors with `pytest-bdd` (ADR-0003, ADR-0006).
+
+## Acceptance Criteria
+
+### Scenario 1: Exporting Velocity Trends for Executive Reviews*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Interactive HTML Velocity Dashboard and Executive Forecast Exporter"
+Then Exporting Velocity Trends for Executive Reviews*
+And observable outputs satisfy public contracts without backdoor tampering.
+```

@@ -1,26 +1,27 @@
 ---
 id: '0114'
-title: Multi-Agent In-Worktree Implementation, Peer Consultation, and Verification Loop
+title: Multi-Agent In-Worktree Implementation, Peer Consultation, and Verification
+  Loop
 status: Proposed
 dependencies:
-  - TASK-0109
-  - TASK-0113
+- TASK-0109
+- TASK-0113
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
-  - ADR-0006
-  - ADR-0007
-  - ADR-0008
-  - ADR-0009
-  - ADR-0010
-  - ADR-0011
-  - ADR-0012
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
+- ADR-0006
+- ADR-0007
+- ADR-0008
+- ADR-0009
+- ADR-0010
+- ADR-0011
+- ADR-0012
 governing_prds:
-  - PRD-0006
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: worker
 ---
 
@@ -45,7 +46,7 @@ Existing workers operate primarily in isolation, frequently missing broader arch
     - Then actionable AST diagnostics are provided for iterative self-healing up to max attempts.
 
 ## Architectural Invariants & Seams
-- **File Length Limit (<500 lines)**: Orchestration worker coordinator in `src/spec_ops/worker/orchestrator_loop.py` must stay strictly under 400 lines (ADR-0002).
+- **File Length Limit (<500 lines)**: Orchestration worker coordinator in `src/spec_ops/worker/orchestrator.py` must stay strictly under 400 lines (ADR-0002).
 - **Strict Backlog Isolation (ADR-0005)**: Feature branches remain strictly forbidden from modifying `docs/project/backlog/`.
 - **Mutmut Mutation Scope**: Peer consultation protocols and preflight validation gates achieve >=80% mutant kill score under `mutmut`.
 
@@ -54,3 +55,25 @@ Existing workers operate primarily in isolation, frequently missing broader arch
 2. Peer consultation rules enforced: subagents must read cited ADRs and stories before generating code.
 3. Preflight gates (`spec-ops health`, `uv run pytest`, `uv lock --check`) verified automatically.
 4. 100% test pass rate verifying observable contracts without private mock backdoors.
+
+## Acceptance Criteria
+
+### Scenario 1: In-Worktree Subagent Peer Consultation*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Multi-Agent In-Worktree Implementation, Peer Consultation, and Verification Loop"
+Then In-Worktree Subagent Peer Consultation*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+### Scenario 2: Preflight Verification and Self-Healing*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Multi-Agent In-Worktree Implementation, Peer Consultation, and Verification Loop"
+Then Preflight Verification and Self-Healing*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+## Hypothesis Invariant Properties
+
+- `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.

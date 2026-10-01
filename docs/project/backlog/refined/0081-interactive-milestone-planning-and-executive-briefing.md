@@ -1,7 +1,7 @@
 ---
 id: 0081
 title: Automated Executive Milestone Briefing and Roadmap Alignment Digest
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0067
 - TASK-0074
@@ -15,7 +15,6 @@ governing_prds:
 governing_stories:
 - US-0023
 target_bc: backlog
-unblocked: true
 ---
 
 # TASK-0081: Automated Executive Milestone Briefing and Roadmap Alignment Digest
@@ -51,3 +50,29 @@ Engineering leaders and technical program managers need to provide executive sta
 2. Executing `spec-ops report milestone --audit-scope` identifies unanchored tasks and outputs actionable alignment warnings.
 3. Executing `spec-ops report milestone <name> --export html` generates a standalone HTML one-pager briefing document.
 4. All scenarios verified via public frontdoor `pytest-bdd` tests without mock backdoors (ADR-0003, ADR-0006).
+
+## Acceptance Criteria
+
+### Scenario 1: Generating Milestone Executive Summary*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Automated Executive Milestone Briefing and Roadmap Alignment Digest"
+Then Generating Milestone Executive Summary*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+### Scenario 2: Detecting Unanchored Scope Creep against Roadmap*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Automated Executive Milestone Briefing and Roadmap Alignment Digest"
+Then Detecting Unanchored Scope Creep against Roadmap*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+### Scenario 3: Standalone Executive HTML One-Pager*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Automated Executive Milestone Briefing and Roadmap Alignment Digest"
+Then Standalone Executive HTML One-Pager*
+And observable outputs satisfy public contracts without backdoor tampering.
+```

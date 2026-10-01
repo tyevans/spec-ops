@@ -1,19 +1,19 @@
 ---
 id: '0116'
 title: Fix Git Worktree Merge Lock Resolution and FileExistsError
-status: Proposed
+status: Refined
 dependencies:
-  - TASK-0109
+- TASK-0109
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0005
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0005
 governing_prds:
-  - PRD-0004
-  - PRD-0006
+- PRD-0004
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: worker
 ---
 
@@ -41,3 +41,17 @@ During dogfooding of the inline SDLC orchestrator on this repository, executing 
 1. `MergeLockManager` dynamically resolves git directory from `.git` file pointer when in a worktree.
 2. `spec-ops queue complete` operates cleanly inside git worktrees without `FileExistsError`.
 3. Tested via unit tests with mock worktree `.git` file pointers.
+
+## Acceptance Criteria
+
+### Scenario 1: Actionable Orchestration Failure Protocol*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Fix Git Worktree Merge Lock Resolution and FileExistsError"
+Then Actionable Orchestration Failure Protocol*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+## Hypothesis Invariant Properties
+
+- `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.

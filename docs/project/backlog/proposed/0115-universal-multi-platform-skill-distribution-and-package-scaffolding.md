@@ -3,18 +3,18 @@ id: '0115'
 title: Universal Multi-Platform Skill Distribution and Package Scaffolding
 status: Proposed
 dependencies:
-  - TASK-0109
-  - TASK-0114
+- TASK-0109
+- TASK-0114
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0006
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: scaffold
 ---
 
@@ -35,7 +35,7 @@ While the initial POC targets Antigravity via `.agents/skills/spec-ops/`, users 
     - And references and CLI primers are packaged without broken links.
 
 ## Architectural Invariants & Seams
-- **File Length Limit (<500 lines)**: Skill packaging module in `src/spec_ops/scaffold/skill_packager.py` must stay strictly under 400 lines (ADR-0002).
+- **File Length Limit (<500 lines)**: Skill packaging module in `src/spec_ops/profiles/packager.py` must stay strictly under 400 lines (ADR-0002).
 - **Zero-Dependency Portability**: Generated skill packages must not depend on proprietary agent runtimes; they must use standard Markdown, frontmatter, and POSIX shell scripts.
 - **Mutmut Mutation Scope**: Skill bundler and platform mapping achieves >=80% mutant kill score under `mutmut`.
 
@@ -44,3 +44,17 @@ While the initial POC targets Antigravity via `.agents/skills/spec-ops/`, users 
 2. Supports Antigravity, Claude Code, and Cursor target platforms.
 3. Automatically validates that references (`cli_primer.md`, `orchestration_protocol.md`) are bundled and accessible.
 4. 100% test pass rate verifying observable contracts without private mock backdoors.
+
+## Acceptance Criteria
+
+### Scenario 1: Universal Multi-Platform Skill Scaffolding*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Universal Multi-Platform Skill Distribution and Package Scaffolding"
+Then Universal Multi-Platform Skill Scaffolding*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+## Hypothesis Invariant Properties
+
+- `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.

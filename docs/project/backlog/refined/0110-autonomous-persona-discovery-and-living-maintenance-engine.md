@@ -1,19 +1,19 @@
 ---
 id: '0110'
 title: Autonomous Persona Discovery and Living Maintenance Engine
-status: Proposed
+status: Refined
 dependencies:
-  - TASK-0109
+- TASK-0109
 governing_adrs:
-  - ADR-0001
-  - ADR-0002
-  - ADR-0003
-  - ADR-0007
-  - ADR-0008
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0007
+- ADR-0008
 governing_prds:
-  - PRD-0006
+- PRD-0006
 governing_stories:
-  - US-0117
+- US-0117
 target_bc: core
 ---
 
@@ -43,3 +43,13 @@ Personas in `PERSONAS.md` represent the human and AI archetypes that interact wi
 2. Automatically identifies unrepresented archetypes referenced across PRD target personas.
 3. Provides interactive diff preview before writing updates to `docs/project/user_stories/PERSONAS.md`.
 4. 100% test pass rate verifying observable contracts without private mock backdoors.
+
+## Acceptance Criteria
+
+### Scenario 1: Autonomous Persona Discovery and Coverage Audit*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Autonomous Persona Discovery and Living Maintenance Engine"
+Then Autonomous Persona Discovery and Coverage Audit*
+And observable outputs satisfy public contracts without backdoor tampering.
+```

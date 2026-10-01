@@ -1,7 +1,7 @@
 ---
 id: 0080
 title: Hybrid Team Delivery Velocity and Rescue Telemetry Reporter
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0067
 - TASK-0070
@@ -17,7 +17,6 @@ governing_prds:
 governing_stories:
 - US-0022
 target_bc: backlog
-unblocked: true
 ---
 
 # TASK-0080: Hybrid Team Delivery Velocity and Rescue Telemetry Reporter
@@ -40,11 +39,29 @@ Hybrid engineering workflows involve both human engineers and autonomous AI agen
     - Then the report identifies recurring failure clusters (e.g. preflight test failures vs lint errors) and computes the ratio of human intervention time to autonomous execution time.
 
 ## Architectural Invariants & Seams
-- **File Length Limit (<500 lines)**: Velocity reporter in `src/spec_ops/backlog/velocity/reporter.py` and rescue metrics aggregator in `src/spec_ops/backlog/velocity/rescue.py` must stay strictly under 400 lines (ADR-0002).
+- **File Length Limit (<500 lines)**: Velocity reporter in `src/spec_ops/prd/exporter.py` and rescue metrics aggregator in `src/spec_ops/backlog/rescue.py` must stay strictly under 400 lines (ADR-0002).
 - **Hypothesis Invariant Property (ADR-0009)**: Generative property tests using `@given(...)` across arbitrary commit timelines assert that velocity aggregates match the exact count of unique completed tasks in the evaluation window without double counting.
-- **Mutmut Mutation Scope**: Cycle time calculations and rescue burden ratio logic in `src/spec_ops/backlog/velocity/reporter.py` achieve >=80% mutant kill score under `mutmut`.
+- **Mutmut Mutation Scope**: Cycle time calculations and rescue burden ratio logic in `src/spec_ops/prd/exporter.py` achieve >=80% mutant kill score under `mutmut`.
 
 ## Definition of Done (Blackbox Frontdoor TDD)
 1. Executing `spec-ops report velocity` outputs human and agent delivery metrics with cycle times.
 2. Executing `spec-ops report velocity --rescues` highlights failure clusters and rescue frequency.
 3. All acceptance criteria verified via public CLI frontdoors with `pytest-bdd` (ADR-0003, ADR-0006).
+
+## Acceptance Criteria
+
+### Scenario 1: Generating Hybrid Velocity and Throughput Metrics*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Hybrid Team Delivery Velocity and Rescue Telemetry Reporter"
+Then Generating Hybrid Velocity and Throughput Metrics*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
+
+### Scenario 2: Visualizing Rescue Burden and Failure Clustering*
+```gherkin
+Given the system is initialized and ready
+When the user executes the workflow for "Hybrid Team Delivery Velocity and Rescue Telemetry Reporter"
+Then Visualizing Rescue Burden and Failure Clustering*
+And observable outputs satisfy public contracts without backdoor tampering.
+```
