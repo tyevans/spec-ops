@@ -96,6 +96,12 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_journey.add_argument("--output", default=None, help="Output destination file path")
     p_journey.add_argument("--json", dest="json_flag", action="store_true", help="Output journey map matrix as JSON")
 
+    p_cov = prd_subs.add_parser("coverage", help="Audit BDD scenario coverage matrix and living acceptance dashboard")
+    p_cov.add_argument("--strict", action="store_true", help="Exit with code 1 if any story has missing scenario coverage")
+    p_cov.add_argument("--json", action="store_true", help="Output coverage matrix as structured JSON")
+    p_cov.add_argument("--bc", dest="target_bc", default=None, help="Filter by target bounded context")
+
+
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural profile commands."""

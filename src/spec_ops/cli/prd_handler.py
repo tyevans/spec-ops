@@ -25,6 +25,31 @@ def handle_prd_command(
         parser.parse_args(["prd", "--help"])
         return 0
 
+    if action == "coverage":
+        import json
+        from ..prd.bdd_matrix import BDDCoverageAuditor
+
+        stories_dir = config.root_dir / "docs" / "project" / "user_stories" / "accepted"
+        tests_dir = config.root_dir / "tests"
+        target_bc = getattr(args, "target_bc", None)
+        strict = getattr(args, "strict", False)
+        json_flag = getattr(args, "json", False)
+
+        auditor = BDDCoverageAuditor(config.root_dir)
+        matrix = auditor.audit(stories_dir=stories_dir, tests_dir=tests_dir, target_bc=target_bc)
+
+        if json_flag:
+            print(json.dumps(matrix.to_dict(), indent=2))
+        else:
+            print(matrix.summary())
+
+        if strict:
+            has_missing = any(s.covered_scenarios < s.total_scenarios for s in matrix.stories)
+            if has_missing or (matrix.total_scenarios > 0 and matrix.covered_scenarios < matrix.total_scenarios):
+                return 1
+
+        return 0
+
     if action == "journey":
         from ..prd.journey_map import handle_journey_command
         fmt = "json" if getattr(args, "json_flag", False) else getattr(args, "format", "markdown")

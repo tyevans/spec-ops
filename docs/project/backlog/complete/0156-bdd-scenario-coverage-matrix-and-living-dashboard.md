@@ -1,7 +1,7 @@
 ---
 id: '0156'
 title: Autonomous BDD Feature Scenario Coverage Matrix and Living Acceptance Dashboard
-status: Refined
+status: Complete
 dependencies:
 - TASK-0111
 - TASK-0135
