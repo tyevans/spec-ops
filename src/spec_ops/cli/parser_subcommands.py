@@ -142,6 +142,13 @@ def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_prof_up.add_argument("--force", action="store_true", help="Force upgrade and overwrite conflicting local ADR modifications")
     p_prof_up.add_argument("--action", choices=["keep-local", "accept-upstream", "custom", "diff", "abort"], default=None, help="Conflict resolution action")
 
+    p_prof_mig = prof_subs.add_parser("migrate", help="Migrate profile configuration schema and validate evolvability")
+    p_prof_mig.add_argument("--check", action="store_true", help="Check if profile configuration is up to date with target schema")
+    p_prof_mig.add_argument("--target-version", default="2.0.0", help="Target schema version for profile migration (default: 2.0.0)")
+    p_prof_mig.add_argument("--dry-run", action="store_true", help="Simulate profile migration without writing changes to disk")
+    p_prof_mig.add_argument("--path", default=None, help="Path to profile configuration file (default: .spec-ops/profile.yaml)")
+    p_prof_mig.add_argument("--json", action="store_true", help="Output profile migration report as structured JSON")
+
 
 def register_adr_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers Architectural Decision Record (ADR) lifecycle commands."""

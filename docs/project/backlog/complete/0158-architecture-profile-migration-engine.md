@@ -1,7 +1,7 @@
 ---
 id: 0158
 title: Living Architecture Profile Migration Engine and Schema Evolvability
-status: Refined
+status: Complete
 dependencies:
 - TASK-0077
 - TASK-0078

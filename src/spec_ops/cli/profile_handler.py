@@ -253,6 +253,86 @@ def handle_profile_command(args: Any, config: Any) -> int:
             print(f"❌ {err}", file=sys.stderr)
             return 1
 
+    elif action == "migrate":
+        import json
+        from ..core.profile_migration import ProfileMigrator
+
+        target_ver = getattr(args, "target_version", "2.0.0") or "2.0.0"
+        dry_run = getattr(args, "dry_run", False)
+        check_only = getattr(args, "check", False)
+        json_output = getattr(args, "json", False)
+        custom_path = getattr(args, "path", None)
+
+        if custom_path:
+            profile_path = Path(custom_path)
+            if not profile_path.is_absolute():
+                profile_path = config.root_dir / profile_path
+        else:
+            profile_path = config.root_dir / ".spec-ops" / "profile.yaml"
+            if not profile_path.exists():
+                alt_path = config.root_dir / ".spec-ops" / "profile.yml"
+                if alt_path.exists():
+                    profile_path = alt_path
+
+        migrator = ProfileMigrator()
+
+        if not profile_path.exists():
+            msg = f"Profile configuration file not found at: {profile_path}"
+            if json_output:
+                print(json.dumps({"error": msg, "success": False, "is_up_to_date": False}, indent=2))
+            else:
+                print(f"❌ {msg}", file=sys.stderr)
+            return 1
+
+        if check_only:
+            success, report = migrator.migrate(profile_path, target_version=target_ver, dry_run=True)
+            if not success:
+                if json_output:
+                    print(json.dumps(report.to_dict(), indent=2))
+                else:
+                    for w in report.warnings:
+                        print(f"❌ {w}", file=sys.stderr)
+                return 1
+
+            if json_output:
+                print(json.dumps(report.to_dict(), indent=2))
+            else:
+                if report.is_up_to_date:
+                    print(f"✅ Profile configuration is up to date (schema version {report.to_version}).")
+                else:
+                    print(
+                        f"⚠️ Profile configuration requires migration: currently {report.from_version}, target {report.to_version}.",
+                        file=sys.stderr,
+                    )
+            return 0 if report.is_up_to_date else 1
+
+        success, report = migrator.migrate(profile_path, target_version=target_ver, dry_run=dry_run)
+        if not success:
+            if json_output:
+                print(json.dumps(report.to_dict(), indent=2))
+            else:
+                for w in report.warnings:
+                    print(f"❌ {w}", file=sys.stderr)
+            return 1
+
+        if json_output:
+            print(json.dumps(report.to_dict(), indent=2))
+            return 0
+
+        if report.is_up_to_date:
+            print(f"✅ Profile configuration is already up to date with schema {report.to_version}.")
+            return 0
+
+        prefix = "✨ [Dry Run] Profile migration preview to schema" if dry_run else "✨ Successfully upgraded profile configuration to schema"
+        print(f"{prefix} {report.to_version}:")
+        for step in report.applied_steps:
+            print(f"  • {step}")
+        if report.changes:
+            print("  Changes applied:")
+            for chg in report.changes:
+                print(f"    - {chg}")
+        return 0
+
     else:
         from ..profiles.registry import list_profiles
 

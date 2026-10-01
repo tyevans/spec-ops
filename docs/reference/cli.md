@@ -21,6 +21,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles inspect` | `[TARGET]` | Inspect resolved profile inheritance, merged ADRs and invariant constraints |
 | `spec-ops profiles diff` | `[PROFILE] [TARGET] [--json]` | Compute semantic diff of profile ADR additions, invariant clauses, and breaking limits |
 | `spec-ops profiles upgrade` | `[PROFILE] [--force] [--action ACTION]` | Upgrade profile version, migrate baseline ADRs, and perform safe 3-way conflict resolution |
+| `spec-ops profiles migrate` | `[--check] [--target-version TARGET_VERSION] [--dry-run] [--path PATH] [--json]` | Migrate profile configuration schema and validate evolvability |
 | `spec-ops adr supersede` | `<OLD_ID> [--by BY] [--with WITH]` | Supersede an existing Architectural Decision Record with a new decision and audit active backlog citations |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops scaffold docs` | `[--bc BC] [--bounded-context BC] [--title TITLE] [--force] [--overwrite]` | Scaffold 4-quadrant Diataxis documentation for a bounded context (alias: diataxis) |
