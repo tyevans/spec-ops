@@ -97,6 +97,20 @@ def handle_health_numbering(config: SpecOpsConfig, json_output: bool = False) ->
     return 0 if report.is_valid else 1
 
 
+def handle_health_modularity(config: SpecOpsConfig, json_output: bool = False) -> int:
+    """Computes modularity debt and source file growth telemetry."""
+    import json
+    from ..core.modularity_debt import ModularityDebtAnalyzer
+
+    analyzer = ModularityDebtAnalyzer(config.root_dir)
+    report = analyzer.analyze_directory(config.root_dir)
+    if json_output:
+        print(json.dumps(report.to_dict(), indent=2))
+    else:
+        print(report.summary())
+    return 0
+
+
 def handle_health_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Main entrypoint for spec-ops health CLI command."""
     from ..backlog.health import HealthChecker
@@ -116,6 +130,9 @@ def handle_health_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
     if getattr(args, "numbering", False):
         return handle_health_numbering(config, json_output=getattr(args, "json", False))
+
+    if getattr(args, "modularity", False):
+        return handle_health_modularity(config, json_output=getattr(args, "json", False))
 
     checker = HealthChecker(config)
     report = checker.run_check()
