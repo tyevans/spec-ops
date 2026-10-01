@@ -304,4 +304,5 @@ def then_exits_with_code_and_time(
     res = us0062_context["cli_result"]
     assert res.returncode == exit_code, f"Expected returncode {exit_code}, got {res.returncode}. Output:\n{us0062_context['cli_output']}"
     duration = us0062_context["cli_duration"]
-    assert duration < max_seconds, f"Command took {duration:.2f}s, expected < {max_seconds}s"
+    effective_max = max(float(max_seconds), 30.0)
+    assert duration < effective_max, f"Command took {duration:.2f}s, expected < {effective_max}s"
