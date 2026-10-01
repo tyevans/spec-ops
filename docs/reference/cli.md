@@ -77,6 +77,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops rescue reset` | `<TASK_ID> --reason REASON [--demote]` | Safe worktree discard with anti-loop failure memory and task reset |
 | `spec-ops rescue salvage` | `<TASK_ID> --files FILES [FILES ...]` | Selectively salvage specified files from stalled worktree into clean rescue branch |
 | `spec-ops rescue patch` | `<TASK_ID> --include INCLUDE` | Incrementally stage files into the rescue index |
+| `spec-ops rescue quota` | `[--threshold THRESHOLD] [--json]` | Worktree disk quota monitor and storage consumption audit |
+| `spec-ops rescue prune` | `[--older-than OLDER_THAN] [--dry-run] [--force] [--json]` | Safely prune merged or abandoned orphan worktrees and reclaim disk space |
 | `spec-ops worktree start` | `<TASK_ID>` | Spawn an isolated development worktree for a task |
 | `spec-ops worktree finish` | `[--task-id TASK_ID]` | Verify preflight, merge into main under MERGE_LOCK, and clean up worktree |
 | `spec-ops spike create` | `--name NAME --question QUESTION [--timebox TIMEBOX] [--task TASK_ID] [--prd PRD_ID]` | Author a new architectural spike task and isolated test harness |

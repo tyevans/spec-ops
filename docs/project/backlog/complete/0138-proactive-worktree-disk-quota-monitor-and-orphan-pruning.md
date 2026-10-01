@@ -1,7 +1,7 @@
 ---
 id: 0138
 title: Proactive Worktree Disk Quota Monitor and Orphan Pruning Daemon
-status: Refined
+status: Complete
 dependencies:
 - TASK-0018
 - TASK-0092

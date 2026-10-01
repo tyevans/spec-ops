@@ -9,23 +9,110 @@ from ..config.models import SpecOpsConfig
 
 def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Executes the rescue subcommand actions."""
-    is_prune = (getattr(args, "task_id", None) == "prune") or getattr(args, "prune", False)
-    if is_prune:
-        from ..rescue.prune import format_bytes, prune_worktrees
+    action = getattr(args, "rescue_action", None) or getattr(args, "task_id", None)
 
+    if action == "quota":
+        import json as json_lib
+        from ..rescue.prune_daemon import audit_worktree_quotas, format_quota_table, parse_threshold_bytes, format_bytes
+
+        threshold_val = parse_threshold_bytes(getattr(args, "threshold", None))
+        report = audit_worktree_quotas(config.root_dir, config.backlog_dir, threshold_bytes=threshold_val)
+
+        if getattr(args, "json", False):
+            payload = {
+                "worktrees": [
+                    {
+                        "worktree": f".worktrees/{w.worktree_name}",
+                        "name": w.worktree_name,
+                        "task_id": w.task_id,
+                        "task_status": w.task_status,
+                        "size_bytes": w.size_bytes,
+                        "size_human": format_bytes(w.size_bytes),
+                        "last_modified": w.last_modified.isoformat(),
+                        "is_dirty": w.is_dirty,
+                        "is_merged": w.is_merged,
+                        "eligible_for_prune": w.is_eligible,
+                        "skip_reason": w.skip_reason,
+                    }
+                    for w in report.worktrees
+                ],
+                "total_size_bytes": report.total_size_bytes,
+                "total_size_human": format_bytes(report.total_size_bytes),
+                "threshold_bytes": report.threshold_bytes,
+                "threshold_human": format_bytes(report.threshold_bytes),
+                "threshold_exceeded": report.threshold_exceeded,
+                "candidates_count": report.candidates_count,
+                "reclaimable_bytes": report.reclaimable_bytes,
+                "reclaimable_human": format_bytes(report.reclaimable_bytes),
+                "warning": report.warning_message or None,
+            }
+            print(json_lib.dumps(payload, indent=2))
+            return 0
+
+        print(format_quota_table(report))
+        return 0
+
+    is_prune = (action == "prune") or getattr(args, "prune", False)
+    if is_prune:
+        import json as json_lib
+        from ..rescue.prune_daemon import run_prune, format_bytes
+
+        older_than = getattr(args, "older_than", None)
         dry_run = getattr(args, "dry_run", False)
-        candidates, warnings = prune_worktrees(config.root_dir, config.backlog_dir, dry_run=dry_run)
+        force = getattr(args, "force", False)
+        is_json = getattr(args, "json", False)
+
+        try:
+            pruned, skipped, warnings = run_prune(
+                config.root_dir, config.backlog_dir, older_than=older_than, force=force, dry_run=dry_run
+            )
+        except ValueError as err:
+            print(f"❌ {err}")
+            return 1
 
         for w in warnings:
             print(w)
+
+        if is_json:
+            total_reclaimed = sum(p.size_bytes for p in pruned)
+            payload = {
+                "dry_run": dry_run,
+                "pruned": [
+                    {
+                        "worktree": f".worktrees/{p.worktree_name}",
+                        "name": p.worktree_name,
+                        "task_id": p.task_id,
+                        "branch": p.branch,
+                        "size_bytes": p.size_bytes,
+                        "size_human": format_bytes(p.size_bytes),
+                        "task_status": p.task_status,
+                    }
+                    for p in pruned
+                ],
+                "skipped": [
+                    {
+                        "worktree": f".worktrees/{s.worktree_name}",
+                        "name": s.worktree_name,
+                        "task_id": s.task_id,
+                        "task_status": s.task_status,
+                        "skip_reason": s.skip_reason,
+                    }
+                    for s in skipped
+                ],
+                "reclaimed_bytes": total_reclaimed,
+                "reclaimed_human": format_bytes(total_reclaimed),
+                "warnings": warnings,
+            }
+            print(json_lib.dumps(payload, indent=2))
+            return 0
 
         if dry_run:
             print("Candidate Worktrees for Pruning:")
             print(f"{'Worktree':<26} {'Branch':<20} {'Estimated Space':<18} {'Status'}")
             print("-" * 75)
-            total_size = sum(c.size_bytes for c in candidates)
-            for c in candidates:
-                rel_wt = f".worktrees/{c.worktree_dir.name}"
+            total_size = sum(c.size_bytes for c in pruned)
+            for c in pruned:
+                rel_wt = f".worktrees/{c.worktree_name}"
                 status_str = c.task_status or "Orphan"
                 size_str = format_bytes(c.size_bytes)
                 print(f"{rel_wt:<26} {c.branch:<20} {size_str:<18} {status_str}")
@@ -34,7 +121,8 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
             print("(Dry run mode: no filesystem modifications made)")
             return 0
 
-        print(f"🧹 Pruned and cleaned up {len(candidates)} worktree(s).")
+        reclaimed = sum(p.size_bytes for p in pruned)
+        print(f"🧹 Pruned and cleaned up {len(pruned)} worktree(s). Reclaimed {format_bytes(reclaimed)}.")
         return 0
 
     from ..backlog.rescue import WorktreeRescueManager
