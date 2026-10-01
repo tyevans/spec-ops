@@ -1,7 +1,7 @@
 ---
 id: '0103'
 title: Interactive Milestone Planning and Workload Balancing Studio
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0081
 - TASK-0074

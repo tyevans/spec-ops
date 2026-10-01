@@ -1,7 +1,7 @@
 ---
 id: 0108
 title: Interactive HTML Velocity Dashboard and Executive Forecast Exporter
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0080
 governing_adrs:

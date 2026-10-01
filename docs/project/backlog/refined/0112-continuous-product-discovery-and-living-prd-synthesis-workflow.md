@@ -1,7 +1,7 @@
 ---
 id: '0112'
 title: Continuous Product Discovery and Living PRD Synthesis Workflow
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0109
 - TASK-0110
