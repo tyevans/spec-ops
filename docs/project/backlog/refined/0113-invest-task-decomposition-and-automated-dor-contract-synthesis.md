@@ -1,7 +1,7 @@
 ---
 id: '0113'
 title: INVEST Task Decomposition and Automated DoR Contract Synthesis
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0109
 - TASK-0111

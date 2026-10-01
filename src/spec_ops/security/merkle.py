@@ -27,6 +27,10 @@ from .audit.merkle import (
     hash_leaf,
     verify_inclusion_proof,
 )
+from .audit.proof_cli import (
+    generate_merkle_proof,
+    verify_merkle_proof,
+)
 from .audit.verifier import (
     VerificationResult,
     verify_audit_trail,
@@ -49,9 +53,11 @@ __all__ = [
     "compile_compliance_manifest",
     "export_compliance_manifest",
     "extract_repo_compliance_deliverables",
+    "generate_merkle_proof",
     "hash_internal_node",
     "hash_leaf",
     "verify_audit_trail",
     "verify_compliance_manifest",
     "verify_inclusion_proof",
+    "verify_merkle_proof",
 ]

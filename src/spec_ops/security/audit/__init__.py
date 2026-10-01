@@ -21,6 +21,7 @@ from .merkle import (
     hash_leaf,
     verify_inclusion_proof,
 )
+from .proof_cli import generate_merkle_proof, verify_merkle_proof
 from .verifier import VerificationResult, verify_audit_trail, verify_compliance_manifest
 
 __all__ = [
@@ -40,10 +41,12 @@ __all__ = [
     "compile_compliance_manifest",
     "export_compliance_manifest",
     "extract_repo_compliance_deliverables",
+    "generate_merkle_proof",
     "hash_internal_node",
     "hash_leaf",
     "run_dependency_audit",
     "verify_audit_trail",
     "verify_compliance_manifest",
     "verify_inclusion_proof",
+    "verify_merkle_proof",
 ]

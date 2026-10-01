@@ -2,7 +2,7 @@
 id: '0114'
 title: Multi-Agent In-Worktree Implementation, Peer Consultation, and Verification
   Loop
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0109
 - TASK-0113

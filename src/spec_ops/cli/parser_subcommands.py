@@ -260,30 +260,7 @@ def register_spike_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_spk_grad.add_argument("--status", default=None, help="ADR status (e.g. Accepted, Proposed)")
 
 
-def register_audit_subparsers(subparsers: argparse._SubParsersAction) -> None:
-    """Registers audit commands (dependencies, export, verify, provenance)."""
-    p_audit_cmd = subparsers.add_parser("audit", help="Audit project dependencies, compliance manifests, and security policies")
-    audit_subs = p_audit_cmd.add_subparsers(dest="audit_action", help="Audit action")
-    p_audit_deps = audit_subs.add_parser("dependencies", help="Scan dependencies for CVEs and license allowlist compliance")
-    p_audit_deps.add_argument("--path", default=".", help="Directory containing dependencies (default: current directory)")
-    p_audit_deps.add_argument("--offline", action="store_true", help="Run in air-gapped/offline mode with local cache")
-
-    p_audit_export = audit_subs.add_parser("export", help="Compile and export tamper-evident Merkle compliance audit manifest")
-    p_audit_export.add_argument("--standard", default="soc2", help="Compliance standard profile (e.g. soc2, iso27001, hipaa)")
-    p_audit_export.add_argument("--output", default="dist/compliance/", help="Output directory for compliance manifest and root hash")
-
-    p_audit_verify = audit_subs.add_parser("verify", help="Verify cryptographic compliance manifest integrity and SDLC traceability")
-    p_audit_verify.add_argument("--manifest", default="dist/compliance/soc2-audit-manifest.json", help="Path to compliance manifest JSON")
-    p_audit_verify.add_argument("--repo", default=".", help="Path to repository root (default: current directory)")
-
-    p_audit_prov = audit_subs.add_parser(
-        "provenance",
-        aliases=["traceability"],
-        help="Audit unbroken commit trailers, SDLC traceability lineage, and contributor provenance",
-    )
-    p_audit_prov.add_argument("--strict", action="store_true", help="Fail with exit code 1 if any unanchored commits, orphaned tasks, or missing tasks exist")
-    p_audit_prov.add_argument("--contributions", action="store_true", help="Break down delivered tasks and merged commits by contributor provenance")
-    p_audit_prov.add_argument("--repo", default=".", help="Repository root path (default: current directory)")
+from .parser_audit import register_audit_subparsers
 
 
 def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:

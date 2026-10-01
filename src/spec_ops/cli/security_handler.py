@@ -79,6 +79,16 @@ def handle_audit_command(args: argparse.Namespace, config: SpecOpsConfig, parser
         print(f"   Merkle Root:  {result.root_hash}")
         return 0
 
+    if action == "proof":
+        from ..security.audit.proof_cli import handle_audit_proof
+
+        return handle_audit_proof(args, config)
+
+    if action == "verify-proof":
+        from ..security.audit.proof_cli import handle_audit_verify_proof
+
+        return handle_audit_verify_proof(args, config)
+
     if action in ("dependencies", None):
         target = Path(getattr(args, "path", ".")).resolve()
         offline = getattr(args, "offline", False)

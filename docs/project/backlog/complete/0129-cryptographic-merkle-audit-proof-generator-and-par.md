@@ -1,7 +1,7 @@
 ---
 id: 0129
 title: Cryptographic Merkle Audit Proof Generator and Partial Verification Engine
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0016
 governing_prds:
@@ -23,4 +23,3 @@ Task TASK-0129 implements Cryptographic Merkle Audit Proof Generator and Partial
 1. Public interfaces or standard domain contracts implemented.
 2. Verified via automated blackbox tests without private backdoor manipulation.
 3. All new source files strictly under 500 lines.
-

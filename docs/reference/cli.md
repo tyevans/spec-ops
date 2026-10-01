@@ -108,6 +108,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
 | `spec-ops audit verify` | `[--manifest MANIFEST] [--repo REPO]` | Verify cryptographic compliance manifest integrity and SDLC traceability |
 | `spec-ops audit provenance` | `[--strict] [--contributions] [--repo REPO]` | Audit unbroken commit trailers, SDLC traceability lineage, and contributor provenance (alias: traceability) |
+| `spec-ops audit proof` | `--deliverable DELIVERABLE [--manifest MANIFEST] [--out OUT] [--json]` | Generate self-contained Merkle inclusion proof for a single deliverable |
+| `spec-ops audit verify-proof` | `PROOF_FILE --root ROOT [--json]` | Verify Merkle inclusion proof against trusted root in offline execution |
 | `spec-ops review` | `[TASK_ID] [--identity IDENTITY] [--provenance]` | Generate structured architectural review brief or cryptographically sign review |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL] [--include-visualizer]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
