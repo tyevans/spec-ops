@@ -1,7 +1,7 @@
 ---
 id: '0143'
 title: Automated Pre-Commit Git Hook Installer and Supply-Chain Sentinel
-status: Refined
+status: Complete
 dependencies:
 - TASK-0127
 - TASK-0130

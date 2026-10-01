@@ -263,6 +263,54 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
         print(f"✅ Security Invariant Met: 0 credential leaks detected in {scope}.")
         return 0
 
+    if args.security_action == "hook":
+        from ..security.git_hooks import (
+            install_hook,
+            run_hook_sentinel,
+            uninstall_hook,
+            verify_hook,
+        )
+
+        target = Path(getattr(args, "path", ".")).resolve()
+        action = getattr(args, "hook_action", None)
+
+        if action == "install":
+            ok, hook_path, msg = install_hook(target, force=bool(getattr(args, "force", False)))
+            if ok:
+                print(f"✅ {msg}")
+                return 0
+            print(f"❌ {msg}", file=sys.stderr)
+            return 1
+
+        if action == "uninstall":
+            ok, hook_path, msg = uninstall_hook(target)
+            if ok:
+                print(f"✅ {msg}")
+                return 0
+            print(f"❌ {msg}", file=sys.stderr)
+            return 1
+
+        if action == "verify":
+            ok, msg = verify_hook(target)
+            if ok:
+                print(f"✅ {msg}")
+                return 0
+            print(f"❌ {msg}", file=sys.stderr)
+            return 1
+
+        if action == "run":
+            result = run_hook_sentinel(target, config=config)
+            if result.ok:
+                print(f"✅ Pre-commit Sentinel Passed: 0 violations across {result.staged_files_count} staged file(s).")
+                return 0
+            print("❌ Pre-commit Sentinel Violation (commit aborted):", file=sys.stderr)
+            for err in result.violations:
+                print(f"   - {err}", file=sys.stderr)
+            return 1
+
+        parser.parse_args(["security", "hook", "--help"])
+        return 0
+
     parser.parse_args(["security", "--help"])
     return 0
 

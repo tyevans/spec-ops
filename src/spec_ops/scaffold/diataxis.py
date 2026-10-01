@@ -178,6 +178,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops security sentinel` | `[--path PATH] [--fix] [--json]` | Inspect and enforce supply-chain lockfile mutation immutability |
 | `spec-ops security scan-secrets` | `[--path PATH] [--staged] [--threshold THRESHOLD] [--json]` | Scan worktree diffs and source files for high-entropy secrets and credential leaks |
+| `spec-ops security hook install` | `[--path PATH] [--force]` | Install automated pre-commit hook into git repository |
+| `spec-ops security hook uninstall` | `[--path PATH]` | Uninstall automated pre-commit hook from git repository |
+| `spec-ops security hook verify` | `[--path PATH]` | Verify automated pre-commit hook installation and integrity |
+| `spec-ops security hook run` | `[--path PATH]` | Execute pre-commit sentinel checks against currently staged files |
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
 | `spec-ops audit verify` | `[--manifest MANIFEST] [--repo REPO]` | Verify cryptographic compliance manifest integrity and SDLC traceability |

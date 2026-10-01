@@ -309,6 +309,22 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
     )
     p_scan.add_argument("--json", action="store_true", help="Output results as structured JSON")
 
+    p_hook = sec_subs.add_parser("hook", help="Automated pre-commit git hook installer and supply-chain sentinel")
+    hook_subs = p_hook.add_subparsers(dest="hook_action", help="Hook action")
+
+    p_h_install = hook_subs.add_parser("install", help="Install automated pre-commit hook into git repository")
+    p_h_install.add_argument("--path", default=".", help="Directory of repository (default: current directory)")
+    p_h_install.add_argument("--force", action="store_true", help="Force overwrite existing hooks")
+
+    p_h_uninstall = hook_subs.add_parser("uninstall", help="Uninstall automated pre-commit hook from git repository")
+    p_h_uninstall.add_argument("--path", default=".", help="Directory of repository (default: current directory)")
+
+    p_h_verify = hook_subs.add_parser("verify", help="Verify automated pre-commit hook installation and integrity")
+    p_h_verify.add_argument("--path", default=".", help="Directory of repository (default: current directory)")
+
+    p_h_run = hook_subs.add_parser("run", help="Execute pre-commit sentinel checks against currently staged files")
+    p_h_run.add_argument("--path", default=".", help="Directory of repository (default: current directory)")
+
 
 from .parser_scaffold import register_scaffold_subparsers
 from .parser_report import register_report_subparsers
