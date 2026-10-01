@@ -105,6 +105,7 @@ class Task:
     persona: str = ""
     mutation_scope: str = ""
     expected_lines: int = 0
+    external_ref: str = ""
 
     @property
     def canonical_id(self) -> str:

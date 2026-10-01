@@ -148,6 +148,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops backlog doctor` | `[--fix] [--repair] [--json] [--dir DIR]` | Audit backlog health, dangling dependencies, and index drift with automated self-healing repair |
 | `spec-ops backlog sweep` | `[--format FORMAT] [--window WINDOW] [--reclaim-stalled]` | Daily standup curation digest and backlog sweep |
 | `spec-ops backlog reorder` | `[--dry-run] [--topological] [--by-weights] [--json]` | Deterministic topological backlog re-ordering and multi-criteria priority scoring |
+| `spec-ops backlog import` | `[--source {{github,jira,linear,auto}}] [--file FILE] [--repo REPO] [--label LABEL] [--bc/--target-bc BC]` | Ingest issues from GitHub Issues, Jira, or Linear into schema-compliant proposed task files |
+| `spec-ops backlog export` | `[--format {{markdown,json}}] [--out/--output OUT]` | Export structured backlog status snapshot and delivery estimates |
+| `spec-ops bridge import` | `[--source {{github,jira,linear,auto}}] [--file FILE] [--repo REPO] [--label LABEL] [--bc/--target-bc BC]` | Ingest issues from GitHub Issues, Jira, or Linear into schema-compliant proposed task files |
+| `spec-ops bridge export` | `[--format {{markdown,json}}] [--out/--output OUT]` | Export structured backlog status snapshot and delivery estimates |
 | `spec-ops report burndown` | `[--milestone MILESTONE] [--format {{deck,html,digest}}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone burndown velocity and presentation slide deck export |
 | `spec-ops report milestone` | `[--milestone MILESTONE] [--format {{digest,deck,html}}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone executive briefing digest and scope alignment |
 | `spec-ops task create` | `[--title TITLE] [--bc TARGET_BC] [--prd PRD] [--story STORY] [--adr ADR] [--dependencies/--deps DEPS] [--stage STAGE] [--non-interactive]` | Scaffold a new PMaC task with Definition of Ready scaffolding |

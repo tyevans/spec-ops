@@ -1,7 +1,7 @@
 ---
 id: 0079
 title: External Issue Tracker Ingestion Bridge
-status: Refined
+status: Complete
 dependencies:
 - TASK-0067
 - TASK-0072

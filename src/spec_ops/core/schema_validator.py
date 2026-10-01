@@ -55,6 +55,8 @@ class TaskFrontmatter(BaseModel):
     blocker: Any = None
     slice_type: Optional[str] = None
     failure_history: list[Any] = Field(default_factory=list)
+    external_ref: Optional[str] = None
+    issue_url: Optional[str] = None
 
 
 class UserStoryFrontmatter(BaseModel):

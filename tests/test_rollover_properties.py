@@ -167,7 +167,7 @@ class TestRolloverGenerativeInvariants:
             assert "TASK-0001" not in result.transitioned_tasks
 
             # Content on disk must be 100% byte-for-byte identical
-            disk_content = task_file.read_text(encoding="utf-8")
+            disk_content = task_file.read_bytes().decode("utf-8")
             assert disk_content == original_content
 
     @settings(max_examples=30)

@@ -251,7 +251,15 @@ def main(argv: list[str] | None = None) -> int:
         from .graph_handler import handle_trace_command
         return handle_trace_command(args, config)
 
+    if args.command == "bridge":
+        from .bridge_handler import handle_bridge_command
+        return handle_bridge_command(args, config, parser)
+
     if args.command == "backlog":
+        if getattr(args, "backlog_action", None) in ("import", "export"):
+            from .bridge_handler import handle_bridge_command
+            return handle_bridge_command(args, config, parser)
+
         if getattr(args, "backlog_action", None) == "doctor":
             from .queue_handler import handle_queue_command
             setattr(args, "queue_action", "doctor")

@@ -21,6 +21,7 @@ from .parser_subcommands import (
     register_spike_subparsers,
     register_test_subparsers,
 )
+from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -276,6 +277,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_b_reorder.add_argument("--topological", action="store_true", help="Enforce strict topological ordering to eliminate priority inversions")
     p_b_reorder.add_argument("--by-weights", action="store_true", help="Apply multi-criteria weighted scoring (milestone, blockers, risk)")
     p_b_reorder.add_argument("--json", action="store_true", help="Output re-ranking results as structured JSON")
+    register_backlog_bridge_subparsers(backlog_subs)
+
+    # bridge
+    register_bridge_subparsers(subparsers)
 
     # report
     p_report = subparsers.add_parser("report", help="Executive milestone reports, burndown velocity, and presentation decks")
