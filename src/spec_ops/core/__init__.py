@@ -61,6 +61,13 @@ from .cycle_resolver import (
 from .decider import TaskDecider, TaskState
 from .event_store import SQLiteEventLedger, append_events, get_stream, project_task_event_to_filesystem, replay_task_state
 from .watcher import WorkspaceWatcher
+from .dag_cache import (
+    CyclePreCheckResult,
+    CyclicDependencyError,
+    DAGCacheEngine,
+    DAGCachePayload,
+    can_add_dependency,
+)
 
 __all__ = [
     "ADR",
@@ -125,5 +132,10 @@ __all__ = [
     "get_stream",
     "project_task_event_to_filesystem",
     "replay_task_state",
+    "DAGCacheEngine",
+    "DAGCachePayload",
+    "CyclePreCheckResult",
+    "CyclicDependencyError",
+    "can_add_dependency",
 ]
 

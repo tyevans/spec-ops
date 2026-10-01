@@ -1,7 +1,7 @@
 ---
 id: '0142'
 title: Incremental DAG Topological Cache and Fast Tarjan Cycle Pre-Check
-status: Refined
+status: Complete
 dependencies:
 - TASK-0058
 - TASK-0128

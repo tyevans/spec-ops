@@ -156,6 +156,8 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_g_cyc.add_argument("--json", action="store_true", help="Output cycles as JSON")
     p_g_cyc.add_argument("--resolve", action="store_true", help="Resolve cycles with minimal feedback edge detection")
     p_g_cyc.add_argument("--prune-chokepoints", action="store_true", help="Calculate bottleneck nodes and decoupling seams")
+    p_g_cyc.add_argument("--check-edge", nargs=2, metavar=("SOURCE", "TARGET"), help="Fast cycle pre-check for proposed dependency edge")
+    p_g_cyc.add_argument("--cache", action="store_true", help="Use incremental DAG topological cache")
 
     p_g_sort = graph_subs.add_parser("sort", help="Deterministic topological backlog execution sorting")
     p_g_sort.add_argument("--type", default="task", help="Entity type filter (default: task)")

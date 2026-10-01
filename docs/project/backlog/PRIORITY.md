@@ -143,7 +143,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0139 (Complete)**: [`0139-multi-agent-collaborative-review-radar`](complete/0139-multi-agent-collaborative-review-radar.md)
 - **TASK-0140 (Complete)**: [`0140-zero-trust-worker-process-sandboxing`](complete/0140-zero-trust-worker-process-sandboxing.md)
 - **TASK-0141 (Complete)**: [`0141-tamper-evident-merkle-compliance-manifest`](complete/0141-tamper-evident-merkle-compliance-manifest.md)
-- **TASK-0142 (Refined)**: [`0142-dag-topological-cache-and-tarjan-precheck`](refined/0142-dag-topological-cache-and-tarjan-precheck.md)
+- **TASK-0142 (Complete)**: [`0142-dag-topological-cache-and-tarjan-precheck`](complete/0142-dag-topological-cache-and-tarjan-precheck.md)
 - **TASK-0143 (Refined)**: [`0143-pre-commit-git-hook-and-supply-chain-sentinel`](refined/0143-pre-commit-git-hook-and-supply-chain-sentinel.md)
 - **TASK-0144 (Refined)**: [`0144-failure-clustering-and-prompt-anti-loop-memory`](refined/0144-failure-clustering-and-prompt-anti-loop-memory.md)
 - **TASK-0145 (Refined)**: [`0145-persona-customer-journey-map-visualizer`](refined/0145-persona-customer-journey-map-visualizer.md)

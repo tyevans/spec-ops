@@ -78,6 +78,36 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
         is_json = fmt == "json" or getattr(args, "json", False)
         resolve = getattr(args, "resolve", False)
         prune_chokepoints = getattr(args, "prune_chokepoints", False)
+        check_edge = getattr(args, "check_edge", None)
+        use_cache = getattr(args, "cache", False)
+
+        if check_edge:
+            src, tgt = check_edge
+            from ..core.dag_cache import DAGCacheEngine, can_add_dependency
+
+            engine = DAGCacheEngine(config.root_dir)
+            cache_payload = engine.build_cache(force=not use_cache)
+            res = can_add_dependency(cache_payload, src, tgt)
+
+            if is_json:
+                out = {
+                    "allowed": res.allowed,
+                    "cycle_path": res.cycle_path,
+                    "path_str": res.path_str,
+                    "error": res.error,
+                    "duration_ms": round(res.duration_ms, 3),
+                }
+                print(json.dumps(out, indent=2))
+                return 0 if res.allowed else 1
+
+            if res.allowed:
+                print(f"Zero dependency cycles detected: adding edge '{src} -> {tgt}' preserves DAG acyclicity.")
+                return 0
+            else:
+                print(f"Cyclic dependency detected: {res.path_str}")
+                print(f"Actionable suggestion: Break cycle by removing dependency from {src} to {tgt}.")
+                return 1
+
         data, graph = _load_graph(config)
         cycles = detect_cycles(graph)
         resolutions = resolve_cyclic_components(graph) if resolve else []

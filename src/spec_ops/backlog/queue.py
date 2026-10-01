@@ -376,3 +376,17 @@ class BacklogQueue:
             return True, f"Task {task.canonical_id} passed refinement gate and transitioned to Refined."
         return True, f"Task {task.canonical_id} passed refinement gate (dry-run)."
 
+    def get_execution_tiers(self, use_cache: bool = True, repo_root: Path | None = None) -> dict[int, list[str]]:
+        """Retrieves topological execution tiers directly from cache if valid."""
+        from ..core.dag_cache import DAGCacheEngine
+
+        root = repo_root
+        if not root:
+            for p in [self.backlog_dir, *self.backlog_dir.parents]:
+                if (p / ".specops").exists() or (p / "specops.toml").exists():
+                    root = p
+                    break
+        root = root or (self.backlog_dir.parents[2] if len(self.backlog_dir.parents) >= 3 else self.backlog_dir.parent)
+        engine = DAGCacheEngine(root)
+        return engine.get_execution_tiers(force=not use_cache)
+
