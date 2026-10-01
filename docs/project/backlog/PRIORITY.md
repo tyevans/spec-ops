@@ -124,7 +124,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0128 (Complete)**: [`0128-deterministic-dag-cycle-resolution-and-choke-point`](complete/0128-deterministic-dag-cycle-resolution-and-choke-point.md)
 - **TASK-0129 (Complete)**: [`0129-cryptographic-merkle-audit-proof-generator-and-par`](complete/0129-cryptographic-merkle-audit-proof-generator-and-par.md)
 - **TASK-0130 (Complete)**: [`0130-real-time-secret-scanning-pre-commit-hook-and-entr`](complete/0130-real-time-secret-scanning-pre-commit-hook-and-entr.md)
-- **TASK-0131 (Refined)**: [`0131-interactive-web-prd-studio-visual-editor-and-real-`](refined/0131-interactive-web-prd-studio-visual-editor-and-real-.md)
+- **TASK-0131 (Complete)**: [`0131-interactive-web-prd-studio-visual-editor-and-real-`](complete/0131-interactive-web-prd-studio-visual-editor-and-real-.md)
 - **TASK-0117 (Complete)**: [`0117-fix-hypothesis-git-branch-strategy-native-hooks`](complete/0117-fix-hypothesis-git-branch-strategy-native-hooks.md)
 - **TASK-0118 (Complete)**: [`0118-resolve-high-entropy-test-literals-in-ci-properties`](complete/0118-resolve-high-entropy-test-literals-in-ci-properties.md)
 - **TASK-0119 (Complete)**: [`0119-resolve-high-entropy-test-fixtures-handover-brief`](complete/0119-resolve-high-entropy-test-fixtures-handover-brief.md)
