@@ -135,7 +135,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0124 (Complete)**: [`0124-filter-existing-directories-in-init-wizard-properties`](complete/0124-filter-existing-directories-in-init-wizard-properties.md)
 - **TASK-0132 (Complete)**: [`0132-pure-decider-event-sourced-kernel-and-sqlite-audit-ledger`](complete/0132-pure-decider-event-sourced-kernel-and-sqlite-audit-ledger.md)
 - **TASK-0133 (Complete)**: [`0133-redstring-relational-knowledge-graph-and-ast-projection`](complete/0133-redstring-relational-knowledge-graph-and-ast-projection.md)
-- **TASK-0134 (Refined)**: [`0134-continuous-orchestration-retrospective-and-self-healing-engine`](refined/0134-continuous-orchestration-retrospective-and-self-healing-engine.md)
+- **TASK-0134 (Complete)**: [`0134-continuous-orchestration-retrospective-and-self-healing-engine`](complete/0134-continuous-orchestration-retrospective-and-self-healing-engine.md)
 - **TASK-0135 (Refined)**: [`0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio`](refined/0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio.md)
 - **TASK-0136 (Refined)**: [`0136-selective-worktree-patch-takeover-and-partial-file-salvage`](refined/0136-selective-worktree-patch-takeover-and-partial-file-salvage.md)
 - **TASK-0137 (Refined)**: [`0137-living-release-notes-generator-and-changelog-publisher`](refined/0137-living-release-notes-generator-and-changelog-publisher.md)

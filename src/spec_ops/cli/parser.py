@@ -26,6 +26,7 @@ from .parser_subcommands import (
     register_worker_subparsers,
 )
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
+from .parser_orchestrate import register_orchestrate_subparsers
 from .parser_persona import register_persona_subparsers
 from .parser_task import register_task_subparsers
 
@@ -211,6 +212,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     # worker
     register_worker_subparsers(subparsers)
+
+    # orchestrate
+    register_orchestrate_subparsers(subparsers)
 
     # cycle
     p_cycle = subparsers.add_parser("cycle", help="Execute end-to-end autonomous development cycle")

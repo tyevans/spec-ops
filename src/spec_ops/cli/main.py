@@ -198,6 +198,10 @@ def main(argv: list[str] | None = None) -> int:
         from .worker_handler import handle_worker_command
         return handle_worker_command(args, config)
 
+    if args.command == "orchestrate":
+        from .orchestrate_handler import handle_orchestrate_command
+        return handle_orchestrate_command(args, config, parser)
+
     if args.command == "cycle":
         from .cycle_handler import handle_cycle_command
         return handle_cycle_command(args, config)
