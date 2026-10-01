@@ -107,7 +107,7 @@ def test_property_dry_run_headless_ast_invariance(
         alphabet=st.characters(categories=["Lu", "Ll"]),
         min_size=3,
         max_size=10,
-    ).filter(lambda s: s.lower() not in AVAILABLE_PROFILES and s.lower() != "base"),
+    ).filter(lambda s: s.lower() not in AVAILABLE_PROFILES and s.lower() != "base" and not Path(s).exists()),
 )
 def test_property_invalid_profile_zero_pollution(project_name: str, invalid_profile: str):
     """Validation failure on invalid profile must raise and cause zero directory pollution."""
