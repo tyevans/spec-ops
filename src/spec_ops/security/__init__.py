@@ -90,6 +90,13 @@ from .release_verifier import (
     verify_release_manifest_file,
 )
 from .sandbox import ExecutionSandbox
+from .supply_chain_daemon import (
+    LockfileAttestation,
+    LockfileIntegrityReport,
+    SupplyChainSentinel,
+    compute_file_sha256,
+    handle_audit_lockfile,
+)
 
 __all__ = [
     "AuthorizedSigner",
@@ -106,8 +113,11 @@ __all__ = [
     "HOOK_START_MARKER",
     "HookSentinelResult",
     "HumanSignoff",
+    "LockfileAttestation",
     "LockfileInspectionResult",
+    "LockfileIntegrityReport",
     "LockfileSentinelResult",
+
     "MerkleInclusionProof",
     "MerkleLeaf",
     "MerkleManifest",
@@ -119,6 +129,7 @@ __all__ = [
     "ReleaseVerificationResult",
     "SecurityViolationEvent",
     "ShannonEntropyScanner",
+    "SupplyChainSentinel",
     "build_merkle_manifest",
     "calculate_entropy",
     "canonical_json_encode",
@@ -126,6 +137,7 @@ __all__ = [
     "check_worktree_dependency_integrity",
     "collect_project_artifacts",
     "compile_compliance_manifest",
+    "compute_file_sha256",
     "create_interceptor_shims",
     "detect_lockfile_mutations",
     "extract_executables",
@@ -135,6 +147,7 @@ __all__ = [
     "generate_hook_payload",
     "generate_merkle_manifest",
     "generate_network_isolation_sitecustomize",
+    "handle_audit_lockfile",
     "hash_internal_node",
     "hash_leaf",
     "inject_sentinel_block",

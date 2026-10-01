@@ -237,6 +237,11 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
             print("✅ Lockfile Sentinel passed: zero unauthorized lockfile mutations detected.")
         return 0
 
+    if args.security_action == "audit-lockfile":
+        from ..security.supply_chain_daemon import handle_audit_lockfile
+
+        return handle_audit_lockfile(args, config)
+
     if args.security_action == "scan":
         import json
         from ..security.entropy_plugins import (
@@ -358,7 +363,6 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
 
     parser.parse_args(["security", "--help"])
     return 0
-
 
 
 def handle_queue_command(args: argparse.Namespace, config: SpecOpsConfig, parser: argparse.ArgumentParser) -> int:
