@@ -341,8 +341,8 @@ class PreflightPipeline:
                 sname = f"stage-{len(stages) + 1}"
             if initial and sname == "test":
                 continue
-            timeout_val = 600.0 if sname == "test" else 120.0
-            stages.append(PreflightStage(name=sname, command=c_str, required=True, timeout_seconds=timeout_val))
+            to = float(os.environ.get("SPECOPS_PREFLIGHT_TEST_TIMEOUT") or getattr(config.quality, "test_timeout", 1200.0) or 1200.0)
+            stages.append(PreflightStage(name=sname, command=c_str, required=True, timeout_seconds=(to if sname == "test" else 120.0)))
 
         sandbox = None
         sandbox_config = getattr(config.execution, "sandbox", None)
