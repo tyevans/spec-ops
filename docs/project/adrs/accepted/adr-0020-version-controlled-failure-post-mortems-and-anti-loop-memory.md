@@ -1,7 +1,7 @@
 # ADR-0020: Version-Controlled Failure Post-Mortems and Anti-Loop Memory
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 When autonomous AI agents fail on tasks due to flawed architectural assumptions, invalid implementation approaches (such as introducing private mock backdoors violating ADR-0003, monkey-patching external libraries, or modifying immutable configuration/lockfiles), human software engineers must intervene to rescue the worktree (`spec-ops rescue`).
