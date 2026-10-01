@@ -104,6 +104,12 @@ from .incremental_runner import (
     run_incremental_rescue_test,
     save_step_cache,
 )
+from .fast_check import (
+    DiagnosticViolation,
+    FastCheckResult,
+    handle_fast_check_command,
+    run_fast_check,
+)
 from .triage import (
     FileDiffMetric,
     TriageFinding,
@@ -115,4 +121,11 @@ from .triage import (
     parse_feedback_diagnostics,
     takeover_task,
 )
+
+__all__.extend([
+    "DiagnosticViolation",
+    "FastCheckResult",
+    "handle_fast_check_command",
+    "run_fast_check",
+])
 

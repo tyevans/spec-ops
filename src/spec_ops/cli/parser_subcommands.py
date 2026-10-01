@@ -358,3 +358,12 @@ def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
 from .parser_scaffold import register_scaffold_subparsers
 
 
+
+def register_check_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers real-time IDE fast check command (US-0091, TASK-0055)."""
+    p_check = subparsers.add_parser("check", help="Sub-second IDE invariant diagnostics and real-time editor feedback")
+    p_check.add_argument("--fast", action="store_true", default=False, help="Fast single-file invariant diagnostic check")
+    p_check.add_argument("--file", dest="file", default=None, help="Target source file to evaluate")
+    p_check.add_argument("positional_file", nargs="?", default=None, help="Target source file to evaluate (positional)")
+    p_check.add_argument("--format", choices=["text", "json", "sarif"], default="text", help="Diagnostic output format (text, json, sarif; default: text)")
+

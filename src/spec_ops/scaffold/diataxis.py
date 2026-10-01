@@ -87,6 +87,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops constitution sync` | `[--repo PATH]` | Synchronize AGENTS.md constitution and docs/operating-manual.md while preserving human custom sections |
 | `spec-ops constitution check` | `[--repo PATH]` | CI drift detection gate comparing specops.toml settings against AGENTS.md |
 | `spec-ops health` | `[--security] [--architecture] [--suggest-splits] [--emit-task] [--generate-refactor-tasks] [--check-uat] [--numbering] [--json]` | Verify file length limits, artifact numbering uniqueness, architecture boundaries, and security profile guardrails |
+| `spec-ops check` | `[--fast] [--file FILE] [POSITIONAL_FILE] [--format {{text,json,sarif}}]` | Sub-second IDE invariant diagnostics and real-time editor feedback |
 | `spec-ops decompose` | `[--suggest PATH] [PATH]` | Analyze AST seams and recommend modular file decomposition |
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |

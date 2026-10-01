@@ -7,6 +7,7 @@ import argparse
 from .parser_subcommands import (
     register_adr_subparsers,
     register_audit_subparsers,
+    register_check_subparsers,
     register_export_subparsers,
     register_graph_subparsers,
     register_prd_subparsers,
@@ -340,6 +341,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     # schema
     register_schema_subparsers(subparsers)
+
+    # check
+    register_check_subparsers(subparsers)
 
     # verify
     p_verify = subparsers.add_parser("verify", help="Execute verification suites and invariant checks")

@@ -100,7 +100,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0105 (Refined)**: [`0105-stalled-worker-claim-reclamation-and-lease-heartbeat`](refined/0105-stalled-worker-claim-reclamation-and-lease-heartbeat.md)
 - **TASK-0098 (Complete)**: [`0098-deterministic-multi-criteria-priority-re-ranking`](complete/0098-deterministic-multi-criteria-priority-re-ranking.md)
 - **TASK-0099 (Complete)**: [`0099-automated-definition-of-ready-gatekeeper`](complete/0099-automated-definition-of-ready-gatekeeper.md)
-- **TASK-0055 (Refined)**: [`0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor`](refined/0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor.md)
+- **TASK-0055 (Complete)**: [`0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor`](complete/0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor.md)
 - **TASK-0054 (Complete)**: [`0054-selective-patch-salvage-safe-reset-and-anti-loop-memory`](complete/0054-selective-patch-salvage-safe-reset-and-anti-loop-memory.md)
 - **TASK-0104 (Refined)**: [`0104-safe-worktree-reset-and-anti-loop-memory`](refined/0104-safe-worktree-reset-and-anti-loop-memory.md)
 - **TASK-0106 (Refined)**: [`0106-milestone-scope-transition-and-rollover-engine`](refined/0106-milestone-scope-transition-and-rollover-engine.md)

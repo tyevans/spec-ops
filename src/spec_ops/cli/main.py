@@ -280,6 +280,10 @@ def main(argv: list[str] | None = None) -> int:
         from .task_handler import handle_task_command
         return handle_task_command(args, config, parser)
 
+    if args.command == "check":
+        from ..rescue.fast_check import handle_fast_check_command
+        return handle_fast_check_command(args, config)
+
     if args.command == "doctor":
         from ..rescue.doctor import handle_doctor_command
         return handle_doctor_command(args, config)

@@ -1,7 +1,7 @@
 ---
 id: '0122'
 title: Document spec-ops check in Diataxis CLI Reference
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0055
 governing_adrs:
@@ -14,7 +14,6 @@ governing_prds:
 governing_stories:
 - US-0091
 target_bc: rescue
-unblocked: true
 ---
 
 # TASK-0122: Document spec-ops check in Diataxis CLI Reference
