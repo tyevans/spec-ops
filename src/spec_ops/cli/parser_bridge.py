@@ -36,3 +36,22 @@ def _add_import_arguments(parser: argparse.ArgumentParser) -> None:
 def _add_export_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--format", choices=["markdown", "json"], default="markdown", help="Export serialization format (default: markdown)")
     parser.add_argument("-o", "--out", "--output", dest="output", default=None, help="Output destination file path")
+    parser.add_argument(
+        "--target",
+        choices=["github", "jira", "linear"],
+        default=None,
+        help="Target external issue tracker platform for status export (github, jira, linear)",
+    )
+    parser.add_argument(
+        "--sync-status",
+        action="store_true",
+        default=False,
+        help="Synchronize task completion status and git commit references to external tracker",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Simulate external export and status synchronization without making network updates",
+    )
+

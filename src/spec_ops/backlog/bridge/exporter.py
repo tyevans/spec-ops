@@ -9,6 +9,28 @@ from typing import Any
 from ...config.loader import load_config
 from ...config.models import SpecOpsConfig
 from ..queue import BacklogQueue
+from .status_sync import (
+    export_tracker_sync,
+    extract_task_external_ticket,
+    format_sync_comment,
+    harvest_task_commits_and_prs,
+    map_status_to_external,
+    normalize_spec_ops_status,
+    parse_github_issue_ref,
+    sync_external_issue,
+)
+
+__all__ = [
+    "export_backlog_snapshot",
+    "export_tracker_sync",
+    "extract_task_external_ticket",
+    "format_sync_comment",
+    "harvest_task_commits_and_prs",
+    "map_status_to_external",
+    "normalize_spec_ops_status",
+    "parse_github_issue_ref",
+    "sync_external_issue",
+]
 
 
 def export_backlog_snapshot(
@@ -16,8 +38,26 @@ def export_backlog_snapshot(
     config: SpecOpsConfig | None = None,
     format: str = "markdown",
     output_path: Path | str | None = None,
+    target: str | None = None,
+    sync_status: bool = False,
+    dry_run: bool = False,
 ) -> str:
-    """Exports structured backlog status snapshot as a Diataxis reference document."""
+    """Exports structured backlog status snapshot or external tracker sync document."""
+    if target:
+        sync_res = export_tracker_sync(
+            backlog_dir=backlog_dir,
+            target=target,
+            sync_status=sync_status,
+            dry_run=dry_run,
+            config=config,
+        )
+        content = sync_res.to_json() if format.lower() == "json" else sync_res.to_markdown()
+        if output_path:
+            out_p = Path(output_path)
+            out_p.parent.mkdir(parents=True, exist_ok=True)
+            out_p.write_text(content, encoding="utf-8")
+        return content
+
     cfg = config or load_config(root_dir=backlog_dir.parent.parent)
     queue = BacklogQueue(backlog_dir)
 

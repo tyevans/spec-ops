@@ -53,12 +53,18 @@ def handle_bridge_command(
         fmt = getattr(args, "format", "markdown") or "markdown"
         out_arg = getattr(args, "output", None) or getattr(args, "out", None)
         out_path = Path(out_arg).resolve() if out_arg else None
+        target = getattr(args, "target", None)
+        sync_status = bool(getattr(args, "sync_status", False))
+        dry_run = bool(getattr(args, "dry_run", False))
 
         output_str = export_backlog_snapshot(
             backlog_dir=backlog_dir,
             config=config,
             format=fmt,
             output_path=out_path,
+            target=target,
+            sync_status=sync_status,
+            dry_run=dry_run,
         )
         if out_path:
             print(f"✅ Exported backlog snapshot to {out_path}")

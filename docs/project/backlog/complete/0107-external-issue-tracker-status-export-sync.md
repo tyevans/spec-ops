@@ -1,7 +1,7 @@
 ---
 id: '0107'
 title: External Issue Tracker Status and Commit Export Sync Bridge
-status: Refined
+status: Complete
 dependencies:
 - TASK-0079
 governing_adrs:

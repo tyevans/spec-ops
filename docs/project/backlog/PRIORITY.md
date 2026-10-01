@@ -105,7 +105,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0104 (Complete)**: [`0104-safe-worktree-reset-and-anti-loop-memory`](complete/0104-safe-worktree-reset-and-anti-loop-memory.md)
 - **TASK-0106 (Complete)**: [`0106-milestone-scope-transition-and-rollover-engine`](complete/0106-milestone-scope-transition-and-rollover-engine.md)
 - **TASK-0079 (Complete)**: [`0079-external-issue-tracker-ingestion-and-sync-bridge`](complete/0079-external-issue-tracker-ingestion-and-sync-bridge.md)
-- **TASK-0107 (Refined)**: [`0107-external-issue-tracker-status-export-sync`](refined/0107-external-issue-tracker-status-export-sync.md)
+- **TASK-0107 (Complete)**: [`0107-external-issue-tracker-status-export-sync`](complete/0107-external-issue-tracker-status-export-sync.md)
 - **TASK-0080 (Refined)**: [`0080-hybrid-team-velocity-and-rescue-analytics`](refined/0080-hybrid-team-velocity-and-rescue-analytics.md)
 - **TASK-0108 (Refined)**: [`0108-interactive-html-velocity-dashboard-exporter`](refined/0108-interactive-html-velocity-dashboard-exporter.md)
 - **TASK-0081 (Refined)**: [`0081-interactive-milestone-planning-and-executive-briefing`](refined/0081-interactive-milestone-planning-and-executive-briefing.md)
