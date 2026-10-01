@@ -215,9 +215,12 @@ def generate_gitlab_ci_workflow(
     py_versions = python_versions or list(DEFAULT_PYTHON_VERSIONS)
     matrix_json = json.dumps(py_versions)
 
-    var_lines = ["variables:", "  UV_CACHE_DIR: .uv-cache/"]
+    cache_dir = custom_env.get("UV_CACHE_DIR", ".uv-cache/") if custom_env else ".uv-cache/"
+    var_lines = ["variables:", f"  UV_CACHE_DIR: {json.dumps(str(cache_dir))}"]
     if custom_env:
         for k, v in sorted(custom_env.items()):
+            if k == "UV_CACHE_DIR":
+                continue
             var_lines.append(f"  {json.dumps(str(k))}: {json.dumps(str(v))}")
     var_section = "\n".join(var_lines)
 

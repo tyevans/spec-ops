@@ -43,6 +43,12 @@ SOURCE_EXTENSIONS = {
 }
 
 
+def is_excluded_path(rel_path: Path | str) -> bool:
+    """Returns True if any path component is in EXCLUDE_DIRS or is a hidden directory."""
+    parts = Path(rel_path).parts
+    return any(part in EXCLUDE_DIRS or (part.startswith(".") and part != ".") for part in parts)
+
+
 @dataclass
 class DebtEvaluation:
     path: str
@@ -68,29 +74,30 @@ def load_grandfathered_debt(root_dir: Path) -> dict[str, int]:
     root = root_dir.resolve()
     debt_map: dict[str, int] = {}
 
-    # 1. Check .specops/grandfathered_debt.json
-    json_path = root / DEBT_BASELINE_FILE
-    if json_path.is_file():
-        try:
-            data = json.loads(json_path.read_text(encoding="utf-8"))
-            if isinstance(data, dict):
-                files_dict = data.get("files", data) if "files" in data and isinstance(data.get("files"), dict) else data
-                for k, v in files_dict.items():
-                    if k == "version":
-                        continue
-                    norm_k = normalize_rel_path(k)
-                    if isinstance(v, int):
-                        debt_map[norm_k] = v
-                    elif isinstance(v, dict) and "line_count" in v and isinstance(v["line_count"], int):
-                        debt_map[norm_k] = v["line_count"]
-                    elif isinstance(v, dict) and "lines" in v and isinstance(v["lines"], int):
-                        debt_map[norm_k] = v["lines"]
-            elif isinstance(data, list):
-                for item in data:
-                    if isinstance(item, dict) and "path" in item and "lines" in item:
-                        debt_map[normalize_rel_path(item["path"])] = int(item["lines"])
-        except (json.JSONDecodeError, OSError):
-            pass
+    # 1. Check .specops/grandfathered_debt.json or fallback alias
+    candidates = [root / DEBT_BASELINE_FILE, root / ".spec-ops/debt-baseline.json"]
+    for json_path in candidates:
+        if json_path.is_file():
+            try:
+                data = json.loads(json_path.read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    files_dict = data.get("files", data) if "files" in data and isinstance(data.get("files"), dict) else data
+                    for k, v in files_dict.items():
+                        if k == "version":
+                            continue
+                        norm_k = normalize_rel_path(k)
+                        if isinstance(v, int):
+                            debt_map[norm_k] = v
+                        elif isinstance(v, dict) and "line_count" in v and isinstance(v["line_count"], int):
+                            debt_map[norm_k] = v["line_count"]
+                        elif isinstance(v, dict) and "lines" in v and isinstance(v["lines"], int):
+                            debt_map[norm_k] = v["lines"]
+                elif isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, dict) and "path" in item and "lines" in item:
+                            debt_map[normalize_rel_path(item["path"])] = int(item["lines"])
+            except (json.JSONDecodeError, OSError):
+                pass
 
     # 2. Check specops.toml invariants.file_limits.grandfathered
     toml_path = root / "specops.toml"
@@ -215,7 +222,7 @@ def scan_and_record_grandfathered_debt(root_dir: Path, limit: int = 500) -> dict
         if not p.is_file():
             continue
         rel_p = p.relative_to(root)
-        if any(part in EXCLUDE_DIRS for part in rel_p.parts):
+        if is_excluded_path(rel_p):
             continue
         if p.suffix not in SOURCE_EXTENSIONS:
             continue

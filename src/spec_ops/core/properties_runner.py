@@ -17,7 +17,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
-from hypothesis import HealthCheck, settings
+try:
+    from hypothesis import HealthCheck, settings
+except ImportError:
+    HealthCheck = None  # type: ignore[assignment, misc]
+    settings = None  # type: ignore[assignment, misc]
 
 
 @dataclass
@@ -86,6 +90,11 @@ class PropertyRunReport:
 
 def configure_hypothesis_profile(max_examples: int | None = None, deadline: int | None = None) -> int:
     """Configures deterministic Hypothesis profile per ADR-0009 invariants."""
+    if settings is None or HealthCheck is None:
+        raise RuntimeError(
+            "Hypothesis is required for property test verification. "
+            "Install hypothesis or run within a project environment: uv run spec-ops verify"
+        )
     resolved_examples = max_examples if (max_examples is not None and max_examples > 0) else 100
     profile_name = "specops_deterministic"
     settings.register_profile(
@@ -148,6 +157,9 @@ def discover_property_tests(
 ) -> list[tuple[str, Callable[..., Any], str, str]]:
     """Discovers Hypothesis property tests from target path or test suites."""
     root = (root_dir or Path.cwd()).resolve()
+    for extra_dir in [root / "src", root]:
+        if extra_dir.is_dir() and str(extra_dir) not in sys.path:
+            sys.path.insert(0, str(extra_dir))
 
     files_to_scan: list[Path] = []
     if target_path:

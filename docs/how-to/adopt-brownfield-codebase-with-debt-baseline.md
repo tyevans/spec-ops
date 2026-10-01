@@ -12,7 +12,7 @@ To bootstrap SpecOps into an existing repository with baseline architectural pro
 spec-ops adopt --name "ExistingSystem" --profile core,bdd,ddd
 ```
 
-By default, `spec-ops adopt` enables `--grandfather-debt`, which snapshots all existing files that exceed the 500-line file limit (ADR-0002) into `.spec-ops/debt-baseline.json`. This ensures existing large files do not cause preflight or CI failures, while preventing those files from growing any larger.
+By default, `spec-ops adopt` enables `--grandfather-debt`, which snapshots all existing files that exceed the 500-line file limit (ADR-0002) into `.specops/grandfathered_debt.json` and records them under `[invariants.file_limits]` in `specops.toml`. This ensures existing large files do not cause preflight or CI failures, while preventing those files from growing any larger.
 
 To adopt without debt baselining:
 
@@ -25,7 +25,7 @@ spec-ops adopt --no-grandfather-debt
 ## How Grandfathered Debt Works
 
 When `--grandfather-debt` is active:
-1. Files already over 500 lines are recorded in `.spec-ops/debt-baseline.json` with their exact line counts at adoption time.
+1. Files already over 500 lines are recorded in `.specops/grandfathered_debt.json` with their exact line counts at adoption time.
 2. In subsequent health checks (`spec-ops health`), grandfathered files are reported as tracked debt:
    ```text
    ℹ️ 3 grandfathered files remain tracked debt items.

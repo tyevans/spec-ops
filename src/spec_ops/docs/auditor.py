@@ -56,7 +56,26 @@ def check_diataxis_structure(docs_dir: Path) -> tuple[list[AuditViolation], list
                     )
                 )
 
-    # 2. Validate all files under docs_dir
+    # 2. Check for configured allowed extra directories or root files
+    extra_dirs: set[str] = set()
+    extra_root: set[str] = set()
+    toml_path = docs_dir.parent / "specops.toml"
+    if toml_path.is_file():
+        try:
+            import sys
+            if sys.version_info >= (3, 11):
+                import tomllib
+            else:
+                import tomli as tomllib  # type: ignore
+            with toml_path.open("rb") as f:
+                tdata = tomllib.load(f)
+            doc_cfg = tdata.get("documentation", {})
+            extra_dirs = set(doc_cfg.get("allowed_directories", []))
+            extra_root = set(doc_cfg.get("allowed_root_files", []))
+        except Exception:
+            pass
+
+    # 3. Validate all files under docs_dir
     for path in sorted(docs_dir.rglob("*")):
         if path.is_dir():
             continue
@@ -65,7 +84,7 @@ def check_diataxis_structure(docs_dir: Path) -> tuple[list[AuditViolation], list
             continue
 
         if len(rel.parts) == 1:
-            if rel.name not in ALLOWED_ROOT_FILES:
+            if rel.name not in ALLOWED_ROOT_FILES and rel.name not in extra_root:
                 violations.append(
                     AuditViolation(
                         category="structure",
@@ -79,7 +98,7 @@ def check_diataxis_structure(docs_dir: Path) -> tuple[list[AuditViolation], list
                 )
         else:
             top_dir = rel.parts[0]
-            if top_dir not in APPROVED_QUADRANTS:
+            if top_dir not in APPROVED_QUADRANTS and top_dir not in extra_dirs:
                 violations.append(
                     AuditViolation(
                         category="structure",

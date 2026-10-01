@@ -125,18 +125,40 @@ def _check_task_waiver(worktree_path: Path) -> tuple[bool, str | None]:
     import re
     import yaml
 
-    # Look for task file in current branch/directory or backlog
+    # Check if cwd or branch contains a task identifier
+    task_match = (
+        re.search(r"(?:task|feat)[-/](?:task-)?(\d+)", worktree_path.name, re.IGNORECASE)
+        or re.search(r"^task[-_](\d+)", worktree_path.name, re.IGNORECASE)
+    )
+    task_num = task_match.group(1) if task_match else None
+    if not task_num:
+        try:
+            res = subprocess.run(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                cwd=worktree_path,
+                capture_output=True,
+                text=True,
+            )
+            if res.returncode == 0:
+                mb = (
+                    re.search(r"(?:task|feat)[-/](?:task-)?(\d+)", res.stdout.strip(), re.IGNORECASE)
+                    or re.search(r"^task[-_](\d+)", res.stdout.strip(), re.IGNORECASE)
+                )
+                if mb:
+                    task_num = mb.group(1)
+        except Exception:
+            pass
+
+    if not task_num:
+        return False, None
+
     candidate_files: list[Path] = []
     backlog_dir = worktree_path / "docs" / "project" / "backlog"
     if backlog_dir.is_dir():
         candidate_files.extend(backlog_dir.glob("*/*.md"))
 
-    # Also check if cwd contains a task identifier
-    m = re.search(r"task-(\d+)", worktree_path.name, re.IGNORECASE)
-    task_num = m.group(1) if m else None
-
     for cf in candidate_files:
-        if task_num and task_num not in cf.name:
+        if task_num not in cf.name:
             continue
         try:
             content = cf.read_text(encoding="utf-8")
@@ -161,21 +183,22 @@ def is_lockfile_mutation_waived(
     repo_dir: Path | str,
     modified_lockfiles: Sequence[str],
     config: SpecOpsConfig | None = None,
-    task_allows_dependencies: bool = False,
+    task_allows_dependencies: bool | None = None,
 ) -> tuple[bool, str | None]:
     """Determines whether an approved waiver exists for lockfile mutations."""
     if not modified_lockfiles:
         return True, None
 
-    if task_allows_dependencies:
+    if task_allows_dependencies is True:
         return True, "Task explicitly authorizes dependency mutations (allows_dependencies: true)"
 
     worktree_path = Path(repo_dir).resolve()
 
     # 1. Check task frontmatter waiver in worktree
-    task_waived, task_reason = _check_task_waiver(worktree_path)
-    if task_waived:
-        return True, task_reason
+    if task_allows_dependencies is None:
+        task_waived, task_reason = _check_task_waiver(worktree_path)
+        if task_waived:
+            return True, task_reason
 
     # 2. Check specops.toml configuration waiver
     if config and config.security:
@@ -275,7 +298,7 @@ def inspect_lockfile_sentinel(
     repo_dir: Path | str,
     fix: bool = False,
     config: SpecOpsConfig | None = None,
-    task_allows_dependencies: bool = False,
+    task_allows_dependencies: bool | None = None,
     base_ref: str | None = None,
     changed_files: Iterable[str] | None = None,
 ) -> LockfileSentinelResult:

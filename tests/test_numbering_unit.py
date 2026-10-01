@@ -146,3 +146,22 @@ def test_cli_health_numbering_json(capsys):
     assert data["is_valid"] is True
     assert data["collision_count"] == 0
     assert "adrs" in data["entity_counts"]
+
+
+def test_refactor_tasks_with_digits_do_not_collide(tmp_path: Path):
+    """Verifies that non-numeric refactoring tasks with digits in the filename do not falsely collide."""
+    proposed = tmp_path / "docs" / "project" / "backlog" / "proposed"
+    proposed.mkdir(parents=True)
+
+    (proposed / "TASK-REFACTOR-redstring-graph-adapters-neo4j.md").write_text(
+        "---\nid: REFACTOR-redstring-graph-adapters-neo4j\ntitle: Neo4j Adapter\n---\n# TASK-REFACTOR-neo4j",
+        encoding="utf-8",
+    )
+    (proposed / "TASK-REFACTOR-tests-integration-graph-test_neo4j_store.md").write_text(
+        "---\nid: REFACTOR-tests-integration-graph-test_neo4j_store\ntitle: Neo4j Store\n---\n# TASK-REFACTOR-neo4j-store",
+        encoding="utf-8",
+    )
+
+    report = audit_numbering_uniqueness(tmp_path)
+    assert report.is_valid
+    assert len(report.collisions) == 0
