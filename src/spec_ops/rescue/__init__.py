@@ -183,4 +183,24 @@ __all__.extend([
     "synthesize_fleet_negative_constraints",
 ])
 
+from .stash_reset import (
+    RescueStashMetadata,
+    StashResetResult,
+    WorktreeStashResetter,
+    apply_rescue_stash,
+    clean_reset,
+    create_rescue_stash,
+    list_rescue_stashes,
+)
+
+__all__.extend([
+    "RescueStashMetadata",
+    "StashResetResult",
+    "WorktreeStashResetter",
+    "create_rescue_stash",
+    "clean_reset",
+    "list_rescue_stashes",
+    "apply_rescue_stash",
+])
+
 

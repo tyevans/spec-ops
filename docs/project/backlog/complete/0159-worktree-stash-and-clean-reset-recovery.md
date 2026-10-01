@@ -1,7 +1,7 @@
 ---
 id: 0159
 title: Automated Worktree Stash and Clean Reset Recovery Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0054
 - TASK-0104

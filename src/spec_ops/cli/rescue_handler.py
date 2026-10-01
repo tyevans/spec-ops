@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 import subprocess
 from ..config.models import SpecOpsConfig
 
@@ -136,23 +137,23 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
     raw_task_id = getattr(args, "task_id", None)
     target = getattr(args, "target", None)
+    opt_task_id = getattr(args, "opt_task_id", None)
 
-    action: str | None = None
-    task_id: str | None = None
+    action: str | None = getattr(args, "rescue_action", None)
+    task_id: str | None = opt_task_id or raw_task_id
 
     known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset", "salvage", "patch", "finish", "complete", "cluster"}
     if raw_task_id in known_actions:
         action = raw_task_id
-        task_id = target
+        task_id = opt_task_id or target
     elif target in known_actions:
         action = target
-        task_id = raw_task_id
+        task_id = opt_task_id or raw_task_id
     elif getattr(args, "step", None) or getattr(args, "only_failed", False):
         action = "test"
-        task_id = raw_task_id
+        task_id = opt_task_id or raw_task_id
     else:
-        task_id = raw_task_id
-        if task_id and not args.complete and not args.discard and not getattr(args, "reset", False) and not args.list and not getattr(args, "salvage", False):
+        if task_id and not args.complete and not args.discard and not getattr(args, "reset", False) and not args.list and not getattr(args, "salvage", False) and not action:
             action = "inspect"
 
     if action == "test":
@@ -189,7 +190,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         print(msg)
         return 0 if ok else 1
 
-    if args.list or not task_id:
+    if args.list or (not task_id and not action and not getattr(args, "reset", False)):
 
         wts = mgr.list_active_worktrees()
         print("=== Active / Stalled Worktrees (.worktrees/) ===")
@@ -226,12 +227,72 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         return 0 if ok else 1
 
     if getattr(args, "reset", False) or action == "reset" or getattr(args, "rescue_action", None) == "reset":
-        from ..rescue.memory import reset_worktree_with_memory
-
+        is_list = getattr(args, "list_stashes", False)
+        apply_id = getattr(args, "apply_stash_id", None)
+        is_stash = getattr(args, "stash", False)
+        is_force = getattr(args, "force", False)
+        is_json = getattr(args, "json", False)
         reason = getattr(args, "reason", "") or ""
         demote = getattr(args, "demote", False)
         worker_id = getattr(args, "worker_id", "") or ""
-        target_tid = task_id or getattr(args, "task_id", None)
+        target_tid = getattr(args, "opt_task_id", None) or task_id or getattr(args, "task_id", None)
+
+        from ..rescue.stash_reset import WorktreeStashResetter, resolve_repo_root
+
+        real_root = resolve_repo_root(config.root_dir)
+
+        if is_list:
+            stashes = WorktreeStashResetter.list_rescue_stashes(real_root, task_id=target_tid)
+            if is_json:
+                import json as json_lib
+                print(json_lib.dumps([s.to_dict() for s in stashes], indent=2))
+                return 0
+            if not stashes:
+                print("No rescue stashes found.")
+                return 0
+            print("=== Rescue Stashes (.specops/rescue_stashes/) ===")
+            print(f"{'Stash ID':<35} {'Task ID':<12} {'Timestamp':<22} {'Branch'}")
+            print("-" * 80)
+            for s in stashes:
+                print(f"{s.stash_id:<35} {s.task_id:<12} {s.timestamp:<22} {s.branch}")
+                if s.diff_summary:
+                    print(f"  Diff Summary: {s.diff_summary.strip().splitlines()[-1]}")
+            return 0
+
+        def _resolve_wt() -> Path:
+            if target_tid:
+                for c in [f"task-{target_tid.lower().replace('task-', '')}", target_tid.lower(), target_tid]:
+                    p = real_root / ".worktrees" / c
+                    if p.is_dir():
+                        return p
+            return Path.cwd()
+
+        if apply_id:
+            wt_dir = _resolve_wt()
+            ok, msg = WorktreeStashResetter.apply_rescue_stash(wt_dir, apply_id)
+            if is_json:
+                import json as json_lib
+                print(json_lib.dumps({"success": ok, "stash_id": apply_id, "message": msg}, indent=2))
+            else:
+                prefix = "✅" if ok else "❌"
+                print(f"{prefix} {msg}")
+            return 0 if ok else 1
+
+        if is_stash or (is_force and not reason and not demote):
+            wt_dir = _resolve_wt()
+            result = WorktreeStashResetter.clean_reset(wt_dir, stash=is_stash, task_id=target_tid or "")
+            if is_json:
+                import json as json_lib
+                print(json_lib.dumps(result.to_dict(), indent=2))
+            else:
+                prefix = "✅" if result.success else "❌"
+                print(f"{prefix} {result.message}")
+                if result.stash_id:
+                    print(f"   Archived to rescue stash: {result.stash_id}")
+            return 0 if result.success else 1
+
+        from ..rescue.memory import reset_worktree_with_memory
+
         if not target_tid:
             print("❌ Task ID is required for rescue reset.")
             return 1

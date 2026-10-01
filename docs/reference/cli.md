@@ -81,7 +81,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops orchestrate health` | `[--log-dir LOG_DIR] [--json]` | Summarize orchestration health, pass/fail rates, stalled worktrees, and unaddressed bugs |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review] [--adaptive]` | Run end-to-end autonomous development cycle |
 | `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--reset] [--reason REASON] [--demote] [--prune] [--dry-run] [--action ACTION] [--file FILE] [--step STEP] [--only-failed] [--salvage]` | Inspect, triage, and recover stalled or failed autonomous worktrees, render quickstart cheatsheets, or reset worktree with failure memory |
-| `spec-ops rescue reset` | `<TASK_ID> --reason REASON [--demote]` | Safe worktree discard with anti-loop failure memory and task reset |
+| `spec-ops rescue reset` | `[task_id] [--task-id TASK_ID] [--stash] [--list-stashes] [--apply STASH_ID] [--force] [--json] [--reason REASON] [--demote]` | Safe worktree discard with anti-loop failure memory, automated stash, and clean reset recovery |
 | `spec-ops rescue salvage` | `<TASK_ID> --files FILES [FILES ...]` | Selectively salvage specified files from stalled worktree into clean rescue branch |
 | `spec-ops rescue patch` | `<TASK_ID> --include INCLUDE` | Incrementally stage files into the rescue index |
 | `spec-ops rescue quota` | `[--threshold THRESHOLD] [--json]` | Worktree disk quota monitor and storage consumption audit |

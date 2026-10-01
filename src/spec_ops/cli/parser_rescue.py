@@ -63,8 +63,14 @@ def register_rescue_subparsers(subparsers: argparse._SubParsersAction) -> None:
 
     rescue_subs = p_rescue.add_subparsers(dest="rescue_action", help="Rescue action")
 
-    p_reset = rescue_subs.add_parser("reset", help="Safe worktree discard with anti-loop failure memory and task reset")
-    p_reset.add_argument("task_id", help="Target task canonical ID (e.g. TASK-0024)")
+    p_reset = rescue_subs.add_parser("reset", help="Safe worktree discard with anti-loop failure memory, automated stash, and clean reset recovery")
+    p_reset.add_argument("task_id", nargs="?", default=None, help="Target task canonical ID (e.g. TASK-0024)")
+    p_reset.add_argument("--task-id", dest="opt_task_id", default=None, help="Target task canonical ID")
+    p_reset.add_argument("--stash", action="store_true", help="Archive uncommitted modifications into a rescue stash before reset")
+    p_reset.add_argument("--list-stashes", action="store_true", help="List available rescue stashes")
+    p_reset.add_argument("--apply", dest="apply_stash_id", default=None, metavar="STASH_ID", help="Apply a previously created rescue stash by ID")
+    p_reset.add_argument("--force", action="store_true", help="Force clean reset without safeguards")
+    p_reset.add_argument("--json", action="store_true", help="Output results in JSON format")
     p_reset.add_argument("--reason", default="", help="Failure post-mortem reason description")
     p_reset.add_argument("--demote", action="store_true", help="Demote task to proposed/ on reset")
 
