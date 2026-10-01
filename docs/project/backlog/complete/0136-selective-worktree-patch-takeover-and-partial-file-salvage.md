@@ -1,7 +1,7 @@
 ---
 id: '0136'
 title: Selective Worktree Patch Takeover and Partial File Salvage Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0104
 - TASK-0114

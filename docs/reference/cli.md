@@ -73,8 +73,10 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops orchestrate retrospect` | `[--log-dir LOG_DIR] [--dry-run] [--json]` | Analyze session artifacts and failure logs to categorize invariant breaches and synthesize proposed remediation tasks |
 | `spec-ops orchestrate health` | `[--log-dir LOG_DIR] [--json]` | Summarize orchestration health, pass/fail rates, stalled worktrees, and unaddressed bugs |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
-| `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--reset] [--reason REASON] [--demote] [--prune] [--dry-run] [--action ACTION] [--file FILE] [--step STEP] [--only-failed]` | Inspect, triage, and recover stalled or failed autonomous worktrees, render quickstart cheatsheets, or reset worktree with failure memory |
+| `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--reset] [--reason REASON] [--demote] [--prune] [--dry-run] [--action ACTION] [--file FILE] [--step STEP] [--only-failed] [--salvage]` | Inspect, triage, and recover stalled or failed autonomous worktrees, render quickstart cheatsheets, or reset worktree with failure memory |
 | `spec-ops rescue reset` | `<TASK_ID> --reason REASON [--demote]` | Safe worktree discard with anti-loop failure memory and task reset |
+| `spec-ops rescue salvage` | `<TASK_ID> --files FILES [FILES ...]` | Selectively salvage specified files from stalled worktree into clean rescue branch |
+| `spec-ops rescue patch` | `<TASK_ID> --include INCLUDE` | Incrementally stage files into the rescue index |
 | `spec-ops worktree start` | `<TASK_ID>` | Spawn an isolated development worktree for a task |
 | `spec-ops worktree finish` | `[--task-id TASK_ID]` | Verify preflight, merge into main under MERGE_LOCK, and clean up worktree |
 | `spec-ops spike create` | `--name NAME --question QUESTION [--timebox TIMEBOX] [--task TASK_ID] [--prd PRD_ID]` | Author a new architectural spike task and isolated test harness |

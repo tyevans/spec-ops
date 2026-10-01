@@ -151,8 +151,19 @@ class WorktreeRescueManager:
             prompt_path=prompt_file if prompt_file.exists() else None,
         )
 
-    def complete_rescue(self, task_id_input: str) -> tuple[bool, str]:
+    def complete_rescue(
+        self,
+        task_id_input: str,
+        salvage: bool = False,
+        author: str | None = None,
+        rescued_by: str | None = None,
+    ) -> tuple[bool, str]:
         """Runs preflight verification and merges human-rescued worktree into main."""
+        if salvage:
+            from ..rescue.salvage import complete_salvage
+
+            return complete_salvage(self.config, task_id_input, author=author, rescued_by=rescued_by)
+
         info = self.inspect_task(task_id_input)
         if not info or not info.worktree_dir.exists():
             return False, f"Worktree for {task_id_input} not found."

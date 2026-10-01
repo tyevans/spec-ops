@@ -47,7 +47,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     action: str | None = None
     task_id: str | None = None
 
-    known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset"}
+    known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset", "salvage", "patch", "finish", "complete"}
     if raw_task_id in known_actions:
         action = raw_task_id
         task_id = target
@@ -59,7 +59,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         task_id = raw_task_id
     else:
         task_id = raw_task_id
-        if task_id and not args.complete and not args.discard and not getattr(args, "reset", False) and not args.list:
+        if task_id and not args.complete and not args.discard and not getattr(args, "reset", False) and not args.list and not getattr(args, "salvage", False):
             action = "inspect"
 
     if action == "test":
@@ -71,6 +71,30 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
             step=getattr(args, "step", None),
             only_failed=getattr(args, "only_failed", False),
         )
+
+    if getattr(args, "rescue_action", None) == "salvage" or action == "salvage":
+        from ..rescue.salvage import salvage_task
+
+        files = getattr(args, "files", []) or []
+        target_tid = task_id or getattr(args, "task_id", None)
+        if not target_tid:
+            print("❌ Task ID is required for rescue salvage.")
+            return 1
+        ok, msg = salvage_task(config, target_tid, files)
+        print(msg)
+        return 0 if ok else 1
+
+    if getattr(args, "rescue_action", None) == "patch" or action == "patch":
+        from ..rescue.salvage import patch_task
+
+        include_files = getattr(args, "include", []) or []
+        target_tid = task_id or getattr(args, "task_id", None)
+        if not target_tid:
+            print("❌ Task ID is required for rescue patch.")
+            return 1
+        ok, msg = patch_task(config, target_tid, include_files)
+        print(msg)
+        return 0 if ok else 1
 
     if args.list or not task_id:
 
@@ -86,12 +110,22 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
                 print(f"  Diagnostics: {w.failure_feedback[:100]}...")
         return 0
 
-    if args.complete:
-        ok, msg = mgr.complete_rescue(task_id)
-        print(f"=== Worktree Rescue: {task_id} ===")
-        print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
-        print(msg)
-        return 0 if ok else 1
+    is_salvage = getattr(args, "salvage", False)
+    if args.complete or action in ("complete", "finish") or is_salvage:
+        if is_salvage:
+            from ..rescue.salvage import complete_salvage
+
+            ok, msg = complete_salvage(config, task_id)
+            print(f"=== Worktree Rescue (Salvage): {task_id} ===")
+            print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
+            print(msg)
+            return 0 if ok else 1
+        else:
+            ok, msg = mgr.complete_rescue(task_id)
+            print(f"=== Worktree Rescue: {task_id} ===")
+            print(f"Status: {'✅ SUCCESS' if ok else '❌ FAILED'}")
+            print(msg)
+            return 0 if ok else 1
 
     if args.discard:
         ok, msg = mgr.discard_worktree(task_id)

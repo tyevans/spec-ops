@@ -137,7 +137,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0133 (Complete)**: [`0133-redstring-relational-knowledge-graph-and-ast-projection`](complete/0133-redstring-relational-knowledge-graph-and-ast-projection.md)
 - **TASK-0134 (Complete)**: [`0134-continuous-orchestration-retrospective-and-self-healing-engine`](complete/0134-continuous-orchestration-retrospective-and-self-healing-engine.md)
 - **TASK-0135 (Complete)**: [`0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio`](complete/0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio.md)
-- **TASK-0136 (Refined)**: [`0136-selective-worktree-patch-takeover-and-partial-file-salvage`](refined/0136-selective-worktree-patch-takeover-and-partial-file-salvage.md)
+- **TASK-0136 (Complete)**: [`0136-selective-worktree-patch-takeover-and-partial-file-salvage`](complete/0136-selective-worktree-patch-takeover-and-partial-file-salvage.md)
 - **TASK-0137 (Refined)**: [`0137-living-release-notes-generator-and-changelog-publisher`](refined/0137-living-release-notes-generator-and-changelog-publisher.md)
 - **TASK-0138 (Refined)**: [`0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning`](refined/0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning.md)
 - **TASK-0139 (Refined)**: [`0139-multi-agent-collaborative-review-radar`](refined/0139-multi-agent-collaborative-review-radar.md)

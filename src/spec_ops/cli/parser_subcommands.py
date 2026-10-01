@@ -206,7 +206,7 @@ class FlexibleRescueParser(argparse.ArgumentParser):
                     first_pos = a
                     break
 
-            if first_pos != "reset":
+            if first_pos not in ("reset", "salvage", "patch"):
                 sub_action = None
                 for act in list(self._actions):
                     if isinstance(act, argparse._SubParsersAction):
@@ -244,12 +244,21 @@ def register_rescue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rescue.add_argument("--action", default=None, help="Direct triage action ([d]iff, [p]atch, [s]hell, [r]eset, [c]omplete, [q]uit)")
     p_rescue.add_argument("--step", default=None, help="Designated preflight step to run in isolation")
     p_rescue.add_argument("--only-failed", action="store_true", help="Re-run only previously failed preflight step")
+    p_rescue.add_argument("--salvage", action="store_true", help="Curated preflight verification and merge solely on staged files")
 
     rescue_subs = p_rescue.add_subparsers(dest="rescue_action", help="Rescue action")
     p_reset = rescue_subs.add_parser("reset", help="Safe worktree discard with anti-loop failure memory and task reset")
     p_reset.add_argument("task_id", help="Target task canonical ID (e.g. TASK-0024)")
     p_reset.add_argument("--reason", default="", help="Failure post-mortem reason description")
     p_reset.add_argument("--demote", action="store_true", help="Demote task to proposed/ on reset")
+
+    p_salv = rescue_subs.add_parser("salvage", help="Selectively salvage specified files from stalled worktree into clean rescue branch")
+    p_salv.add_argument("task_id", help="Target task canonical ID (e.g. TASK-0018)")
+    p_salv.add_argument("--files", nargs="+", default=[], help="File paths to salvage into clean rescue branch")
+
+    p_patch = rescue_subs.add_parser("patch", help="Incrementally stage files into the rescue index")
+    p_patch.add_argument("task_id", help="Target task canonical ID (e.g. TASK-0018)")
+    p_patch.add_argument("--include", action="append", default=[], help="File path to include in rescue patch")
 
 
 from .parser_spike import register_spike_subparsers

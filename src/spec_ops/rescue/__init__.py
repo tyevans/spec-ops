@@ -131,3 +131,31 @@ __all__.extend([
     "run_fast_check",
 ])
 
+from .salvage import (
+    complete_salvage,
+    ensure_rescue_branch,
+    format_salvage_commit_message,
+    get_rescue_branch_name,
+    get_staged_files,
+    get_untracked_files,
+    patch_files,
+    patch_task,
+    run_curated_preflight,
+    salvage_files,
+    salvage_task,
+)
+
+__all__.extend([
+    "complete_salvage",
+    "ensure_rescue_branch",
+    "format_salvage_commit_message",
+    "get_rescue_branch_name",
+    "get_staged_files",
+    "get_untracked_files",
+    "patch_files",
+    "patch_task",
+    "run_curated_preflight",
+    "salvage_files",
+    "salvage_task",
+])
+
