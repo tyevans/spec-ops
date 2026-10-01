@@ -159,3 +159,28 @@ __all__.extend([
     "salvage_task",
 ])
 
+from .failure_clustering import (
+    ClusteredFailureEntry,
+    FailureArchetype,
+    FailureCluster,
+    classify_failure_entry,
+    cluster_failure_entries,
+    collect_backlog_failures,
+    format_fleet_failure_prompt,
+    handle_cluster_cli,
+    synthesize_fleet_negative_constraints,
+)
+
+__all__.extend([
+    "ClusteredFailureEntry",
+    "FailureArchetype",
+    "FailureCluster",
+    "classify_failure_entry",
+    "cluster_failure_entries",
+    "collect_backlog_failures",
+    "format_fleet_failure_prompt",
+    "handle_cluster_cli",
+    "synthesize_fleet_negative_constraints",
+])
+
+

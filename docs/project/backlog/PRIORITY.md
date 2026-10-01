@@ -145,7 +145,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0141 (Complete)**: [`0141-tamper-evident-merkle-compliance-manifest`](complete/0141-tamper-evident-merkle-compliance-manifest.md)
 - **TASK-0142 (Complete)**: [`0142-dag-topological-cache-and-tarjan-precheck`](complete/0142-dag-topological-cache-and-tarjan-precheck.md)
 - **TASK-0143 (Complete)**: [`0143-pre-commit-git-hook-and-supply-chain-sentinel`](complete/0143-pre-commit-git-hook-and-supply-chain-sentinel.md)
-- **TASK-0144 (Refined)**: [`0144-failure-clustering-and-prompt-anti-loop-memory`](refined/0144-failure-clustering-and-prompt-anti-loop-memory.md)
+- **TASK-0144 (Complete)**: [`0144-failure-clustering-and-prompt-anti-loop-memory`](complete/0144-failure-clustering-and-prompt-anti-loop-memory.md)
 - **TASK-0145 (Refined)**: [`0145-persona-customer-journey-map-visualizer`](refined/0145-persona-customer-journey-map-visualizer.md)
 - **TASK-0146 (Refined)**: [`0146-team-delivery-velocity-and-churn-heatmap`](refined/0146-team-delivery-velocity-and-churn-heatmap.md)
 - **TASK-0147 (Refined)**: [`0147-worktree-auto-rebase-and-merge-conflict-resolver`](refined/0147-worktree-auto-rebase-and-merge-conflict-resolver.md)

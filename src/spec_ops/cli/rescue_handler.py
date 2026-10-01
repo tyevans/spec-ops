@@ -125,6 +125,11 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         print(f"🧹 Pruned and cleaned up {len(pruned)} worktree(s). Reclaimed {format_bytes(reclaimed)}.")
         return 0
 
+    if action == "cluster" or getattr(args, "rescue_action", None) == "cluster":
+        from ..rescue.failure_clustering import handle_cluster_cli
+
+        return handle_cluster_cli(config, args)
+
     from ..backlog.rescue import WorktreeRescueManager
 
     mgr = WorktreeRescueManager(config)
@@ -135,7 +140,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     action: str | None = None
     task_id: str | None = None
 
-    known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset", "salvage", "patch", "finish", "complete"}
+    known_actions = {"triage", "takeover", "inspect", "shell", "test", "reset", "salvage", "patch", "finish", "complete", "cluster"}
     if raw_task_id in known_actions:
         action = raw_task_id
         task_id = target

@@ -123,6 +123,15 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
         lines.append("")
         lines.append(neg_block.strip())
 
+    from ..rescue.failure_clustering import format_fleet_failure_prompt
+
+    backlog_dir = getattr(config, "backlog_dir", None)
+    repo_root = getattr(config, "root_dir", None)
+    fleet_block = format_fleet_failure_prompt(backlog_dir, task=task, repo_root=repo_root)
+    if fleet_block.strip():
+        lines.append("")
+        lines.append(fleet_block.strip())
+
     lines.extend([
         "",
         "## Task Specification",

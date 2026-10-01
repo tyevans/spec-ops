@@ -21,7 +21,7 @@ class FlexibleRescueParser(argparse.ArgumentParser):
                     first_pos = a
                     break
 
-            if first_pos not in ("reset", "salvage", "patch", "quota", "prune"):
+            if first_pos not in ("reset", "salvage", "patch", "quota", "prune", "cluster"):
                 sub_action = None
                 for act in list(self._actions):
                     if isinstance(act, argparse._SubParsersAction):
@@ -85,3 +85,7 @@ def register_rescue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_prune.add_argument("--dry-run", action="store_true", help="Dry-run preview of candidate worktrees and disk space")
     p_prune.add_argument("--force", action="store_true", help="Force prune worktrees with uncommitted or unmerged changes")
     p_prune.add_argument("--json", action="store_true", help="Output pruned worktree results in JSON format")
+
+    p_cluster = rescue_subs.add_parser("cluster", help="Autonomous failure post-mortem clustering and prompt anti-loop synthesizer")
+    p_cluster.add_argument("--json", action="store_true", help="Output failure clusters and negative constraints in JSON format")
+    p_cluster.add_argument("--task", default=None, help="Target task canonical ID to filter failure clusters")
