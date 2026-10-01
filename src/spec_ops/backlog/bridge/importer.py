@@ -229,9 +229,6 @@ class IssueImporter:
         m_mut = re.search(r"mutation\s+(?:testing\s+)?scope:\s*([^\n]+)", issue.description, re.IGNORECASE)
         if m_mut:
             meta["mutation_scope"] = m_mut.group(1).strip()
-        m_per = re.search(r"persona:\s*([^\n]+)", issue.description, re.IGNORECASE)
-        if m_per:
-            meta["persona"] = m_per.group(1).strip()
 
         clean_title = re.sub(r"[\r\n]+", " ", issue.title).strip() or "Untitled Task"
         meta["title"] = clean_title
