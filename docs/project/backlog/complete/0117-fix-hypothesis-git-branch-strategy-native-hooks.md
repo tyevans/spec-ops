@@ -1,7 +1,7 @@
 ---
 id: '0117'
 title: Constrain Hypothesis Git Branch Strategy in Native Hooks Property Tests
-status: Refined
+status: Complete
 dependencies:
 - TASK-0084
 governing_adrs:
@@ -13,6 +13,8 @@ governing_prds:
 governing_stories:
 - US-0068
 target_bc: scaffold
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:22:04.525759+00:00'
 ---
 
 # TASK-0117: Constrain Hypothesis Git Branch Strategy in Native Hooks Property Tests
