@@ -85,6 +85,11 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_receipt.add_argument("--out", default=None, help="Output receipt file path")
     p_receipt.add_argument("--verify", action="store_true", help="Verify cryptographic Customer UAT receipt integrity and git tree digest")
 
+    p_export = uat_subs.add_parser("export", help="Export standalone interactive Customer UAT acceptance matrix HTML report")
+    p_export.add_argument("--prd", required=True, help="Target PRD canonical ID (e.g. PRD-0003)")
+    p_export.add_argument("--format", choices=["html"], default="html", help="Export format (default: html)")
+    p_export.add_argument("--output", default=None, help="Output file path for exported matrix")
+
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural profile commands."""

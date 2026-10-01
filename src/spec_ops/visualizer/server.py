@@ -46,6 +46,20 @@ class VisualizerHandler(BaseHTTPRequestHandler):
             root = getattr(self.config, "root_dir", Path.cwd())
             steps = extract_frontdoor_steps(root, query=q)
             self._send_json(200, steps)
+        elif path in ("/api/uat/export", "/uat/export"):
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            prd_id = query_params.get("prd", [None])[0]
+            root = getattr(self.config, "root_dir", Path.cwd())
+            if prd_id:
+                from ..prd.uat_export import render_uat_matrix_html
+
+                try:
+                    html_doc, _ = render_uat_matrix_html(root, prd_id=prd_id)
+                    self._send_response_bytes(200, "text/html; charset=utf-8", html_doc.encode("utf-8"))
+                except Exception as exc:
+                    self._send_json(400, {"success": False, "error": str(exc)})
+            else:
+                self._send_json(400, {"success": False, "error": "Missing 'prd' parameter"})
         else:
             self.send_response(404)
             self.end_headers()

@@ -57,6 +57,7 @@ def render_studio_html() -> str:
     <div class="nav-tabs">
       <button class="tab-btn active" id="tabPrd" onclick="switchTab('prd')">PRDs & Features</button>
       <button class="tab-btn" id="tabStory" onclick="switchTab('story')">Story Studio</button>
+      <button class="tab-btn" id="btnExportUat" onclick="exportUatMatrix()">Export UAT Matrix</button>
     </div>
   </header>
 
@@ -318,6 +319,11 @@ def render_studio_html() -> str:
         success.style.display = "block";
         success.innerText = data.message;
       }
+    }
+
+    function exportUatMatrix() {
+      const prd = (document.getElementById("storyPrd") && document.getElementById("storyPrd").value) || "PRD-0003";
+      window.open("/api/uat/export?prd=" + encodeURIComponent(prd), "_blank");
     }
 
     loadFrontdoorSteps();

@@ -366,6 +366,15 @@ def dispatch_uat_command(
             out=getattr(args, "out", None),
             verify=getattr(args, "verify", False),
         )
+    if action == "export":
+        from .uat_export import handle_uat_export
+
+        return handle_uat_export(
+            config,
+            prd=args.prd,
+            fmt=getattr(args, "format", "html"),
+            output=getattr(args, "output", None),
+        )
 
     parser.parse_args(["prd", "uat", "--help"])
     return 0
