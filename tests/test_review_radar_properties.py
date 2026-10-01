@@ -5,6 +5,7 @@ Governed by ADR-0002, ADR-0003, ADR-0007, ADR-0009; PRD-0005; US-0106.
 
 from __future__ import annotations
 
+import keyword
 import re
 
 from hypothesis import given, settings
@@ -17,10 +18,10 @@ from spec_ops.core.review_radar import (
 
 # Valid python identifiers
 _public_ident = st.from_regex(r"[a-z][a-z0-9_]{1,10}", fullmatch=True).filter(
-    lambda s: not s.startswith("_") and s not in ("def", "class", "return", "pass", "import", "from", "for", "while", "if", "else", "try", "except")
+    lambda s: not s.startswith("_") and not keyword.iskeyword(s)
 )
 _private_ident = st.from_regex(r"_[a-z][a-z0-9_]{1,10}", fullmatch=True).filter(
-    lambda s: s.startswith("_") and not s.startswith("__")
+    lambda s: s.startswith("_") and not s.startswith("__") and not keyword.iskeyword(s)
 )
 
 
