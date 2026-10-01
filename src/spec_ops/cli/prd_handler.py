@@ -25,6 +25,16 @@ def handle_prd_command(
         parser.parse_args(["prd", "--help"])
         return 0
 
+    if action == "journey":
+        from ..prd.journey_map import handle_journey_command
+        fmt = "json" if getattr(args, "json_flag", False) else getattr(args, "format", "markdown")
+        return handle_journey_command(
+            config,
+            persona=getattr(args, "persona", None),
+            fmt=fmt,
+            output=getattr(args, "output", None),
+        )
+
     if action == "uat":
         from ..prd.uat_cli import dispatch_uat_command
         return dispatch_uat_command(args, config, parser)

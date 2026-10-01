@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from ..prd.journey_map import CustomerJourneyReport, JourneyMapEngine
 from ..prd.studio import (
     KNOWN_PERSONAS,
     commit_prd_specification,
@@ -14,6 +15,8 @@ from ..prd.studio import (
 )
 
 __all__ = [
+    "CustomerJourneyReport",
+    "JourneyMapEngine",
     "KNOWN_PERSONAS",
     "commit_prd_specification",
     "create_prd_draft",

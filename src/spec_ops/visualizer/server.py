@@ -60,6 +60,20 @@ class VisualizerHandler(BaseHTTPRequestHandler):
                     self._send_json(400, {"success": False, "error": str(exc)})
             else:
                 self._send_json(400, {"success": False, "error": "Missing 'prd' parameter"})
+        elif path in ("/api/prd/journey", "/api/journey", "/journey"):
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            persona_filter = query_params.get("persona", [None])[0]
+            fmt = query_params.get("format", ["json" if "api" in path else "html"])[0]
+            root = getattr(self.config, "root_dir", Path.cwd())
+            from ..prd.journey_map import JourneyMapEngine
+
+            engine = JourneyMapEngine(repo_root=root, config=self.config)
+            report = engine.correlate(persona_filter=persona_filter)
+            if fmt == "html":
+                html_doc = engine.generate_html(report)
+                self._send_response_bytes(200, "text/html; charset=utf-8", html_doc.encode("utf-8"))
+            else:
+                self._send_json(200, report.to_dict())
         else:
             self.send_response(404)
             self.end_headers()

@@ -90,6 +90,12 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_export.add_argument("--format", choices=["html"], default="html", help="Export format (default: html)")
     p_export.add_argument("--output", default=None, help="Output file path for exported matrix")
 
+    p_journey = prd_subs.add_parser("journey", help="Interactive Persona Customer Journey Map and Pain Point Matrix Visualizer")
+    p_journey.add_argument("--persona", default=None, help="Target persona name or ID")
+    p_journey.add_argument("--format", choices=["markdown", "html", "json"], default="markdown", help="Output format (markdown, html, json)")
+    p_journey.add_argument("--output", default=None, help="Output destination file path")
+    p_journey.add_argument("--json", dest="json_flag", action="store_true", help="Output journey map matrix as JSON")
+
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural profile commands."""

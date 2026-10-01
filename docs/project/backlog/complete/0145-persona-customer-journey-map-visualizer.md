@@ -1,7 +1,7 @@
 ---
 id: '0145'
 title: Interactive Persona Customer Journey Map and Pain Point Matrix Visualizer
-status: Refined
+status: Complete
 dependencies:
 - TASK-0043
 - TASK-0131

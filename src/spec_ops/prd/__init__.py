@@ -5,20 +5,25 @@ from .decomposer import PRDDecomposer
 from .discovery import interactive_new_prd
 from .discovery_workflow import discover_prd, shape_prd
 from .exporter import export_roadmap, render_roadmap_html, render_roadmap_svg
+from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecord, PersonaJourneyMap
 from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
 from .manager import PRDAuditResult, PRDManager
 from .traceability import PersonaCoverageReport, PersonaLineageRecord, PersonaTraceabilityEngine
 
 __all__ = [
+    "CustomerJourneyReport",
     "DeepPRDAuditor",
+    "JourneyMapEngine",
     "OutcomeAuditResult",
     "PRDAuditResult",
     "PRDDecomposer",
     "PRDLifecycleManager",
     "PRDLinter",
     "PRDManager",
+    "PainPointRecord",
     "PersonaCoverageReport",
+    "PersonaJourneyMap",
     "PersonaLineageRecord",
     "PersonaTraceabilityEngine",
     "calculate_outcome_coverage",
