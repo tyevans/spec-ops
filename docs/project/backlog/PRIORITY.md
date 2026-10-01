@@ -118,3 +118,4 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0114 (Proposed)**: [`0114-multi-agent-in-worktree-implementation-peer-consultation-and-verification`](proposed/0114-multi-agent-in-worktree-implementation-peer-consultation-and-verification.md)
 - **TASK-0115 (Proposed)**: [`0115-universal-multi-platform-skill-distribution-and-package-scaffolding`](proposed/0115-universal-multi-platform-skill-distribution-and-package-scaffolding.md)
 - **TASK-0116 (Refined)**: [`0116-fix-worktree-git-merge-lock-resolution`](refined/0116-fix-worktree-git-merge-lock-resolution.md)
+- **TASK-0125 (Complete)**: [`0125-autonomous-continuous-balancing-loop-and-tri-direc`](complete/0125-autonomous-continuous-balancing-loop-and-tri-direc.md)

@@ -30,6 +30,9 @@ This document defines the multi-agent coordination protocol used by the SpecOps 
      - Document the failure immediately as a high-priority bug in `docs/project/backlog/proposed/`.
      - Dispatch remediation to resolve the root cause before moving forward.
 
+5. **Autonomous Continuous Balancing Loop**:
+   - Maintain continuous development velocity across PRD value, BDD user journeys, ADR architectural invariants, and Diataxis documentation without waiting for manual step-by-step steering. Governed by [Continuous Balancing Loop](./balancing_loop.md).
+
 ---
 
 ## 2. Specialized Subagent Archetypes
