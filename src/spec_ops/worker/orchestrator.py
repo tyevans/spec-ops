@@ -13,6 +13,7 @@ from ..backlog.commands import ClaimTask, ReleaseTask
 from ..backlog.decider import TaskDecider, TaskState
 from ..backlog.queue import BacklogQueue, write_task_file
 from ..config.models import SpecOpsConfig
+from .fleet_pool import FleetPoolController, PoolConcurrencyConfig
 from .merge_lock import MergeLockManager
 
 if TYPE_CHECKING:
@@ -42,6 +43,8 @@ class BatchCycleOrchestrator:
         dry_run: bool = False,
         no_merge: bool = False,
         skip_review: bool = False,
+        adaptive: bool = False,
+        pool_controller: FleetPoolController | None = None,
     ):
         self.config = config
         self.repo_root = config.root_dir
@@ -56,6 +59,8 @@ class BatchCycleOrchestrator:
         self.dry_run = dry_run
         self.no_merge = no_merge
         self.skip_review = skip_review
+        self.adaptive = adaptive
+        self.pool_controller = pool_controller
 
         self._shutdown_requested = False
         self._orig_sigint: Any = None
@@ -136,21 +141,50 @@ class BatchCycleOrchestrator:
         failed: list[str] = []
         active_futures: dict[concurrent.futures.Future[WorkerResult], str] = {}
 
+        pool_max = self.max_concurrency
+        if self.adaptive:
+            if self.pool_controller is None:
+                self.pool_controller = FleetPoolController(
+                    PoolConcurrencyConfig(min_workers=1, max_workers=self.max_concurrency)
+                )
+            pool_max = max(self.max_concurrency, self.pool_controller.config.max_workers)
+
+        adaptive_desc = f", adaptive: True (max_pool: {pool_max})" if self.adaptive else ""
         print(
-            f"⚡ Starting multi-worker orchestrator (concurrency: {self.max_concurrency}, "
+            f"⚡ Starting multi-worker orchestrator (concurrency: {self.max_concurrency}{adaptive_desc}, "
             f"max_tasks: {self.max_tasks or 'unlimited/drain'})..."
         )
 
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_concurrency)
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=pool_max)
         try:
             while not self._shutdown_requested:
                 # 1. Calculate available capacity
+                if self.adaptive and self.pool_controller:
+                    evaluation = self.pool_controller.evaluate_capacity(
+                        active_workers=len(active_futures),
+                        target_path=self.repo_root / ".worktrees",
+                    )
+                    effective_concurrency = evaluation.concurrency_limit
+                    if evaluation.is_throttled:
+                        print(
+                            f"⚠️  Adaptive Fleet Pool Throttled: {evaluation.throttle_reason} "
+                            f"(Limit: {effective_concurrency}, Active: {len(active_futures)})"
+                        )
+                    else:
+                        print(
+                            f"📊 Adaptive Fleet Pool: CPU {evaluation.metrics.cpu_utilization_pct:.1f}%, "
+                            f"Mem {evaluation.metrics.memory_utilization_pct:.1f}% -> "
+                            f"Capacity: {effective_concurrency}/{self.pool_controller.config.max_workers}"
+                        )
+                else:
+                    effective_concurrency = self.max_concurrency
+
                 if self.max_tasks is not None:
                     accounted = len(succeeded) + len(failed) + len(active_futures)
                     remaining = max(0, self.max_tasks - accounted)
-                    slots = min(self.max_concurrency - len(active_futures), remaining)
+                    slots = min(max(0, effective_concurrency - len(active_futures)), remaining)
                 else:
-                    slots = self.max_concurrency - len(active_futures)
+                    slots = max(0, effective_concurrency - len(active_futures))
 
                 # 2. Query dynamic ready unblocked tasks
                 if slots > 0:

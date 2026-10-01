@@ -41,6 +41,13 @@ from .commits import (
     format_task_commit_message,
     parse_commit_trailers,
 )
+from .fleet_pool import (
+    FleetPoolController,
+    PoolConcurrencyConfig,
+    PoolEvaluation,
+    SystemMetrics,
+    sample_host_metrics,
+)
 from .guardrails import (
     detect_backlog_modifications,
     prepare_guardrailed_commit,
@@ -102,9 +109,12 @@ __all__ = [
     "ChangedFileInfo",
     "CommitProvenanceInfo",
     "DEFAULT_TOOLCHAIN_ENV_VARS",
+    "FleetPoolController",
     "HookEvaluationResult",
     "MergeLockManager",
     "PipelineResult",
+    "PoolConcurrencyConfig",
+    "PoolEvaluation",
     "PreCommitHookEvaluator",
     "PreflightPipeline",
     "PreflightStage",
@@ -113,6 +123,7 @@ __all__ = [
     "SecurityViolationError",
     "SpecConsultationReport",
     "StageResult",
+    "SystemMetrics",
     "TaskClaimer",
     "WorkerOrchestrationReport",
     "WorkerOrchestrator",
@@ -150,6 +161,7 @@ __all__ = [
     "render_review_brief",
     "run_spec_ops_health_hook",
     "run_worktree_preflight",
+    "sample_host_metrics",
     "sanitize_backlog_modifications",
     "sanitize_environment",
     "scan_worktree_file_length_violations",

@@ -1,7 +1,7 @@
 ---
 id: '0150'
 title: Dynamic Multi-Worker Fleet Concurrency and Adaptive Worktree Pool Sizing
-status: Refined
+status: Complete
 dependencies:
 - TASK-0081
 - TASK-0138

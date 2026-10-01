@@ -76,7 +76,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops worker rebase` | `[task-id] [--abort-on-conflict] [--dry-run] [--json]` | Autonomous worktree auto-rebase against main with conflict resolution |
 | `spec-ops orchestrate retrospect` | `[--log-dir LOG_DIR] [--dry-run] [--json]` | Analyze session artifacts and failure logs to categorize invariant breaches and synthesize proposed remediation tasks |
 | `spec-ops orchestrate health` | `[--log-dir LOG_DIR] [--json]` | Summarize orchestration health, pass/fail rates, stalled worktrees, and unaddressed bugs |
-| `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review]` | Run end-to-end autonomous development cycle |
+| `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review] [--adaptive]` | Run end-to-end autonomous development cycle |
 | `spec-ops rescue` | `[ACTION] [TASK_ID] [--list] [--complete] [--discard] [--reset] [--reason REASON] [--demote] [--prune] [--dry-run] [--action ACTION] [--file FILE] [--step STEP] [--only-failed] [--salvage]` | Inspect, triage, and recover stalled or failed autonomous worktrees, render quickstart cheatsheets, or reset worktree with failure memory |
 | `spec-ops rescue reset` | `<TASK_ID> --reason REASON [--demote]` | Safe worktree discard with anti-loop failure memory and task reset |
 | `spec-ops rescue salvage` | `<TASK_ID> --files FILES [FILES ...]` | Selectively salvage specified files from stalled worktree into clean rescue branch |

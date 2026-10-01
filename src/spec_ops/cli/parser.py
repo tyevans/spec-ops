@@ -226,6 +226,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_cycle.add_argument("--no-merge", action="store_true", help="Do not squash-merge branches to main")
     p_cycle.add_argument("--build-docs", action="store_true", help="Compile documentation static site after cycle")
     p_cycle.add_argument("--no-review", "--skip-review", dest="no_review", action="store_true", help="Skip architectural review step")
+    p_cycle.add_argument("--adaptive", action="store_true", help="Enable dynamic fleet concurrency and adaptive worktree pool sizing")
 
 
     # rescue

@@ -151,7 +151,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0147 (Complete)**: [`0147-worktree-auto-rebase-and-merge-conflict-resolver`](complete/0147-worktree-auto-rebase-and-merge-conflict-resolver.md)
 - **TASK-0148 (Complete)**: [`0148-workspace-watcher-and-incremental-graph-invalidation`](complete/0148-workspace-watcher-and-incremental-graph-invalidation.md)
 - **TASK-0149 (Complete)**: [`0149-cryptographic-release-verification-and-keyring-validator`](complete/0149-cryptographic-release-verification-and-keyring-validator.md)
-- **TASK-0150 (Refined)**: [`0150-dynamic-fleet-concurrency-and-pool-sizing`](refined/0150-dynamic-fleet-concurrency-and-pool-sizing.md)
+- **TASK-0150 (Complete)**: [`0150-dynamic-fleet-concurrency-and-pool-sizing`](complete/0150-dynamic-fleet-concurrency-and-pool-sizing.md)
 - **TASK-0151 (Refined)**: [`0151-ast-diagnostic-injector-for-worker-self-healing`](refined/0151-ast-diagnostic-injector-for-worker-self-healing.md)
 - **TASK-0152 (Refined)**: [`0152-web-prd-studio-client-sync-and-autosave`](refined/0152-web-prd-studio-client-sync-and-autosave.md)
 - **TASK-0153 (Refined)**: [`0153-modularity-debt-scoring-and-growth-telemetry`](refined/0153-modularity-debt-scoring-and-growth-telemetry.md)

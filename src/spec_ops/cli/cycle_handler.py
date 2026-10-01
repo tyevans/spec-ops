@@ -205,6 +205,7 @@ def handle_cycle_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
         dry_run=args.dry_run,
         no_merge=args.no_merge,
         skip_review=getattr(args, "no_review", False),
+        adaptive=getattr(args, "adaptive", False),
     )
     report = orchestrator.run()
     if report.tasks_failed:
