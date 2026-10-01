@@ -17,6 +17,13 @@ def handle_review_command(
 ) -> int:
     """Executes review subcommands including task sign-off and architectural review briefs."""
     action = getattr(args, "task_or_action", None) or getattr(args, "review_action", None)
+    if action == "radar":
+        from ..core.review_radar import run_review_radar
+
+        json_output = getattr(args, "json", False)
+        target_bc = getattr(args, "bc", None)
+        return run_review_radar(config.root_dir, json_output=json_output, target_bc=target_bc)
+
     if action == "sign":
         task_id = getattr(args, "sign_task_id", None) or getattr(args, "task_id", "")
         identity = getattr(args, "identity", "")

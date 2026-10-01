@@ -127,6 +127,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops audit proof` | `--deliverable DELIVERABLE [--manifest MANIFEST] [--out OUT] [--json]` | Generate self-contained Merkle inclusion proof for a single deliverable |
 | `spec-ops audit verify-proof` | `PROOF_FILE --root ROOT [--json]` | Verify Merkle inclusion proof against trusted root in offline execution |
 | `spec-ops review` | `[TASK_ID] [--identity IDENTITY] [--provenance]` | Generate structured architectural review brief or cryptographically sign review |
+| `spec-ops review radar` | `[--json] [--bc BC]` | Cross-context interface auditor and architectural review radar |
 | `spec-ops docs build` | `[--out OUT_DIR] [--base-url BASE_URL] [--include-visualizer]` | Compile Diataxis documentation static site and embedded 2D visualizer |
 | `spec-ops docs audit` | `[--dir DIR] [--strict]` | Audit Diataxis quadrant structure, CLI drift, and documentation code snippets |
 | `spec-ops docs check` | `[--dir DIR]` | Audit public CLI commands against Diataxis documentation and flag drift |

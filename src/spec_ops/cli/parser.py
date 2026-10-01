@@ -28,6 +28,7 @@ from .parser_subcommands import (
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
 from .parser_orchestrate import register_orchestrate_subparsers
 from .parser_persona import register_persona_subparsers
+from .parser_review import register_review_subparsers
 from .parser_task import register_task_subparsers
 
 
@@ -289,11 +290,7 @@ def build_parser() -> argparse.ArgumentParser:
     register_security_subparsers(subparsers)
 
     # review
-    p_rev = subparsers.add_parser("review", help="Architectural review and dual-custody human sign-offs")
-    p_rev.add_argument("task_or_action", nargs="?", default=None, help="Target task canonical ID (e.g. TASK-0015) or 'sign'")
-    p_rev.add_argument("sign_task_id", nargs="?", default=None, help="Target task ID when using 'sign'")
-    p_rev.add_argument("--identity", default=None, help="Authorized reviewer identity or key ID (e.g. 'Riley <riley@example.com>')")
-    p_rev.add_argument("--provenance", action="store_true", help="Audit commit provenance trailers and author distinction")
+    register_review_subparsers(subparsers)
 
     # task
     register_task_subparsers(subparsers)

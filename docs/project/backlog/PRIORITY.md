@@ -140,4 +140,4 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0136 (Complete)**: [`0136-selective-worktree-patch-takeover-and-partial-file-salvage`](complete/0136-selective-worktree-patch-takeover-and-partial-file-salvage.md)
 - **TASK-0137 (Complete)**: [`0137-living-release-notes-generator-and-changelog-publisher`](complete/0137-living-release-notes-generator-and-changelog-publisher.md)
 - **TASK-0138 (Complete)**: [`0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning`](complete/0138-proactive-worktree-disk-quota-monitor-and-orphan-pruning.md)
-- **TASK-0139 (Refined)**: [`0139-multi-agent-collaborative-review-radar`](refined/0139-multi-agent-collaborative-review-radar.md)
+- **TASK-0139 (Complete)**: [`0139-multi-agent-collaborative-review-radar`](complete/0139-multi-agent-collaborative-review-radar.md)
