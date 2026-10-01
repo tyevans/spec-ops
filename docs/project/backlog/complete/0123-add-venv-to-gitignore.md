@@ -1,8 +1,7 @@
 ---
 id: '0123'
 title: Add Virtual Environment .venv to Gitignore
-status: Proposed
-dependencies: []
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0003
@@ -11,7 +10,9 @@ governing_prds:
 governing_stories:
 - US-0068
 target_bc: scaffold
-unblocked: true
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:24:59.653760+00:00'
+mutation_scope: src/spec_ops/scaffold/diataxis.py
 ---
 
 # TASK-0123: Add Virtual Environment .venv to Gitignore
