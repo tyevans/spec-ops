@@ -65,7 +65,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops visualizer` | `[--serve] [--entity ENTITY] [--build OUT] [--port PORT]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
 | `spec-ops export roadmap` | `[--format {svg,html}] [-o OUTPUT] [--out OUTPUT] [--output OUTPUT] [--audience AUDIENCE] [--granularity GRANULARITY]` | Export executive roadmap vector visual or interactive presentation |
-| `spec-ops release notes` | `--milestone MILESTONE [--format {markdown,html}] [--branded] [-o OUTPUT] [--output OUTPUT]` | Generate customer-facing release notes from shipped PRD capabilities and passed user stories |
+| `spec-ops release notes` | `[PRD_ID] [--milestone MILESTONE] [--format {markdown,html,json}] [--branded] [-o OUTPUT] [--output OUTPUT] [--publish]` | Generate customer-facing release notes from shipped PRD capabilities and passed user stories |
 | `spec-ops milestone rollover` | `--from FROM_M --to TO_M [--dry-run] [--json]` | Transition uncompleted tasks from one milestone to another |
 | `spec-ops milestone plan` | `[--simulate] [--assign TASK=MILESTONE] [--save] [--json] [--non-interactive]` | Interactive milestone planning studio, workload balancing, and capacity simulation |
 | `spec-ops worker` | `[ACTION] [TASK_ID] [--task TASK_ID] [--auto] [--drain] [--max-concurrency N] [--max-tasks M] [--dry-run] [--no-merge] [--no-review] [--skip-review] [--worker-id WORKER_ID] [--claimant CLAIMANT] [--telemetry] [--json]` | Execute backlog task in isolated worktree with concurrent review, or monitor fleet telemetry |

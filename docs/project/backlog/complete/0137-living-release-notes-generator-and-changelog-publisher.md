@@ -1,7 +1,7 @@
 ---
 id: '0137'
 title: Living Release Notes Generator and Changelog Publisher
-status: Refined
+status: Complete
 dependencies:
 - TASK-0041
 - TASK-0112

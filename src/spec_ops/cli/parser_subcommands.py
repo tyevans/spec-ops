@@ -334,10 +334,12 @@ def register_release_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rel = subparsers.add_parser("release", help="Customer-facing release notes and changelog generation")
     rel_subs = p_rel.add_subparsers(dest="release_action", help="Release action")
     p_notes = rel_subs.add_parser("notes", help="Generate customer-facing release notes")
-    p_notes.add_argument("--milestone", required=True, help="Target milestone identifier (e.g. M1, Milestone 1)")
-    p_notes.add_argument("--format", choices=["markdown", "html"], default="markdown", help="Output format (markdown, html)")
-    p_notes.add_argument("--branded", action="store_true", default=False, help="Include branded styling and visualizer links")
+    p_notes.add_argument("prd_id", nargs="?", default=None, help="Target PRD identifier (e.g. PRD-0001)")
+    p_notes.add_argument("--milestone", default=None, help="Target milestone identifier (e.g. M1, Milestone 1)")
+    p_notes.add_argument("--format", choices=["markdown", "html", "json"], default="markdown", help="Output format")
+    p_notes.add_argument("--branded", action="store_true", default=False, help="Include branded styling")
     p_notes.add_argument("-o", "--output", default=None, help="Output file path")
+    p_notes.add_argument("--publish", action="store_true", default=False, help="Publish notes to changelog")
 def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers supply-chain security, verification, and sentinel commands."""
     p_sec = subparsers.add_parser("security", help="Supply-chain security, verification, and sandboxing")
@@ -370,11 +372,7 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
         default=3.7,
         help="Shannon entropy threshold (default: 3.7)",
     )
-    p_scan.add_argument(
-        "--json",
-        action="store_true",
-        help="Output results as structured JSON",
-    )
+    p_scan.add_argument("--json", action="store_true", help="Output results as structured JSON")
 
 
 from .parser_scaffold import register_scaffold_subparsers

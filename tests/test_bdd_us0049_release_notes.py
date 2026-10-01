@@ -273,3 +273,74 @@ def then_links_each_new_capability_to_pages_and_permalink(repo_context: dict[str
     # Links directly to Visualizer permalink
     assert "Visualizer Permalink" in html_content
     assert "https://specops.github.io/spec-ops/visualizer/#tab=prds&amp;entity=PRD-0001" in html_content or "#tab=prds" in html_content
+
+
+@given('a shipped PRD "PRD-0001" with verified checkable outcomes and linked persona "Taylor"')
+def given_shipped_prd_with_outcomes_and_taylor(repo_context: dict[str, Any]) -> None:
+    repo = repo_context["repo"]
+    prd_file = repo / "docs" / "project" / "product" / "shipped" / "prd-0001-autonomous-engine.md"
+    assert prd_file.is_file()
+    content = prd_file.read_text(encoding="utf-8")
+    assert "target_persona: Taylor" in content
+    assert "## Checkable Outcomes" in content
+
+
+@when('the product lead executes "spec-ops release notes PRD-0001"')
+def when_execute_release_notes_prd(repo_context: dict[str, Any]) -> None:
+    res = run_spec_ops(repo_context["repo"], ["release", "notes", "PRD-0001"])
+    assert res.returncode == 0, f"Command failed: {res.stderr}\n{res.stdout}"
+    repo_context["prd_notes_output"] = res.stdout
+
+
+@then("customer-facing release notes are generated")
+def then_customer_facing_release_notes_generated(repo_context: dict[str, Any]) -> None:
+    dest = repo_context["repo"] / "docs" / "releases" / "prd-0001-release-notes.md"
+    assert dest.is_file(), f"Expected release notes file at {dest}"
+    content = dest.read_text(encoding="utf-8")
+    assert "# Release Notes:" in content
+    assert "PRD-0001" in content
+
+
+@then("the notes group changes by target persona benefits without internal git commit jargon")
+def then_notes_group_by_persona_without_jargon(repo_context: dict[str, Any]) -> None:
+    dest = repo_context["repo"] / "docs" / "releases" / "prd-0001-release-notes.md"
+    content = dest.read_text(encoding="utf-8")
+    assert "## Target Persona Benefits" in content
+    assert "Taylor" in content
+    assert "chore:" not in content
+    assert "spike:" not in content
+    assert "refactor:" not in content
+    assert "TASK-0001" not in content
+
+
+@given('a shipped PRD "PRD-0001"')
+def given_shipped_prd(repo_context: dict[str, Any]) -> None:
+    repo = repo_context["repo"]
+    prd_file = repo / "docs" / "project" / "product" / "shipped" / "prd-0001-autonomous-engine.md"
+    assert prd_file.is_file()
+
+
+@when('the user runs "spec-ops release notes PRD-0001 --format html"')
+def when_run_release_notes_prd_html(repo_context: dict[str, Any]) -> None:
+    res = run_spec_ops(repo_context["repo"], ["release", "notes", "PRD-0001", "--format", "html"])
+    assert res.returncode == 0, f"Command failed: {res.stderr}\n{res.stdout}"
+    repo_context["prd_html"] = res.stdout
+
+
+@then("a standalone HTML release announcement is produced")
+def then_standalone_html_produced(repo_context: dict[str, Any]) -> None:
+    dest = repo_context["repo"] / "docs" / "releases" / "prd-0001-release-notes.html"
+    assert dest.is_file(), f"Expected HTML file at {dest}"
+    html_content = dest.read_text(encoding="utf-8")
+    assert "<!DOCTYPE html>" in html_content
+    assert "Release Announcement:" in html_content
+    assert "PRD-0001" in html_content
+
+
+@then("includes verifiable customer UAT checkmarks")
+def then_includes_verifiable_customer_uat_checkmarks(repo_context: dict[str, Any]) -> None:
+    dest = repo_context["repo"] / "docs" / "releases" / "prd-0001-release-notes.html"
+    assert dest.is_file(), f"Expected HTML file at {dest}"
+    html_content = dest.read_text(encoding="utf-8")
+    assert "Verifiable Customer UAT Checkmarks" in html_content
+    assert "✓ Verified UAT" in html_content

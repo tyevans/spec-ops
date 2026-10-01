@@ -37,3 +37,32 @@ The HTML template provides:
 - Standalone CSS styling compatible with email clients and web views.
 - Deep links connecting each new capability directly to the live GitHub Pages documentation.
 - Visualizer permalinks allowing stakeholders to explore the capability in the interactive 2D graph visualizer.
+
+---
+
+## 3. Generating Release Notes from a Shipped PRD
+
+To compile customer-facing release notes directly from a shipped or accepted PRD:
+
+```bash
+uv run spec-ops release notes PRD-0001 --format markdown
+```
+
+This groups benefits by target persona (`Taylor`, `Alex`, `Jordan`, `Riley`) and formats checkable outcomes as verifiable customer UAT checkmarks without internal git commit jargon.
+
+### Publishing to Project Changelog
+
+To update the living project changelog at `docs/explanation/changelog.md` and save dedicated release notes under `docs/releases/`:
+
+```bash
+uv run spec-ops release notes PRD-0001 --publish
+```
+
+### Exporting Multi-Format Output
+
+Release notes can be exported in GitHub Markdown, self-contained HTML, or structured JSON:
+
+```bash
+uv run spec-ops release notes PRD-0001 --format html
+uv run spec-ops release notes PRD-0001 --format json
+```
