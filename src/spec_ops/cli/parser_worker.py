@@ -79,3 +79,9 @@ def register_worker_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rebase.add_argument("--abort-on-conflict", action="store_true", default=True, help="Safely abort rebase and generate HANDOVER.md on conflict (default: True)")
     p_rebase.add_argument("--dry-run", action="store_true", help="Simulate rebase without modifying working directory")
     p_rebase.add_argument("--json", action="store_true", help="Output rebase report as JSON")
+
+    p_diag = worker_subs.add_parser("diagnose", help="AST self-healing diagnostic analysis of preflight failures and retry prompt synthesis")
+    p_diag.add_argument("--log", dest="log_file", default=None, metavar="LOG", help="Path to preflight failure log file")
+    p_diag.add_argument("--text", dest="trace_text", default=None, metavar="TEXT", help="Raw failure traceback or preflight output text")
+    p_diag.add_argument("--json", action="store_true", help="Output diagnostic cards as JSON")
+

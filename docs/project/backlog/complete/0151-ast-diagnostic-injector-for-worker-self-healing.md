@@ -1,7 +1,7 @@
 ---
 id: '0151'
 title: AST Self-Healing Diagnostic Injector for In-Worktree Preflight Recovery
-status: Refined
+status: Complete
 dependencies:
 - TASK-0085
 - TASK-0114

@@ -104,8 +104,48 @@ def handle_worker_rebase(args: argparse.Namespace, config: SpecOpsConfig) -> int
     return 0 if result.success else 1
 
 
+def handle_worker_diagnose(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+    """Handles 'spec-ops worker diagnose' execution."""
+    from ..worker.diagnostic_injector import DiagnosticInjector
+
+    log_file = getattr(args, "log_file", None)
+    trace_text = getattr(args, "trace_text", None)
+    as_json = getattr(args, "json", False)
+
+    content = ""
+    if trace_text:
+        content = trace_text
+    elif log_file:
+        p = Path(log_file)
+        if not p.exists():
+            print(f"Error: Log file not found: {log_file}", file=sys.stderr)
+            return 1
+        content = p.read_text(encoding="utf-8", errors="ignore")
+    else:
+        if not sys.stdin.isatty():
+            content = sys.stdin.read()
+        else:
+            preflight_log = Path(".preflight.log")
+            if preflight_log.exists():
+                content = preflight_log.read_text(encoding="utf-8", errors="ignore")
+
+    cards = DiagnosticInjector.diagnose_failure(content, repo_root=Path.cwd())
+
+    if as_json:
+        print(json.dumps([c.to_dict() for c in cards], indent=2))
+        return 0
+
+    if not cards:
+        print("✅ No diagnostic failure patterns identified in provided input.")
+        return 0
+
+    prompt = DiagnosticInjector.synthesize_retry_prompt(cards)
+    print(prompt)
+    return 0
+
+
 def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
-    """Dispatches worker command to orchestrator, rebase, or legacy cycle_handler."""
+    """Dispatches worker command to orchestrator, rebase, diagnose, or legacy cycle_handler."""
     worker_action = getattr(args, "worker_action", None)
     action_or_task = getattr(args, "action_or_task", None)
 
@@ -115,6 +155,10 @@ def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     if worker_action == "rebase" or (isinstance(action_or_task, str) and action_or_task.lower() == "rebase"):
         return handle_worker_rebase(args, config)
 
+    if worker_action == "diagnose" or (isinstance(action_or_task, str) and action_or_task.lower() == "diagnose"):
+        return handle_worker_diagnose(args, config)
+
     from .cycle_handler import handle_worker_command as handle_legacy_worker
 
     return handle_legacy_worker(args, config)
+

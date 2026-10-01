@@ -152,7 +152,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0148 (Complete)**: [`0148-workspace-watcher-and-incremental-graph-invalidation`](complete/0148-workspace-watcher-and-incremental-graph-invalidation.md)
 - **TASK-0149 (Complete)**: [`0149-cryptographic-release-verification-and-keyring-validator`](complete/0149-cryptographic-release-verification-and-keyring-validator.md)
 - **TASK-0150 (Complete)**: [`0150-dynamic-fleet-concurrency-and-pool-sizing`](complete/0150-dynamic-fleet-concurrency-and-pool-sizing.md)
-- **TASK-0151 (Refined)**: [`0151-ast-diagnostic-injector-for-worker-self-healing`](refined/0151-ast-diagnostic-injector-for-worker-self-healing.md)
+- **TASK-0151 (Complete)**: [`0151-ast-diagnostic-injector-for-worker-self-healing`](complete/0151-ast-diagnostic-injector-for-worker-self-healing.md)
 - **TASK-0152 (Refined)**: [`0152-web-prd-studio-client-sync-and-autosave`](refined/0152-web-prd-studio-client-sync-and-autosave.md)
 - **TASK-0153 (Refined)**: [`0153-modularity-debt-scoring-and-growth-telemetry`](refined/0153-modularity-debt-scoring-and-growth-telemetry.md)
 - **TASK-0154 (Refined)**: [`0154-orchestration-event-streaming-bridge`](refined/0154-orchestration-event-streaming-bridge.md)

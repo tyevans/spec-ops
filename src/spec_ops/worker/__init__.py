@@ -9,6 +9,10 @@ from .auto_rebase import (
     AutoRebaseResult,
     auto_rebase_worktree,
 )
+from .diagnostic_injector import (
+    DiagnosticCard,
+    DiagnosticInjector,
+)
 from .ci_repair import (
     ci_heal_task,
     extract_failure_trace,
@@ -109,6 +113,8 @@ __all__ = [
     "ChangedFileInfo",
     "CommitProvenanceInfo",
     "DEFAULT_TOOLCHAIN_ENV_VARS",
+    "DiagnosticCard",
+    "DiagnosticInjector",
     "FleetPoolController",
     "HookEvaluationResult",
     "MergeLockManager",
