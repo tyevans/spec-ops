@@ -1,8 +1,7 @@
 ---
 id: '0124'
 title: Filter Existing Filesystem Directories in Init Wizard Property Tests
-status: Proposed
-dependencies: []
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0003
@@ -12,8 +11,9 @@ governing_prds:
 governing_stories:
 - US-0068
 target_bc: scaffold
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T00:52:11.623827+00:00'
 mutation_scope: src/spec_ops/scaffold/wizard.py
-unblocked: true
 ---
 
 # TASK-0124: Filter Existing Filesystem Directories in Init Wizard Property Tests
