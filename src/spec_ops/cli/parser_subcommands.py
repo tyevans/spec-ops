@@ -215,6 +215,14 @@ def register_queue_subparsers(subparsers: argparse._SubParsersAction) -> None:
         help="Time window for completed throughput analysis (default: 24h)",
     )
 
+    p_q_reorder = queue_subs.add_parser(
+        "reorder",
+        help="Deterministic topological backlog re-ordering and multi-criteria priority scoring",
+    )
+    p_q_reorder.add_argument("--dry-run", action="store_true", help="Preview re-ordering without modifying PRIORITY.md")
+    p_q_reorder.add_argument("--topological", action="store_true", help="Enforce strict topological ordering to eliminate priority inversions")
+    p_q_reorder.add_argument("--by-weights", action="store_true", help="Apply multi-criteria weighted scoring (milestone, blockers, risk)")
+    p_q_reorder.add_argument("--json", action="store_true", help="Output re-ranking results as structured JSON")
 
 
 def register_spike_subparsers(subparsers: argparse._SubParsersAction) -> None:

@@ -276,6 +276,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_b_swp.add_argument("--window", default="24h", help="Time window for completed throughput analysis (default: 24h)")
     p_b_swp.add_argument("--reclaim-stalled", action="store_true", help="Flag and reclaim stalled worker claims")
 
+    p_b_reorder = backlog_subs.add_parser(
+        "reorder",
+        help="Deterministic topological backlog re-ordering and multi-criteria priority scoring",
+    )
+    p_b_reorder.add_argument("--dry-run", action="store_true", help="Preview re-ordering without modifying PRIORITY.md")
+    p_b_reorder.add_argument("--topological", action="store_true", help="Enforce strict topological ordering to eliminate priority inversions")
+    p_b_reorder.add_argument("--by-weights", action="store_true", help="Apply multi-criteria weighted scoring (milestone, blockers, risk)")
+    p_b_reorder.add_argument("--json", action="store_true", help="Output re-ranking results as structured JSON")
 
     # report
     p_report = subparsers.add_parser("report", help="Executive milestone reports, burndown velocity, and presentation decks")

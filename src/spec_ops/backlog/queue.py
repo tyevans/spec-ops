@@ -80,7 +80,10 @@ def write_task_file(task: Task) -> Path:
         meta["claimed_at"] = task.claimed_at
     if getattr(task, "timestamp", ""):
         meta["timestamp"] = task.timestamp
-
+    if getattr(task, "pinned", False):
+        meta["pinned"] = True
+    if getattr(task, "priority_pin", None) is not None:
+        meta["priority_pin"] = task.priority_pin
 
     yaml_block = yaml.dump(meta, sort_keys=False).strip()
     clean_body = task.body.strip()

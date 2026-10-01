@@ -167,6 +167,16 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         completed_at=str(meta.get("completed_at", "")),
         claimed_at=str(meta.get("claimed_at", "")),
         timestamp=str(meta.get("timestamp", "")),
+        pinned=bool(meta.get("pinned", False) or meta.get("priority_pin") is not None),
+        priority_pin=(
+            int(meta["priority_pin"])
+            if meta.get("priority_pin") is not None and str(meta["priority_pin"]).isdigit()
+            else (
+                meta["pinned"]
+                if isinstance(meta.get("pinned"), int) and not isinstance(meta.get("pinned"), bool)
+                else None
+            )
+        ),
     )
 
 

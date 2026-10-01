@@ -98,7 +98,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0066 (Complete)**: [`0066-backlog-health-diagnostics-and-cross-process-locking`](complete/0066-backlog-health-diagnostics-and-cross-process-locking.md)
 - **TASK-0067 (Complete)**: [`0067-daily-standup-digest-and-external-tracker-bridge`](complete/0067-daily-standup-digest-and-external-tracker-bridge.md)
 - **TASK-0105 (Refined)**: [`0105-stalled-worker-claim-reclamation-and-lease-heartbeat`](refined/0105-stalled-worker-claim-reclamation-and-lease-heartbeat.md)
-- **TASK-0098 (Refined)**: [`0098-deterministic-multi-criteria-priority-re-ranking`](refined/0098-deterministic-multi-criteria-priority-re-ranking.md)
+- **TASK-0098 (Complete)**: [`0098-deterministic-multi-criteria-priority-re-ranking`](complete/0098-deterministic-multi-criteria-priority-re-ranking.md)
 - **TASK-0099 (Refined)**: [`0099-automated-definition-of-ready-gatekeeper`](refined/0099-automated-definition-of-ready-gatekeeper.md)
 - **TASK-0055 (Refined)**: [`0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor`](refined/0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor.md)
 - **TASK-0054 (Complete)**: [`0054-selective-patch-salvage-safe-reset-and-anti-loop-memory`](complete/0054-selective-patch-salvage-safe-reset-and-anti-loop-memory.md)

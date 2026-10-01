@@ -79,11 +79,13 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops queue monitor` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
 | `spec-ops queue doctor` | `[--fix] [--repair] [--json] [--dir DIR]` | Audit backlog health, dangling dependencies, and index drift with automated self-healing repair |
 | `spec-ops queue digest` | `[--format FORMAT] [--window WINDOW]` | Generate automated daily standup curation digest |
+| `spec-ops queue reorder` | `[--dry-run] [--topological] [--by-weights] [--json]` | Deterministic topological backlog re-ordering and multi-criteria priority scoring |
 | `spec-ops backlog` | `[--once]` | Backlog flow monitor, buffer telemetry, and bottleneck detection |
 | `spec-ops backlog flow` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |
 | `spec-ops backlog doctor` | `[--fix] [--repair] [--json] [--dir DIR]` | Audit backlog health, dangling dependencies, and index drift with automated self-healing repair |
 | `spec-ops backlog sweep` | `[--format FORMAT] [--window WINDOW] [--reclaim-stalled]` | Daily standup curation digest and backlog sweep |
+| `spec-ops backlog reorder` | `[--dry-run] [--topological] [--by-weights] [--json]` | Deterministic topological backlog re-ordering and multi-criteria priority scoring |
 | `spec-ops report burndown` | `[--milestone MILESTONE] [--format {deck,html,digest}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone burndown velocity and presentation slide deck export |
 | `spec-ops report milestone` | `[--milestone MILESTONE] [--format {digest,deck,html}] [-o OUTPUT] [--output OUTPUT] [--check-alignment]` | Milestone executive briefing digest and scope alignment |
 | `spec-ops task create` | `[--title TITLE] [--bc TARGET_BC] [--prd PRD] [--story STORY] [--adr ADR] [--dependencies/--deps DEPS] [--stage STAGE] [--non-interactive]` | Scaffold a new PMaC task with Definition of Ready scaffolding |

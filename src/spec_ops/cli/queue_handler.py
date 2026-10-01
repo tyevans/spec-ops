@@ -252,6 +252,60 @@ def handle_queue_command(
         print(digest_output)
         return 0
 
+    if action == "reorder":
+        from ..backlog.reranker import BacklogReranker
+
+        dry_run = getattr(args, "dry_run", False)
+        topological = getattr(args, "topological", False)
+        by_weights = getattr(args, "by_weights", False)
+        if not topological and not by_weights:
+            by_weights = True
+            topological = True
+        elif by_weights:
+            topological = True
+
+        reranker = BacklogReranker(config.backlog_dir)
+        ok, msg, result = reranker.apply(
+            dry_run=dry_run,
+            by_weights=by_weights,
+            topological=topological,
+        )
+
+        if getattr(args, "json", False):
+            payload = result.to_dict()
+            payload["success"] = ok
+            payload["message"] = msg
+            payload["dry_run"] = dry_run
+            print(json.dumps(payload, indent=2))
+            return 0 if ok else 1
+
+        if not ok:
+            print(f"❌ {msg}", file=sys.stderr)
+            return 1
+
+        if result.inversions:
+            console.print(f"⚠️  [bold yellow]Detected {len(result.inversions)} priority inversion(s):[/bold yellow]")
+            for inv in result.inversions:
+                console.print(f"   • {inv}")
+
+        if dry_run:
+            console.print(f"🔍 [bold cyan]{msg}[/bold cyan]")
+            table = Table(title="Proposed Backlog Priority Order (Dry Run)", expand=True)
+            table.add_column("Rank", style="bold cyan")
+            table.add_column("Task ID", style="bold white")
+            table.add_column("Title", style="white")
+            table.add_column("Status", style="yellow")
+            table.add_column("Score", style="green")
+            for idx, t in enumerate(result.ordered_tasks, start=1):
+                sc = result.scores.get(t.canonical_id)
+                score_str = f"{sc.total_score:.1f}" if sc else "-"
+                table.add_row(str(idx), t.canonical_id, t.title, t.status, score_str)
+            console.print(table)
+            return 0
+
+        console.print(f"✅ [bold green]{msg}[/bold green]")
+        return 0
+
     parser.parse_args(["queue", "--help"])
 
     return 0

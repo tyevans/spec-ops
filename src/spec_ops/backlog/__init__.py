@@ -34,6 +34,14 @@ from .reconciler import (
     ReconciliationDiff,
     ReconciliationResult,
 )
+from .reranker import (
+    BacklogReranker,
+    PriorityInversion,
+    ReorderResult,
+    ScoringWeights,
+    TaskScoreBreakdown,
+    calculate_priority_score,
+)
 from .reviewer import ReviewResult, TaskReviewEngine
 from .slicer import AutonomousTaskSlicer, TaskSliceResult
 from .unblocker import (
@@ -53,6 +61,7 @@ __all__ = [
     "BacklogDoctor",
     "BacklogDoctorReport",
     "BacklogQueue",
+    "BacklogReranker",
     "BacklogWorkerEngine",
     "CascadeResult",
     "ClaimTask",
@@ -64,6 +73,7 @@ __all__ = [
     "HealthChecker",
     "InferenceCurationResult",
     "InferenceCurator",
+    "PriorityInversion",
     "ProposeTask",
     "ReconciliationChange",
     "ReconciliationDiff",
@@ -71,9 +81,13 @@ __all__ = [
     "RecordPreflight",
     "RefineTask",
     "ReleaseTask",
+    "ReorderResult",
     "ReviewResult",
     "StandupDigest",
     "generate_standup_digest",
+    "ScoringWeights",
+    "TaskScoreBreakdown",
+    "calculate_priority_score",
     "run_backlog_doctor",
     "TaskClaimed",
     "TaskCompleted",

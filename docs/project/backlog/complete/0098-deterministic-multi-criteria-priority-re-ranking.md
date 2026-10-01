@@ -1,7 +1,7 @@
 ---
 id: 0098
 title: Deterministic Multi-Criteria Priority Re-Ranking and Topological Backlog Ordering
-status: Refined
+status: Complete
 dependencies:
 - TASK-0065
 governing_adrs:

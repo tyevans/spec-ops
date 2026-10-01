@@ -98,7 +98,8 @@ class Task:
     completed_at: str = ""
     claimed_at: str = ""
     timestamp: str = ""
-
+    pinned: bool = False
+    priority_pin: int | None = None
 
     @property
     def canonical_id(self) -> str:
