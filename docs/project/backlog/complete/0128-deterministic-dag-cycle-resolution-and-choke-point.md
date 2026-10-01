@@ -1,7 +1,7 @@
 ---
 id: 0128
 title: Deterministic DAG Cycle Resolution and Choke Point Pruning Engine
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0017
 governing_prds:
@@ -23,4 +23,3 @@ Task TASK-0128 implements Deterministic DAG Cycle Resolution and Choke Point Pru
 1. Public interfaces or standard domain contracts implemented.
 2. Verified via automated blackbox tests without private backdoor manipulation.
 3. All new source files strictly under 500 lines.
-

@@ -17,6 +17,11 @@ from ..core.topology import (
     compute_execution_tiers,
     detect_cycles,
 )
+from ..core.cycle_resolver import (
+    calculate_choke_points,
+    format_choke_points,
+    resolve_cyclic_components,
+)
 
 
 def _load_graph(config: SpecOpsConfig) -> tuple[Any, DirectedGraph]:
@@ -71,8 +76,12 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
     if action == "cycles":
         fmt = getattr(args, "format", "text")
         is_json = fmt == "json" or getattr(args, "json", False)
+        resolve = getattr(args, "resolve", False)
+        prune_chokepoints = getattr(args, "prune_chokepoints", False)
         data, graph = _load_graph(config)
         cycles = detect_cycles(graph)
+        resolutions = resolve_cyclic_components(graph) if resolve else []
+        choke_points = calculate_choke_points(graph) if prune_chokepoints else []
 
         if is_json:
             out = {
@@ -90,17 +99,67 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
                     for c in cycles
                 ],
             }
+            if resolve:
+                out["resolution"] = {
+                    "all_feedback_edges": [
+                        list(e) for r in resolutions for e in r.feedback_edges
+                    ],
+                    "all_remediations": [
+                        rem for r in resolutions for rem in r.remediations
+                    ],
+                    "resolved_acyclic": True,
+                    "resolutions": [
+                        {
+                            "scc": r.scc,
+                            "cycle_path": r.cycle_path,
+                            "feedback_edges": [list(e) for e in r.feedback_edges],
+                            "remediations": r.remediations,
+                        }
+                        for r in resolutions
+                    ],
+                }
+            if prune_chokepoints:
+                out["choke_points"] = [
+                    {
+                        "node_id": cp.node_id,
+                        "downstream_impact": cp.downstream_impact,
+                        "critical_path_delay": cp.critical_path_delay,
+                        "in_degree": cp.in_degree,
+                        "out_degree": cp.out_degree,
+                        "decoupling_seams": cp.decoupling_seams,
+                    }
+                    for cp in choke_points
+                ]
             print(json.dumps(out, indent=2))
             return 1 if cycles else 0
 
         if not cycles:
             print("Traceability Invariant Met: Zero dependency cycles detected.")
+            if prune_chokepoints:
+                for line in format_choke_points(choke_points):
+                    print(line)
             return 0
 
-        for c in cycles:
-            print(f"Cyclic Backlog Dependency Detected: Strongly Connected Component of size {c.size}")
-            print(f"Directed cycle path: {c.path_str}")
-            print(f"Actionable suggestion: {c.remediation}.")
+        if resolve:
+            for r in resolutions:
+                print(f"Cyclic Backlog Dependency Detected: Strongly Connected Component of size {r.size}")
+                print(f"Directed cycle path: {r.path_str}")
+                print(f"Minimal feedback edge: ({r.feedback_edge[0]}, {r.feedback_edge[1]})")
+                print(f"Actionable suggestion: {r.remediation}.")
+                if len(r.feedback_edges) > 1:
+                    print("Additional feedback edges to break SCC:")
+                    for edge in r.feedback_edges[1:]:
+                        print(f"  - ({edge[0]}, {edge[1]}): Break cycle by removing dependency from {edge[0]} to {edge[1]}")
+        else:
+            for c in cycles:
+                print(f"Cyclic Backlog Dependency Detected: Strongly Connected Component of size {c.size}")
+                print(f"Directed cycle path: {c.path_str}")
+                print(f"Actionable suggestion: {c.remediation}.")
+
+        if prune_chokepoints:
+            for line in format_choke_points(choke_points):
+                print(line)
+
         return 1
 
     if action in ("sort", "order"):

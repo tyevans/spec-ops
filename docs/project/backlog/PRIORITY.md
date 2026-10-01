@@ -121,6 +121,6 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0125 (Complete)**: [`0125-autonomous-continuous-balancing-loop-and-tri-direc`](complete/0125-autonomous-continuous-balancing-loop-and-tri-direc.md)
 - **TASK-0126 (Complete)**: [`0126-cryptographic-customer-uat-receipt-generation-and-`](complete/0126-cryptographic-customer-uat-receipt-generation-and-.md)
 - **TASK-0127 (Complete)**: [`0127-supply-chain-lockfile-mutation-sentinel-and-pre-ex`](complete/0127-supply-chain-lockfile-mutation-sentinel-and-pre-ex.md)
-- **TASK-0128 (Refined)**: [`0128-deterministic-dag-cycle-resolution-and-choke-point`](refined/0128-deterministic-dag-cycle-resolution-and-choke-point.md)
+- **TASK-0128 (Complete)**: [`0128-deterministic-dag-cycle-resolution-and-choke-point`](complete/0128-deterministic-dag-cycle-resolution-and-choke-point.md)
 - **TASK-0129 (Refined)**: [`0129-cryptographic-merkle-audit-proof-generator-and-par`](refined/0129-cryptographic-merkle-audit-proof-generator-and-par.md)
 - **TASK-0130 (Refined)**: [`0130-real-time-secret-scanning-pre-commit-hook-and-entr`](refined/0130-real-time-secret-scanning-pre-commit-hook-and-entr.md)

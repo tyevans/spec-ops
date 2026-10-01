@@ -48,6 +48,16 @@ from .topology import (
     kahns_topological_sort,
     tarjan_scc,
 )
+from .cycle_resolver import (
+    ChokePoint,
+    CycleResolution,
+    calculate_choke_points,
+    find_minimal_feedback_arc_set,
+    format_choke_points,
+    format_cycle_resolutions,
+    resolve_cyclic_components,
+    suggest_decoupling_seams,
+)
 from .watcher import WorkspaceWatcher
 
 __all__ = [
@@ -79,6 +89,14 @@ __all__ = [
     "BlastRadiusResult",
     "tarjan_scc",
     "detect_cycles",
+    "CycleResolution",
+    "ChokePoint",
+    "find_minimal_feedback_arc_set",
+    "resolve_cyclic_components",
+    "calculate_choke_points",
+    "suggest_decoupling_seams",
+    "format_cycle_resolutions",
+    "format_choke_points",
     "kahns_topological_sort",
     "compute_execution_tiers",
     "compute_blast_radius",

@@ -34,7 +34,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops stats` | `[--cache] [--persona-coverage]` | Report project statistics, persona coverage distribution, and entity counts |
 | `spec-ops parse` | `PATH` | Parse specification file with resilient AST diagnostics |
 | `spec-ops graph compile` | `[--incremental] [--json] [--force-cold]` | Compile repository relational knowledge graph backed by content-addressed cache |
-| `spec-ops graph cycles` | `[--format {text,json}] [--json]` | Deterministic cycle detection via Tarjan SCC |
+| `spec-ops graph cycles` | `[--format {text,json}] [--json] [--resolve] [--prune-chokepoints]` | Deterministic cycle detection via Tarjan SCC |
 | `spec-ops graph sort` | `[--type TYPE]` | Deterministic topological backlog execution sorting |
 | `spec-ops graph order` | `[--type TYPE]` | Deterministic topological backlog execution ordering |
 | `spec-ops graph path` | `--from ORIGIN --to DEST` | Reachability pathfinding and lineage tracing |
