@@ -16,6 +16,10 @@ governing_stories:
 - US-0053
 - US-0054
 target_bc: security
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-01T18:25:44.720342+00:00'
+has_signed_commits: true
+commit_signature_status: SIGNED
 ---
 
 # TASK-0155: Shannon Entropy Secret Scanner Rule Plugin Engine and Custom Token Defenses
