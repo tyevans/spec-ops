@@ -1,7 +1,7 @@
 ---
 id: '0126'
 title: Cryptographic Customer UAT Receipt Generation and Verification CLI
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0014
 governing_prds:
@@ -23,4 +23,3 @@ Task TASK-0126 implements Cryptographic Customer UAT Receipt Generation and Veri
 1. Public interfaces or standard domain contracts implemented.
 2. Verified via automated blackbox tests without private backdoor manipulation.
 3. All new source files strictly under 500 lines.
-

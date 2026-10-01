@@ -119,6 +119,6 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0115 (Proposed)**: [`0115-universal-multi-platform-skill-distribution-and-package-scaffolding`](proposed/0115-universal-multi-platform-skill-distribution-and-package-scaffolding.md)
 - **TASK-0116 (Complete)**: [`0116-fix-worktree-git-merge-lock-resolution`](complete/0116-fix-worktree-git-merge-lock-resolution.md)
 - **TASK-0125 (Complete)**: [`0125-autonomous-continuous-balancing-loop-and-tri-direc`](complete/0125-autonomous-continuous-balancing-loop-and-tri-direc.md)
-- **TASK-0126 (Refined)**: [`0126-cryptographic-customer-uat-receipt-generation-and-`](refined/0126-cryptographic-customer-uat-receipt-generation-and-.md)
+- **TASK-0126 (Complete)**: [`0126-cryptographic-customer-uat-receipt-generation-and-`](complete/0126-cryptographic-customer-uat-receipt-generation-and-.md)
 - **TASK-0127 (Refined)**: [`0127-supply-chain-lockfile-mutation-sentinel-and-pre-ex`](refined/0127-supply-chain-lockfile-mutation-sentinel-and-pre-ex.md)
 - **TASK-0128 (Refined)**: [`0128-deterministic-dag-cycle-resolution-and-choke-point`](refined/0128-deterministic-dag-cycle-resolution-and-choke-point.md)

@@ -25,6 +25,10 @@ def handle_prd_command(
         parser.parse_args(["prd", "--help"])
         return 0
 
+    if action == "uat":
+        from ..prd.uat_cli import dispatch_uat_command
+        return dispatch_uat_command(args, config, parser)
+
     if action == "studio":
         open_browser = getattr(args, "open", False)
         port = getattr(args, "port", 8787)

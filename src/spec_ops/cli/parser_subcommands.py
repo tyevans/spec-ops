@@ -52,6 +52,24 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_studio.add_argument("--port", type=int, default=8787, help="Server port (default: 8787)")
     p_studio.add_argument("--host", default="127.0.0.1", help="Server host (default: 127.0.0.1)")
 
+    p_uat = prd_subs.add_parser("uat", help="Customer UAT verification, PM sign-off, and receipt management")
+    uat_subs = p_uat.add_subparsers(dest="uat_action", help="UAT action")
+
+    p_status = uat_subs.add_parser("status", help="Display customer UAT readiness matrix and overall delivery percentage")
+    p_status.add_argument("--json", action="store_true", help="Output customer UAT readiness matrix as JSON")
+
+    p_sign = uat_subs.add_parser("sign", help="Record PM business acceptance sign-off into docs/project/product/uat-signoff.json")
+    p_sign.add_argument("--prd", required=True, help="Target PRD canonical ID (e.g. PRD-0003)")
+    p_sign.add_argument("--outcome", required=True, help="PRD checkable outcome ID (e.g. 1)")
+    p_sign.add_argument("--reviewer", required=True, help="Reviewer identity (e.g. Taylor <taylor@example.com>)")
+    p_sign.add_argument("--notes", default="", help="Business acceptance review notes")
+    p_sign.add_argument("--status", choices=["Approved", "Rejected", "Pending"], default="Approved", help="Sign-off status (default: Approved)")
+
+    p_receipt = uat_subs.add_parser("receipt", help="Generate or verify tamper-evident cryptographic Customer UAT receipt")
+    p_receipt.add_argument("--prd", default=None, help="Target PRD canonical ID (e.g. PRD-0003)")
+    p_receipt.add_argument("--out", default=None, help="Output receipt file path")
+    p_receipt.add_argument("--verify", action="store_true", help="Verify cryptographic Customer UAT receipt integrity and git tree digest")
+
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural profile commands."""

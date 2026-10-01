@@ -111,6 +111,9 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd audit` | `[PRD_ID] [--deep]` | Audit PRD lifecycle statuses |
 | `spec-ops prd decompose` | `<PRD_ID> [--no-spike] [--by-outcomes] [--diff]` | Decompose PRD into vertical slices |
 | `spec-ops prd studio` | `[--open] [--port PORT] [--host HOST]` | Run interactive Web PRD Studio and Low-Code Story Assistant |
+| `spec-ops prd uat status` | `[--json]` | Display customer UAT readiness matrix and overall delivery percentage |
+| `spec-ops prd uat sign` | `--prd PRD --outcome OUTCOME --reviewer REVIEWER [--notes NOTES] [--status {{Approved,Rejected,Pending}}]` | Record PM business acceptance sign-off into docs/project/product/uat-signoff.json |
+| `spec-ops prd uat receipt` | `[--prd PRD] [--out OUT] [--verify]` | Generate or verify tamper-evident cryptographic Customer UAT receipt |
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT] [--entity ENTITY]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |
