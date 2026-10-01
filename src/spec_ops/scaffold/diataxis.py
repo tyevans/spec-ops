@@ -97,6 +97,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops graph sort` | `[--type TYPE]` | Deterministic topological backlog execution sorting |
 | `spec-ops graph order` | `[--type TYPE]` | Deterministic topological backlog execution ordering |
 | `spec-ops graph path` | `--from ORIGIN --to DEST` | Reachability pathfinding and lineage tracing |
+| `spec-ops graph reach` | `--source SOURCE --target TARGET [--json]` | Verify reachability between graph entities |
 | `spec-ops graph blast-radius` | `<ENTITY>` | Calculate downstream blast radius of entity |
 | `spec-ops graph inspect` | `<ENTITY>` | Inspect entity metadata, lineage card, and neighborhood |
 | `spec-ops graph audit` | None | Full bidirectional graph traceability and orphan work item audit |

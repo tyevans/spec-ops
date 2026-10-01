@@ -162,6 +162,11 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_g_path.add_argument("--from", dest="from_node", required=True, help="Origin entity ID (e.g. persona:taylor)")
     p_g_path.add_argument("--to", dest="to_node", required=True, help="Destination entity ID (e.g. commit:a1b2c3d)")
 
+    p_g_reach = graph_subs.add_parser("reach", help="Verify reachability between graph entities")
+    p_g_reach.add_argument("--source", required=True, help="Source entity ID (e.g. persona:Alex or TASK-0001)")
+    p_g_reach.add_argument("--target", required=True, help="Target entity ID (e.g. PRD-0001 or ADR-0010)")
+    p_g_reach.add_argument("--json", action="store_true", help="Output reachability result as JSON")
+
     p_g_blast = graph_subs.add_parser("blast-radius", help="Calculate downstream blast radius of entity")
     p_g_blast.add_argument("entity", help="Target entity ID (e.g. ADR-0003)")
 

@@ -195,6 +195,36 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
         print(format_traceability_path(path, graph=graph))
         return 0
 
+    if action == "reach":
+        src = getattr(args, "source", None)
+        dst = getattr(args, "target", None)
+        if not src or not dst:
+            print("Error: Both --source and --target are required.", file=sys.stderr)
+            return 1
+
+        is_json = getattr(args, "json", False)
+        from ..graph.redstring_bridge import RedstringBridge
+
+        bridge = RedstringBridge(config.root_dir)
+        bridge.compile_sync()
+        reachable, path = bridge.reach_sync(src, dst)
+
+        if is_json:
+            print(json.dumps({
+                "source": src,
+                "target": dst,
+                "reachable": reachable,
+                "path": path,
+            }, indent=2))
+            return 0 if reachable else 1
+
+        if reachable:
+            print(f"Traceability Reachable: '{src}' reaches '{dst}' via {' -> '.join(path)}")
+            return 0
+        else:
+            print(f"Traceability Unreachable: No path found between '{src}' and '{dst}'.")
+            return 1
+
     if action == "blast-radius":
         target = getattr(args, "entity", None)
         if not target:

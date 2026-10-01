@@ -1,7 +1,7 @@
 ---
 id: '0133'
 title: Redstring Relational Knowledge Graph and AST Projection
-status: Refined
+status: Complete
 dependencies:
 - TASK-0058
 - TASK-0128
