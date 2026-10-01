@@ -17,12 +17,13 @@ from .prune import (
     prune_worktrees,
     scan_worktree_candidates,
 )
-from .memory_spike import (
+from .memory import (
     FailureHistoryEntry,
     append_failure_record,
     benchmark_frontmatter_update,
     demote_task_to_proposed,
     extract_failed_invariants,
+    format_failure_memory_prompt,
     parse_task_memory,
     reset_worktree_with_memory,
     serialize_task_with_memory,
@@ -53,6 +54,7 @@ __all__ = [
     "append_failure_record",
     "demote_task_to_proposed",
     "synthesize_negative_constraints",
+    "format_failure_memory_prompt",
     "reset_worktree_with_memory",
     "benchmark_frontmatter_update",
     "TriageFinding",

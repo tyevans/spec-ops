@@ -98,17 +98,23 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
         print(msg)
         return 0 if ok else 1
 
-    if getattr(args, "reset", False) or action == "reset":
-        from ..rescue.memory_spike import reset_worktree_with_memory
+    if getattr(args, "reset", False) or action == "reset" or getattr(args, "rescue_action", None) == "reset":
+        from ..rescue.memory import reset_worktree_with_memory
 
         reason = getattr(args, "reason", "") or ""
         demote = getattr(args, "demote", False)
+        worker_id = getattr(args, "worker_id", "") or ""
+        target_tid = task_id or getattr(args, "task_id", None)
+        if not target_tid:
+            print("❌ Task ID is required for rescue reset.")
+            return 1
         ok, msg = reset_worktree_with_memory(
             config.root_dir,
             config.backlog_dir,
-            task_id,
+            target_tid,
             reason=reason,
             demote=demote,
+            worker_id=worker_id,
         )
         print(msg)
         return 0 if ok else 1

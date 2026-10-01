@@ -1,7 +1,7 @@
 ---
 id: '0104'
 title: Safe Worktree Discard with Anti-Loop Failure Memory and Task Reset
-status: Refined
+status: Complete
 dependencies:
 - TASK-0053
 governing_adrs:

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from spec_ops.rescue.memory_spike import (
+from spec_ops.rescue.memory import (
     DEFAULT_MANDATE,
     INVARIANT_MANDATES,
     FailureHistoryEntry,
@@ -16,6 +16,7 @@ from spec_ops.rescue.memory_spike import (
     benchmark_frontmatter_update,
     demote_task_to_proposed,
     extract_failed_invariants,
+    format_failure_memory_prompt,
     parse_task_memory,
     reset_worktree_with_memory,
     serialize_task_with_memory,
@@ -308,3 +309,72 @@ def test_benchmark_frontmatter_update_runs(tmp_path: Path):
     ms = benchmark_frontmatter_update(t_file, iterations=10)
     assert isinstance(ms, float)
     assert ms > 0.0
+
+
+def test_format_failure_memory_prompt_variants():
+    # None or empty
+    assert format_failure_memory_prompt(None) == ""
+    assert format_failure_memory_prompt({}) == ""
+    assert format_failure_memory_prompt("") == ""
+    assert format_failure_memory_prompt([]) == ""
+
+    # From dict with failure_history
+    d = {
+        "failure_history": [
+            {"reason": "Broke ADR-0003 mock backdoors", "failed_invariants": ["ADR-0003"]}
+        ]
+    }
+    prompt = format_failure_memory_prompt(d)
+    assert "## Prior Attempt Failures & Anti-Patterns (DO NOT REPEAT)" in prompt
+    assert "- Previous failure: Broke ADR-0003 mock backdoors." in prompt
+    assert "- Mandate: You must strictly use public frontdoor entrypoints with zero mock backdoors." in prompt
+
+    # From raw markdown string
+    md = (
+        "---\n"
+        "title: Test\n"
+        "failure_history:\n"
+        "  - reason: Broke ADR-0002 line limit\n"
+        "---\n"
+        "# Body\n"
+    )
+    prompt_md = format_failure_memory_prompt(md)
+    assert "## Prior Attempt Failures & Anti-Patterns (DO NOT REPEAT)" in prompt_md
+    assert "ADR-0002" in prompt_md
+
+
+def test_reset_clears_claim_fields(tmp_path: Path):
+    repo = tmp_path / "repo_claim"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=repo, check=True, capture_output=True)
+    (repo / "file.txt").write_text("main", encoding="utf-8")
+    subprocess.run(["git", "add", "."], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "init"], cwd=repo, check=True, capture_output=True)
+
+    backlog = repo / "docs" / "project" / "backlog"
+    refined = backlog / "refined"
+    refined.mkdir(parents=True)
+    task_file = refined / "0077-claim-task.md"
+    task_file.write_text(
+        "---\n"
+        "id: '0077'\n"
+        "title: Claim Task\n"
+        "status: Refined\n"
+        "claimed_by: worker-1\n"
+        "claimed_at: '2026-09-30T10:00:00Z'\n"
+        "---\n"
+        "# Body\n",
+        encoding="utf-8",
+    )
+
+    ok, msg = reset_worktree_with_memory(repo, backlog, "TASK-0077", reason="Stalled worker")
+    assert ok
+    meta, _, hist = parse_task_memory(task_file.read_text(encoding="utf-8"))
+    assert meta["status"] == "Refined"
+    assert "claimed_by" not in meta
+    assert "claimed_at" not in meta
+    assert len(hist) == 1
+    assert hist[0]["reason"] == "Stalled worker"
+

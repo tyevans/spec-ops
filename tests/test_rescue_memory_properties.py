@@ -10,7 +10,7 @@ import pytest
 import yaml
 from hypothesis import given, settings, strategies as st
 
-from spec_ops.rescue.memory_spike import (
+from spec_ops.rescue.memory import (
     FailureHistoryEntry,
     append_failure_record,
     benchmark_frontmatter_update,

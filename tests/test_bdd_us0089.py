@@ -17,7 +17,7 @@ from spec_ops.config.loader import load_config
 from spec_ops.core.parser import parse_task
 from spec_ops.worker.claimer import hydrate_task_prompt
 
-scenarios("features/us_0089_safe_worktree_discard_with_anti_loop_failure_memory.feature")
+scenarios("features/us_0089_safe_worktree_reset.feature")
 
 
 @pytest.fixture

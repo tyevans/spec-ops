@@ -15,6 +15,7 @@ from .parser_subcommands import (
     register_profile_subparsers,
     register_queue_subparsers,
     register_release_subparsers,
+    register_rescue_subparsers,
     register_scaffold_subparsers,
     register_schema_subparsers,
     register_spike_subparsers,
@@ -229,21 +230,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
     # rescue
-    p_rescue = subparsers.add_parser("rescue", help="Inspect and recover stalled or failed autonomous worktrees")
-    p_rescue.add_argument("task_id", nargs="?", help="Action ('triage', 'takeover', 'inspect', 'shell', 'prune', 'reset') or target task canonical ID (e.g. TASK-0011)")
-    p_rescue.add_argument("target", nargs="?", default=None, help="Target task canonical ID when an action is specified (e.g. TASK-0011)")
-    p_rescue.add_argument("--list", action="store_true", help="List all active/stalled worktrees")
-    p_rescue.add_argument("--complete", action="store_true", help="Verify preflight and merge rescued worktree into main")
-    p_rescue.add_argument("--discard", action="store_true", help="Discard worktree and branch")
-    p_rescue.add_argument("--reset", action="store_true", help="Reset worktree and capture failure memory")
-    p_rescue.add_argument("--reason", default="", help="Failure post-mortem reason description")
-    p_rescue.add_argument("--demote", action="store_true", help="Demote task to proposed/ on reset")
-    p_rescue.add_argument("--prune", action="store_true", help="Prune and clean up all stale/orphaned worktrees")
-    p_rescue.add_argument("--dry-run", action="store_true", help="Dry-run preview of candidate worktrees and disk space")
-    p_rescue.add_argument("--file", default=None, help="Target file for AST / line count diff inspection in triage")
-    p_rescue.add_argument("--action", default=None, help="Direct triage action ([d]iff, [p]atch, [s]hell, [r]eset, [c]omplete, [q]uit)")
-    p_rescue.add_argument("--step", default=None, help="Designated preflight step to run in isolation")
-    p_rescue.add_argument("--only-failed", action="store_true", help="Re-run only previously failed preflight step")
+    register_rescue_subparsers(subparsers)
 
 
     # worktree

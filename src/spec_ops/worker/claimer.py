@@ -116,19 +116,12 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
         "- Dependency Immutability Invariant: You must NOT edit `pyproject.toml` or `uv.lock` unless `allows_dependencies: true` is explicitly declared in task frontmatter (US-0111). Modifying `pyproject.toml` without authorization triggers an immediate security failure. Do not edit `pyproject.toml` for `[tool.mutmut]`; mutation coverage already scans `src/spec_ops/`.",
     ]
 
-    failure_history = getattr(task, "failure_history", None)
-    if not failure_history and getattr(task, "raw_markdown", ""):
-        from ..rescue.memory_spike import parse_task_memory
+    from ..rescue.memory import format_failure_memory_prompt
 
-        _, _, failure_history = parse_task_memory(task.raw_markdown)
-
-    if failure_history:
-        from ..rescue.memory_spike import synthesize_negative_constraints
-
-        neg_block = synthesize_negative_constraints(failure_history)
-        if neg_block.strip():
-            lines.append("")
-            lines.append(neg_block.strip())
+    neg_block = format_failure_memory_prompt(task)
+    if neg_block.strip():
+        lines.append("")
+        lines.append(neg_block.strip())
 
     lines.extend([
         "",
