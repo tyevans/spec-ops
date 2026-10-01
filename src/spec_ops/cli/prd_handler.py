@@ -47,6 +47,39 @@ def handle_prd_command(
         serve_visualizer(config, host=host, port=port, default_view="studio")
         return 0
 
+    if action == "discover":
+        from ..prd.discovery_workflow import discover_prd
+
+        p = discover_prd(
+            config,
+            title=getattr(args, "title", None),
+            persona=getattr(args, "persona", None),
+            bc=getattr(args, "bc", None),
+            summary=getattr(args, "summary", None),
+            non_interactive=getattr(args, "non_interactive", False),
+        )
+        print(f"✨ Scaffolding complete: Created PRD draft under {p}")
+        return 0
+
+    if action == "shape":
+        from ..prd.discovery_workflow import shape_prd
+
+        prd_id = getattr(args, "prd_id", None) or getattr(args, "pos_id", None)
+        if not prd_id:
+            print("❌ Error: Missing PRD ID or path. Specify --id <PRD_ID> or provide it as an argument.")
+            return 1
+
+        ok, msg = shape_prd(
+            config,
+            prd_id_or_path=prd_id,
+            outcomes=getattr(args, "outcomes", None),
+            anti_goals=getattr(args, "anti_goals", None),
+            target_stage=getattr(args, "stage", None),
+            accept=getattr(args, "accept", False),
+        )
+        print(msg)
+        return 0 if ok else 1
+
     if action == "new":
         p = interactive_new_prd(
             config,

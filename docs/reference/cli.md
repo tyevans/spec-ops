@@ -46,6 +46,8 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops trace` | `[--verify]` | Audit end-to-end bidirectional graph linkages and traceability |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |
 | `spec-ops prd create` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--summary SUMMARY] [--stage STAGE]` | Scaffold a new PRD specification |
+| `spec-ops prd discover` | `[--title TITLE] [--persona PERSONA] [--bc BC] [--summary SUMMARY] [--non-interactive]` | Discover and scaffold a new PRD idea draft |
+| `spec-ops prd shape` | `[PRD_ID] [--id PRD_ID] [--outcomes OUTCOMES] [--anti-goals ANTI_GOALS] [--stage {shaped,accepted}] [--accept]` | Shape PRD idea into falsifiable specifications and advance lifecycle stage |
 | `spec-ops prd new` | `[--title TITLE] [--persona PERSONA] [--component COMPONENT] [--friction FRICTION] [--good GOOD] [--anti-goals ANTI_GOALS] [--outcomes OUTCOMES] [--non-interactive]` | Interactively scaffold a new PRD specification in idea stage |
 | `spec-ops prd lint` | `[PATH]` | Lint PRD markdown files for mandatory sections and falsifiable outcomes |
 | `spec-ops prd promote` | `<PRD_ID> --stage STAGE` | Advance PRD through lifecycle stage gates |

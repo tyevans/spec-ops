@@ -17,6 +17,21 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_create.add_argument("--summary", default="", help="Brief summary of problem statement")
     p_create.add_argument("--stage", default="accepted", help="Stage (accepted, idea, shaped)")
 
+    p_disc = prd_subs.add_parser("discover", help="Discover and scaffold a new PRD idea draft")
+    p_disc.add_argument("--title", help="PRD title")
+    p_disc.add_argument("--persona", help="Target persona")
+    p_disc.add_argument("--bc", help="Target bounded context / component")
+    p_disc.add_argument("--summary", help="Summary of problem statement / customer friction")
+    p_disc.add_argument("--non-interactive", action="store_true", help="Do not prompt interactively")
+
+    p_shape = prd_subs.add_parser("shape", help="Shape PRD idea into falsifiable specifications and advance lifecycle stage")
+    p_shape.add_argument("pos_id", nargs="?", default=None, help="PRD canonical ID or path")
+    p_shape.add_argument("--id", dest="prd_id", default=None, help="PRD canonical ID or path")
+    p_shape.add_argument("--outcomes", help="Checkable outcomes (comma-separated, newline-separated, or file path)")
+    p_shape.add_argument("--anti-goals", help="Scope boundaries and non-goals")
+    p_shape.add_argument("--stage", choices=["shaped", "accepted"], default=None, help="Target lifecycle stage (default: shaped or accepted)")
+    p_shape.add_argument("--accept", action="store_true", help="Promote PRD directly to accepted stage")
+
     p_new = prd_subs.add_parser("new", help="Interactively guide creation of a new PRD draft in idea/")
     p_new.add_argument("--title", help="PRD title")
     p_new.add_argument("--persona", help="Target persona")
@@ -227,37 +242,7 @@ def register_rescue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_reset.add_argument("--demote", action="store_true", help="Demote task to proposed/ on reset")
 
 
-def register_spike_subparsers(subparsers: argparse._SubParsersAction) -> None:
-    """Registers architectural spike lifecycle commands."""
-    p_spike = subparsers.add_parser("spike", help="Governed architectural spike lifecycle, sandboxing, and empirical ADR synthesis")
-    spike_subs = p_spike.add_subparsers(dest="spike_action", help="Spike action")
-
-    p_spk_create = spike_subs.add_parser("create", help="Author a new architectural spike task and isolated test harness")
-    p_spk_create.add_argument("--name", required=True, help="Spike descriptive name / topic")
-    p_spk_create.add_argument("--question", required=True, help="Unanswered question or hypothesis statement to validate")
-    p_spk_create.add_argument("--timebox", default="2h", help="Timebox duration (default: 2h)")
-    p_spk_create.add_argument("--task", default=None, help="Governing task canonical ID (e.g. TASK-0052)")
-    p_spk_create.add_argument("--prd", default=None, help="Governing PRD canonical ID (e.g. PRD-0002)")
-
-    p_spk_start = spike_subs.add_parser("start", help="Instantiate disposable sandboxed spike worktree")
-    p_spk_start.add_argument("spike_id", help="Spike canonical identifier (e.g. SPIKE-0002 or 0002)")
-    p_spk_start.add_argument("--hypothesis", default=None, help="Hypothesis statement for empirical validation")
-    p_spk_start.add_argument("--timebox", default=None, help="Spike timebox duration (e.g. 2h, 4h)")
-
-    p_spk_check = spike_subs.add_parser("check", help="Check spike timebox and write isolation")
-    p_spk_check.add_argument("spike_id", nargs="?", default=None, help="Spike identifier (optional if run inside worktree)")
-    p_spk_check.add_argument("--elapsed", type=float, default=None, help="Simulated elapsed seconds for testing")
-
-    p_spk_preflight = spike_subs.add_parser("preflight", help="Enforce in-worktree write isolation preflight hook")
-    p_spk_preflight.add_argument("spike_id", nargs="?", default=None, help="Spike identifier")
-
-    p_spk_grad = spike_subs.add_parser("graduate", help="Graduate empirical spike findings into an Architectural Decision Record")
-    p_spk_grad.add_argument("spike_id", help="Spike canonical identifier (e.g. SPIKE-0002 or 0002)")
-    p_spk_grad.add_argument("--result", required=True, choices=["proven", "disproven"], help="Empirical hypothesis validation result")
-    p_spk_grad.add_argument("--title", default=None, help="ADR Title")
-    p_spk_grad.add_argument("--notes", default=None, help="Empirical observations or rationale")
-    p_spk_grad.add_argument("--findings", default=None, help="Recorded benchmark output / findings")
-    p_spk_grad.add_argument("--status", default=None, help="ADR status (e.g. Accepted, Proposed)")
+from .parser_spike import register_spike_subparsers
 
 
 from .parser_audit import register_audit_subparsers
