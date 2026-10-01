@@ -188,7 +188,9 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
 
     graph_subs.add_parser("audit", help="Full bidirectional graph traceability and orphan work item audit")
     p_g_watch = graph_subs.add_parser("watch", help="Real-time in-memory graph event bus and workspace change watcher")
+    p_g_watch.add_argument("--interval", type=float, default=0.5, help="Polling interval in seconds (default: 0.5)")
     p_g_watch.add_argument("--debounce-ms", type=float, default=250.0, help="Debounce window in milliseconds (default: 250)")
+    p_g_watch.add_argument("--json", action="store_true", help="Output real-time change events as structured JSON")
     p_g_watch.add_argument("--event-stream", action="store_true", help="Emit raw JSON structured event stream")
     p_g_watch.add_argument("--dir", default=".", help="Target repository directory (default: current directory)")
     p_g_watch.add_argument("--once", action="store_true", help="Run single watcher scan iteration and exit")

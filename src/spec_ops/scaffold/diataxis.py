@@ -101,7 +101,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops graph blast-radius` | `<ENTITY>` | Calculate downstream blast radius of entity |
 | `spec-ops graph inspect` | `<ENTITY>` | Inspect entity metadata, lineage card, and neighborhood |
 | `spec-ops graph audit` | None | Full bidirectional graph traceability and orphan work item audit |
-| `spec-ops graph watch` | `[--debounce-ms DEBOUNCE_MS] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
+| `spec-ops graph watch` | `[--interval INTERVAL] [--debounce-ms DEBOUNCE_MS] [--json] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
 | `spec-ops watch` | `[--debounce-ms DEBOUNCE_MS] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
 | `spec-ops trace` | `[--verify]` | Audit end-to-end bidirectional graph linkages and traceability |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |

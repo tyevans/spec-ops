@@ -172,7 +172,7 @@ class RelationalGraphCacheEngine:
                 )
             )
 
-            for fn in filenames:
+            for fn in sorted(filenames):
                 if (
                     not fn.endswith(".md")
                     or fn.startswith(".")
