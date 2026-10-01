@@ -30,3 +30,6 @@ def register_report_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_rep_vel.add_argument("--window", default="14d", help="Evaluation time window (e.g. 14d, 30d; default: 14d)")
     p_rep_vel.add_argument("--rescues", action="store_true", help="Include worktree rescue frequency and failure clustering analytics")
     p_rep_vel.add_argument("--json", action="store_true", help="Output velocity metrics as structured JSON")
+    p_rep_vel.add_argument("--export", default=None, help="Export format or destination (e.g. html, json)")
+    p_rep_vel.add_argument("--format", choices=["table", "json", "html"], default=None, help="Report format (table, json, html)")
+    p_rep_vel.add_argument("-o", "--out", "--output", dest="output", default=None, help="Output destination file path (default: dist/velocity-report.html)")

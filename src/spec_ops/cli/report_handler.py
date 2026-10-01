@@ -31,20 +31,38 @@ def handle_report_command(
 
     if action == "velocity":
         from ..backlog.velocity import calculate_hybrid_velocity, save_velocity_snapshot
+        from ..backlog.velocity_dashboard import export_velocity_dashboard
         from ..backlog.velocity_format import format_rescues_table, format_velocity_table
 
         window = getattr(args, "window", "14d") or "14d"
         include_rescues = getattr(args, "rescues", False)
         as_json = getattr(args, "json", False)
+        export_val = getattr(args, "export", None)
+        fmt = getattr(args, "format", None)
+        out_path = getattr(args, "output", None)
+
+        is_html = (
+            fmt == "html"
+            or export_val == "html"
+            or (export_val and (export_val.endswith(".html") or export_val.endswith(".svg")))
+            or (out_path and out_path.endswith(".html"))
+        )
+        if export_val and not out_path and (export_val.endswith(".html") or export_val.endswith(".svg")):
+            out_path = export_val
 
         report = calculate_hybrid_velocity(
             config.root_dir,
             window=window,
-            include_rescues=include_rescues,
+            include_rescues=include_rescues or is_html,
         )
         save_velocity_snapshot(report, config.root_dir)
 
-        if as_json:
+        if is_html:
+            dest = export_velocity_dashboard(report, output_path=out_path, repo_root=config.root_dir)
+            print(f"✅ Exported velocity report to {dest}")
+            return 0
+
+        if as_json or fmt == "json" or export_val == "json":
             print(json.dumps(report.to_dict(), indent=2))
             return 0
 
