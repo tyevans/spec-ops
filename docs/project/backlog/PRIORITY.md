@@ -103,7 +103,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0055 (Complete)**: [`0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor`](complete/0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor.md)
 - **TASK-0054 (Complete)**: [`0054-selective-patch-salvage-safe-reset-and-anti-loop-memory`](complete/0054-selective-patch-salvage-safe-reset-and-anti-loop-memory.md)
 - **TASK-0104 (Refined)**: [`0104-safe-worktree-reset-and-anti-loop-memory`](refined/0104-safe-worktree-reset-and-anti-loop-memory.md)
-- **TASK-0106 (Refined)**: [`0106-milestone-scope-transition-and-rollover-engine`](refined/0106-milestone-scope-transition-and-rollover-engine.md)
+- **TASK-0106 (Complete)**: [`0106-milestone-scope-transition-and-rollover-engine`](complete/0106-milestone-scope-transition-and-rollover-engine.md)
 - **TASK-0079 (Refined)**: [`0079-external-issue-tracker-ingestion-and-sync-bridge`](refined/0079-external-issue-tracker-ingestion-and-sync-bridge.md)
 - **TASK-0107 (Proposed)**: [`0107-external-issue-tracker-status-export-sync`](proposed/0107-external-issue-tracker-status-export-sync.md)
 - **TASK-0080 (Refined)**: [`0080-hybrid-team-velocity-and-rescue-analytics`](refined/0080-hybrid-team-velocity-and-rescue-analytics.md)

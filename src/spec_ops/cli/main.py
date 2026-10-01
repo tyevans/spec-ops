@@ -116,6 +116,10 @@ def main(argv: list[str] | None = None) -> int:
         from .release_handler import handle_release_command
         return handle_release_command(args, config, parser)
 
+    if args.command == "milestone":
+        from .milestone_handler import handle_milestone_command
+        return handle_milestone_command(args, config, parser)
+
     if args.command == "curate":
         if getattr(args, "curate_action", None) == "next":
             from ..backlog.queue import BacklogQueue

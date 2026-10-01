@@ -1,7 +1,7 @@
 ---
 id: '0106'
 title: Milestone Scope Transition and Rollover Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0067
 governing_adrs:

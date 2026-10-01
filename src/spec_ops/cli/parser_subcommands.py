@@ -375,3 +375,14 @@ def register_check_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_check.add_argument("positional_file", nargs="?", default=None, help="Target source file to evaluate (positional)")
     p_check.add_argument("--format", choices=["text", "json", "sarif"], default="text", help="Diagnostic output format (text, json, sarif; default: text)")
 
+
+def register_milestone_subparsers(subparsers: argparse._SubParsersAction) -> None:
+    """Registers milestone management commands."""
+    p_ms = subparsers.add_parser("milestone", help="Milestone lifecycle, scope transitions, and rollover")
+    ms_subs = p_ms.add_subparsers(dest="milestone_action", help="Milestone action")
+    p_roll = ms_subs.add_parser("rollover", help="Transition uncompleted tasks from one milestone to another")
+    p_roll.add_argument("--from", dest="from_m", required=True, help="Source milestone to rollover unfinished tasks from")
+    p_roll.add_argument("--to", dest="to_m", required=True, help="Target milestone to assign unfinished tasks to")
+    p_roll.add_argument("--dry-run", action="store_true", default=False, help="Preview task milestone updates without modifying disk")
+    p_roll.add_argument("--json", action="store_true", default=False, help="Output rollover results as structured JSON")
+
