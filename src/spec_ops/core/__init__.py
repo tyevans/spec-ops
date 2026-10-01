@@ -58,6 +58,8 @@ from .cycle_resolver import (
     resolve_cyclic_components,
     suggest_decoupling_seams,
 )
+from .decider import TaskDecider, TaskState
+from .event_store import SQLiteEventLedger, append_events, get_stream, project_task_event_to_filesystem, replay_task_state
 from .watcher import WorkspaceWatcher
 
 __all__ = [
@@ -116,5 +118,12 @@ __all__ = [
     "GRAPH_CYCLE_INTRODUCED",
     "NODE_UPDATED",
     "BATCHED_UPDATE",
+    "TaskDecider",
+    "TaskState",
+    "SQLiteEventLedger",
+    "append_events",
+    "get_stream",
+    "project_task_event_to_filesystem",
+    "replay_task_state",
 ]
 

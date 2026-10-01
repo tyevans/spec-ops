@@ -133,7 +133,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0122 (Complete)**: [`0122-document-check-cli-command-in-reference`](complete/0122-document-check-cli-command-in-reference.md)
 - **TASK-0123 (Complete)**: [`0123-add-venv-to-gitignore`](complete/0123-add-venv-to-gitignore.md)
 - **TASK-0124 (Complete)**: [`0124-filter-existing-directories-in-init-wizard-properties`](complete/0124-filter-existing-directories-in-init-wizard-properties.md)
-- **TASK-0132 (Refined)**: [`0132-pure-decider-event-sourced-kernel-and-sqlite-audit-ledger`](refined/0132-pure-decider-event-sourced-kernel-and-sqlite-audit-ledger.md)
+- **TASK-0132 (Complete)**: [`0132-pure-decider-event-sourced-kernel-and-sqlite-audit-ledger`](complete/0132-pure-decider-event-sourced-kernel-and-sqlite-audit-ledger.md)
 - **TASK-0133 (Refined)**: [`0133-redstring-relational-knowledge-graph-and-ast-projection`](refined/0133-redstring-relational-knowledge-graph-and-ast-projection.md)
 - **TASK-0134 (Refined)**: [`0134-continuous-orchestration-retrospective-and-self-healing-engine`](refined/0134-continuous-orchestration-retrospective-and-self-healing-engine.md)
 - **TASK-0135 (Refined)**: [`0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio`](refined/0135-interactive-customer-uat-matrix-html-exporter-and-signoff-studio.md)
