@@ -1,7 +1,7 @@
 ---
 id: '0105'
 title: Stalled Worker Claim Reclamation and Lease Heartbeat Watcher
-status: Refined
+status: Complete
 dependencies:
 - TASK-0067
 governing_adrs:

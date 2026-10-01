@@ -32,7 +32,7 @@ def write_task_file(task: Task) -> Path:
         "target_bc", "target_release", "pr_url", "claimed_by", "branch",
         "hypothesis", "timebox", "signed_off_by", "signed_off_at",
         "commit_signature_status", "persona", "mutation_scope",
-        "completed_at", "claimed_at", "timestamp",
+        "completed_at", "claimed_at", "timestamp", "heartbeat_at", "heartbeat",
     ]
     for key in simple_str_fields:
         val = getattr(task, key, "")

@@ -224,6 +224,14 @@ def register_queue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_q_reorder.add_argument("--by-weights", action="store_true", help="Apply multi-criteria weighted scoring (milestone, blockers, risk)")
     p_q_reorder.add_argument("--json", action="store_true", help="Output re-ranking results as structured JSON")
 
+    p_q_rec = queue_subs.add_parser(
+        "reclaim-stalled",
+        help="Automated detection and reclamation of abandoned task claims and stale worker leases",
+    )
+    p_q_rec.add_argument("--timeout-hours", type=float, default=4.0, help="Inactivity timeout threshold in hours before lease is revoked (default: 4.0)")
+    p_q_rec.add_argument("--dry-run", action="store_true", help="Preview reclaimable tasks without modifying disk")
+    p_q_rec.add_argument("--json", action="store_true", help="Output reclamation results as structured JSON")
+
 
 def register_spike_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers architectural spike lifecycle commands."""

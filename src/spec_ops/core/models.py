@@ -98,6 +98,8 @@ class Task:
     completed_at: str = ""
     claimed_at: str = ""
     timestamp: str = ""
+    heartbeat_at: str = ""
+    heartbeat: str = ""
     pinned: bool = False
     priority_pin: int | None = None
     persona: str = ""

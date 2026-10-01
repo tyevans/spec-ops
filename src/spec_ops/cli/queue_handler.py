@@ -241,6 +241,12 @@ def handle_queue_command(
         window = getattr(args, "window", "24h") or "24h"
         digest_output = generate_standup_digest(config, window=window, fmt=fmt)
         print(digest_output)
+        if getattr(args, "reclaim_stalled", False):
+            from ..backlog.reclaim import reclaim_stalled_claims
+
+            rec = reclaim_stalled_claims(config, timeout_hours=4.0)
+            if rec.reclaimed_count > 0:
+                print(f"\n🔄 Reclaimed {rec.reclaimed_count} stalled claim(s): {', '.join(rec.reclaimed_ids)}")
         return 0
 
     if action == "reorder":
@@ -297,8 +303,19 @@ def handle_queue_command(
         console.print(f"✅ [bold green]{msg}[/bold green]")
         return 0
 
-    parser.parse_args(["queue", "--help"])
+    if action == "reclaim-stalled":
+        from ..backlog.reclaim import reclaim_stalled_claims
 
+        timeout = float(getattr(args, "timeout_hours", 4.0) or 4.0)
+        dry_run = bool(getattr(args, "dry_run", False))
+        result = reclaim_stalled_claims(config, timeout_hours=timeout, dry_run=dry_run)
+        if getattr(args, "json", False):
+            print(json.dumps(result.to_dict(), indent=2))
+        else:
+            result.render_console(console)
+        return 0
+
+    parser.parse_args(["queue", "--help"])
     return 0
 
 

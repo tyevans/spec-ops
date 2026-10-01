@@ -81,6 +81,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops queue doctor` | `[--fix] [--repair] [--json] [--dir DIR]` | Audit backlog health, dangling dependencies, and index drift with automated self-healing repair |
 | `spec-ops queue digest` | `[--format FORMAT] [--window WINDOW]` | Generate automated daily standup curation digest |
 | `spec-ops queue reorder` | `[--dry-run] [--topological] [--by-weights] [--json]` | Deterministic topological backlog re-ordering and multi-criteria priority scoring |
+| `spec-ops queue reclaim-stalled` | `[--timeout-hours TIMEOUT_HOURS] [--dry-run] [--json]` | Automated detection and reclamation of abandoned task claims and stale worker leases |
 | `spec-ops backlog` | `[--once]` | Backlog flow monitor, buffer telemetry, and bottleneck detection |
 | `spec-ops backlog flow` | `[--once]` | Interactive terminal backlog flow monitor and JIT buffer telemetry |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |

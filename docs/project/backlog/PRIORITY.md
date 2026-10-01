@@ -97,7 +97,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0102 (Complete)**: [`0102-cross-process-file-locking-concurrency`](complete/0102-cross-process-file-locking-concurrency.md)
 - **TASK-0066 (Complete)**: [`0066-backlog-health-diagnostics-and-cross-process-locking`](complete/0066-backlog-health-diagnostics-and-cross-process-locking.md)
 - **TASK-0067 (Complete)**: [`0067-daily-standup-digest-and-external-tracker-bridge`](complete/0067-daily-standup-digest-and-external-tracker-bridge.md)
-- **TASK-0105 (Refined)**: [`0105-stalled-worker-claim-reclamation-and-lease-heartbeat`](refined/0105-stalled-worker-claim-reclamation-and-lease-heartbeat.md)
+- **TASK-0105 (Complete)**: [`0105-stalled-worker-claim-reclamation-and-lease-heartbeat`](complete/0105-stalled-worker-claim-reclamation-and-lease-heartbeat.md)
 - **TASK-0098 (Complete)**: [`0098-deterministic-multi-criteria-priority-re-ranking`](complete/0098-deterministic-multi-criteria-priority-re-ranking.md)
 - **TASK-0099 (Complete)**: [`0099-automated-definition-of-ready-gatekeeper`](complete/0099-automated-definition-of-ready-gatekeeper.md)
 - **TASK-0055 (Complete)**: [`0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor`](complete/0055-sub-second-ide-diagnostics-blast-radius-and-workspace-doctor.md)
