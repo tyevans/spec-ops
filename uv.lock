@@ -968,6 +968,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "eventsource-py" },
+    { name = "hypothesis" },
     { name = "pyyaml" },
     { name = "redstring" },
     { name = "rich" },
@@ -984,6 +985,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "eventsource-py", specifier = ">=0.8.1" },
+    { name = "hypothesis", specifier = ">=6.168.3" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "redstring", specifier = ">=0.11.0" },
     { name = "rich", specifier = ">=15.0.0" },

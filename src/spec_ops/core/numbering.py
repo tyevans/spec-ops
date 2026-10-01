@@ -157,10 +157,10 @@ def audit_numbering_uniqueness(target: Any) -> NumberingAuditReport:
         project_docs = Path("docs/project")
 
     groups: list[tuple[str, Path, str, str]] = [
-        ("adrs", project_docs / "adrs", "ADR", r"adr-(\d+)"),
-        ("prds", project_docs / "product", "PRD", r"(?:prd-)?(\d+)"),
-        ("tasks", project_docs / "backlog", "TASK", r"(?:task-)?(\d+)"),
-        ("stories", project_docs / "user_stories", "US", r"(?:us-)?(\d+)"),
+        ("adrs", project_docs / "adrs", "ADR", r"^(?:adr-)?(\d+)"),
+        ("prds", project_docs / "product", "PRD", r"^(?:prd-)?(\d+)"),
+        ("tasks", project_docs / "backlog", "TASK", r"^(?:task-)?(\d+)"),
+        ("stories", project_docs / "user_stories", "US", r"^(?:us-)?(\d+)"),
     ]
 
     all_collisions: list[NumberingCollision] = []

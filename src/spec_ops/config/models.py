@@ -119,6 +119,10 @@ class SpecOpsConfig:
         return (self.root_dir / self.project.docs_dir).resolve()
 
     @property
+    def docs_dir(self) -> Path:
+        return (self.root_dir / "docs").resolve()
+
+    @property
     def backlog_dir(self) -> Path:
         return self.project_docs_dir / "backlog"
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from ..config.models import SpecOpsConfig
 from ..core.arch_checker import ArchitectureChecker
 from ..core.ast_seams import emit_refactor_task, emit_split_task, suggest_decomposition
-from ..core.debt_baseline import EXCLUDE_DIRS, SOURCE_EXTENSIONS, load_grandfathered_debt
+from ..core.debt_baseline import EXCLUDE_DIRS, SOURCE_EXTENSIONS, is_excluded_path, load_grandfathered_debt
 
 
 def handle_health_architecture(config: SpecOpsConfig) -> int:
@@ -35,7 +35,7 @@ def handle_health_suggest_splits(config: SpecOpsConfig, emit_task: bool = False)
         if not p.is_file():
             continue
         rel = p.relative_to(root)
-        if any(part in EXCLUDE_DIRS for part in rel.parts):
+        if is_excluded_path(rel):
             continue
         if p.suffix not in SOURCE_EXTENSIONS:
             continue

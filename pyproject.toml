@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "eventsource-py>=0.8.1",
+    "hypothesis>=6.168.3",
     "pyyaml>=6.0.1",
     "redstring>=0.11.0",
     "rich>=15.0.0",

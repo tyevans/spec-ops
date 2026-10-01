@@ -84,10 +84,26 @@ def check_code_snippets(
     violations: list[AuditViolation] = []
     snippet_count = 0
 
-    if not docs_dir.exists():
-        return violations, 0
+    extra_dirs: set[str] = set()
+    toml_path = docs_dir.parent / "specops.toml"
+    if toml_path.is_file():
+        try:
+            import sys
+            if sys.version_info >= (3, 11):
+                import tomllib
+            else:
+                import tomli as tomllib  # type: ignore
+            with toml_path.open("rb") as f:
+                tdata = tomllib.load(f)
+            extra_dirs = set(tdata.get("documentation", {}).get("allowed_directories", []))
+        except Exception:
+            pass
 
     for md_path in sorted(docs_dir.rglob("*.md")):
+        rel = md_path.relative_to(docs_dir)
+        if any(part.startswith(".") for part in rel.parts) or (rel.parts and rel.parts[0] in ("project", *extra_dirs)):
+            continue
+
         content = md_path.read_text(encoding="utf-8", errors="replace")
         blocks = re.findall(r"```([a-zA-Z0-9_-]*)\n(.*?)```", content, flags=re.DOTALL)
 
@@ -97,7 +113,8 @@ def check_code_snippets(
             if clean_lang in ("python", "py", "python3"):
                 snippet_count += 1
                 try:
-                    ast.parse(code, filename=str(md_path))
+                    import textwrap
+                    ast.parse(textwrap.dedent(code), filename=str(md_path))
                 except SyntaxError as e:
                     violations.append(
                         AuditViolation(
@@ -111,8 +128,9 @@ def check_code_snippets(
             elif clean_lang in ("bash", "sh", "shell", "zsh"):
                 snippet_count += 1
                 try:
+                    import textwrap
                     res = subprocess.run(
-                        ["bash", "-n", "-c", code],
+                        ["bash", "-n", "-c", textwrap.dedent(code)],
                         capture_output=True,
                         text=True,
                     )

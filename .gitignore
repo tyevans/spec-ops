@@ -13,7 +13,8 @@ mutants/
 .task-review-prompt.md
 .task-conflict-prompt.md
 .spec-consultation.md
-.specops/
+.specops/*
+!.specops/grandfathered_debt.json
 .agents/*
 !.agents/skills/
 HANDOVER.md

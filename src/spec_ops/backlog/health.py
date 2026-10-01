@@ -97,7 +97,7 @@ class HealthChecker:
         self.tracked_debt: list[tuple[Path, int, int]] = []
 
     def scan_file_lengths(self) -> tuple[list[FileLengthViolation], list[FileLengthWarning], list[tuple[int, Path]]]:
-        from ..core.debt_baseline import evaluate_file_debt, load_grandfathered_debt
+        from ..core.debt_baseline import evaluate_file_debt, is_excluded_path, load_grandfathered_debt
 
         violations: list[FileLengthViolation] = []
         warnings: list[FileLengthWarning] = []
@@ -110,7 +110,7 @@ class HealthChecker:
             if not p.is_file():
                 continue
             rel_path = p.relative_to(self.root_dir)
-            if any(part in EXCLUDE_DIRS for part in rel_path.parts):
+            if is_excluded_path(rel_path):
                 continue
             if p.suffix not in SOURCE_EXTENSIONS:
                 continue

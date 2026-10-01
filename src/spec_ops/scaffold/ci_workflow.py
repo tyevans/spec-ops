@@ -21,6 +21,7 @@ jobs:
   preflight-and-invariants:
     name: SpecOps Invariant & Health Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository

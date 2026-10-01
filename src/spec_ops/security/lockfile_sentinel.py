@@ -125,18 +125,34 @@ def _check_task_waiver(worktree_path: Path) -> tuple[bool, str | None]:
     import re
     import yaml
 
-    # Look for task file in current branch/directory or backlog
+    # Check if cwd or branch contains a task identifier
+    m = re.search(r"task[-/](\d+)", worktree_path.name, re.IGNORECASE)
+    task_num = m.group(1) if m else None
+    if not task_num:
+        try:
+            res = subprocess.run(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                cwd=worktree_path,
+                capture_output=True,
+                text=True,
+            )
+            if res.returncode == 0:
+                mb = re.search(r"task[-/](\d+)", res.stdout.strip(), re.IGNORECASE)
+                if mb:
+                    task_num = mb.group(1)
+        except Exception:
+            pass
+
+    if not task_num:
+        return False, None
+
     candidate_files: list[Path] = []
     backlog_dir = worktree_path / "docs" / "project" / "backlog"
     if backlog_dir.is_dir():
         candidate_files.extend(backlog_dir.glob("*/*.md"))
 
-    # Also check if cwd contains a task identifier
-    m = re.search(r"task-(\d+)", worktree_path.name, re.IGNORECASE)
-    task_num = m.group(1) if m else None
-
     for cf in candidate_files:
-        if task_num and task_num not in cf.name:
+        if task_num not in cf.name:
             continue
         try:
             content = cf.read_text(encoding="utf-8")
