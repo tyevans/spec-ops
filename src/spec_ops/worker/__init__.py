@@ -5,6 +5,10 @@ from .ast_analyzer import (
     generate_ast_decomposition_hint,
     scan_worktree_file_length_violations,
 )
+from .auto_rebase import (
+    AutoRebaseResult,
+    auto_rebase_worktree,
+)
 from .ci_repair import (
     ci_heal_task,
     extract_failure_trace,
@@ -92,6 +96,7 @@ __all__ = [
     "APPROVED_COMMAND_PREFIXES",
     "AgentRunner",
     "AstNodeSeam",
+    "AutoRebaseResult",
     "BatchCycleOrchestrator",
     "BatchCycleReport",
     "ChangedFileInfo",
@@ -111,6 +116,7 @@ __all__ = [
     "TaskClaimer",
     "WorkerOrchestrationReport",
     "WorkerOrchestrator",
+    "auto_rebase_worktree",
     "build_agent_cmd",
     "build_commit_subject",
     "build_commit_trailers",

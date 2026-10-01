@@ -21,7 +21,12 @@ class FlexibleWorkerParser(argparse.ArgumentParser):
                     first_pos = a
                     break
 
-            if first_pos != "orchestrate":
+            sub_commands = set()
+            for act in self._actions:
+                if isinstance(act, argparse._SubParsersAction):
+                    sub_commands.update(act.choices.keys())
+
+            if first_pos not in sub_commands:
                 sub_action = None
                 for act in list(self._actions):
                     if isinstance(act, argparse._SubParsersAction):
@@ -43,7 +48,7 @@ class FlexibleWorkerParser(argparse.ArgumentParser):
 
 
 def register_worker_subparsers(subparsers: argparse._SubParsersAction) -> None:
-    """Registers worker commands, legacy arguments, and orchestrate subcommand."""
+    """Registers worker commands, legacy arguments, and orchestrate/rebase subcommands."""
     p_worker = subparsers.add_parser("worker", help="Execute backlog task in isolated worktree")
     p_worker.__class__ = FlexibleWorkerParser
 
@@ -68,3 +73,9 @@ def register_worker_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_orch.add_argument("--no-peer-review", dest="peer_review", action="store_false", help="Disable peer consultation and ADR review")
     p_orch.add_argument("--dry-run", action="store_true", help="Simulate orchestrator loop without executing agents")
     p_orch.add_argument("--json", action="store_true", help="Output orchestration report as JSON")
+
+    p_rebase = worker_subs.add_parser("rebase", help="Autonomous worktree auto-rebase against main with conflict resolution")
+    p_rebase.add_argument("task_pos", nargs="?", default=None, metavar="[task-id]", help="Target task canonical ID (e.g. TASK-0147)")
+    p_rebase.add_argument("--abort-on-conflict", action="store_true", default=True, help="Safely abort rebase and generate HANDOVER.md on conflict (default: True)")
+    p_rebase.add_argument("--dry-run", action="store_true", help="Simulate rebase without modifying working directory")
+    p_rebase.add_argument("--json", action="store_true", help="Output rebase report as JSON")
