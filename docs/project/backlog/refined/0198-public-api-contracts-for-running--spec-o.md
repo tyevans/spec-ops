@@ -3,11 +3,17 @@ id: 0198
 title: Public API Contracts for Running `spec-ops prd audit PRD-0003` computes test
   coverage across checkable outcomes and linked BDD scenarios.
 status: Refined
+governing_adrs:
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0004
 governing_prds:
 - PRD-0003
 governing_stories:
 - US-0120
 target_bc: prd
+persona: Taylor (The Product Manager & Technical Writer)
 ---
 
 # TASK-0198: Public API Contracts for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios.

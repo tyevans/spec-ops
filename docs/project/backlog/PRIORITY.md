@@ -198,7 +198,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0194 (Complete)**: [`0194-public-api-contracts-for-running--spec-o`](complete/0194-public-api-contracts-for-running--spec-o.md)
 - **TASK-0195 (Complete)**: [`0195-user-interface---component-stories-for-r`](complete/0195-user-interface---component-stories-for-r.md)
 - **TASK-0196 (Complete)**: [`0196-blackbox-frontdoor-test-suite-for-runnin`](complete/0196-blackbox-frontdoor-test-suite-for-runnin.md)
-- **TASK-0197 (Refined)**: [`0197-domain-model---state-handlers-for-runnin`](refined/0197-domain-model---state-handlers-for-runnin.md)
+- **TASK-0197 (Complete)**: [`0197-domain-model---state-handlers-for-runnin`](complete/0197-domain-model---state-handlers-for-runnin.md)
 - **TASK-0198 (Refined)**: [`0198-public-api-contracts-for-running--spec-o`](refined/0198-public-api-contracts-for-running--spec-o.md)
 - **TASK-0205 (Refined)**: [`0205-architectural-spike--user-interface---co`](refined/0205-architectural-spike--user-interface---co.md)
 - **TASK-0206 (Proposed)**: [`0206-user-interface---component-stories-for-r`](proposed/0206-user-interface---component-stories-for-r.md)

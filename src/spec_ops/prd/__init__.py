@@ -22,6 +22,11 @@ from .lint_engine import (
 from .lint_runner import run_prd_lint
 from .lint_ui import LINT_COMPONENT_STORIES, render_lint_html
 from .linter import PRDLinter
+from .outcome_coverage import (
+    OutcomeScenarioItem,
+    PRDOutcomeCoverageEngine,
+    PRDTestCoverageReport,
+)
 from .studio_api import dispatch_studio_api_request
 from .studio_runner import launch_prd_studio
 from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
@@ -38,6 +43,7 @@ __all__ = [
     "LINT_COMPONENT_STORIES",
     "LineLevelSuggestion",
     "OutcomeAuditResult",
+    "OutcomeScenarioItem",
     "PRDAuditResult",
     "PRDDecomposer",
     "PRDLifecycleManager",
@@ -46,9 +52,11 @@ __all__ = [
     "PRDLintReport",
     "PRDLinter",
     "PRDManager",
+    "PRDOutcomeCoverageEngine",
     "PRDStudioSessionState",
     "PRDStudioStateManager",
     "PRDSummary",
+    "PRDTestCoverageReport",
     "PainPointRecord",
     "PersonaCoverageReport",
     "PersonaJourneyMap",

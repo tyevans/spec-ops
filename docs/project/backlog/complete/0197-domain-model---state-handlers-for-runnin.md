@@ -2,12 +2,22 @@
 id: 0197
 title: Domain Model & State Handlers for Running `spec-ops prd audit PRD-0003` computes
   test coverage across checkable outcomes and linked BDD scenarios.
-status: Refined
+status: Complete
+governing_adrs:
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0004
 governing_prds:
 - PRD-0003
 governing_stories:
 - US-0120
 target_bc: prd
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T05:00:55.264858+00:00'
+commit_signature_status: SIGNED
+persona: Taylor (The Product Manager & Technical Writer)
+has_signed_commits: true
 ---
 
 # TASK-0197: Domain Model & State Handlers for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios.
