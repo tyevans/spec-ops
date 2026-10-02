@@ -221,6 +221,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0248 (Refined)**: [`0248-self-contained-github-pages-workflow-scaffolding`](refined/0248-self-contained-github-pages-workflow-scaffolding.md)
 - **TASK-0249 (Refined)**: [`0249-pre-existing-docs-detection-and-workflow-deconfliction`](refined/0249-pre-existing-docs-detection-and-workflow-deconfliction.md)
 - **TASK-0250 (Refined)**: [`0250-brownfield-technical-debt-ratchet-and-ast-decomposition`](refined/0250-brownfield-technical-debt-ratchet-and-ast-decomposition.md)
+- **TASK-0251 (Refined)**: [`0251-security-and-provenance-adoption-scaffolding`](refined/0251-security-and-provenance-adoption-scaffolding.md)
 - **TASK-0205 (Refined)**: [`0205-architectural-spike--user-interface---co`](refined/0205-architectural-spike--user-interface---co.md)
 - **TASK-0206 (Proposed)**: [`0206-user-interface---component-stories-for-r`](proposed/0206-user-interface---component-stories-for-r.md)
 - **TASK-0207 (Proposed)**: [`0207-user-interface---component-stories-for-r`](proposed/0207-user-interface---component-stories-for-r.md)

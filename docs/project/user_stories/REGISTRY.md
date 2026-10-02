@@ -125,3 +125,4 @@
 | `US-0125` | Intelligent Pre-Existing Documentation Bridging and Workflow Deconfliction | Accepted | Devon | FEAT-ADOPT-03 | `PRD-0007` |
 | `US-0126` | Incremental Brownfield Technical Debt Baselining and Seam Refactoring Synthesis | Accepted | Devon | FEAT-ADOPT-01 | `PRD-0007` |
 | `US-0127` | Zero-Contamination Tool Execution and Isolated Target Environment Inspection | Accepted | Devon | FEAT-ADOPT-04 | `PRD-0007` |
+| `US-0128` | Brownfield Commit Provenance Baselining and Rev-Range Auditing | Accepted | Devon | FEAT-AUDIT-02 | `PRD-0007` |
