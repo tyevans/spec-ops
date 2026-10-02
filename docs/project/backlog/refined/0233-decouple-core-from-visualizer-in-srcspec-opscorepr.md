@@ -1,7 +1,8 @@
 ---
 id: '0233'
 title: 'Decouple Core from Visualizer in src/spec_ops/core/provenance.py'
-status: Proposed
+status: Refined
+allows_dependencies: true
 governing_adrs:
 - ADR-0007
 - ADR-0021
