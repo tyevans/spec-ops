@@ -3,17 +3,19 @@ id: 0194
 title: Public API Contracts for Running `spec-ops prd lint` flags unfalsifiable outcomes
   and missing persona links with line-level suggestions and remediation hints.
 status: Refined
-governing_prds:
-- PRD-0003
-governing_stories:
-- US-0119
-target_bc: prd
-persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 governing_adrs:
 - ADR-0001
 - ADR-0002
 - ADR-0003
 - ADR-0004
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0119
+target_bc: prd
+claimed_by: spec-ops-worker
+branch: task/TASK-0194
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0194: Public API Contracts for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints.
