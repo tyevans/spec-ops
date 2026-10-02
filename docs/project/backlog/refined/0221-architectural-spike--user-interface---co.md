@@ -3,7 +3,7 @@ id: '0221'
 title: 'Architectural Spike: User Interface & Component Stories for Running `spec-ops
   prd ship PRD-0003` verifies 100% completion of implementing tasks and generates
   automated customer release notes.'
-status: Proposed
+status: Refined
 governing_prds:
 - PRD-0003
 governing_stories:

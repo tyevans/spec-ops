@@ -216,7 +216,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0218 (Proposed)**: [`0218-public-api-contracts-for-running--spec-o`](proposed/0218-public-api-contracts-for-running--spec-o.md)
 - **TASK-0219 (Proposed)**: [`0219-public-api-contracts-for-running--spec-o`](proposed/0219-public-api-contracts-for-running--spec-o.md)
 - **TASK-0220 (Proposed)**: [`0220-public-api-contracts-for-running--spec-o`](proposed/0220-public-api-contracts-for-running--spec-o.md)
-- **TASK-0221 (Proposed)**: [`0221-architectural-spike--user-interface---co`](proposed/0221-architectural-spike--user-interface---co.md)
+- **TASK-0221 (Refined)**: [`0221-architectural-spike--user-interface---co`](refined/0221-architectural-spike--user-interface---co.md)
 - **TASK-0222 (Proposed)**: [`0222-user-interface---component-stories-for-r`](proposed/0222-user-interface---component-stories-for-r.md)
 - **TASK-0223 (Proposed)**: [`0223-user-interface---component-stories-for-r`](proposed/0223-user-interface---component-stories-for-r.md)
 - **TASK-0224 (Proposed)**: [`0224-user-interface---component-stories-for-r`](proposed/0224-user-interface---component-stories-for-r.md)
