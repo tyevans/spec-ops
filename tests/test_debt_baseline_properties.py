@@ -131,7 +131,37 @@ def test_hypothesis_hidden_directories_never_baselined(
     hidden_dir.mkdir(parents=True)
     file_path = hidden_dir / "oversized.py"
     file_path.write_text("\n".join(f"# line {i}" for i in range(line_count)) + "\n", encoding="utf-8")
-
     oversized = scan_and_record_grandfathered_debt(tmp_path, limit=500)
     assert len(oversized) == 0
+
+
+@settings(max_examples=30, deadline=None)
+@given(
+    st.lists(
+        st.tuples(
+            st.text(alphabet=st.characters(whitelist_categories=("Ll",)), min_size=3, max_size=10),
+            st.integers(min_value=501, max_value=999),
+        ),
+        min_size=1,
+        max_size=8,
+        unique_by=lambda x: x[0],
+    ),
+    st.sampled_from([
+        (".specops", "grandfathered_debt.json"),
+        (".spec-ops", "debt-baseline.json"),
+    ]),
+)
+def test_hypothesis_legacy_alias_equivalency(tmp_path_factory, files_list, location):
+    """Invariant: Both canonical and legacy alias debt baseline files load identically."""
+    import json
+    dir_name, file_name = location
+    tmp_path = tmp_path_factory.mktemp("hyp_alias")
+    debt_dir = tmp_path / dir_name
+    debt_dir.mkdir(parents=True)
+    baseline_dict = {f"src/{name}.py": count for name, count in files_list}
+    (debt_dir / file_name).write_text(json.dumps(baseline_dict), encoding="utf-8")
+
+    loaded = load_grandfathered_debt(tmp_path)
+    assert loaded == baseline_dict
+
 

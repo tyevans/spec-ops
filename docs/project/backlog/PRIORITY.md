@@ -176,7 +176,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0183 (Complete)**: [`0183-fix-missing-os-import-in-queue-handler-claim`](complete/0183-fix-missing-os-import-in-queue-handler-claim.md)
 - **TASK-0172 (Complete)**: [`0172-fix-numbering-integrity-regex-collision-on-non-num`](complete/0172-fix-numbering-integrity-regex-collision-on-non-num.md)
 - **TASK-0173 (Complete)**: [`0173-exclude-hidden-tooling-directories-during-brownfie`](complete/0173-exclude-hidden-tooling-directories-during-brownfie.md)
-- **TASK-0174 (Refined)**: [`0174-correct-debt-baseline-file-path-discrepancy-in-bro`](refined/0174-correct-debt-baseline-file-path-discrepancy-in-bro.md)
+- **TASK-0174 (Complete)**: [`0174-correct-debt-baseline-file-path-discrepancy-in-bro`](complete/0174-correct-debt-baseline-file-path-discrepancy-in-bro.md)
 - **TASK-0175 (Refined)**: [`0175-fix-docs-audit-dir-fallback-to-respect-configured-`](refined/0175-fix-docs-audit-dir-fallback-to-respect-configured-.md)
 - **TASK-0176 (Refined)**: [`0176-support-committing-debt-baseline-file-without-giti`](refined/0176-support-committing-debt-baseline-file-without-giti.md)
 - **TASK-0177 (Refined)**: [`0177-add-explicit-timeout-minutes-to-scaffolding-github`](refined/0177-add-explicit-timeout-minutes-to-scaffolding-github.md)

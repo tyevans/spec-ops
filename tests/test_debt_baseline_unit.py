@@ -44,6 +44,17 @@ def test_load_grandfathered_debt_json_formats(tmp_path: Path):
     assert loaded == {"src/c.py": 650}
 
 
+def test_load_grandfathered_debt_legacy_alias(tmp_path: Path):
+    dot_specops = tmp_path / ".spec-ops"
+    dot_specops.mkdir()
+    json_file = dot_specops / "debt-baseline.json"
+    json_file.write_text(json.dumps({"src/legacy_old.py": 580}), encoding="utf-8")
+
+    loaded = load_grandfathered_debt(tmp_path)
+    assert loaded == {"src/legacy_old.py": 580}
+
+
+
 def test_load_grandfathered_debt_toml_fallback(tmp_path: Path):
     toml_path = tmp_path / "specops.toml"
     toml_path.write_text(
