@@ -1,7 +1,7 @@
 ---
-id: '0239'
+id: 0239
 title: Decouple Security from Backlog in src/spec_ops/security/dual_custody.py
-status: Refined
+status: Complete
 dependencies:
 - TASK-0244
 governing_adrs:
@@ -13,7 +13,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: security
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:38:25.479063+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0239: Decouple Security from Backlog in src/spec_ops/security/dual_custody.py

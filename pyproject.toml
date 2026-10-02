@@ -111,7 +111,6 @@ layers = [
     "spec_ops.config",
 ]
 ignore_imports = [
-    "spec_ops.security.dual_custody -> spec_ops.backlog.queue",
     "spec_ops.security.dual_custody -> spec_ops.rescue.handover",
     "spec_ops.security.sandbox -> spec_ops.worker.sandbox_env",
     "spec_ops.security.release_verifier -> spec_ops.prd.manifest",
