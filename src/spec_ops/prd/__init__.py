@@ -16,6 +16,7 @@ from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
 from .studio_api import dispatch_studio_api_request
 from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
+from .studio_ui import STUDIO_COMPONENT_STORIES, render_studio_html
 from .traceability import PersonaCoverageReport, PersonaLineageRecord, PersonaTraceabilityEngine
 
 __all__ = [
@@ -39,6 +40,7 @@ __all__ = [
     "PersonaJourneyMap",
     "PersonaLineageRecord",
     "PersonaTraceabilityEngine",
+    "STUDIO_COMPONENT_STORIES",
     "StoryCoverageReport",
     "calculate_outcome_coverage",
     "discover_prd",

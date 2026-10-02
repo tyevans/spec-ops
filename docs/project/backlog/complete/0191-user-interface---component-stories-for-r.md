@@ -3,7 +3,7 @@ id: 0191
 title: User Interface & Component Stories for Running `spec-ops prd studio --open`
   launches a lightweight local web interface for authoring and validating PRDs without
   terminal interaction.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -14,9 +14,11 @@ governing_prds:
 governing_stories:
 - US-0118
 target_bc: prd
-claimed_by: spec-ops-worker
-branch: task/TASK-0191
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T04:20:28.902048+00:00'
+commit_signature_status: SIGNED
 persona: Taylor (The Product Manager & Technical Writer)
+has_signed_commits: true
 ---
 
 # TASK-0191: User Interface & Component Stories for Running `spec-ops prd studio --open` launches a lightweight local web interface for authoring and validating PRDs without terminal interaction.
