@@ -24,6 +24,12 @@ except ImportError:
     settings = None  # type: ignore[assignment, misc]
 
 
+def is_hypothesis_available() -> bool:
+    """Returns True if Hypothesis dependency is installed and available."""
+    return settings is not None and HealthCheck is not None
+
+
+
 @dataclass
 class PropertyTestResult:
     """Outcome of a single generative property test execution."""
@@ -282,12 +288,31 @@ def handle_properties_command(args: argparse.Namespace, config: Any) -> int:
     as_json = getattr(args, "json", False)
     filter_expr = getattr(args, "filter_expr", None)
 
-    report = run_property_tests(
-        target_path=target_path,
-        root_dir=getattr(config, "root_dir", None),
-        max_examples=max_examples,
-        filter_expr=filter_expr,
-    )
+    if not is_hypothesis_available():
+        err_msg = (
+            "Hypothesis is required for property test verification.\n"
+            "👉 Install hypothesis (`pip install hypothesis` or `uv add --dev hypothesis`)\n"
+            "👉 Or run within your project environment: `uv run spec-ops verify`"
+        )
+        if as_json:
+            print(json.dumps({"is_success": False, "error": err_msg}, indent=2))
+        else:
+            print(f"⚠️ {err_msg}", file=sys.stderr)
+        return 1
+
+    try:
+        report = run_property_tests(
+            target_path=target_path,
+            root_dir=getattr(config, "root_dir", None),
+            max_examples=max_examples,
+            filter_expr=filter_expr,
+        )
+    except RuntimeError as err:
+        if as_json:
+            print(json.dumps({"is_success": False, "error": str(err)}, indent=2))
+        else:
+            print(f"⚠️ {err}", file=sys.stderr)
+        return 1
 
     if as_json:
         print(json.dumps(report.to_dict(), indent=2))

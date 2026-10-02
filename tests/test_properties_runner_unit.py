@@ -22,6 +22,7 @@ from spec_ops.core.properties_runner import (
     configure_hypothesis_profile,
     discover_property_tests,
     handle_properties_command,
+    is_hypothesis_available,
     run_property_tests,
 )
 
@@ -272,3 +273,74 @@ def test_handle_properties_command_failure_text(tmp_path: Path, capsys: pytest.C
     assert rc == 1
     captured = capsys.readouterr()
     assert "Invariant Verification Failed" in captured.err
+
+
+def test_is_hypothesis_available_detects_presence_and_absence(monkeypatch: pytest.MonkeyPatch):
+    import spec_ops.core.properties_runner as pr
+
+    assert is_hypothesis_available() is True
+
+    monkeypatch.setattr(pr, "settings", None)
+    assert is_hypothesis_available() is False
+
+    monkeypatch.setattr(pr, "settings", object())
+    monkeypatch.setattr(pr, "HealthCheck", None)
+    assert is_hypothesis_available() is False
+
+
+def test_handle_properties_command_missing_hypothesis_text(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    import spec_ops.core.properties_runner as pr
+
+    monkeypatch.setattr(pr, "settings", None)
+    monkeypatch.setattr(pr, "HealthCheck", None)
+
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    args = argparse.Namespace(
+        path=str(tmp_path),
+        opt_path=None,
+        max_examples=10,
+        json=False,
+        filter_expr=None,
+    )
+
+    rc = handle_properties_command(args, cfg)
+    assert rc == 1
+    captured = capsys.readouterr()
+    assert "Hypothesis is required for property test verification" in captured.err
+    assert "uv run spec-ops verify" in captured.err
+
+
+def test_handle_properties_command_missing_hypothesis_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    import spec_ops.core.properties_runner as pr
+
+    monkeypatch.setattr(pr, "settings", None)
+    monkeypatch.setattr(pr, "HealthCheck", None)
+
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    args = argparse.Namespace(
+        path=str(tmp_path),
+        opt_path=None,
+        max_examples=10,
+        json=True,
+        filter_expr=None,
+    )
+
+    rc = handle_properties_command(args, cfg)
+    assert rc == 1
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert data["is_success"] is False
+    assert "Hypothesis is required" in data["error"]
+
+
+def test_configure_hypothesis_profile_raises_runtime_error_when_missing(monkeypatch: pytest.MonkeyPatch):
+    import spec_ops.core.properties_runner as pr
+
+    monkeypatch.setattr(pr, "settings", None)
+    with pytest.raises(RuntimeError, match="Hypothesis is required for property test verification"):
+        configure_hypothesis_profile(max_examples=50)
+

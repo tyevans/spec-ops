@@ -2,7 +2,7 @@
 id: TASK-0178
 title: Handle Missing Hypothesis Dependency Gracefully in Property Runner and Tool
   Installs
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,7 +13,11 @@ governing_prds:
 governing_stories:
 - US-0001
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T02:48:10.380705+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 ## Summary
