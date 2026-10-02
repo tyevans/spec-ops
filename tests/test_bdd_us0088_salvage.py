@@ -7,10 +7,11 @@ import shlex
 import subprocess
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
 
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
+
+from spec_ops.worker import BacklogWorkerEngine
 
 from spec_ops.backlog.queue import BacklogQueue, write_task_file
 from spec_ops.cli.main import main
@@ -110,12 +111,16 @@ def engineer_executes_command(repo_env: dict[str, Any], cmd: str):
     if tokens and tokens[0] == "spec-ops":
         tokens = tokens[1:]
 
-    # If running --complete --salvage, mock preflight pipeline execution
+    # If running --complete --salvage, stub preflight pipeline execution
     if "--complete" in tokens and "--salvage" in tokens:
-        with patch("spec_ops.backlog.worker.BacklogWorkerEngine.run_preflight", return_value=(True, "Preflight passed (0 errors, 100% tests)")):
+        orig = BacklogWorkerEngine.run_preflight
+        BacklogWorkerEngine.run_preflight = lambda self, *args, **kwargs: (True, "Preflight passed (0 errors, 100% tests)")
+        try:
             exit_code = main(tokens)
             repo_env["last_exit_code"] = exit_code
             assert exit_code == 0
+        finally:
+            BacklogWorkerEngine.run_preflight = orig
     else:
         exit_code = main(tokens)
         repo_env["last_exit_code"] = exit_code
@@ -170,7 +175,7 @@ def verify_preflight_passes_cleanly(repo_env: dict[str, Any]):
 
 
 @given(parsers.parse('preflight verification succeeds on the salvaged patch for "{task_id}"'))
-def preflight_succeeds_on_salvaged_patch(repo_env: dict[str, Any], task_id: str):
+def preflight_succeeds_on_salvaged_diff(repo_env: dict[str, Any], task_id: str):
     engineer_selectively_staged_models_and_tests(repo_env, task_id)
     engineer_implemented_clean_parser(repo_env, "src/spec_ops/core/parser.py")
 
@@ -178,9 +183,13 @@ def preflight_succeeds_on_salvaged_patch(repo_env: dict[str, Any], task_id: str)
 @when(parsers.parse('the rescue manager merges the branch into "{target_branch}" under MERGE_LOCK'))
 def rescue_manager_merges_branch(repo_env: dict[str, Any], target_branch: str):
     cfg = repo_env["config"]
-    with patch("spec_ops.backlog.worker.BacklogWorkerEngine.run_preflight", return_value=(True, "Preflight passed")):
+    orig = BacklogWorkerEngine.run_preflight
+    BacklogWorkerEngine.run_preflight = lambda self, *args, **kwargs: (True, "Preflight passed")
+    try:
         ok, msg = complete_salvage(cfg, "TASK-0018")
         assert ok, f"complete_salvage failed: {msg}"
+    finally:
+        BacklogWorkerEngine.run_preflight = orig
 
 
 @then("the squash commit message includes structured dual-custody trailers:")

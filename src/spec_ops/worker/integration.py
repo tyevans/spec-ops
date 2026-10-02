@@ -139,7 +139,7 @@ def rebase_with_inference_healing(
         subprocess.run(["git", "rebase", "--abort"], cwd=worktree_dir, capture_output=True)
         return False, raw_conflict
 
-    from ..backlog.prompts import build_agent_cmd
+    from .runners import build_agent_cmd
 
     max_steps = 10
     step = 0

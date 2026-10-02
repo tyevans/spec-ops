@@ -17,7 +17,7 @@ from .fleet_pool import FleetPoolController, PoolConcurrencyConfig
 from .merge_lock import MergeLockManager
 
 if TYPE_CHECKING:
-    from ..backlog.worker import BacklogWorkerEngine, WorkerResult
+    from .engine import BacklogWorkerEngine, WorkerResult
 
 
 @dataclass
@@ -49,7 +49,7 @@ class BatchCycleOrchestrator:
         self.config = config
         self.repo_root = config.root_dir
         self.queue = BacklogQueue(config.backlog_dir)
-        from ..backlog.worker import BacklogWorkerEngine
+        from .engine import BacklogWorkerEngine
         self.worker_engine = BacklogWorkerEngine(config)
         self.lock_mgr = MergeLockManager(self.repo_root)
 
@@ -76,7 +76,7 @@ class BatchCycleOrchestrator:
                 print("\n⚠️ Graceful shutdown requested. Allowing active worktrees to checkpoint...")
                 self._shutdown_requested = True
                 try:
-                    from ..backlog.worker import request_global_shutdown
+                    from .engine import request_global_shutdown
                     request_global_shutdown()
                 except Exception:
                     pass

@@ -1,3 +1,9 @@
+"""Autonomous git worktree worker engine.
+
+Coordinates autonomous task execution in isolated git worktrees.
+Governed by ADR-0007, ADR-0011, and ADR-0021.
+"""
+
 from __future__ import annotations
 
 import concurrent.futures
@@ -10,15 +16,20 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from ..backlog.queue import BacklogQueue
+from ..backlog.reviewer import TaskReviewEngine
 from ..config.models import SpecOpsConfig
+from ..core.agent_cmd import build_agent_cmd
 from ..core.models import Task
-from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
-from ..worker.merge_lock import MergeLockManager, _THREAD_LOCK as MERGE_LOCK
-from ..worker.preflight import run_worktree_preflight
-from ..worker.worktree import cleanup_worktree as _cleanup_worktree, create_worktree as _create_worktree
-from .queue import BacklogQueue
-from .reviewer import TaskReviewEngine
-
+from .ast_analyzer import format_preflight_ast_feedback
+from .ci_repair import verify_worktree_diff
+from .claimer import hydrate_task_prompt
+from .commits import format_task_commit_message
+from .guardrails import prepare_guardrailed_commit
+from .integration import rebase_with_inference_healing, squash_merge_and_commit
+from .merge_lock import MergeLockManager, _THREAD_LOCK as MERGE_LOCK
+from .preflight import run_worktree_preflight
+from .worktree import cleanup_worktree as _cleanup_worktree, create_worktree as _create_worktree
 
 _GLOBAL_SHUTDOWN: bool = False
 
@@ -41,9 +52,6 @@ class WorkerResult:
     message: str = ""
 
 
-from .prompts import build_task_prompt, build_agent_cmd
-
-
 class BacklogWorkerEngine:
     """Coordinates autonomous task execution in isolated git worktrees."""
 
@@ -52,6 +60,7 @@ class BacklogWorkerEngine:
         self.repo_root = config.root_dir
         self.queue = BacklogQueue(config.backlog_dir)
         self.reviewer = TaskReviewEngine(config)
+        self.last_attempt_history: list[tuple[int, int]] = []
 
     def run_preflight(
         self, cwd: Path, task: Task | None = None, initial: bool = False
@@ -76,8 +85,6 @@ class BacklogWorkerEngine:
         commit_msg: str = "",
     ) -> tuple[bool, str]:
         """Initiates commit preparation with backlog guardrails and staging."""
-        from ..worker.commits import format_task_commit_message
-        from ..worker.guardrails import prepare_guardrailed_commit
         msg = commit_msg or (
             format_task_commit_message(task)
             if task else "feat: worker commit"
@@ -93,7 +100,7 @@ class BacklogWorkerEngine:
         skip_review: bool = False,
     ) -> tuple[bool, str]:
         """Invokes configured agent command with self-healing feedback loop and concurrent review."""
-        prompt = build_task_prompt(task, self.config)
+        prompt = hydrate_task_prompt(task, self.config)
         prompt_file = worktree_dir / ".task-prompt.md"
         if prompt_file.exists():
             existing = prompt_file.read_text(encoding="utf-8", errors="ignore")
@@ -123,7 +130,7 @@ class BacklogWorkerEngine:
         max_attempts = self.config.execution.agent_max_attempts
         last_failure_log = ""
         current_prompt = prompt
-        self.last_attempt_history: list[tuple[int, int]] = []
+        self.last_attempt_history = []
 
         for attempt in range(1, max_attempts + 1):
             if is_shutdown_requested():
@@ -179,7 +186,6 @@ class BacklogWorkerEngine:
                 continue
 
             # Verify that real code modifications were produced (excluding prompt files)
-            from ..worker.ci_repair import verify_worktree_diff
             diff_ok, diff_reason = verify_worktree_diff(worktree_dir)
             if not diff_ok:
                 print(f"⚠️ Agent attempt {attempt} flagged as '{diff_reason}'. Retrying...")
@@ -219,7 +225,6 @@ class BacklogWorkerEngine:
                 feedback_sections: list[str] = []
                 if not preflight_ok:
                     print(f"❌ CI preflight failed on attempt {attempt}.")
-                    from ..worker.ast_analyzer import format_preflight_ast_feedback
                     feedback_sections.append(
                         format_preflight_ast_feedback(preflight_log, attempt, worktree_dir)
                     )
@@ -249,7 +254,6 @@ class BacklogWorkerEngine:
                     return True, f"Preflight passed on attempt {attempt}."
 
                 print(f"❌ Preflight failed on attempt {attempt}. Retrying with feedback...")
-                from ..worker.ast_analyzer import format_preflight_ast_feedback
                 feedback = "\n\n" + format_preflight_ast_feedback(preflight_log, attempt, worktree_dir)
                 current_prompt = prompt + feedback
                 prompt_file.write_text(current_prompt, encoding="utf-8")
@@ -307,7 +311,6 @@ class BacklogWorkerEngine:
                 if p.exists():
                     p.unlink()
 
-            from ..worker.commits import format_task_commit_message
             commit_msg = format_task_commit_message(task)
             commit_ok, commit_log = self.prepare_commit(worktree_dir, task=task, commit_msg=commit_msg)
             if not commit_ok:

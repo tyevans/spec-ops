@@ -109,7 +109,9 @@ def handle_queue_command(
             return 1
 
         base = getattr(args, "base", "main")
-        ok, msg = queue.complete_task_with_gate(
+        from ..app.task_lifecycle import TaskLifecycleService
+        lifecycle = TaskLifecycleService(config)
+        ok, msg = lifecycle.complete_task_with_gate(
             target_task, base_branch=base, repo_root=config.root_dir, config=config
         )
         if not ok:

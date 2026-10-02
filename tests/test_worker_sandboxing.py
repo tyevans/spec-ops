@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from spec_ops.backlog.worker import BacklogWorkerEngine
+from spec_ops.worker import BacklogWorkerEngine
 from spec_ops.config.models import (
     ArchitectureSettings,
     ExecutionSettings,

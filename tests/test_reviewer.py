@@ -17,7 +17,7 @@ from spec_ops.backlog.reviewer import (
     build_review_prompt,
     parse_review_output,
 )
-from spec_ops.backlog.worker import BacklogWorkerEngine, WorkerResult
+from spec_ops.worker import BacklogWorkerEngine, WorkerResult
 from spec_ops.config.models import SpecOpsConfig
 from spec_ops.core.models import Task
 from spec_ops.scaffold.init import init_project

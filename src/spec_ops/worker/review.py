@@ -199,7 +199,7 @@ def _analyze_git_changes(branch: str, repo_root: Path) -> tuple[list[ChangedFile
 
     changed_files: list[ChangedFileInfo] = []
     mock_violations: list[str] = []
-    mock_patterns = [r"unittest\.mock", r"mocker\.patch", r"patch\(", r"patch\.object\(", r"MagicMock"]
+    mock_patterns = [r"unittest\.mock", r"mocker\.patch", r"\bpatch\(", r"patch\.object\(", r"MagicMock"]
 
     if diff_res.returncode == 0 and diff_res.stdout.strip():
         for line in diff_res.stdout.splitlines():
@@ -208,17 +208,17 @@ def _analyze_git_changes(branch: str, repo_root: Path) -> tuple[list[ChangedFile
                 continue
             add_s, del_s, fpath = parts
             added, deleted = (int(add_s) if add_s.isdigit() else 0), (int(del_s) if del_s.isdigit() else 0)
-            fp = repo_root / fpath
             file_txt = ""
-            if fp.is_file():
-                try:
-                    file_txt = fp.read_text(encoding="utf-8", errors="replace")
-                except Exception:
-                    pass
-            if not file_txt:
-                show_p = subprocess.run(["git", "show", f"{branch}:{fpath}"], cwd=repo_root, capture_output=True, text=True)
-                if show_p.returncode == 0:
-                    file_txt = show_p.stdout
+            show_p = subprocess.run(["git", "show", f"{branch}:{fpath}"], cwd=repo_root, capture_output=True, text=True)
+            if show_p.returncode == 0:
+                file_txt = show_p.stdout
+            else:
+                fp = repo_root / fpath
+                if fp.is_file():
+                    try:
+                        file_txt = fp.read_text(encoding="utf-8", errors="replace")
+                    except Exception:
+                        pass
 
             total_lines = len(file_txt.splitlines()) if file_txt else max(0, added - deleted)
             if ("test" in fpath or fpath.startswith("tests/") or "mock" in fpath) and not fpath.endswith("review.py"):

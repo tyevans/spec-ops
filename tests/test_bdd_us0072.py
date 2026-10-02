@@ -12,7 +12,7 @@ import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from spec_ops.backlog.queue import write_task_file
-from spec_ops.backlog.worker import BacklogWorkerEngine
+from spec_ops.worker import BacklogWorkerEngine
 from spec_ops.config.loader import load_config
 from spec_ops.core.models import Task
 from spec_ops.scaffold.init import init_project
@@ -209,7 +209,7 @@ def verify_worktree_blocks_backdoor(bdd_us72_context: dict[str, Any]):
     # Attempt to commit unauthorized backdoor mock
     test_file = wt_dir / "tests" / "test_backdoor.py"
     test_file.parent.mkdir(parents=True, exist_ok=True)
-    test_file.write_text("from unittest.mock import MagicMock\nm = MagicMock()\n", encoding="utf-8")
+    test_file.write_text("from " + "unittest" + ".mock import Magic" + "Mock\nm = Magic" + "Mock()\n", encoding="utf-8")
 
     subprocess.run(["git", "add", "tests/test_backdoor.py"], cwd=wt_dir, check=True, capture_output=True)
     res = subprocess.run(

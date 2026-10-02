@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 from pytest_bdd import given, scenarios, then, when
 
-from spec_ops.backlog.worker import BacklogWorkerEngine
+from spec_ops.worker import BacklogWorkerEngine
 from spec_ops.config.models import SpecOpsConfig
 from spec_ops.core.models import Task
 from spec_ops.scaffold.init import init_project

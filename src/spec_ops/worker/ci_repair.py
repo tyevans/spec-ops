@@ -197,8 +197,8 @@ def ci_heal_task(
     6. When preflight passes, pushes updated branch and re-triggers remote CI.
     """
     from ..backlog.queue import BacklogQueue
-    from ..backlog.worker import BacklogWorkerEngine
-    from ..worker.worktree import create_worktree
+    from .engine import BacklogWorkerEngine
+    from .worktree import create_worktree
 
     queue = BacklogQueue(config.backlog_dir)
     clean_id = task_id.upper().strip()

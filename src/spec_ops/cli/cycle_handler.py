@@ -10,11 +10,10 @@ from pathlib import Path
 from ..backlog.curator import BacklogCurator
 from ..backlog.health import HealthChecker
 from ..backlog.queue import BacklogQueue
-from ..backlog.worker import BacklogWorkerEngine
 from ..config.models import SpecOpsConfig
 from ..prd.decomposer import PRDDecomposer
 from ..prd.manager import PRDManager
-from ..worker import BatchCycleOrchestrator
+from ..worker import BacklogWorkerEngine, BatchCycleOrchestrator
 
 
 def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:

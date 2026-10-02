@@ -244,7 +244,7 @@ def run_curated_preflight(
     stashed = "Saved" in stash_res.stdout or "Saved" in stash_res.stderr
 
     try:
-        from ..backlog.worker import BacklogWorkerEngine
+        from ..worker import BacklogWorkerEngine
 
         worker_engine = BacklogWorkerEngine(config)
         ok, log = worker_engine.run_preflight(worktree_dir, task=task)

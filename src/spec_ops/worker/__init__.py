@@ -13,6 +13,12 @@ from .diagnostic_injector import (
     DiagnosticCard,
     DiagnosticInjector,
 )
+from .engine import (
+    BacklogWorkerEngine,
+    WorkerResult,
+    is_shutdown_requested,
+    request_global_shutdown,
+)
 from .ci_repair import (
     ci_heal_task,
     extract_failure_trace,
@@ -147,6 +153,10 @@ __all__ = [
     "ci_heal_task",
     "cleanup_worktree",
     "conduct_peer_consultation",
+    "BacklogWorkerEngine",
+    "WorkerResult",
+    "is_shutdown_requested",
+    "request_global_shutdown",
     "consult_specifications",
     "create_worktree",
     "derive_conventional_type",

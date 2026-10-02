@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from ..backlog.queue import BacklogQueue
-from ..backlog.worker import BacklogWorkerEngine
+from ..worker import BacklogWorkerEngine
 from ..config.models import SpecOpsConfig
 from ..core.models import Task
 from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit

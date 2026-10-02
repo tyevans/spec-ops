@@ -202,11 +202,12 @@ class BacklogQueue:
         base_branch: str = "main",
         repo_root: Path | None = None,
         config: Any | None = None,
+        integration_runner: Any | None = None,
     ) -> tuple[bool, str]:
-        """Integration gate verifying supply-chain, commit signatures, and dual-custody under merge lock."""
+        """Integration gate verifying supply-chain, commit signatures, and dual-custody under advisory lock."""
         import subprocess
         from ..config.loader import load_config
-        from ..worker.merge_lock import MergeLockManager
+        from .lock import BacklogLock
         from ..security.lockfile import (
             PROTECTED_DEPENDENCY_FILES,
             check_diff_for_dependency_modifications,
@@ -215,7 +216,7 @@ class BacklogQueue:
 
         root = (repo_root or self.backlog_dir.parent.parent).resolve()
         cfg = config or load_config(root_dir=root)
-        lock_mgr = MergeLockManager(root)
+        lock_mgr = BacklogLock(repo_root=root)
         with lock_mgr.acquire():
             wt_dir = root / ".worktrees" / f"task-{task.id}"
             check_dirs = [wt_dir] if (wt_dir.exists() and wt_dir.is_dir()) else [root]
@@ -328,22 +329,20 @@ class BacklogQueue:
             if cfg and hasattr(cfg, "architecture") and hasattr(cfg.architecture, "buffer_target"):
                 buf_target = cfg.architecture.buffer_target
 
-            # Integration merge with structured trailers
+            # Integration merge with structured trailers via injected integration runner
             if target_branch and target_branch != base_branch:
-                from ..worker.commits import format_task_commit_message
-                from ..worker.integration import squash_merge_and_commit
-
-                commit_msg = format_task_commit_message(task)
-                merge_ok, merge_msg = squash_merge_and_commit(
-                    root,
-                    target_branch,
-                    commit_msg,
-                    on_staged=lambda: self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target),
-                    main_branch=base_branch,
-                )
-                if not merge_ok:
-                    return False, f"Integration gate failed: {merge_msg}"
-                return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
+                if integration_runner is not None:
+                    merge_ok, merge_msg = integration_runner(
+                        root,
+                        target_branch,
+                        base_branch,
+                        task,
+                        buf_target,
+                        lambda: self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target),
+                    )
+                    if not merge_ok:
+                        return False, f"Integration gate failed: {merge_msg}"
+                    return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
 
             self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target)
             return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."

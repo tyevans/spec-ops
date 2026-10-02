@@ -322,7 +322,7 @@ class WorkerOrchestrator:
 
         from .ast_analyzer import format_preflight_ast_feedback
         from .preflight import run_worktree_preflight
-        from ..backlog.worker import BacklogWorkerEngine
+        from .engine import BacklogWorkerEngine
 
         engine = BacklogWorkerEngine(self.config)
         attempts_history: list[OrchestrationAttempt] = []

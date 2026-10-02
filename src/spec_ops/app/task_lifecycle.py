@@ -114,3 +114,41 @@ class TaskLifecycleService:
                 branch=branch_name,
                 details={"completed_task_id": clean_id},
             )
+
+    def complete_task_with_gate(
+        self,
+        task: Task,
+        base_branch: str = "main",
+        repo_root: Path | None = None,
+        config: Any | None = None,
+    ) -> tuple[bool, str]:
+        """Orchestrates git integration under merge lock and gates task completion."""
+        root = (repo_root or self.root_dir).resolve()
+        cfg = config or self.config
+
+        from ..worker.merge_lock import MergeLockManager
+        from ..worker.commits import format_task_commit_message
+        from ..worker.integration import squash_merge_and_commit
+        from ..backlog.queue import BacklogQueue
+
+        lock_mgr = MergeLockManager(root)
+        with lock_mgr.acquire(timeout=120.0):
+            queue = BacklogQueue(cfg.backlog_dir)
+
+            def _git_merge_runner(root_p, tgt_b, base_b, t, buf, on_staged_fn):
+                commit_msg = format_task_commit_message(t)
+                return squash_merge_and_commit(
+                    root_p,
+                    tgt_b,
+                    commit_msg,
+                    on_staged=on_staged_fn,
+                    main_branch=base_b,
+                )
+
+            return queue.complete_task_with_gate(
+                task,
+                base_branch=base_branch,
+                repo_root=root,
+                config=cfg,
+                integration_runner=_git_merge_runner,
+            )

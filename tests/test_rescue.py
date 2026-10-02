@@ -52,7 +52,7 @@ def test_rescue_manager_discard(tmp_path: Path):
 
 
 def test_build_agent_cmd():
-    from spec_ops.backlog.worker import build_agent_cmd
+    from spec_ops.worker import build_agent_cmd
 
     cmd1 = build_agent_cmd("agy --dangerously-skip-permissions -p {prompt}", "My multi-line 'prompt' with \"quotes\"", Path("prompt.md"))
     assert cmd1 == ["agy", "--dangerously-skip-permissions", "-p", "My multi-line 'prompt' with \"quotes\""]

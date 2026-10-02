@@ -208,7 +208,7 @@ class TaskReviewEngine:
         attempt: int = 1,
     ) -> ReviewResult:
         """Executes the reviewer agent and returns a structured ReviewResult."""
-        from .worker import build_agent_cmd
+        from ..core.agent_cmd import build_agent_cmd
 
         prompt = self.build_prompt(task, worktree_dir)
         prompt_file = worktree_dir / ".task-review-prompt.md"

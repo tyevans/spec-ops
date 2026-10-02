@@ -11,7 +11,7 @@ import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
 from spec_ops.backlog.queue import write_task_file
-from spec_ops.backlog.worker import BacklogWorkerEngine, WorkerResult
+from spec_ops.worker import BacklogWorkerEngine, WorkerResult
 from spec_ops.config.loader import load_config
 from spec_ops.core.models import Task
 from spec_ops.scaffold.init import init_project

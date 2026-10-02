@@ -5,9 +5,10 @@ from __future__ import annotations
 import os
 import subprocess
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
+
+from spec_ops.worker import BacklogWorkerEngine
 
 from spec_ops.backlog.queue import BacklogQueue, write_task_file
 from spec_ops.cli.main import main
@@ -188,10 +189,14 @@ def test_complete_salvage_end_to_end(salvage_repo: Path, monkeypatch: pytest.Mon
     assert get_staged_files(wt_dir) == ["valid_model.py"]
     assert "scratch_hallucinated.py" in get_untracked_files(wt_dir)
 
-    # 5. Mock run_preflight to succeed
-    with patch("spec_ops.backlog.worker.BacklogWorkerEngine.run_preflight", return_value=(True, "Preflight passed")):
+    # 5. Stub run_preflight to succeed
+    orig = BacklogWorkerEngine.run_preflight
+    BacklogWorkerEngine.run_preflight = lambda self, *args, **kwargs: (True, "Preflight passed")
+    try:
         comp_ok, comp_msg = complete_salvage(cfg, "TASK-0018")
         assert comp_ok, f"complete_salvage failed: {comp_msg}"
+    finally:
+        BacklogWorkerEngine.run_preflight = orig
 
     # 6. Verify worktree removed
     assert not wt_dir.exists()
@@ -212,7 +217,7 @@ def test_complete_salvage_end_to_end(salvage_repo: Path, monkeypatch: pytest.Mon
     assert "Provenance: agent-human-hybrid" in commit_body
 
 
-def test_cli_rescue_salvage_and_patch(salvage_repo: Path, monkeypatch: pytest.MonkeyPatch):
+def test_cli_rescue_salvage_and_apply(salvage_repo: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.chdir(salvage_repo)
     cfg = load_config(salvage_repo)
 

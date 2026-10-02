@@ -95,7 +95,7 @@ def test_backlog_curator_dry_run(tmp_path: Path):
 
 
 def test_worker_preflight_lockfile_check(tmp_path: Path):
-    from spec_ops.backlog.worker import BacklogWorkerEngine
+    from spec_ops.worker import BacklogWorkerEngine
     init_project(tmp_path, name="PreflightTest")
     config = load_config(root_dir=tmp_path)
     config.quality.preflight = ["python3 -c 'print(\"ok\")'"]

@@ -56,7 +56,6 @@ from .unblocker import (
     UnblockingCascadeEngine,
     normalize_task_id,
 )
-from .worker import BacklogWorkerEngine, WorkerResult
 
 __all__ = [
     "ALL_DOR_RULES",
@@ -70,7 +69,6 @@ __all__ = [
     "BacklogDoctorReport",
     "BacklogQueue",
     "BacklogReranker",
-    "BacklogWorkerEngine",
     "CascadeResult",
     "ClaimTask",
     "CompleteTask",

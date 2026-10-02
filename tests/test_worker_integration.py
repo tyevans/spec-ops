@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from spec_ops.backlog.worker import BacklogWorkerEngine, request_global_shutdown
+from spec_ops.worker import BacklogWorkerEngine, request_global_shutdown
 from spec_ops.config.loader import load_config
 from spec_ops.core.models import Task
 from spec_ops.scaffold.init import init_project
@@ -124,7 +124,7 @@ def test_rebase_with_inference_healing_success(repo_with_git: Path, tmp_path: Pa
 
 
 def test_agent_halt_on_shutdown_signal(repo_with_git: Path, tmp_path: Path):
-    from spec_ops.backlog import worker
+    from spec_ops.worker import engine as worker
     config = load_config(repo_with_git)
     config.execution.agent_command = "echo 'noop'"
     config.execution.agent_max_attempts = 3
