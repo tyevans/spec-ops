@@ -154,5 +154,16 @@ __all__ = [
     "AuditSinkExporter",
     "read_audit_sink",
     "verify_audit_sink",
+    "ConsultedSpecReference",
+    "SubagentConsultationRequest",
+    "SubagentConsultationResponse",
+    "SpecConsultationValidator",
 ]
+
+from .subagent_consultation import (
+    ConsultedSpecReference,
+    SpecConsultationValidator,
+    SubagentConsultationRequest,
+    SubagentConsultationResponse,
+)
 

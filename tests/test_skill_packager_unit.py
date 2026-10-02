@@ -192,3 +192,26 @@ def test_references_cli_primer_and_protocol_contract():
     # Continuous Balancing Loop checks
     assert "Continuous Balancing Loop" in balancing
     assert "Tri-Directional Discovery" in balancing
+
+
+def test_subagent_orchestration_guidelines_spec_consultation():
+    """Verifies that orchestration protocol contains explicit subagent spec and peer consultation guidelines (TASK-0187)."""
+    bundle = package_antigravity()
+    protocol = bundle[".agents/skills/spec-ops/references/orchestration_protocol.md"]
+
+    # 1. Approved Specification Consultation Protocol in docs/project/
+    assert "Subagent Specification & Peer Consultation Guidelines" in protocol
+    assert "Approved Specification Consultation Protocol (`docs/project/`)" in protocol
+    assert "Persona Grounding" in protocol
+    assert "Living PRDs" in protocol
+    assert "Executable User Stories" in protocol
+    assert "Governing ADRs" in protocol
+    assert "Backlog & Priority" in protocol
+    assert "Ground Truth Invariant" in protocol
+
+    # 2. Inter-Subagent Peer Consultation Protocol
+    assert "Inter-Subagent Peer Consultation Protocol" in protocol
+    assert "Stage Handoff Consultations" in protocol
+    assert "In-Worktree Peer Review" in protocol
+    assert "Ambiguity Resolution & Escalation" in protocol
+    assert "Execution State Reporting" in protocol
