@@ -227,7 +227,20 @@ def install_security_adrs(root_dir: Path) -> list[Path]:
     return installed
 
 
-def apply_security_profile(root_dir: Path, sync_worktrees: bool = True) -> None:
+_DEFAULT_AGENTS_SCAFFOLDER: Any = None
+
+
+def register_default_agents_scaffolder(scaffolder: Any) -> None:
+    """Registers an external AGENTS.md scaffolding callback for dependency inversion."""
+    global _DEFAULT_AGENTS_SCAFFOLDER
+    _DEFAULT_AGENTS_SCAFFOLDER = scaffolder
+
+
+def apply_security_profile(
+    root_dir: Path,
+    sync_worktrees: bool = True,
+    agents_scaffolder: Any = None,
+) -> None:
     """Applies the security profile to an existing or new repository."""
     scaffold_security_policy(root_dir, overwrite=False)
 
@@ -241,18 +254,31 @@ def apply_security_profile(root_dir: Path, sync_worktrees: bool = True) -> None:
 
     install_security_adrs(root_dir)
 
-    from ..scaffold.agents_md import scaffold_agents_command
-    scaffold_agents_command(root_dir)
+    scaffolder = agents_scaffolder or _DEFAULT_AGENTS_SCAFFOLDER
+    if scaffolder is None:
+        try:
+            import importlib
+            scaffold_mod = importlib.import_module("spec_ops.scaffold.agents_md")
+            scaffolder = getattr(scaffold_mod, "scaffold_agents_command", None)
+        except Exception:
+            scaffolder = None
+
+    if scaffolder:
+        scaffolder(root_dir)
 
     if sync_worktrees:
         worktrees_dir = root_dir / ".worktrees"
         if worktrees_dir.is_dir():
             for wt in worktrees_dir.iterdir():
                 if wt.is_dir() and (wt / ".git").exists():
-                    apply_security_profile(wt, sync_worktrees=False)
+                    apply_security_profile(wt, sync_worktrees=False, agents_scaffolder=scaffolder)
 
 
-def sync_security_profile(root_dir: Path, sync_worktrees: bool = True) -> None:
+def sync_security_profile(
+    root_dir: Path,
+    sync_worktrees: bool = True,
+    agents_scaffolder: Any = None,
+) -> None:
     """Restores missing or degraded security artifacts."""
     scaffold_security_policy(root_dir, overwrite=True)
 
@@ -264,13 +290,22 @@ def sync_security_profile(root_dir: Path, sync_worktrees: bool = True) -> None:
 
     install_security_adrs(root_dir)
 
-    from ..scaffold.agents_md import scaffold_agents_command
-    scaffold_agents_command(root_dir)
+    scaffolder = agents_scaffolder or _DEFAULT_AGENTS_SCAFFOLDER
+    if scaffolder is None:
+        try:
+            import importlib
+            scaffold_mod = importlib.import_module("spec_ops.scaffold.agents_md")
+            scaffolder = getattr(scaffold_mod, "scaffold_agents_command", None)
+        except Exception:
+            scaffolder = None
+
+    if scaffolder:
+        scaffolder(root_dir)
 
     if sync_worktrees:
         worktrees_dir = root_dir / ".worktrees"
         if worktrees_dir.is_dir():
             for wt in worktrees_dir.iterdir():
                 if wt.is_dir() and (wt / ".git").exists():
-                    sync_security_profile(wt, sync_worktrees=False)
+                    sync_security_profile(wt, sync_worktrees=False, agents_scaffolder=scaffolder)
 

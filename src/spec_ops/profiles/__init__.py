@@ -43,6 +43,11 @@ from .registry import (
     register_profile_release,
     resolve_adrs_for_profiles,
 )
+from .security import (
+    apply_security_profile,
+    register_default_agents_scaffolder,
+    sync_security_profile,
+)
 
 __all__ = [
     "ADRCollisionError",
@@ -59,6 +64,7 @@ __all__ = [
     "ProfileInheritanceError",
     "ProfileSemanticDiff",
     "ResolvedComposition",
+    "apply_security_profile",
     "compose_profiles",
     "compute_profile_diff",
     "detect_adr_conflicts",
@@ -72,9 +78,11 @@ __all__ = [
     "package_profile",
     "parse_adr_content",
     "parse_profile_toml",
+    "register_default_agents_scaffolder",
     "register_profile_release",
     "resolve_adrs_for_profiles",
     "resolve_inheritance_dag",
+    "sync_security_profile",
     "validate_profile_source",
 ]
 

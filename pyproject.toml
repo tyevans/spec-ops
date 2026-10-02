@@ -126,7 +126,6 @@ ignore_imports = [
     "spec_ops.backlog.velocity -> spec_ops.rescue.memory",
     "spec_ops.spike.sandbox -> spec_ops.worker.worktree",
     "spec_ops.spike.graduate -> spec_ops.worker.worktree",
-    "spec_ops.profiles.security -> spec_ops.scaffold.agents_md",
 ]
 
 

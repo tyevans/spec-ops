@@ -1,7 +1,7 @@
 ---
-id: '0238'
+id: 0238
 title: Decouple Profiles from Scaffold in src/spec_ops/profiles/security.py
-status: Refined
+status: Complete
 dependencies:
 - TASK-0244
 governing_adrs:
@@ -13,7 +13,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: profiles
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:34:29.319711+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0238: Decouple Profiles from Scaffold in src/spec_ops/profiles/security.py
