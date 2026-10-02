@@ -249,7 +249,12 @@ def compute_contributor_stats(commits: list[CommitRecord], tasks: list[Task]) ->
     return {"Autonomous Agents": stats[True], "Human Developers": stats[False]}
 
 
-def audit_provenance(data: ProjectData, commits: list[CommitRecord], strict: bool = False) -> ProvenanceReport:
+def audit_provenance(
+    data: ProjectData,
+    commits: list[CommitRecord],
+    strict: bool = False,
+    ignore_orphaned_tasks: bool = False,
+) -> ProvenanceReport:
     """Audits end-to-end SDLC traceability, detects unanchored commits, and verifies provenance."""
     tasks_by_id = {t.canonical_id: t for t in data.tasks}
     commits_by_task: dict[str, list[CommitRecord]] = {}
@@ -266,7 +271,10 @@ def audit_provenance(data: ProjectData, commits: list[CommitRecord], strict: boo
                 else:
                     missing_tasks.append((c, tid))
 
-    orphaned_tasks = [t.canonical_id for t in data.tasks if t.status.lower() == "complete" and not commits_by_task.get(t.canonical_id)]
+    if ignore_orphaned_tasks:
+        orphaned_tasks: list[str] = []
+    else:
+        orphaned_tasks = [t.canonical_id for t in data.tasks if t.status.lower() == "complete" and not commits_by_task.get(t.canonical_id)]
     lineage, orphaned_stories = build_provenance_lineage(data, commits_by_task)
     contrib_stats = compute_contributor_stats(commits, data.tasks)
 
@@ -336,7 +344,12 @@ def run_provenance_audit(
     commits = extract_commit_records(repo_dir, since=since_arg, baseline_commit=baseline_commit)
     strict = getattr(args, "strict", False)
 
-    report = audit_provenance(data, commits, strict=strict)
+    report = audit_provenance(
+        data,
+        commits,
+        strict=strict,
+        ignore_orphaned_tasks=bool(since_arg or baseline_commit),
+    )
 
     if getattr(args, "contributions", False):
         print("Contributor Provenance Breakdown:")
