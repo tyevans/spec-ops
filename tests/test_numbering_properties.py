@@ -106,3 +106,32 @@ def test_property_cross_group_numbers_strictly_isolated(common_num: int):
         report = audit_numbering_uniqueness(root)
         assert report.is_valid
         assert len(report.collisions) == 0
+
+
+@settings(max_examples=30, deadline=None)
+@given(
+    st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll")), min_size=3, max_size=12),
+    st.integers(min_value=0, max_value=9999),
+    st.text(alphabet=st.characters(whitelist_categories=("Lu", "Ll")), min_size=3, max_size=12),
+)
+def test_property_non_numeric_task_stems_with_embedded_digits_ignored(
+    prefix_str: str, embedded_digit: int, suffix_str: str
+):
+    """Generative property: Non-numeric task stems with embedded digits never extract false IDs or collide."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        backlog = root / "docs" / "project" / "backlog" / "proposed"
+        backlog.mkdir(parents=True)
+
+        stem = f"TASK-REFACTOR-{prefix_str}-{suffix_str}{embedded_digit}"
+        file_path = backlog / f"{stem}.md"
+        file_path.write_text(
+            f"---\nid: REFACTOR-{prefix_str}-{suffix_str}{embedded_digit}\ntitle: Refactor\n---\n# {stem}\n",
+            encoding="utf-8",
+        )
+
+        report = audit_numbering_uniqueness(root)
+        assert report.is_valid
+        assert len(report.collisions) == 0
+        assert report.entity_counts.get("tasks", 0) == 0
+

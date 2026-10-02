@@ -174,7 +174,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0170 (Complete)**: [`0170-bounded-context-seam-auditor`](complete/0170-bounded-context-seam-auditor.md)
 - **TASK-0171 (Complete)**: [`0171-failure-memory-strategy-indexer`](complete/0171-failure-memory-strategy-indexer.md)
 - **TASK-0183 (Complete)**: [`0183-fix-missing-os-import-in-queue-handler-claim`](complete/0183-fix-missing-os-import-in-queue-handler-claim.md)
-- **TASK-0172 (Refined)**: [`0172-fix-numbering-integrity-regex-collision-on-non-num`](refined/0172-fix-numbering-integrity-regex-collision-on-non-num.md)
+- **TASK-0172 (Complete)**: [`0172-fix-numbering-integrity-regex-collision-on-non-num`](complete/0172-fix-numbering-integrity-regex-collision-on-non-num.md)
 - **TASK-0173 (Refined)**: [`0173-exclude-hidden-tooling-directories-during-brownfie`](refined/0173-exclude-hidden-tooling-directories-during-brownfie.md)
 - **TASK-0174 (Refined)**: [`0174-correct-debt-baseline-file-path-discrepancy-in-bro`](refined/0174-correct-debt-baseline-file-path-discrepancy-in-bro.md)
 - **TASK-0175 (Refined)**: [`0175-fix-docs-audit-dir-fallback-to-respect-configured-`](refined/0175-fix-docs-audit-dir-fallback-to-respect-configured-.md)

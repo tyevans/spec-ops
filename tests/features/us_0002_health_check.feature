@@ -15,3 +15,10 @@ Feature: Codebase Invariant Health and File Length Limit Verification
     When the preflight command runs "spec-ops health"
     Then the command exits with code 1
     And lists the violating file path, exact line count, and configured limit
+
+  Scenario: Non-Numeric Tasks with Embedded Digits Do Not Trigger Collisions
+    Given a task file with non-numeric slug containing embedded digits
+    When the developer runs "spec-ops health --numbering"
+    Then the command exits with code 0
+    And reports "Numbering Invariant Met"
+
