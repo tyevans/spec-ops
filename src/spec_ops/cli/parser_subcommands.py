@@ -327,6 +327,12 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
     p_vlock = sec_subs.add_parser("verify-lock", help="Verify supply-chain lockfile cryptographic hashes and pinning")
     p_vlock.add_argument("--path", default=".", help="Directory containing uv.lock (default: current directory)")
 
+    p_vcommits = sec_subs.add_parser("verify-commits", help="Verify cryptographic commit signatures across rev-range against authorized keyring")
+    p_vcommits.add_argument("--range", dest="rev_range", default="HEAD~1..HEAD", help="Git revision range to verify (e.g. main..HEAD, HEAD~5..HEAD)")
+    p_vcommits.add_argument("--keyring", default=None, help="Path to authorized signers keyring file (e.g. .allowed_signers)")
+    p_vcommits.add_argument("--strict", action="store_true", help="Reject unsigned or unverified commits with exit code 1")
+    p_vcommits.add_argument("--json", action="store_true", help="Output verification report as structured JSON")
+
     p_sentinel = sec_subs.add_parser("sentinel", help="Inspect and enforce supply-chain lockfile mutation immutability")
     p_sentinel.add_argument("--path", default=".", help="Directory to inspect for lockfile mutations (default: current directory)")
     p_sentinel.add_argument("--fix", action="store_true", help="Automatically revert unauthorized lockfile modifications")

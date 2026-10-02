@@ -6,7 +6,6 @@ import argparse
 import sys
 from pathlib import Path
 
-from ..backlog.queue import BacklogQueue
 from ..config.models import SpecOpsConfig
 from ..security.audit import run_dependency_audit
 from ..security.lockfile import verify_lockfile
@@ -361,38 +360,21 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
         parser.parse_args(["security", "hook", "--help"])
         return 0
 
-    parser.parse_args(["security", "--help"])
-    return 0
+    if args.security_action == "verify-commits":
+        from ..security.commit_attestation import verify_commits_cli
 
+        rev_range = getattr(args, "rev_range", "HEAD~1..HEAD")
+        keyring = getattr(args, "keyring", None)
+        strict = getattr(args, "strict", False)
+        as_json = getattr(args, "json", False)
 
-def handle_queue_command(args: argparse.Namespace, config: SpecOpsConfig, parser: argparse.ArgumentParser) -> int:
-    """Executes queue subcommands including gated task completion."""
-    if args.queue_action == "complete":
-        queue = BacklogQueue(config.backlog_dir)
-        clean_id = args.task_id.upper()
-        if not clean_id.startswith("TASK-") and clean_id.isdigit():
-            clean_id = f"TASK-{clean_id.zfill(4)}"
-
-        target_task = None
-        for t in queue.list_all_tasks():
-            if t.canonical_id == clean_id:
-                target_task = t
-                break
-
-        if not target_task:
-            print(f"❌ Task {args.task_id} not found in backlog.", file=sys.stderr)
-            return 1
-
-        base = getattr(args, "base", "main")
-        ok, msg = queue.complete_task_with_gate(
-            target_task, base_branch=base, repo_root=config.root_dir, config=config
+        return verify_commits_cli(
+            repo_dir=config.root_dir,
+            rev_range=rev_range,
+            keyring_path=keyring,
+            strict=strict,
+            as_json=as_json,
         )
-        if not ok:
-            print(f"❌ {msg}", file=sys.stderr)
-            print(msg)
-            return 1
-        print(f"✅ {msg}")
-        return 0
 
-    parser.parse_args(["queue", "--help"])
+    parser.parse_args(["security", "--help"])
     return 0

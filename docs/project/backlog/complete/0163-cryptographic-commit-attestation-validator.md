@@ -1,7 +1,7 @@
 ---
 id: '0163'
 title: Cryptographic Commit Attestation and Sigstore Keyring Validator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0030
 - TASK-0149
@@ -16,6 +16,10 @@ governing_prds:
 governing_stories:
 - US-0113
 target_bc: security
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T00:47:14.481056+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0163: Cryptographic Commit Attestation and Sigstore Keyring Validator
