@@ -212,7 +212,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0214 (Proposed)**: [`0214-domain-model---state-handlers-for-runnin`](proposed/0214-domain-model---state-handlers-for-runnin.md)
 - **TASK-0215 (Proposed)**: [`0215-domain-model---state-handlers-for-runnin`](proposed/0215-domain-model---state-handlers-for-runnin.md)
 - **TASK-0216 (Proposed)**: [`0216-domain-model---state-handlers-for-runnin`](proposed/0216-domain-model---state-handlers-for-runnin.md)
-- **TASK-0217 (Proposed)**: [`0217-architectural-spike--public-api-contract`](proposed/0217-architectural-spike--public-api-contract.md)
+- **TASK-0217 (Refined)**: [`0217-architectural-spike--public-api-contract`](refined/0217-architectural-spike--public-api-contract.md)
 - **TASK-0218 (Proposed)**: [`0218-public-api-contracts-for-running--spec-o`](proposed/0218-public-api-contracts-for-running--spec-o.md)
 - **TASK-0219 (Proposed)**: [`0219-public-api-contracts-for-running--spec-o`](proposed/0219-public-api-contracts-for-running--spec-o.md)
 - **TASK-0220 (Proposed)**: [`0220-public-api-contracts-for-running--spec-o`](proposed/0220-public-api-contracts-for-running--spec-o.md)
