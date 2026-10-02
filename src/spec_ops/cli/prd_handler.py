@@ -86,22 +86,14 @@ def handle_prd_command(
         return dispatch_uat_command(args, config, parser)
 
     if action == "studio":
-        open_browser = getattr(args, "open", False)
-        port = getattr(args, "port", 8787)
-        host = getattr(args, "host", "127.0.0.1")
-        if open_browser:
-            import threading
-            import webbrowser
+        from ..prd.studio_runner import launch_prd_studio
 
-            def _open() -> None:
-                import time
-                time.sleep(0.5)
-                webbrowser.open(f"http://{host}:{port}/studio")
-
-            threading.Thread(target=_open, daemon=True).start()
-        from ..visualizer.server import serve_visualizer
-        serve_visualizer(config, host=host, port=port, default_view="studio")
-        return 0
+        return launch_prd_studio(
+            config,
+            host=getattr(args, "host", "127.0.0.1"),
+            port=getattr(args, "port", 8787),
+            open_browser=getattr(args, "open", False),
+        )
 
     if action == "discover":
         from ..prd.discovery_workflow import discover_prd

@@ -15,6 +15,7 @@ from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecor
 from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
 from .studio_api import dispatch_studio_api_request
+from .studio_runner import launch_prd_studio
 from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
 from .studio_ui import STUDIO_COMPONENT_STORIES, render_studio_html
 from .traceability import PersonaCoverageReport, PersonaLineageRecord, PersonaTraceabilityEngine
@@ -47,6 +48,7 @@ __all__ = [
     "dispatch_studio_api_request",
     "export_roadmap",
     "interactive_new_prd",
+    "launch_prd_studio",
     "render_roadmap_html",
     "render_roadmap_svg",
     "run_deep_audit",
