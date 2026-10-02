@@ -163,7 +163,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0159 (Complete)**: [`0159-worktree-stash-and-clean-reset-recovery`](complete/0159-worktree-stash-and-clean-reset-recovery.md)
 - **TASK-0160 (Complete)**: [`0160-distributed-audit-sink-exporter`](complete/0160-distributed-audit-sink-exporter.md)
 - **TASK-0161 (Complete)**: [`0161-relational-graph-mermaid-exporter`](complete/0161-relational-graph-mermaid-exporter.md)
-- **TASK-0162 (Refined)**: [`0162-persona-journey-friction-auditor`](refined/0162-persona-journey-friction-auditor.md)
+- **TASK-0162 (Complete)**: [`0162-persona-journey-friction-auditor`](complete/0162-persona-journey-friction-auditor.md)
 - **TASK-0163 (Refined)**: [`0163-cryptographic-commit-attestation-validator`](refined/0163-cryptographic-commit-attestation-validator.md)
 - **TASK-0164 (Refined)**: [`0164-deadlock-breaker-and-cycle-resolution`](refined/0164-deadlock-breaker-and-cycle-resolution.md)
 - **TASK-0165 (Refined)**: [`0165-living-adr-supersession-and-evolution`](refined/0165-living-adr-supersession-and-evolution.md)

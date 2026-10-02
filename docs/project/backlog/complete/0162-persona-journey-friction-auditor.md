@@ -1,7 +1,7 @@
 ---
 id: '0162'
 title: Autonomous User Persona Journey Friction Auditor and Heuristic Evaluator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0110
 - TASK-0145
@@ -17,6 +17,10 @@ governing_stories:
 - US-0110
 - US-0117
 target_bc: prd
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T00:41:40.956660+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0162: Autonomous User Persona Journey Friction Auditor and Heuristic Evaluator

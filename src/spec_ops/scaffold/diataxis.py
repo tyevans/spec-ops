@@ -123,6 +123,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops prd uat export` | `--prd PRD [--format {{html}}] [--output OUTPUT]` | Export standalone interactive Customer UAT acceptance matrix HTML report |
 | `spec-ops prd journey` | `[--persona PERSONA] [--format {{markdown,html,json}}] [--output OUTPUT] [--json]` | Interactive Persona Customer Journey Map and Pain Point Matrix Visualizer |
 | `spec-ops prd coverage` | `[--strict] [--json] [--bc BC]` | Audit BDD scenario coverage matrix and living acceptance dashboard |
+| `spec-ops prd friction` | `[--persona PERSONA] [--json] [--threshold THRESHOLD]` | Autonomous user persona journey friction auditor and heuristic evaluator |
 | `spec-ops curate` | `[ACTION] [--infer] [--dry-run] [--model MODEL] [--json]` | Perform JIT backlog refinement, cognitive drift reconciliation, and scope slicing |
 | `spec-ops visualizer` | `[--serve] [--build OUT] [--port PORT] [--entity ENTITY]` | Interactive 2D graph visualizer |
 | `spec-ops visualizer export` | `[--output OUT]` | Export standalone single-file HTML visualizer bundle |

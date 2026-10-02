@@ -101,6 +101,11 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_cov.add_argument("--json", action="store_true", help="Output coverage matrix as structured JSON")
     p_cov.add_argument("--bc", dest="target_bc", default=None, help="Filter by target bounded context")
 
+    p_friction = prd_subs.add_parser("friction", help="Autonomous persona journey friction auditor and heuristic evaluator")
+    p_friction.add_argument("--persona", default=None, help="Filter audit by persona name or ID")
+    p_friction.add_argument("--json", action="store_true", help="Output friction audit report as structured JSON")
+    p_friction.add_argument("--threshold", type=float, default=None, help="Flag workflows exceeding cognitive friction score threshold")
+
 
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:

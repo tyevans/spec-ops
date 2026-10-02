@@ -60,6 +60,27 @@ def handle_prd_command(
             output=getattr(args, "output", None),
         )
 
+    if action == "friction":
+        import json
+        from ..prd.persona_friction import PersonaFrictionAuditor
+
+        auditor = PersonaFrictionAuditor(config.root_dir)
+        persona_filter = getattr(args, "persona", None)
+        threshold = getattr(args, "threshold", None)
+        json_flag = getattr(args, "json", False)
+
+        report = auditor.audit(parser=parser, persona_filter=persona_filter, threshold=threshold)
+
+        if json_flag:
+            print(json.dumps(report.to_dict(), indent=2))
+        else:
+            print(report.format_text())
+
+        if threshold is not None and report.has_violations:
+            return 1
+
+        return 0
+
     if action == "uat":
         from ..prd.uat_cli import dispatch_uat_command
         return dispatch_uat_command(args, config, parser)
