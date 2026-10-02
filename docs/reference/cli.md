@@ -99,6 +99,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops spike preflight` | `[SPIKE_ID]` | Enforce in-worktree write isolation preflight hook |
 | `spec-ops spike graduate` | `<SPIKE_ID> --result {proven,disproven} [--title TITLE] [--notes NOTES] [--findings FINDINGS] [--status STATUS]` | Graduate empirical spike findings into an Architectural Decision Record |
 | `spec-ops tui` | `[--once] [--view {overview,backlog,tree,health}]` | Launch interactive Terminal UI (TUI) dashboard |
+| `spec-ops monitor live` | `[--headless] [--interval INTERVAL] [--tab {workers,events,health}] [--json]` | Multi-tab interactive terminal dashboard streaming real-time events and worker status |
 | `spec-ops queue next` | `[--json]` | Inspect next ready, unblocked backlog task |
 | `spec-ops queue claim` | `[TASK_ID] [--auto] [--worker-id WORKER_ID] [--claimant CLAIMANT] [--json]` | Claim next ready unblocked task or specific task under cross-process lock |
 | `spec-ops queue refine` | `<TASK_ID>` | Validate Definition of Ready and promote task to refined |

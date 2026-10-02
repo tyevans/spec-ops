@@ -1,7 +1,7 @@
 ---
 id: '0167'
 title: Interactive Terminal Dashboard Multi-Tab Live Monitor and Status Streamer
-status: Refined
+status: Complete
 dependencies:
 - TASK-0013
 - TASK-0154
@@ -18,6 +18,10 @@ governing_stories:
 - US-0115
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T01:16:34.147987+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0167: Interactive Terminal Dashboard Multi-Tab Live Monitor and Status Streamer
