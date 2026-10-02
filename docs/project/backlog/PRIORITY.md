@@ -187,7 +187,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0182 (Complete)**: [`0182-detect-unindexed-backlog-tasks-in-health-priority-sync`](complete/0182-detect-unindexed-backlog-tasks-in-health-priority-sync.md)
 - **TASK-0184 (Complete)**: [`0184-an-inline-skill-agentsskillsspec-opsskillmd-is-pre`](complete/0184-an-inline-skill-agentsskillsspec-opsskillmd-is-pre.md)
 - **TASK-0185 (Complete)**: [`0185-scaffolding-specops-agent-adapters-spec-ops-scaffo`](complete/0185-scaffolding-specops-agent-adapters-spec-ops-scaffo.md)
-- **TASK-0186 (Refined)**: [`0186-the-skill-includes-a-standalone-cli-primer-and-pro`](refined/0186-the-skill-includes-a-standalone-cli-primer-and-pro.md)
+- **TASK-0186 (Complete)**: [`0186-the-skill-includes-a-standalone-cli-primer-and-pro`](complete/0186-the-skill-includes-a-standalone-cli-primer-and-pro.md)
 - **TASK-0187 (Refined)**: [`0187-subagent-orchestration-guidelines-explicitly-speci`](refined/0187-subagent-orchestration-guidelines-explicitly-speci.md)
 - **TASK-0188 (Refined)**: [`0188-definition-of-ready-and-definition-of-done-checks-`](refined/0188-definition-of-ready-and-definition-of-done-checks-.md)
 - **TASK-0189 (Refined)**: [`0189-domain-model---state-handlers-for-runnin`](refined/0189-domain-model---state-handlers-for-runnin.md)

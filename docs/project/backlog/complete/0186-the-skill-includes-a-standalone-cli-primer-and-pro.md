@@ -2,7 +2,7 @@
 id: 0186
 title: Implement The skill includes a standalone CLI primer and protocol documentation
   in `references/`.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,6 +13,10 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:32:34.036245+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0186: Implement The skill includes a standalone CLI primer and protocol documentation in `references/`.

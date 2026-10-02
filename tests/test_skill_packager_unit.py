@@ -166,3 +166,29 @@ def test_inline_skill_contract_and_protocols():
     assert "File Length Limit (<500 lines)" in skill_content
     assert "Blackbox Frontdoor Verification" in skill_content
     assert "Strict Backlog Isolation" in skill_content
+
+
+def test_references_cli_primer_and_protocol_contract():
+    """Verifies that standalone CLI primer and protocol docs in references/ satisfy requirements (TASK-0186)."""
+    bundle = package_antigravity()
+    cli_primer = bundle[".agents/skills/spec-ops/references/cli_primer.md"]
+    protocol = bundle[".agents/skills/spec-ops/references/orchestration_protocol.md"]
+    balancing = bundle[".agents/skills/spec-ops/references/balancing_loop.md"]
+
+    # CLI Primer checks
+    assert "# SpecOps CLI Primer" in cli_primer
+    assert "uv run spec-ops health" in cli_primer
+    assert "uv run spec-ops prd audit" in cli_primer
+    assert "uv run spec-ops curate" in cli_primer
+    assert "uv run spec-ops worktree" in cli_primer
+    assert "uv run spec-ops rescue" in cli_primer
+
+    # Orchestration Protocol checks
+    assert "# SpecOps Multi-Agent SDLC Orchestration Protocol" in protocol
+    assert "Specialized Subagent Archetypes" in protocol
+    assert "Actionable Orchestration Failure Protocol" in protocol
+    assert "docs/project/" in protocol
+
+    # Continuous Balancing Loop checks
+    assert "Continuous Balancing Loop" in balancing
+    assert "Tri-Directional Discovery" in balancing

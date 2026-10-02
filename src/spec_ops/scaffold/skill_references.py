@@ -36,14 +36,11 @@ uv run spec-ops constitution sync
 PRDs live in `docs/project/product/` across lifecycle stages (`idea/`, `shaped/`, `accepted/`, `shipped/`):
 
 ```bash
-# List all PRDs and their lifecycle states
-uv run spec-ops prd list
+# Audit PRD decomposition state and buffer readiness
+uv run spec-ops prd audit PRD-XXXX
 
 # Lint PRDs against falsifiable criteria and checkable outcomes
 uv run spec-ops prd lint docs/project/product/accepted/PRD-XXXX.md
-
-# Inspect detailed PRD status and checkable outcomes
-uv run spec-ops prd status PRD-XXXX
 ```
 
 ---
