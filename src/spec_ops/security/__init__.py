@@ -24,6 +24,7 @@ from .git_hooks import (
     uninstall_hook,
     verify_hook,
 )
+from .hygiene import assert_handover_excluded_from_git
 from .interceptor import (
     FORBIDDEN_UTILITIES,
     create_interceptor_shims,
@@ -111,6 +112,7 @@ __all__ = [
     "CommitValidationResult",
     "ComplianceDeliverable",
     "ComplianceManifest",
+    "assert_handover_excluded_from_git",
     "EntropyFinding",
     "EntropyRule",
     "EntropyScannerConfig",

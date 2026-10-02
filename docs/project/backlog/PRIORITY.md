@@ -213,7 +213,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0238 (Complete)**: [`0238-decouple-profiles-from-scaffold-in-srcspec-opsprof`](complete/0238-decouple-profiles-from-scaffold-in-srcspec-opsprof.md)
 - **TASK-0239 (Complete)**: [`0239-decouple-security-from-backlog-in-srcspec-opssecur`](complete/0239-decouple-security-from-backlog-in-srcspec-opssecur.md)
 - **TASK-0240 (Complete)**: [`0240-decouple-security-from-prd-in-srcspec-opssecurityr`](complete/0240-decouple-security-from-prd-in-srcspec-opssecurityr.md)
-- **TASK-0241 (Refined)**: [`0241-decouple-security-from-rescue-in-srcspec-opssecuri`](refined/0241-decouple-security-from-rescue-in-srcspec-opssecuri.md)
+- **TASK-0241 (Complete)**: [`0241-decouple-security-from-rescue-in-srcspec-opssecuri`](complete/0241-decouple-security-from-rescue-in-srcspec-opssecuri.md)
 - **TASK-0242 (Proposed)**: [`0242-decouple-security-from-worker-in-srcspec-opssecuri`](proposed/0242-decouple-security-from-worker-in-srcspec-opssecuri.md)
 - **TASK-0243 (Proposed)**: [`0243-decouple-spike-from-worker-in-srcspec-opsspikesand`](proposed/0243-decouple-spike-from-worker-in-srcspec-opsspikesand.md)
 - **TASK-0245 (Proposed)**: [`0245-retire-adr-0007-adr-0021-import-waivers-and-enforc`](proposed/0245-retire-adr-0007-adr-0021-import-waivers-and-enforc.md)
