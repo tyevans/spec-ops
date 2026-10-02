@@ -17,8 +17,8 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
-signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
-signed_off_at: '2026-10-02T00:29:07.289325+00:00'
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T00:36:59.792674+00:00'
 commit_signature_status: SIGNED
 has_signed_commits: true
 ---

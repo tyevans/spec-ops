@@ -209,6 +209,13 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_g_watch.add_argument("--once", action="store_true", help="Run single watcher scan iteration and exit")
     p_g_watch.add_argument("--max-iterations", type=int, default=None, help="Maximum number of poll iterations before exit")
 
+    p_g_merm = graph_subs.add_parser("mermaid", help="Export relational knowledge graph subgraph as Mermaid or Graphviz diagram")
+    p_g_merm.add_argument("--root", default=None, help="Root entity identifier (e.g. TASK-0001, PRD-0001)")
+    p_g_merm.add_argument("--depth", type=int, default=2, help="Traversal depth limit (default: 2)")
+    p_g_merm.add_argument("--format", choices=["mermaid", "dot"], default="mermaid", help="Diagram output format")
+    p_g_merm.add_argument("--direction", choices=["TD", "LR", "TB", "RL"], default="TD", help="Diagram layout direction")
+    p_g_merm.add_argument("--output", "-o", default=None, help="Output file path to save diagram")
+
 
 from .parser_queue import register_queue_subparsers
 

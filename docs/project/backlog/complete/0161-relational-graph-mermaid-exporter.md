@@ -1,7 +1,7 @@
 ---
 id: '0161'
 title: Relational Knowledge Graph Subgraph Export and Interactive Diagram Generator
-status: Refined
+status: Complete
 dependencies:
 - TASK-0087
 - TASK-0133
@@ -16,6 +16,10 @@ governing_prds:
 governing_stories:
 - US-0101
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T00:37:03.376068+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0161: Relational Knowledge Graph Subgraph Export and Interactive Diagram Generator

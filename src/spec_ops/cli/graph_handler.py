@@ -286,6 +286,10 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
     if action == "watch":
         return handle_graph_watch_command(args, config)
 
+    if action == "mermaid":
+        from ..graph.mermaid_export import handle_mermaid_command
+        return handle_mermaid_command(args, config)
+
     print(f"❌ Unknown graph action: {action}", file=sys.stderr)
     return 1
 
