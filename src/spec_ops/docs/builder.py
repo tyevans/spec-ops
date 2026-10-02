@@ -249,11 +249,21 @@ def _generate_sidebar(pages: list[DocPage], current_html: str, base_url: str) ->
     return "\n".join(sections)
 
 
+_DEFAULT_ROADMAP_EXPORTER: Any = None
+
+
+def register_default_roadmap_exporter(exporter: Any) -> None:
+    """Registers an external roadmap exporter callback (e.g. from prd or app context)."""
+    global _DEFAULT_ROADMAP_EXPORTER
+    _DEFAULT_ROADMAP_EXPORTER = exporter
+
+
 def build_docs_site(
     config: SpecOpsConfig,
     out_dir: Path | None = None,
     base_url: str = "/spec-ops/",
     include_visualizer: bool = True,
+    roadmap_exporter: Any = None,
 ) -> Path:
     """Compiles Diataxis documentation into a clean static site with embedded visualizer."""
     root_dir = config.root_dir
@@ -280,10 +290,22 @@ def build_docs_site(
     payload = serialize_project_data(config)
     (site_dir / "project-data.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    from ..prd.exporter import export_roadmap
-    assets_dir = site_dir / "assets"
-    assets_dir.mkdir(parents=True, exist_ok=True)
-    export_roadmap(config, format="svg", output_path=assets_dir / "roadmap.svg")
+    exporter = roadmap_exporter or _DEFAULT_ROADMAP_EXPORTER
+    if exporter is None:
+        try:
+            import importlib
+            prd_exporter_mod = importlib.import_module("spec_ops.prd.exporter")
+            exporter = getattr(prd_exporter_mod, "export_roadmap", None)
+        except Exception:
+            exporter = None
+
+    if exporter:
+        assets_dir = site_dir / "assets"
+        assets_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            exporter(config, format="svg", output_path=assets_dir / "roadmap.svg")
+        except TypeError:
+            exporter(config, output_path=assets_dir / "roadmap.svg")
 
     # 4. Discover all Markdown docs in docs/ (excluding docs/project/)
     pages: list[DocPage] = []

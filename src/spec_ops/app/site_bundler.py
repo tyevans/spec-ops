@@ -69,6 +69,9 @@ class SiteBundlerService:
             from ..prd.exporter import export_roadmap
 
             try:
+                assets_dir = out_path / "assets"
+                assets_dir.mkdir(parents=True, exist_ok=True)
+                export_roadmap(self.config, format="svg", output_path=assets_dir / "roadmap.svg")
                 export_roadmap(self.config, output_path=out_path / "roadmap.html")
                 roadmap_exported = True
             except Exception:
