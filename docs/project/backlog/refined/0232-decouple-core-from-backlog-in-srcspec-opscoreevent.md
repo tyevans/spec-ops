@@ -1,7 +1,7 @@
 ---
 id: '0232'
 title: 'Decouple Core from Backlog in src/spec_ops/core/event_store.py'
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0007
 - ADR-0021
