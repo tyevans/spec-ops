@@ -185,3 +185,8 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0180 (Refined)**: [`0180-support-test-classes-and-hypothesis-attributes-in-pro`](refined/0180-support-test-classes-and-hypothesis-attributes-in-pro.md)
 - **TASK-0181 (Refined)**: [`0181-fix-lockfile-sentinel-global-waiver-leak-outside-task`](refined/0181-fix-lockfile-sentinel-global-waiver-leak-outside-task.md)
 - **TASK-0182 (Refined)**: [`0182-detect-unindexed-backlog-tasks-in-health-priority-sync`](refined/0182-detect-unindexed-backlog-tasks-in-health-priority-sync.md)
+- **TASK-0184 (Refined)**: [`0184-an-inline-skill-agentsskillsspec-opsskillmd-is-pre`](refined/0184-an-inline-skill-agentsskillsspec-opsskillmd-is-pre.md)
+- **TASK-0185 (Refined)**: [`0185-scaffolding-specops-agent-adapters-spec-ops-scaffo`](refined/0185-scaffolding-specops-agent-adapters-spec-ops-scaffo.md)
+- **TASK-0186 (Refined)**: [`0186-the-skill-includes-a-standalone-cli-primer-and-pro`](refined/0186-the-skill-includes-a-standalone-cli-primer-and-pro.md)
+- **TASK-0187 (Refined)**: [`0187-subagent-orchestration-guidelines-explicitly-speci`](refined/0187-subagent-orchestration-guidelines-explicitly-speci.md)
+- **TASK-0188 (Refined)**: [`0188-definition-of-ready-and-definition-of-done-checks-`](refined/0188-definition-of-ready-and-definition-of-done-checks-.md)
