@@ -1,7 +1,8 @@
 ---
 id: '0245'
-title: 'Retire ADR-0007 / ADR-0021 Import Waivers and Enforce Zero Prohibited Dependencies in CI Radar'
-status: Proposed
+title: Retire ADR-0007 / ADR-0021 Import Waivers and Enforce Zero Prohibited Dependencies
+  in CI Radar
+status: Refined
 dependencies:
 - TASK-0229
 - TASK-0230

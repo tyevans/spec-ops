@@ -160,6 +160,13 @@ __all__ = [
     "DoRGateResult",
     "DoDGateResult",
     "LifecycleGateOrchestrator",
+    "cleanup_worktree",
+    "create_worktree",
+    "get_worktree_branch",
+    "init_worktree_environment",
+    "is_worktree_dirty",
+    "prune_git_worktrees",
+    "register_default_hook_propagator",
 ]
 
 from .subagent_consultation import (
@@ -174,5 +181,14 @@ from .lifecycle_gates import (
     DoDGateResult,
     DoRGateResult,
     LifecycleGateOrchestrator,
+)
+from .git_worktree import (
+    cleanup_worktree,
+    create_worktree,
+    get_worktree_branch,
+    init_worktree_environment,
+    is_worktree_dirty,
+    prune_git_worktrees,
+    register_default_hook_propagator,
 )
 

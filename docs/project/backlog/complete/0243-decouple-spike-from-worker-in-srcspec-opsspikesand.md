@@ -1,7 +1,7 @@
 ---
 id: '0243'
-title: 'Decouple Spike from Worker in src/spec_ops/spike/sandbox.py'
-status: Refined
+title: Decouple Spike from Worker in src/spec_ops/spike/sandbox.py
+status: Complete
 dependencies:
 - TASK-0242
 governing_adrs:
@@ -13,7 +13,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: spike
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:53:59.093411+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0243: Decouple Spike from Worker in src/spec_ops/spike/sandbox.py

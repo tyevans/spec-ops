@@ -13,7 +13,7 @@ from typing import Any
 from ..backlog.queue import write_task_file
 from ..core.models import Task
 from ..core.parser import parse_task
-from ..worker.worktree import cleanup_worktree
+from ..core.git_worktree import cleanup_worktree
 from .sandbox import SpikeSandbox, normalize_spike_id
 
 

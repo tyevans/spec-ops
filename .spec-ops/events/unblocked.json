@@ -1,6 +1,6 @@
 {
   "event": "task_unblocked",
-  "task_id": "TASK-0236",
-  "target_bc": "docs",
-  "priority_rank": 207
+  "task_id": "TASK-0245",
+  "target_bc": "core",
+  "priority_rank": 215
 }
