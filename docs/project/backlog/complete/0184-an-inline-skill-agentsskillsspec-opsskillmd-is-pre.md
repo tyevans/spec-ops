@@ -3,7 +3,7 @@ id: 0184
 title: Implement An inline skill `.agents/skills/spec-ops/SKILL.md` is present and
   recognized by the agent platform with executable CLI runbooks and subagent orchestration
   protocols.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -14,6 +14,10 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:23:30.365833+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0184: Implement An inline skill `.agents/skills/spec-ops/SKILL.md` is present and recognized by the agent platform with executable CLI runbooks and subagent orchestration protocols.

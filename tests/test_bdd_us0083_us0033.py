@@ -290,6 +290,14 @@ def setup_pull_request_branch(bdd_ctx: dict[str, Any], branch: str):
     write_task_file(task)
     bdd_ctx["task"] = task
 
+    priority_file = repo / "docs" / "project" / "backlog" / "PRIORITY.md"
+    priority_file.parent.mkdir(parents=True, exist_ok=True)
+    priority_file.write_text(
+        "1. **TASK-0001 (Refined)**: [Initial Spike](refined/0001-initial-architecture-spike-and-setup.md)\n"
+        f"2. **{clean_id} (Refined)**: [{task.title}](refined/{slug}-task.md)\n",
+        encoding="utf-8",
+    )
+
     subprocess.run(["git", "add", "-A"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "commit", "-m", f"chore({slug}): refine task"], cwd=repo, check=True, capture_output=True)
 

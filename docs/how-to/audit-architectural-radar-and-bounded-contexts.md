@@ -28,10 +28,13 @@ spec-ops visualizer export --output dist/project-visualizer.html
 
 ## 1. Bounded Context Boundary & Coupling Matrix
 
-The coupling matrix visualizes all cross-context module imports between bounded contexts:
+The coupling matrix visualizes all cross-context module imports between bounded contexts based on architectural layers and independence contracts governed by `import-linter` and ADR-0007:
 
-- **Permissible Imports**: Permitted directional dependency flows between layers.
-- **Prohibited Imports**: Highlighted with pulsing red warning badges (`matrix-badge-prohibited pulsing-red`) indicating illegal backward dependencies (violating ADR-0007) or forbidden import vectors defined in `specops.toml`.
+- **Permissible (N)**: Permitted downward dependency flow actively in use by code.
+- **Permissible**: Allowed downward layer vectors currently uncoupled ($N = 0$).
+- **Isolated**: Independent peer bounded contexts in the same layer (enforced via `import-linter` pipe `|` separation).
+- **Prohibited**: Forbidden backward layer vectors (lower layer attempting to import a higher layer) or contract-forbidden vectors ($N = 0$).
+- **Prohibited (N)**: Active architectural violations highlighted with pulsing red warning badges (`matrix-badge-prohibited pulsing-red`) indicating illegal backward dependencies or unauthorized peer imports.
 - **Layout Switching**: Toggle between the **Coupling Matrix**, **Radial Radar Layout** (`window.switchLayout('radial')`), or **Flow DAG Layout** (`window.switchLayout('flow')`) to inspect bounded context hulls and directional dependency flows.
 
 ---

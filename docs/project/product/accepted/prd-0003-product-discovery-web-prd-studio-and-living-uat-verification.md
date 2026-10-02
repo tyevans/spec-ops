@@ -67,6 +67,10 @@ component: prd
 - `US-0098`
 - `US-0099`
 - `US-0100`
+- `US-0118`
+- `US-0119`
+- `US-0120`
+- `US-0121`
 
 ## Implementing Backlog Tasks
 
@@ -81,4 +85,20 @@ component: prd
 - `TASK-0042`
 - `TASK-0043`
 - `TASK-0091`
+- `TASK-0189`
+- `TASK-0190`
+- `TASK-0191`
+- `TASK-0192`
+- `TASK-0193`
+- `TASK-0194`
+- `TASK-0195`
+- `TASK-0196`
+- `TASK-0197`
+- `TASK-0198`
+- `TASK-0199`
+- `TASK-0200`
+- `TASK-0201`
+- `TASK-0202`
+- `TASK-0203`
+- `TASK-0204`
 

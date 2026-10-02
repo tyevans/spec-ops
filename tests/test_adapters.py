@@ -143,12 +143,13 @@ def test_scaffold_agent_adapters_individual(tmp_path: Path):
     # Antigravity only
     ag_dir = tmp_path / "ag_project"
     files = scaffold_agent_adapters(ag_dir, "AgApp", agents="antigravity")
-    assert len(files) == 5
+    assert len(files) == 8
     assert (ag_dir / "GEMINI.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "curate" / "SKILL.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "health" / "SKILL.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "worker" / "SKILL.md").is_file()
     assert (ag_dir / ".agents" / "skills" / "spec-ops" / "SKILL.md").is_file()
+    assert (ag_dir / ".agents" / "skills" / "spec-ops" / "references" / "cli_primer.md").is_file()
     assert not (ag_dir / "CLAUDE.md").exists()
     assert not (ag_dir / ".cursorrules").exists()
 
@@ -156,7 +157,7 @@ def test_scaffold_agent_adapters_individual(tmp_path: Path):
 def test_scaffold_agent_adapters_all(tmp_path: Path):
     target = tmp_path / "all_project"
     files = scaffold_agent_adapters(target, "AllApp", agents="antigravity,claude,cursor")
-    assert len(files) == 7
+    assert len(files) == 10
 
     assert (target / "CLAUDE.md").is_file()
     assert (target / ".cursorrules").is_file()

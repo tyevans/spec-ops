@@ -139,3 +139,109 @@ def test_scaffold_skill_command_custom_output_dir(tmp_path: Path):
     res = scaffold_skill_command(root_dir=tmp_path, target="antigravity", output_dir=custom_out)
     assert res == 0
     assert (custom_out / ".agents" / "skills" / "spec-ops" / "SKILL.md").is_file()
+
+
+def test_inline_skill_contract_and_protocols():
+    """Verifies that .agents/skills/spec-ops/SKILL.md satisfies PMaC inline skill contracts (TASK-0184)."""
+    bundle = package_antigravity()
+    skill_content = bundle[".agents/skills/spec-ops/SKILL.md"]
+
+    # 1. Frontmatter check
+    assert skill_content.startswith("---\n")
+    assert "name: spec-ops\n" in skill_content
+    assert "description:" in skill_content
+
+    # 2. Executable runbooks
+    assert "uv run spec-ops curate" in skill_content
+    assert "uv run spec-ops health" in skill_content
+    assert "uv run spec-ops worktree create" in skill_content
+
+    # 3. Subagent orchestration protocols
+    assert "Multi-Agent Orchestration Protocol" in skill_content
+    assert "references/orchestration_protocol.md" in skill_content
+    assert "references/cli_primer.md" in skill_content
+    assert "references/balancing_loop.md" in skill_content
+
+    # 4. Invariant checks
+    assert "File Length Limit (<500 lines)" in skill_content
+    assert "Blackbox Frontdoor Verification" in skill_content
+    assert "Strict Backlog Isolation" in skill_content
+
+
+def test_references_cli_primer_and_protocol_contract():
+    """Verifies that standalone CLI primer and protocol docs in references/ satisfy requirements (TASK-0186)."""
+    bundle = package_antigravity()
+    cli_primer = bundle[".agents/skills/spec-ops/references/cli_primer.md"]
+    protocol = bundle[".agents/skills/spec-ops/references/orchestration_protocol.md"]
+    balancing = bundle[".agents/skills/spec-ops/references/balancing_loop.md"]
+
+    # CLI Primer checks
+    assert "# SpecOps CLI Primer" in cli_primer
+    assert "uv run spec-ops health" in cli_primer
+    assert "uv run spec-ops prd audit" in cli_primer
+    assert "uv run spec-ops curate" in cli_primer
+    assert "uv run spec-ops worktree" in cli_primer
+    assert "uv run spec-ops rescue" in cli_primer
+
+    # Orchestration Protocol checks
+    assert "# SpecOps Multi-Agent SDLC Orchestration Protocol" in protocol
+    assert "Specialized Subagent Archetypes" in protocol
+    assert "Actionable Orchestration Failure Protocol" in protocol
+    assert "docs/project/" in protocol
+
+    # Continuous Balancing Loop checks
+    assert "Continuous Balancing Loop" in balancing
+    assert "Tri-Directional Discovery" in balancing
+
+
+def test_subagent_orchestration_guidelines_spec_consultation():
+    """Verifies that orchestration protocol contains explicit subagent spec and peer consultation guidelines (TASK-0187)."""
+    bundle = package_antigravity()
+    protocol = bundle[".agents/skills/spec-ops/references/orchestration_protocol.md"]
+
+    # 1. Approved Specification Consultation Protocol in docs/project/
+    assert "Subagent Specification & Peer Consultation Guidelines" in protocol
+    assert "Approved Specification Consultation Protocol (`docs/project/`)" in protocol
+    assert "Persona Grounding" in protocol
+    assert "Living PRDs" in protocol
+    assert "Executable User Stories" in protocol
+    assert "Governing ADRs" in protocol
+    assert "Backlog & Priority" in protocol
+    assert "Ground Truth Invariant" in protocol
+
+    # 2. Inter-Subagent Peer Consultation Protocol
+    assert "Inter-Subagent Peer Consultation Protocol" in protocol
+    assert "Stage Handoff Consultations" in protocol
+    assert "In-Worktree Peer Review" in protocol
+    assert "Ambiguity Resolution & Escalation" in protocol
+    assert "Execution State Reporting" in protocol
+
+
+def test_lifecycle_gate_invariants_dor_and_dod():
+    """Verifies that orchestration protocol embeds explicit DoR and DoD lifecycle gate invariants (TASK-0188)."""
+    bundle = package_antigravity()
+    protocol = bundle[".agents/skills/spec-ops/references/orchestration_protocol.md"]
+
+    # 1. Definition of Ready (DoR) Gate checks
+    assert "Lifecycle Gate Invariants: Definition of Ready (DoR) & Definition of Done (DoD)" in protocol
+    assert "Definition of Ready (DoR) Gate (Phase 5)" in protocol
+    assert "Task Metadata Complete" in protocol
+    assert "Governing Artifacts Linked" in protocol
+    assert "Executable BDD Specification" in protocol
+    assert "Generative Property Invariants Identified" in protocol
+    assert "Mutation Testing Scope Defined" in protocol
+    assert "INVEST Criteria Satisfied" in protocol
+    assert "Documentation Review" in protocol
+
+    # 2. Definition of Done (DoD) Gate checks
+    assert "Definition of Done (DoD) Gate (Phase 7)" in protocol
+    assert "Blackbox Frontdoor Verification" in protocol
+    assert "Executable BDD Scenarios Passing" in protocol
+    assert "Hypothesis Property Tests Passing" in protocol
+    assert "Mutmut Mutation Score Attained" in protocol
+    assert "Codebase Health Check" in protocol
+    assert "Lockfile Integrity" in protocol
+    assert "Documentation Integrity (Diataxis)" in protocol
+    assert "Strict Backlog Progression" in protocol
+    assert "Commit Provenance" in protocol
+    assert "Dual-Custody Human Sign-Off" in protocol

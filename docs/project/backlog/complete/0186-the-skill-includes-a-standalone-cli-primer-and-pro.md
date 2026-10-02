@@ -1,8 +1,8 @@
 ---
-id: 0187
-title: Implement Subagent orchestration guidelines explicitly specify how subagents
-  consult each other and existing approved specs (`docs/project/`).
-status: Refined
+id: 0186
+title: Implement The skill includes a standalone CLI primer and protocol documentation
+  in `references/`.
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,13 +13,17 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:32:34.036245+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
-# TASK-0187: Implement Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`).
+# TASK-0186: Implement The skill includes a standalone CLI primer and protocol documentation in `references/`.
 
 ## Summary
-Fulfills Outcome 4 of PRD-0006 for persona Alex (The Agentic Systems Architect) & Jordan (The AI-Native Engineering Lead).
-Target capability: Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`)..
+Fulfills Outcome 3 of PRD-0006 for persona Alex (The Agentic Systems Architect) & Jordan (The AI-Native Engineering Lead).
+Target capability: The skill includes a standalone CLI primer and protocol documentation in `references/`..
 
 ## Problem Statement & Context
 Delivers an INVEST-compliant vertical slice in bounded context `core`.
@@ -29,9 +33,9 @@ File length limit: all touched source files strictly <500 lines (ADR-0002).
 ## Acceptance Criteria
 
 ```gherkin
-Scenario: Verify Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`).
+Scenario: Verify The skill includes a standalone CLI primer and protocol documentation in `references/`.
   Given the system is initialized and ready
-  When the user executes the workflow for "Implement Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`)."
+  When the user executes the workflow for "Implement The skill includes a standalone CLI primer and protocol documentation in `references/`."
   Then observable outputs satisfy public contracts without backdoor tampering
   And no internal invariants are violated.
 ```

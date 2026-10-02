@@ -156,6 +156,23 @@ def _derive_suite_name(fn: Callable[..., Any]) -> str:
     return fn_name
 
 
+def is_hypothesis_test(fn: Any, name: str = "") -> bool:
+    """Returns True if the callable is recognized as a Hypothesis property test."""
+    if not callable(fn):
+        return False
+    fn_name = name or getattr(fn, "__name__", "")
+    return bool(
+        getattr(fn, "is_hypothesis_test", False)
+        or hasattr(fn, "hypothesis")
+        or hasattr(fn, "_hypothesis_internal_use_raw_state")
+        or hasattr(fn, "_hypothesis_internal_use_seed")
+        or hasattr(fn, "_hypothesis_internal_use_settings")
+        or hasattr(fn, "_hypothesis_internal_given_arguments")
+        or "property" in fn_name.lower()
+        or "properties" in fn_name.lower()
+    )
+
+
 def find_workspace_root(start_path: Path | str | None = None) -> Path:
     """Finds project workspace root by searching upwards for marker files."""
     current = (Path(start_path) if start_path else Path.cwd()).resolve()
@@ -213,28 +230,42 @@ def discover_property_tests(
                 print(f"⚠️ Warning: Failed to import property test module '{file_path}': {exc}", file=sys.stderr)
             continue
 
-        for attr_name in dir(module):
-            if not attr_name.startswith("test_"):
-                continue
-            fn = getattr(module, attr_name)
-            if not callable(fn):
-                continue
-            is_hypo = getattr(fn, "is_hypothesis_test", False) or hasattr(fn, "hypothesis") or "property" in attr_name
-            if not is_hypo:
-                continue
-
-            suite_name = _derive_suite_name(fn)
-            func_key = f"{file_path.name}:{attr_name}"
+        def _record_test(suite_name: str, fn: Callable[..., Any], test_id: str) -> None:
+            func_key = f"{file_path.name}:{test_id}"
             if func_key in seen_funcs:
-                continue
-
+                return
             if filter_expr:
                 f_lower = filter_expr.lower()
-                if f_lower not in suite_name.lower() and f_lower not in attr_name.lower():
-                    continue
-
+                if f_lower not in suite_name.lower() and f_lower not in test_id.lower():
+                    return
             seen_funcs.add(func_key)
-            discovered.append((suite_name, fn, attr_name, file_path.name))
+            discovered.append((suite_name, fn, test_id, file_path.name))
+
+        for attr_name in dir(module):
+            obj = getattr(module, attr_name)
+            if attr_name.startswith("test_") and callable(obj) and not inspect.isclass(obj):
+                if is_hypothesis_test(obj, attr_name):
+                    _record_test(_derive_suite_name(obj), obj, attr_name)
+            elif inspect.isclass(obj) and (attr_name.startswith("Test") or "test" in attr_name.lower()):
+                if getattr(obj, "__module__", None) != module.__name__:
+                    continue
+                instance = None
+                for method_name in dir(obj):
+                    if not method_name.startswith("test_"):
+                        continue
+                    raw_fn = getattr(obj, method_name)
+                    if not callable(raw_fn) or not is_hypothesis_test(raw_fn, method_name):
+                        continue
+                    if instance is None:
+                        try:
+                            instance = obj()
+                        except Exception:
+                            try:
+                                instance = object.__new__(obj)
+                            except Exception:
+                                pass
+                    bound_fn = getattr(instance, method_name) if instance is not None else raw_fn
+                    _record_test(_derive_suite_name(bound_fn), bound_fn, f"{attr_name}::{method_name}")
 
     return discovered
 

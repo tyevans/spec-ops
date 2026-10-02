@@ -234,37 +234,25 @@ class BacklogQueue:
                     if unstaged:
                         return False, "Integration gate failed: unstaged lockfile alterations detected."
 
-            target_branch = task.branch
-            if not target_branch and wt_dir.exists() and wt_dir.is_dir():
-                b_res = subprocess.run(
-                    ["git", "branch", "--show-current"],
-                    cwd=wt_dir,
-                    capture_output=True,
-                    text=True,
-                )
-                target_branch = b_res.stdout.strip()
+            target_branch = ""
+            if wt_dir.exists() and wt_dir.is_dir():
+                b_res = subprocess.run(["git", "branch", "--show-current"], cwd=wt_dir, capture_output=True, text=True)
+                active_b = b_res.stdout.strip()
+                if active_b and active_b != base_branch:
+                    target_branch = active_b
             if not target_branch:
-                cur_b = subprocess.run(
-                    ["git", "branch", "--show-current"],
-                    cwd=root,
-                    capture_output=True,
-                    text=True,
-                ).stdout.strip()
+                target_branch = task.branch
+            if not target_branch:
+                cur_b = subprocess.run(["git", "branch", "--show-current"], cwd=root, capture_output=True, text=True).stdout.strip()
                 if cur_b != base_branch:
                     target_branch = cur_b
             if not target_branch:
-                b_all = subprocess.run(
-                    ["git", "branch", "--format=%(refname:short)"],
-                    cwd=root,
-                    capture_output=True,
-                    text=True,
-                )
-                if b_all.returncode == 0:
-                    for b in b_all.stdout.splitlines():
-                        b = b.strip()
-                        if b != base_branch and (task.id.lower() in b.lower() or task.canonical_id.lower() in b.lower()):
-                            target_branch = b
-                            break
+                b_all = subprocess.run(["git", "branch", "--format=%(refname:short)"], cwd=root, capture_output=True, text=True)
+                for b in (b_all.stdout.splitlines() if b_all.returncode == 0 else []):
+                    b = b.strip()
+                    if b != base_branch and (task.id.lower() in b.lower() or task.canonical_id.lower() in b.lower()):
+                        target_branch = b
+                        break
 
             if target_branch:
                 branch_exists = subprocess.run(

@@ -154,5 +154,28 @@ __all__ = [
     "AuditSinkExporter",
     "read_audit_sink",
     "verify_audit_sink",
+    "ConsultedSpecReference",
+    "SubagentConsultationRequest",
+    "SubagentConsultationResponse",
+    "SpecConsultationValidator",
+    "ALL_DOR_GATE_RULES",
+    "ALL_DOD_GATE_RULES",
+    "DoRGateResult",
+    "DoDGateResult",
+    "LifecycleGateOrchestrator",
 ]
+
+from .subagent_consultation import (
+    ConsultedSpecReference,
+    SpecConsultationValidator,
+    SubagentConsultationRequest,
+    SubagentConsultationResponse,
+)
+from .lifecycle_gates import (
+    ALL_DOD_GATE_RULES,
+    ALL_DOR_GATE_RULES,
+    DoDGateResult,
+    DoRGateResult,
+    LifecycleGateOrchestrator,
+)
 

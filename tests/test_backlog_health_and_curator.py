@@ -111,3 +111,54 @@ def test_worker_preflight_lockfile_check(tmp_path: Path):
     ok2, log2 = worker.run_preflight(tmp_path)
     assert not ok2
     assert "uv lock --check" in log2
+
+
+def test_check_priority_sync_detects_unindexed_tasks(tmp_path: Path):
+    init_project(tmp_path, name="SyncTest")
+    config = load_config(root_dir=tmp_path)
+    checker = HealthChecker(config)
+
+    ok, errs = checker.check_priority_sync()
+    assert ok
+    assert len(errs) == 0
+
+    refined_dir = tmp_path / "docs" / "project" / "backlog" / "refined"
+    refined_dir.mkdir(parents=True, exist_ok=True)
+    unindexed = refined_dir / "0099-unindexed-task.md"
+    unindexed.write_text("---\nid: TASK-0099\ntitle: Unindexed\nstatus: Refined\n---\n", encoding="utf-8")
+
+    ok2, errs2 = checker.check_priority_sync()
+    assert not ok2
+    assert len(errs2) == 1
+    assert "TASK-0099" in errs2[0]
+    assert "unindexed in PRIORITY.md" in errs2[0]
+
+    report = checker.run_check()
+    assert not report.is_healthy
+    assert not report.priority_sync_ok
+    assert any("TASK-0099" in e for e in report.sync_errors)
+
+
+def test_check_priority_sync_resolves_when_indexed(tmp_path: Path):
+    init_project(tmp_path, name="SyncResolveTest")
+    config = load_config(root_dir=tmp_path)
+    checker = HealthChecker(config)
+
+    refined_dir = tmp_path / "docs" / "project" / "backlog" / "refined"
+    refined_dir.mkdir(parents=True, exist_ok=True)
+    task_file = refined_dir / "0099-indexed-task.md"
+    task_file.write_text("---\nid: TASK-0099\ntitle: Indexed\nstatus: Refined\n---\n", encoding="utf-8")
+
+    priority_file = tmp_path / "docs" / "project" / "backlog" / "PRIORITY.md"
+    current = priority_file.read_text(encoding="utf-8")
+    priority_file.write_text(
+        current + "\n- **TASK-0099 (Refined)**: [`0099-indexed-task`](refined/0099-indexed-task.md)\n",
+        encoding="utf-8",
+    )
+
+    ok, errs = checker.check_priority_sync()
+    assert ok
+    assert len(errs) == 0
+    report = checker.run_check()
+    assert report.is_healthy
+    assert report.priority_sync_ok

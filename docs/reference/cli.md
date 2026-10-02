@@ -24,10 +24,11 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles migrate` | `[--check] [--target-version TARGET_VERSION] [--dry-run] [--path PATH] [--json]` | Migrate profile configuration schema and validate evolvability |
 | `spec-ops architecture seams` | `[--strict] [--json] [--export-heatmap EXPORT_HEATMAP]` | Audit bounded context seams and cross-context coupling heatmap |
 | `spec-ops adr supersede` | `[<OLD_ID>] [--old OLD] [--title TITLE] [--by BY] [--with WITH] [--dry-run]` | Supersede an existing Architectural Decision Record with a new decision and audit active backlog citations |
+| `spec-ops scaffold` | `[--agent AGENT] [--agents AGENTS]` | Scaffold or regenerate project components and agent adapters |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops scaffold docs` | `[--bc BC] [--bounded-context BC] [--title TITLE] [--force] [--overwrite]` | Scaffold 4-quadrant Diataxis documentation for a bounded context (alias: diataxis) |
 | `spec-ops scaffold hooks` | `[--force] [--native]` | Scaffold zero-dependency native POSIX shell git hooks and propagate to worktrees |
-| `spec-ops scaffold ci` | `[--platform PLATFORM] [--force] [--update] [--matrix MATRIX] [--timeout TIMEOUT] [--timeout-minutes TIMEOUT]` | Scaffold multi-platform CI/CD quality gate workflows across GitHub Actions and GitLab CI |
+| `spec-ops scaffold ci` | `[--platform PLATFORM] [--force] [--update] [--matrix MATRIX] [--timeout TIMEOUT] [--timeout-minutes TIMEOUT_MINUTES]` | Scaffold multi-platform CI/CD quality gate workflows across GitHub Actions and GitLab CI |
 | `spec-ops scaffold skill` | `[--target TARGET] [--output-dir OUTPUT_DIR] [--dry-run] [--force]` | Package and scaffold universal multi-platform skill bundles across agent platforms |
 | `spec-ops constitution sync` | `[--repo PATH]` | Synchronize AGENTS.md constitution and docs/operating-manual.md while preserving human custom sections |
 | `spec-ops constitution check` | `[--repo PATH]` | CI drift detection gate comparing specops.toml settings against AGENTS.md |

@@ -1,8 +1,8 @@
 ---
-id: 0188
-title: Implement Definition of Ready and Definition of Done checks are rigorously
-  embedded into the orchestration lifecycle.
-status: Refined
+id: 0185
+title: Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`)
+  generates `.agents/skills/spec-ops/SKILL.md`.
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,13 +13,17 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:29:05.404210+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
-# TASK-0188: Implement Definition of Ready and Definition of Done checks are rigorously embedded into the orchestration lifecycle.
+# TASK-0185: Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`.
 
 ## Summary
-Fulfills Outcome 5 of PRD-0006 for persona Alex (The Agentic Systems Architect) & Jordan (The AI-Native Engineering Lead).
-Target capability: Definition of Ready and Definition of Done checks are rigorously embedded into the orchestration lifecycle..
+Fulfills Outcome 2 of PRD-0006 for persona Alex (The Agentic Systems Architect) & Jordan (The AI-Native Engineering Lead).
+Target capability: Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`..
 
 ## Problem Statement & Context
 Delivers an INVEST-compliant vertical slice in bounded context `core`.
@@ -29,9 +33,9 @@ File length limit: all touched source files strictly <500 lines (ADR-0002).
 ## Acceptance Criteria
 
 ```gherkin
-Scenario: Verify Definition of Ready and Definition of Done checks are rigorously embedded into the orchestration lifecycle.
+Scenario: Verify Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`.
   Given the system is initialized and ready
-  When the user executes the workflow for "Implement Definition of Ready and Definition of Done checks are rigorously embedded into the orchestration lifecycle."
+  When the user executes the workflow for "Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`."
   Then observable outputs satisfy public contracts without backdoor tampering
   And no internal invariants are violated.
 ```

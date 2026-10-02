@@ -204,12 +204,15 @@ from .skill_templates import (
 
 def get_antigravity_slash_commands() -> dict[str, str]:
     """Returns mapping of relative file paths to Antigravity skill/slash command content."""
-    return {
+    from .skill_packager import package_antigravity
+
+    bundled = {
         ".agents/skills/curate/SKILL.md": CURATE_SKILL_MD.strip() + "\n",
         ".agents/skills/health/SKILL.md": HEALTH_SKILL_MD.strip() + "\n",
         ".agents/skills/worker/SKILL.md": WORKER_SKILL_MD.strip() + "\n",
-        ".agents/skills/spec-ops/SKILL.md": SPEC_OPS_SKILL_MD.strip() + "\n",
     }
+    bundled.update(package_antigravity())
+    return bundled
 
 
 def scaffold_agent_adapters(

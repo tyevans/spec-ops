@@ -1,8 +1,8 @@
 ---
-id: 0185
-title: Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`)
-  generates `.agents/skills/spec-ops/SKILL.md`.
-status: Refined
+id: 0187
+title: Implement Subagent orchestration guidelines explicitly specify how subagents
+  consult each other and existing approved specs (`docs/project/`).
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,13 +13,17 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:51:52.940958+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
-# TASK-0185: Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`.
+# TASK-0187: Implement Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`).
 
 ## Summary
-Fulfills Outcome 2 of PRD-0006 for persona Alex (The Agentic Systems Architect) & Jordan (The AI-Native Engineering Lead).
-Target capability: Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`..
+Fulfills Outcome 4 of PRD-0006 for persona Alex (The Agentic Systems Architect) & Jordan (The AI-Native Engineering Lead).
+Target capability: Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`)..
 
 ## Problem Statement & Context
 Delivers an INVEST-compliant vertical slice in bounded context `core`.
@@ -29,9 +33,9 @@ File length limit: all touched source files strictly <500 lines (ADR-0002).
 ## Acceptance Criteria
 
 ```gherkin
-Scenario: Verify Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`.
+Scenario: Verify Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`).
   Given the system is initialized and ready
-  When the user executes the workflow for "Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`."
+  When the user executes the workflow for "Implement Subagent orchestration guidelines explicitly specify how subagents consult each other and existing approved specs (`docs/project/`)."
   Then observable outputs satisfy public contracts without backdoor tampering
   And no internal invariants are violated.
 ```

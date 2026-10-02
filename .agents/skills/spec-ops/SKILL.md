@@ -100,7 +100,7 @@ Continuously audit the repository across four critical vectors to maintain portf
 2. **Review Hold & Dual-Custody Sign-Off**:
    - Verify all commits are cryptographically signed: `git log --format="%h %G? %s"`.
    - Generate architectural review brief: `uv run spec-ops review TASK-XXXX`.
-   - Await human architect sign-off: `uv run spec-ops review sign TASK-XXXX --identity "Ty Evans <tyler@poorlythoughtout.com>"`.
+   - Await human architect sign-off: `uv run spec-ops review sign TASK-XXXX --identity "Ty Evans <tyevans@gmail.com>"`.
    - Autonomous agents are strictly forbidden from merging to `main` without human review approval.
 3. Once signed off, execute integration merge under `MERGE_LOCK`:
    ```bash

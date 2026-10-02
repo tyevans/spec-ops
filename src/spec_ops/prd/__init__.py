@@ -15,6 +15,7 @@ from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecor
 from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
 from .manager import PRDAuditResult, PRDManager
+from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
 from .traceability import PersonaCoverageReport, PersonaLineageRecord, PersonaTraceabilityEngine
 
 __all__ = [
@@ -30,6 +31,9 @@ __all__ = [
     "PRDLifecycleManager",
     "PRDLinter",
     "PRDManager",
+    "PRDStudioSessionState",
+    "PRDStudioStateManager",
+    "PRDSummary",
     "PainPointRecord",
     "PersonaCoverageReport",
     "PersonaJourneyMap",

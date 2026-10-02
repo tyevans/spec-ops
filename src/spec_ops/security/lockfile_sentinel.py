@@ -125,41 +125,64 @@ def _check_task_waiver(worktree_path: Path) -> tuple[bool, str | None]:
     import re
     import yaml
 
-    # Check if cwd or branch contains a task identifier
-    task_match = (
-        re.search(r"(?:task|feat)[-/](?:task-)?(\d+)", worktree_path.name, re.IGNORECASE)
-        or re.search(r"^task[-_](\d+)", worktree_path.name, re.IGNORECASE)
-    )
-    task_num = task_match.group(1) if task_match else None
-    if not task_num:
-        try:
-            res = subprocess.run(
-                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-                cwd=worktree_path,
-                capture_output=True,
-                text=True,
-            )
-            if res.returncode == 0:
+    # Check git branch first, then dedicated worktree directory name
+    task_num: str | None = None
+    try:
+        res = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=worktree_path,
+            capture_output=True,
+            text=True,
+        )
+        if res.returncode == 0:
+            branch = res.stdout.strip()
+            if branch not in ("main", "master", "HEAD"):
                 mb = (
-                    re.search(r"(?:task|feat)[-/](?:task-)?(\d+)", res.stdout.strip(), re.IGNORECASE)
-                    or re.search(r"^task[-_](\d+)", res.stdout.strip(), re.IGNORECASE)
+                    re.search(r"(?:^|/)(?:task|feat)[/-](?:task-)?(\d+)", branch, re.IGNORECASE)
+                    or re.search(r"^task[-_](\d+)", branch, re.IGNORECASE)
                 )
                 if mb:
                     task_num = mb.group(1)
-        except Exception:
-            pass
+    except Exception:
+        pass
+
+    if not task_num:
+        dir_name = worktree_path.name
+        task_match = (
+            re.search(r"^(?:task|feat)[-_](\d+)$", dir_name, re.IGNORECASE)
+            or re.search(r"(?:^|/)(?:task|feat)[/-](?:task-)?(\d+)", dir_name, re.IGNORECASE)
+        )
+        if task_match:
+            task_num = task_match.group(1)
 
     if not task_num:
         return False, None
 
+    try:
+        t_int = int(task_num)
+    except ValueError:
+        return False, None
+
+    canonical_id = f"TASK-{t_int:04d}"
+    short_id = f"TASK-{t_int}"
+    prefix_str = f"{t_int:04d}-"
+    alt_prefix_str = f"{t_int}-"
+
     candidate_files: list[Path] = []
     backlog_dir = worktree_path / "docs" / "project" / "backlog"
     if backlog_dir.is_dir():
-        candidate_files.extend(backlog_dir.glob("*/*.md"))
+        for candidate in backlog_dir.glob("*/*.md"):
+            stem_upper = candidate.stem.upper()
+            if (
+                candidate.name.startswith(prefix_str)
+                or candidate.name.startswith(alt_prefix_str)
+                or stem_upper == canonical_id
+                or stem_upper.startswith(f"{canonical_id}-")
+                or stem_upper.startswith(f"{canonical_id}_")
+            ):
+                candidate_files.append(candidate)
 
     for cf in candidate_files:
-        if task_num not in cf.name:
-            continue
         try:
             content = cf.read_text(encoding="utf-8")
             if content.startswith("---"):
@@ -167,6 +190,9 @@ def _check_task_waiver(worktree_path: Path) -> tuple[bool, str | None]:
                 if len(parts) >= 3:
                     fm = yaml.safe_load(parts[1])
                     if isinstance(fm, dict):
+                        fm_id = str(fm.get("id", "")).strip().upper()
+                        if fm_id and fm_id not in (canonical_id, short_id, str(t_int), f"{t_int:04d}"):
+                            continue
                         if fm.get("allows_dependencies") is True:
                             tid = fm.get("id", cf.stem)
                             return True, f"Backlog task '{tid}' frontmatter explicitly sets 'allows_dependencies: true'"

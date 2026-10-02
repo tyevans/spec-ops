@@ -8,6 +8,13 @@ import argparse
 def register_scaffold_subparsers(subparsers: argparse._SubParsersAction) -> None:
     """Registers scaffold commands (agents, docs, ci, hooks)."""
     p_scaffold = subparsers.add_parser("scaffold", help="Scaffold or regenerate project components")
+    p_scaffold.add_argument(
+        "--agent",
+        "--agents",
+        dest="agent",
+        default=None,
+        help="Target agent platform adapters to configure (antigravity, claude, cursor)",
+    )
     scaffold_subs = p_scaffold.add_subparsers(dest="scaffold_action", help="Scaffolding action")
     scaffold_subs.add_parser("agents", help="Regenerate AGENTS.md constitution from installed profiles")
     p_scaffold_docs = scaffold_subs.add_parser(

@@ -159,6 +159,13 @@ def autonomous_task_dispatched(bdd_us72_context: dict[str, Any], dispatch_cmd: s
         "# TASK-0020\n",
         encoding="utf-8",
     )
+    priority_file = repo / "docs" / "project" / "backlog" / "PRIORITY.md"
+    priority_file.parent.mkdir(parents=True, exist_ok=True)
+    priority_file.write_text(
+        "1. **TASK-0001 (Refined)**: [Initial Spike](refined/0001-initial-architecture-spike-and-setup.md)\n"
+        "2. **TASK-0020 (Refined)**: [Autonomous Task](refined/0020-autonomous-task.md)\n",
+        encoding="utf-8",
+    )
     subprocess.run(["git", "add", "-A"], cwd=repo, check=True, capture_output=True)
     subprocess.run(["git", "commit", "-m", "chore: add task 0020"], cwd=repo, check=True, capture_output=True)
 

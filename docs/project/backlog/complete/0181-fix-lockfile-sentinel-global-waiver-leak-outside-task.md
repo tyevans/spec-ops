@@ -1,7 +1,7 @@
 ---
 id: TASK-0181
 title: Fix Lockfile Sentinel Global Waiver Leak When Outside Dedicated Task Branch
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -12,7 +12,11 @@ governing_prds:
 governing_stories:
 - US-0001
 target_bc: security
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:14:01.435094+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 ## Summary

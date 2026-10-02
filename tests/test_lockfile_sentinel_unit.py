@@ -267,3 +267,37 @@ def test_pre_commit_hook_evaluator_catches_lockfile_mutation(git_worktree: Path)
     dirty_res = evaluator.evaluate()
     assert dirty_res.success is False
     assert "Supply-Chain Lockfile Sentinel Violations" in dirty_res.output
+
+
+def test_waiver_not_leaked_across_different_task_branches(git_worktree: Path):
+    task_dir = git_worktree / "docs" / "project" / "backlog" / "refined"
+    task_dir.mkdir(parents=True, exist_ok=True)
+    (task_dir / "0099-dependency-update.md").write_text(
+        "---\nid: '0099'\ntitle: Dep Update\nstatus: Refined\nallows_dependencies: true\n---\n# Task\n",
+        encoding="utf-8",
+    )
+
+    subprocess.run(["git", "checkout", "-b", "task/TASK-0100"], cwd=git_worktree, check=True, capture_output=True)
+    (git_worktree / "uv.lock").write_text("# Unauthorized change for task 100\n", encoding="utf-8")
+
+    res = inspect_lockfile_sentinel(git_worktree)
+    assert res.ok is False
+    assert res.waiver_applied is False
+    assert "uv.lock" in res.modified_lockfiles
+
+
+def test_waiver_applied_on_canonical_task_branch(git_worktree: Path):
+    task_dir = git_worktree / "docs" / "project" / "backlog" / "refined"
+    task_dir.mkdir(parents=True, exist_ok=True)
+    (task_dir / "0181-dep-update.md").write_text(
+        "---\nid: TASK-0181\ntitle: Dep Update 181\nstatus: Refined\nallows_dependencies: true\n---\n# Task\n",
+        encoding="utf-8",
+    )
+
+    subprocess.run(["git", "checkout", "-b", "feat/task-0181"], cwd=git_worktree, check=True, capture_output=True)
+    (git_worktree / "uv.lock").write_text("# Authorized change for task 181\n", encoding="utf-8")
+
+    res = inspect_lockfile_sentinel(git_worktree)
+    assert res.ok is True
+    assert res.waiver_applied is True
+    assert "TASK-0181" in (res.waiver_details or "")

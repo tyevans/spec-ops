@@ -147,6 +147,10 @@ class ArchitectureChecker:
 
         # 1. Check specops.toml
         arch = self.toml_data.get("architecture", {})
+        layers_cfg = arch.get("layers", {})
+        if isinstance(layers_cfg, dict):
+            contexts.update(layers_cfg.keys())
+
         bc_table = arch.get("bounded_contexts", self.toml_data.get("bounded_contexts", {}))
         if isinstance(bc_table, dict):
             for k in bc_table.keys():
@@ -166,6 +170,16 @@ class ArchitectureChecker:
             for child in src_dir.iterdir():
                 if child.is_dir() and not child.name.startswith(".") and child.name not in EXCLUDE_DIRS:
                     contexts.add(child.name)
+            for child in list(contexts):
+                pkg_dir = src_dir / child
+                if pkg_dir.is_dir() and (pkg_dir / "__init__.py").exists():
+                    sub_bcs = [
+                        s.name for s in pkg_dir.iterdir()
+                        if s.is_dir() and not s.name.startswith(".") and s.name not in EXCLUDE_DIRS
+                    ]
+                    if sub_bcs:
+                        contexts.remove(child)
+                        contexts.update(sub_bcs)
 
         return sorted(contexts)
 
@@ -207,6 +221,9 @@ class ArchitectureChecker:
         return None
 
     def check(self) -> ArchitectureReport:
+        from .layer_contracts import load_architectural_contract
+
+        contract = load_architectural_contract(self.root_dir)
         violations: list[ArchitectureViolation] = []
         context_deps: dict[str, set[str]] = {ctx: set() for ctx in self.bounded_contexts}
 
@@ -235,6 +252,9 @@ class ArchitectureChecker:
             )
 
             for imp in imports:
+                if contract.is_ignored_import(file_mod, imp):
+                    continue
+
                 imp_ctx = self._determine_context(imp)
                 if file_ctx and imp_ctx and file_ctx != imp_ctx:
                     context_deps[file_ctx].add(imp_ctx)
@@ -244,7 +264,6 @@ class ArchitectureChecker:
                 is_domain_file = ".domain." in f".{file_mod}." or "/domain/" in f"/{rel_str}/"
                 is_external_infra = ".infrastructure" in imp or "/infrastructure" in imp
                 if is_domain_file and is_external_infra:
-                    # External if from another context or explicitly flagged
                     if imp_ctx != file_ctx or (imp_ctx and imp_ctx != file_ctx):
                         violations.append(
                             ArchitectureViolation(
@@ -278,6 +297,10 @@ class ArchitectureChecker:
         for c1, deps in context_deps.items():
             for c2 in deps:
                 if c1 in context_deps.get(c2, set()):
+                    src_l = contract.get_layer(c1)
+                    tgt_l = contract.get_layer(c2)
+                    if src_l is not None and tgt_l is not None and src_l == tgt_l and not contract.is_independent(c1, c2):
+                        continue
                     pair = tuple(sorted([c1, c2]))
                     if pair not in reported_pairs:
                         reported_pairs.add(pair)

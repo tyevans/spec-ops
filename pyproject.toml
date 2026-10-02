@@ -10,6 +10,7 @@ requires-python = ">=3.13"
 dependencies = [
     "eventsource-py>=0.8.1",
     "hypothesis>=6.168.3",
+    "import-linter>=2.15",
     "pyyaml>=6.0.1",
     "redstring>=0.11.0",
     "rich>=15.0.0",
@@ -92,6 +93,51 @@ pytest_add_cli_args_test_selection = [
     "tests/test_cache_spike.py",
 ]
 runner = "pytest"
+
+[tool.importlinter]
+root_package = "spec_ops"
+exclude_type_checking_imports = true
+
+[[tool.importlinter.contracts]]
+name = "SpecOps Bounded Context Layers"
+type = "layers"
+layers = [
+    "spec_ops.cli",
+    "spec_ops.visualizer | spec_ops.tui",
+    "spec_ops.worker : spec_ops.rescue : spec_ops.scaffold : spec_ops.release",
+    "spec_ops.backlog : spec_ops.prd : spec_ops.adrs : spec_ops.graph : spec_ops.profiles : spec_ops.spike",
+    "spec_ops.core : spec_ops.security : spec_ops.docs",
+    "spec_ops.config",
+]
+ignore_imports = [
+    "spec_ops.core.provenance -> spec_ops.visualizer.generator",
+    "spec_ops.core.event_store -> spec_ops.backlog.events",
+    "spec_ops.core.event_store -> spec_ops.backlog.queue",
+    "spec_ops.core.event_store -> spec_ops.backlog.decider",
+    "spec_ops.core.decider -> spec_ops.backlog.decider",
+    "spec_ops.core.decider -> spec_ops.backlog.events",
+    "spec_ops.core.decider -> spec_ops.backlog.commands",
+    "spec_ops.security.dual_custody -> spec_ops.backlog.queue",
+    "spec_ops.security.dual_custody -> spec_ops.rescue.handover",
+    "spec_ops.security.sandbox -> spec_ops.worker.sandbox_env",
+    "spec_ops.security.release_verifier -> spec_ops.prd.manifest",
+    "spec_ops.docs.checker -> spec_ops.cli.parser",
+    "spec_ops.docs.builder -> spec_ops.visualizer.generator",
+    "spec_ops.docs.builder -> spec_ops.prd.exporter",
+    "spec_ops.backlog.milestone_briefing -> spec_ops.visualizer.burndown_deck",
+    "spec_ops.backlog.rollover -> spec_ops.visualizer.burndown_deck",
+    "spec_ops.backlog.worker -> spec_ops.worker.*",
+    "spec_ops.backlog.queue -> spec_ops.worker.*",
+    "spec_ops.backlog.rescue -> spec_ops.worker.*",
+    "spec_ops.backlog.prompts -> spec_ops.worker.*",
+    "spec_ops.backlog.rescue -> spec_ops.rescue.*",
+    "spec_ops.backlog.worker -> spec_ops.rescue.*",
+    "spec_ops.backlog.velocity -> spec_ops.rescue.memory",
+    "spec_ops.prd.persona_friction -> spec_ops.cli.parser",
+    "spec_ops.spike.sandbox -> spec_ops.worker.worktree",
+    "spec_ops.spike.graduate -> spec_ops.worker.worktree",
+    "spec_ops.profiles.security -> spec_ops.scaffold.agents_md",
+]
 
 
 

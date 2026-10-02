@@ -67,12 +67,21 @@ window.renderArchitectureRadarView = function() {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
           <div>
             <h3 style="font-size:1.05rem; font-weight:700; color:#fff;">Bounded Context Boundary &amp; Coupling Matrix</h3>
-            <p style="font-size:0.75rem; color:var(--text-muted);">Cross-context coupling matrices highlight permissible and prohibited import vectors.</p>
+            <p style="font-size:0.75rem; color:var(--text-muted);">Cross-context coupling matrices enforce hierarchical layering (higher layers importing lower layers) and bounded context independence (ADR-0007).</p>
           </div>
           <div style="display:flex; gap:6px;">
             <button class="ctrl-btn" onclick="window.switchTab('graph'); if(window.switchLayout) window.switchLayout('radial');" title="View in Radial Radar">🎯 Radar Layout</button>
             <button class="ctrl-btn" onclick="window.switchTab('graph'); if(window.switchLayout) window.switchLayout('flow');" title="View in Flow DAG">🌊 Flow DAG</button>
           </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; font-size:0.72rem; color:#94a3b8; align-items:center;">
+          <span style="font-weight:600; color:#cbd5e1;">Legend:</span>
+          <span style="display:flex; align-items:center; gap:4px;"><span class="matrix-badge matrix-badge-complete" style="background:rgba(16,185,129,0.15); color:#6ee7b7; border:1px solid rgba(16,185,129,0.3); font-size:0.65rem;">Permissible (N)</span> Active downward import</span>
+          <span style="display:flex; align-items:center; gap:4px;"><span class="matrix-badge" style="background:rgba(16,185,129,0.05); color:#a7f3d0; border:1px dashed rgba(16,185,129,0.2); font-size:0.65rem;">Permissible</span> Downward layer vector</span>
+          <span style="display:flex; align-items:center; gap:4px;"><span class="matrix-badge" style="background:rgba(100,116,139,0.15); color:#94a3b8; border:1px solid rgba(148,163,184,0.25); font-size:0.65rem;">Isolated</span> Independent peer context</span>
+          <span style="display:flex; align-items:center; gap:4px;"><span class="matrix-badge" style="background:rgba(239,68,68,0.08); color:#f87171; border:1px dashed rgba(239,68,68,0.4); font-size:0.65rem;">Prohibited</span> Backward layer vector (forbidden)</span>
+          <span style="display:flex; align-items:center; gap:4px;"><span class="matrix-badge matrix-badge-prohibited pulsing-red" style="background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid #ef4444; font-size:0.65rem;">Prohibited (N)</span> Active layer/rule violation</span>
         </div>
 
         <div class="matrix-table-wrap" style="overflow-x:auto;">
@@ -95,11 +104,44 @@ window.renderArchitectureRadarView = function() {
                       status: violations.some(v => v.source === src && v.target === tgt) ? "prohibited" : "permissible"
                     };
                     const isProhibited = cell.is_prohibited || cell.status === "prohibited";
-                    const badgeClass = isProhibited ? "matrix-badge-prohibited pulsing-red" : "matrix-badge-complete";
-                    const badgeBg = isProhibited ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.15)";
-                    const badgeColor = isProhibited ? "#fca5a5" : "#6ee7b7";
-                    const badgeBorder = isProhibited ? "1px solid #ef4444" : "1px solid rgba(16, 185, 129, 0.3)";
-                    const label = isProhibited ? `Prohibited (${cell.count})` : (cell.count > 0 ? `Permissible (${cell.count})` : `Allowed`);
+                    const isIsolated = cell.status === "isolated";
+                    let badgeClass, badgeBg, badgeColor, badgeBorder, label;
+
+                    if (isProhibited) {
+                      if (cell.count > 0) {
+                        badgeClass = "matrix-badge-prohibited pulsing-red";
+                        badgeBg = "rgba(239, 68, 68, 0.2)";
+                        badgeColor = "#fca5a5";
+                        badgeBorder = "1px solid #ef4444";
+                        label = `Prohibited (${cell.count})`;
+                      } else {
+                        badgeClass = "matrix-badge-prohibited-vector";
+                        badgeBg = "rgba(239, 68, 68, 0.08)";
+                        badgeColor = "#f87171";
+                        badgeBorder = "1px dashed rgba(239, 68, 68, 0.4)";
+                        label = "Prohibited";
+                      }
+                    } else if (isIsolated) {
+                      badgeClass = "matrix-badge-isolated";
+                      badgeBg = "rgba(100, 116, 139, 0.15)";
+                      badgeColor = "#94a3b8";
+                      badgeBorder = "1px solid rgba(148, 163, 184, 0.25)";
+                      label = "Isolated";
+                    } else {
+                      if (cell.count > 0) {
+                        badgeClass = "matrix-badge-complete";
+                        badgeBg = "rgba(16, 185, 129, 0.15)";
+                        badgeColor = "#6ee7b7";
+                        badgeBorder = "1px solid rgba(16, 185, 129, 0.3)";
+                        label = `Permissible (${cell.count})`;
+                      } else {
+                        badgeClass = "matrix-badge-permissible-inactive";
+                        badgeBg = "rgba(16, 185, 129, 0.05)";
+                        badgeColor = "#a7f3d0";
+                        badgeBorder = "1px dashed rgba(16, 185, 129, 0.2)";
+                        label = "Permissible";
+                      }
+                    }
                     return `<td style="text-align:center; padding:8px;"><span class="matrix-badge ${badgeClass}" style="background:${badgeBg}; color:${badgeColor}; border:${badgeBorder}; font-size:0.7rem;">${label}</span></td>`;
                   }).join("")}
                 </tr>

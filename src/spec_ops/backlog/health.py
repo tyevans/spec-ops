@@ -162,13 +162,14 @@ class HealthChecker:
             folder = self.backlog_dir / folder_name
             if not folder.exists():
                 continue
-            for p in folder.glob("*.md"):
+            for p in sorted(folder.glob("*.md")):
                 if p.name.startswith("."):
                     continue
-                m = re.match(r"^(\d+)", p.stem)
+                m = re.match(r"^(?:(TASK|SPIKE)-)?(\d+)", p.stem, re.IGNORECASE)
                 if not m:
                     continue
-                cid = f"TASK-{m.group(1).zfill(4)}"
+                prefix = (m.group(1) or "TASK").upper()
+                cid = f"{prefix}-{m.group(2).zfill(4)}"
                 expected_tag = folder_name.capitalize()
                 # Check line in priority file
                 pattern = rf"\*\*{cid}\s*\(([^)]+)\)\*\*:\s*\[`?[^`\]]+`?\]\(([^/]+)/"
@@ -178,6 +179,8 @@ class HealthChecker:
                     found_folder = match.group(2).strip()
                     if found_folder != folder_name and not (folder_name == "refined" and found_status in ("In-Progress", "Review")):
                         errors.append(f"{cid} is in {folder_name}/ on disk but referenced as {found_folder}/ in PRIORITY.md")
+                else:
+                    errors.append(f"{cid} ({p.name}) exists in {folder_name}/ on disk but is unindexed in PRIORITY.md")
 
         return len(errors) == 0, errors
 
