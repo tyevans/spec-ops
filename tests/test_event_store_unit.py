@@ -9,7 +9,7 @@ import asyncio
 from pathlib import Path
 import pytest
 
-from spec_ops.core.decider import (
+from spec_ops.backlog import (
     ClaimTask,
     CompleteTask,
     ProposeTask,

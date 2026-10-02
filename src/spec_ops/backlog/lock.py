@@ -15,7 +15,6 @@ from typing import Generator
 
 # In-process reentrant lock for thread safety
 _THREAD_LOCK = threading.RLock()
-_LOCK_HOLDER = threading.local()
 
 
 def is_pid_alive(pid: int) -> bool:
@@ -212,17 +211,6 @@ class BacklogLock:
         if not acquired_thread:
             raise TimeoutError("Timed out waiting for in-process backlog lock")
 
-        depth = getattr(_LOCK_HOLDER, "depth", 0)
-        if depth > 0:
-            _LOCK_HOLDER.depth = depth + 1
-            try:
-                yield
-            finally:
-                _LOCK_HOLDER.depth -= 1
-                if acquired_thread:
-                    _THREAD_LOCK.release()
-            return
-
         acquired_files = False
         start_time = time.monotonic()
         sleep_interval = 0.02
@@ -278,11 +266,9 @@ class BacklogLock:
                 paths_str = ", ".join(str(p) for p in self._lock_paths)
                 raise TimeoutError(f"Timed out waiting for backlog lock at {paths_str}")
 
-            _LOCK_HOLDER.depth = 1
             yield
 
         finally:
-            _LOCK_HOLDER.depth = 0
             for fd, path in self._open_fds:
                 try:
                     import fcntl

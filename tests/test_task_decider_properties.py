@@ -10,7 +10,7 @@ from pathlib import Path
 from hypothesis import given, strategies as st, settings
 import pytest
 
-from spec_ops.core.decider import (
+from spec_ops.backlog import (
     ClaimTask,
     CompleteTask,
     ProposeTask,

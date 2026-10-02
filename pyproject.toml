@@ -112,12 +112,6 @@ layers = [
 ]
 ignore_imports = [
     "spec_ops.core.provenance -> spec_ops.visualizer.generator",
-    "spec_ops.core.event_store -> spec_ops.backlog.events",
-    "spec_ops.core.event_store -> spec_ops.backlog.queue",
-    "spec_ops.core.event_store -> spec_ops.backlog.decider",
-    "spec_ops.core.decider -> spec_ops.backlog.decider",
-    "spec_ops.core.decider -> spec_ops.backlog.events",
-    "spec_ops.core.decider -> spec_ops.backlog.commands",
     "spec_ops.security.dual_custody -> spec_ops.backlog.queue",
     "spec_ops.security.dual_custody -> spec_ops.rescue.handover",
     "spec_ops.security.sandbox -> spec_ops.worker.sandbox_env",

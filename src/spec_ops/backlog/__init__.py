@@ -33,6 +33,10 @@ from .dor_gate import (
 )
 from .health import FileLengthViolation, HealthChecker, HealthCheckReport
 from .inference_curator import InferenceCurationResult, InferenceCurator
+from .projection import (
+    project_task_event_to_filesystem,
+    replay_task_state,
+)
 from .queue import BacklogQueue, write_task_file
 from .reconciler import (
     ArchitecturalReconciler,
@@ -113,6 +117,8 @@ __all__ = [
     "task_id_to_uuid",
     "validate_task_dor",
     "write_task_file",
+    "project_task_event_to_filesystem",
+    "replay_task_state",
 ]
 
 

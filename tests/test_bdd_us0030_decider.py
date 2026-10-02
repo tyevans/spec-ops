@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
-from spec_ops.core.decider import (
+from spec_ops.backlog import (
     ProposeTask,
     TaskDecider,
     TaskProposed,

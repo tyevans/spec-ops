@@ -151,11 +151,12 @@ class BacklogQueue:
         cascade: bool = True,
         repo_root: Path | None = None,
         target_buffer: int = 10,
+        acquire_lock: bool = True,
     ) -> Path:
         root = (repo_root or self.backlog_dir.parent.parent).resolve()
         from .lock import BacklogLock, atomic_write, recover_transactions
 
-        with BacklogLock(root).acquire():
+        def _execute() -> Path:
             recover_transactions(root)
             dest = self.complete_dir / task.file_path.name
             self.complete_dir.mkdir(parents=True, exist_ok=True)
@@ -179,6 +180,11 @@ class BacklogQueue:
                 engine.cascade(completed_task_id=task.canonical_id)
 
             return dest
+
+        if acquire_lock:
+            with BacklogLock(root).acquire():
+                return _execute()
+        return _execute()
 
     def _sync_priority_file(self, task: Task, new_status: str, new_folder: str) -> None:
         priority_file = self.backlog_dir / "PRIORITY.md"
@@ -338,13 +344,25 @@ class BacklogQueue:
                         base_branch,
                         task,
                         buf_target,
-                        lambda: self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target),
+                        lambda: self.complete_task(
+                            task,
+                            cascade=True,
+                            repo_root=root,
+                            target_buffer=buf_target,
+                            acquire_lock=False,
+                        ),
                     )
                     if not merge_ok:
                         return False, f"Integration gate failed: {merge_msg}"
                     return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
 
-            self.complete_task(task, cascade=True, repo_root=root, target_buffer=buf_target)
+            self.complete_task(
+                task,
+                cascade=True,
+                repo_root=root,
+                target_buffer=buf_target,
+                acquire_lock=False,
+            )
             return True, f"Task {task.canonical_id} passed integration gate and transitioned to Complete."
 
     def refine_task_with_gate(

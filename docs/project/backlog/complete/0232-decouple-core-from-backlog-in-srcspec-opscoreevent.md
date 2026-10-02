@@ -1,7 +1,7 @@
 ---
 id: '0232'
-title: 'Decouple Core from Backlog in src/spec_ops/core/event_store.py'
-status: Refined
+title: Decouple Core from Backlog in src/spec_ops/core/event_store.py
+status: Complete
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,6 +11,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:06:56.041297+00:00'
+commit_signature_status: SIGNED
+allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0232: Decouple Core from Backlog in src/spec_ops/core/event_store.py
