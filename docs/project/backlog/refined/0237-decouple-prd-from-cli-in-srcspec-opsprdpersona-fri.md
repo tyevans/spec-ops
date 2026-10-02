@@ -1,7 +1,9 @@
 ---
 id: '0237'
-title: 'Decouple PRD from CLI in src/spec_ops/prd/persona_friction.py'
-status: Proposed
+title: Decouple PRD from CLI in src/spec_ops/prd/persona_friction.py
+status: Refined
+dependencies:
+- TASK-0244
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: prd
+allows_dependencies: true
 ---
 
 # TASK-0237: Decouple PRD from CLI in src/spec_ops/prd/persona_friction.py
