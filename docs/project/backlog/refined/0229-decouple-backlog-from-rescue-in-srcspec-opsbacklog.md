@@ -13,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: backlog
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0229: Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py
@@ -37,3 +38,20 @@ Migrate RescueManager and worktree salvage orchestration from spec_ops.backlog t
 2. Verified via `uv run spec-ops arch` and `harvest_architecture_radar()` showing 0 prohibited boundary violations.
 3. Tests pass with 100% pass rate (`uv run pytest`).
 4. All source files strictly comply with ADR-0002 (<500 lines limit).
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py
+  Given the system is initialized and ready
+  When the user executes the workflow for "Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/backlog/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).
