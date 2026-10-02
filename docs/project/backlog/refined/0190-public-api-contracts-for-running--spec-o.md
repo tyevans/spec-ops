@@ -3,16 +3,18 @@ id: 0190
 title: Public API Contracts for Running `spec-ops prd studio --open` launches a lightweight
   local web interface for authoring and validating PRDs without terminal interaction.
 status: Refined
-governing_prds:
-- PRD-0003
-governing_stories:
-- US-0118
-target_bc: prd
 governing_adrs:
 - ADR-0001
 - ADR-0002
 - ADR-0003
 - ADR-0004
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0118
+target_bc: prd
+claimed_by: spec-ops-worker
+branch: task/TASK-0190
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
