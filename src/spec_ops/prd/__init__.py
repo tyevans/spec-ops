@@ -21,7 +21,9 @@ from .lint_engine import (
 )
 from .lint_runner import run_prd_lint
 from .lint_ui import LINT_COMPONENT_STORIES, render_lint_html
+from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
+from .manager import PRDAuditResult, PRDManager
 from .outcome_coverage import (
     OutcomeScenarioItem,
     PRDOutcomeCoverageEngine,

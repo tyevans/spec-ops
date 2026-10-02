@@ -221,7 +221,7 @@ def _analyze_git_changes(branch: str, repo_root: Path) -> tuple[list[ChangedFile
                     file_txt = show_p.stdout
 
             total_lines = len(file_txt.splitlines()) if file_txt else max(0, added - deleted)
-            if ("test" in fpath or fpath.startswith("tests/")) and not fpath.endswith("review.py"):
+            if ("test" in fpath or fpath.startswith("tests/") or "mock" in fpath) and not fpath.endswith("review.py"):
                 for pat in mock_patterns:
                     if file_txt and re.search(pat, file_txt):
                         mock_violations.append(f"{fpath} contains forbidden private mock ({pat})")
