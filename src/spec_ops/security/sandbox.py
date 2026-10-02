@@ -40,7 +40,7 @@ class ExecutionSandbox:
         """Configures PATH shims and PYTHONPATH network isolation in the child execution environment."""
         env = dict(base_env or os.environ).copy()
         if self.scrub_environment:
-            from ..worker.sandbox_env import sanitize_environment
+            from .sandbox_env import sanitize_environment
             env = sanitize_environment(
                 env,
                 extra_allowed={"PYTHONPATH", "PYTEST_CURRENT_TEST", "SPEC_OPS_WORKTREE", "PWD"},

@@ -92,6 +92,12 @@ from .release_verifier import (
     verify_release_manifest_file,
 )
 from .sandbox import ExecutionSandbox
+from .sandbox_env import (
+    DEFAULT_TOOLCHAIN_ENV_VARS,
+    is_sensitive_key,
+    is_sensitive_value,
+    sanitize_environment,
+)
 from .supply_chain_daemon import (
     LockfileAttestation,
     LockfileIntegrityReport,
@@ -177,6 +183,7 @@ __all__ = [
     "resolve_hooks_dir",
     "run_comparative_benchmark",
     "run_hook_sentinel",
+    "sanitize_environment",
     "sign_release_manifest",
     "strip_sentinel_block",
     "uninstall_hook",

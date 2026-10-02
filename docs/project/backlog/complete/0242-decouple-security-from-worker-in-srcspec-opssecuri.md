@@ -1,7 +1,7 @@
 ---
 id: '0242'
-title: 'Decouple Security from Worker in src/spec_ops/security/sandbox.py'
-status: Refined
+title: Decouple Security from Worker in src/spec_ops/security/sandbox.py
+status: Complete
 dependencies:
 - TASK-0241
 governing_adrs:
@@ -13,7 +13,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: security
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:50:26.003397+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0242: Decouple Security from Worker in src/spec_ops/security/sandbox.py
