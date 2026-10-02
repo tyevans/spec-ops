@@ -17,7 +17,26 @@ def handle_scaffold_command(
     config: SpecOpsConfig,
     parser: argparse.ArgumentParser,
 ) -> int:
-    """Executes 'spec-ops scaffold' commands."""
+    agent_target = getattr(args, "agent", None)
+    if agent_target:
+        from ..scaffold.adapters import scaffold_agent_adapters
+
+        created = scaffold_agent_adapters(
+            root=config.root_dir,
+            project_name=config.project.name,
+            agents=agent_target,
+            profiles=None,
+            overwrite=getattr(args, "force", False),
+        )
+        print(f"✨ Successfully scaffolded agent adapters ({len(created)} files):")
+        for p in created:
+            try:
+                rel = p.relative_to(config.root_dir)
+                print(f"   - {rel}")
+            except ValueError:
+                print(f"   - {p}")
+        return 0
+
     action = getattr(args, "scaffold_action", None)
     if action == "agents":
         from ..scaffold.agents_md import scaffold_agents_command

@@ -82,6 +82,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles migrate` | `[--check] [--target-version TARGET_VERSION] [--dry-run] [--path PATH] [--json]` | Migrate profile configuration schema and validate evolvability |
 | `spec-ops architecture seams` | `[--strict] [--json] [--export-heatmap EXPORT_HEATMAP]` | Audit bounded context seams and cross-context coupling heatmap |
 | `spec-ops adr supersede` | `[<OLD_ID>] [--old OLD] [--title TITLE] [--by BY] [--with WITH] [--dry-run]` | Supersede an existing Architectural Decision Record with a new decision and audit active backlog citations |
+| `spec-ops scaffold` | `[--agent AGENT] [--agents AGENTS]` | Scaffold or regenerate project components and agent adapters |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops scaffold docs` | `[--bc BC] [--bounded-context BC] [--title TITLE] [--force] [--overwrite]` | Scaffold 4-quadrant Diataxis documentation for a bounded context (alias: diataxis) |
 | `spec-ops scaffold hooks` | `[--force] [--native]` | Scaffold zero-dependency native POSIX shell git hooks and propagate to worktrees |

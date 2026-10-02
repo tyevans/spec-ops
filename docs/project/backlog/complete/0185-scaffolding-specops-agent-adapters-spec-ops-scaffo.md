@@ -2,7 +2,7 @@
 id: 0185
 title: Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`)
   generates `.agents/skills/spec-ops/SKILL.md`.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,6 +13,10 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T03:29:05.404210+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0185: Implement Scaffolding SpecOps agent adapters (`spec-ops scaffold --agents antigravity`) generates `.agents/skills/spec-ops/SKILL.md`.
