@@ -1,19 +1,21 @@
 ---
 id: '0251'
-title: "Automated Security & Auditing Scaffolding and Commit Provenance Baselining in Adoption"
+title: Automated Security & Auditing Scaffolding and Commit Provenance Baselining
+  in Adoption
 status: Refined
 governing_adrs:
-  - ADR-0001
-  - ADR-0010
-  - ADR-0011
-  - ADR-0012
+- ADR-0001
+- ADR-0010
+- ADR-0011
+- ADR-0012
 governing_prds:
-  - PRD-0007
+- PRD-0007
 governing_stories:
-  - US-0128
+- US-0128
 target_bc: security
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T19:52:11.690133+00:00'
 persona: Devon
-slice_type: feat
 ---
 
 # TASK-0251: Automated Security & Auditing Scaffolding and Commit Provenance Baselining in Adoption

@@ -114,6 +114,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_adopt.add_argument("--profile", default="core,bdd,ddd", help="Comma-separated architectural profiles to install (default: core,bdd,ddd)")
     p_adopt.add_argument("--grandfather-debt", action="store_true", default=True, help="Baseline existing files exceeding file limits into debt tracker (default: True)")
     p_adopt.add_argument("--no-grandfather-debt", dest="grandfather_debt", action="store_false", help="Do not grandfather existing debt")
+    p_adopt.add_argument("--github-pages", action="store_true", default=False, help="Scaffold self-contained GitHub Pages deployment workflow using standalone tool execution")
+    p_adopt.add_argument("--deconflict-workflow", action="store_true", default=False, help="Deconflict duplicate GitHub Pages deployment workflows")
+    p_adopt.add_argument("--bridge-docs", action="store_true", default=False, help="Output bridging configuration and navigation guidance for existing doc systems")
 
     # docs
     p_docs = subparsers.add_parser("docs", help="Compile Diataxis documentation and static site")

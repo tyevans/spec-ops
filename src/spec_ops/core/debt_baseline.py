@@ -79,7 +79,11 @@ def load_grandfathered_debt(root_dir: Path) -> dict[str, int]:
     debt_map: dict[str, int] = {}
 
     # 1. Check .specops/grandfathered_debt.json or fallback alias
-    candidates = [root / DEBT_BASELINE_FILE, root / ".spec-ops/debt-baseline.json"]
+    candidates = [
+        root / DEBT_BASELINE_FILE,
+        root / ".spec-ops/debt_baseline.json",
+        root / ".spec-ops/debt-baseline.json",
+    ]
     for json_path in candidates:
         if json_path.is_file():
             try:
@@ -138,7 +142,7 @@ def load_grandfathered_debt(root_dir: Path) -> dict[str, int]:
 
 
 def save_grandfathered_debt(root_dir: Path, baseline: dict[str, int]) -> Path:
-    """Saves baseline debt into .specops/grandfathered_debt.json."""
+    """Saves baseline debt into .specops/grandfathered_debt.json and .spec-ops/debt_baseline.json."""
     root = root_dir.resolve()
     json_path = root / DEBT_BASELINE_FILE
     json_path.parent.mkdir(parents=True, exist_ok=True)
@@ -148,7 +152,14 @@ def save_grandfathered_debt(root_dir: Path, baseline: dict[str, int]) -> Path:
         "version": 1,
         "files": normalized_files,
     }
-    json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    encoded = json.dumps(payload, indent=2) + "\n"
+    json_path.write_text(encoded, encoding="utf-8")
+
+    # Also persist to .spec-ops/debt_baseline.json for cross-compatibility
+    spec_ops_json = root / ".spec-ops" / "debt_baseline.json"
+    spec_ops_json.parent.mkdir(parents=True, exist_ok=True)
+    spec_ops_json.write_text(encoded, encoding="utf-8")
+
     return json_path
 
 

@@ -107,8 +107,8 @@ def test_repo_personas_md_idempotence():
 
     content = repo_personas.read_text(encoding="utf-8")
     doc = PersonaDocument.parse(content)
-    assert len(doc.personas) == 6
-    expected_names = ["Alex", "Jordan", "Morgan", "Riley", "Taylor", "Sasha"]
+    assert len(doc.personas) == 7
+    expected_names = ["Alex", "Jordan", "Morgan", "Riley", "Taylor", "Sasha", "Devon"]
     assert [p.name for p in doc.personas] == expected_names
 
     serialized = doc.serialize()

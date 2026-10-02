@@ -28,6 +28,7 @@ def register_audit_subparsers(subparsers: argparse._SubParsersAction) -> None:
     )
     p_audit_prov.add_argument("--strict", action="store_true", help="Fail with exit code 1 if any unanchored commits, orphaned tasks, or missing tasks exist")
     p_audit_prov.add_argument("--contributions", action="store_true", help="Break down delivered tasks and merged commits by contributor provenance")
+    p_audit_prov.add_argument("--since", default=None, help="Audit commits starting from revision, tag, or commit hash (e.g. --since main or --since <hash>)")
     p_audit_prov.add_argument("--repo", default=".", help="Repository root path (default: current directory)")
 
     p_audit_proof = audit_subs.add_parser(

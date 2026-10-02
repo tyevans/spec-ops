@@ -1,18 +1,21 @@
 ---
-id: '0248'
-title: "Self-Contained GitHub Pages Workflow Scaffolding with Standalone Tool Execution"
-status: Refined
+id: 0248
+title: Self-Contained GitHub Pages Workflow Scaffolding with Standalone Tool Execution
+status: Complete
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0006
+- ADR-0001
+- ADR-0003
+- ADR-0006
 governing_prds:
-  - PRD-0007
+- PRD-0007
 governing_stories:
-  - US-0124
+- US-0124
 target_bc: docs
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T19:52:04.558167+00:00'
+commit_signature_status: SIGNED
 persona: Devon
-slice_type: feat
+has_signed_commits: true
 ---
 
 # TASK-0248: Self-Contained GitHub Pages Workflow Scaffolding with Standalone Tool Execution

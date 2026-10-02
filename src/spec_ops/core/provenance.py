@@ -109,20 +109,40 @@ def parse_commit_from_raw(
     )
 
 
-def extract_commit_records(repo_dir: Path | str, max_commits: int = 500) -> list[CommitRecord]:
+def extract_commit_records(
+    repo_dir: Path | str,
+    max_commits: int = 500,
+    since: str | None = None,
+    baseline_commit: str | None = None,
+) -> list[CommitRecord]:
     """Harvests commits from git history with parsed RFC-822 trailers."""
     repo = Path(repo_dir).resolve()
     if not (repo / ".git").exists() and not (repo / ".git").is_file():
         return []
     sep_f, sep_r = "\x1f", "\x1e"
     fmt = f"%H{sep_f}%h{sep_f}%an{sep_f}%ae{sep_f}%ad{sep_f}%s{sep_f}%B{sep_r}"
+
+    git_args = ["git", "log"]
+    effective_since = since or baseline_commit
+    if effective_since:
+        git_args.append(f"{effective_since}..HEAD")
+    git_args.extend([f"-n{max_commits}", f"--format={fmt}", "--date=short"])
+
     try:
         res = subprocess.run(
-            ["git", "log", f"-n{max_commits}", f"--format={fmt}", "--date=short"],
+            git_args,
             cwd=str(repo), capture_output=True, text=True, check=True,
         )
     except Exception:
-        return []
+        # Fallback if revision range fails
+        try:
+            res = subprocess.run(
+                ["git", "log", f"-n{max_commits}", f"--format={fmt}", "--date=short"],
+                cwd=str(repo), capture_output=True, text=True, check=True,
+            )
+        except Exception:
+            return []
+
     records: list[CommitRecord] = []
     for block in res.stdout.split(sep_r):
         fields = block.strip().split(sep_f)
@@ -297,7 +317,23 @@ def run_provenance_audit(
     repo_arg = getattr(args, "repo", ".")
     repo_dir = Path(repo_arg).resolve() if Path(repo_arg).is_absolute() else (config.root_dir / repo_arg).resolve()
     data = SpecOpsParser(config.project_docs_dir).parse_all()
-    commits = extract_commit_records(repo_dir)
+
+    since_arg = getattr(args, "since", None)
+    baseline_commit = None
+    toml_path = repo_dir / "specops.toml"
+    if not since_arg and toml_path.is_file():
+        try:
+            import sys
+            if sys.version_info >= (3, 11):
+                import tomllib
+            else:
+                import tomli as tomllib  # type: ignore
+            data_toml = tomllib.loads(toml_path.read_text(encoding="utf-8"))
+            baseline_commit = data_toml.get("audit", {}).get("provenance", {}).get("baseline_commit")
+        except Exception:
+            pass
+
+    commits = extract_commit_records(repo_dir, since=since_arg, baseline_commit=baseline_commit)
     strict = getattr(args, "strict", False)
 
     report = audit_provenance(data, commits, strict=strict)

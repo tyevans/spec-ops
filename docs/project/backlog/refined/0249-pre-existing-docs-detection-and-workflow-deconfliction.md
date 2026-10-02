@@ -1,18 +1,20 @@
 ---
-id: '0249'
-title: "Pre-Existing Documentation System Detection, Workflow Deconfliction & Bridging Guidance"
+id: 0249
+title: Pre-Existing Documentation System Detection, Workflow Deconfliction & Bridging
+  Guidance
 status: Refined
 governing_adrs:
-  - ADR-0001
-  - ADR-0003
-  - ADR-0006
+- ADR-0001
+- ADR-0003
+- ADR-0006
 governing_prds:
-  - PRD-0007
+- PRD-0007
 governing_stories:
-  - US-0125
+- US-0125
 target_bc: adopt
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T19:52:10.402639+00:00'
 persona: Devon
-slice_type: feat
 ---
 
 # TASK-0249: Pre-Existing Documentation System Detection, Workflow Deconfliction & Bridging Guidance

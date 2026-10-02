@@ -170,7 +170,7 @@ def test_persona_cli_audit_and_sync_json(capsys, monkeypatch):
     data = json.loads(captured.out)
     assert "total_personas" in data
     assert "distribution" in data
-    assert data["total_personas"] == 6
+    assert data["total_personas"] == 7
 
     code_sync = main(["persona", "sync", "--json"])
     assert code_sync == 0

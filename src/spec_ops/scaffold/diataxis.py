@@ -67,7 +67,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | Command | Arguments | Description |
 |---|---|---|
 | `spec-ops init` | `[--dir PATH] [--name NAME] [--profile PROFILES] [--agent AGENTS] [--diataxis/--no-diataxis] [--github-pages/--no-github-pages] [--pre-commit/--no-pre-commit] [--interactive] [--headless] [--non-interactive] [--dry-run] [--ci CI] [--bc BC] [--bounded-context BC] [--yes]` | Bootstrap a new PMaC project with profile ADRs, interactive wizard, and headless CI automation |
-| `spec-ops adopt` | `[--name NAME] [--dir DIR] [--profile PROFILES] [--grandfather-debt] [--no-grandfather-debt]` | Adopt SpecOps into an existing brownfield codebase with debt baseline |
+| `spec-ops adopt` | `[--name NAME] [--dir DIR] [--profile PROFILES] [--grandfather-debt] [--no-grandfather-debt] [--github-pages] [--deconflict-workflow] [--bridge-docs]` | Adopt SpecOps into an existing brownfield codebase with debt baseline |
 | `spec-ops profiles list` | None | List available architectural profiles |
 | `spec-ops profiles apply` | `<PROFILE_NAME>` | Apply architectural profile to current repository |
 | `spec-ops profiles sync` | `<PROFILE_NAME>` | Synchronize or restore architectural profile artifacts |
@@ -206,7 +206,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops audit dependencies` | `[--path PATH] [--offline]` | Scan direct and transitive dependencies for High/Critical CVEs and enforce license allowlists |
 | `spec-ops audit export` | `[--standard STANDARD] [--output OUTPUT]` | Compile and export tamper-evident Merkle compliance audit manifest |
 | `spec-ops audit verify` | `[--manifest MANIFEST] [--repo REPO]` | Verify cryptographic compliance manifest integrity and SDLC traceability |
-| `spec-ops audit provenance` | `[--strict] [--contributions] [--repo REPO]` | Audit unbroken commit trailers, SDLC traceability lineage, and contributor provenance (alias: traceability) |
+| `spec-ops audit provenance` | `[--strict] [--contributions] [--repo REPO] [--since SINCE]` | Audit unbroken commit trailers, SDLC traceability lineage, and contributor provenance (alias: traceability) |
 | `spec-ops audit proof` | `--deliverable DELIVERABLE [--manifest MANIFEST] [--out OUT] [--json]` | Generate self-contained Merkle inclusion proof for a single deliverable |
 | `spec-ops audit verify-proof` | `PROOF_FILE --root ROOT [--json]` | Verify Merkle inclusion proof against trusted root in offline execution |
 | `spec-ops audit merkle` | `[--verify VERIFY] [--output OUTPUT] [--json]` | Compile, output, or verify tamper-evident Merkle compliance manifest for repository artifacts |

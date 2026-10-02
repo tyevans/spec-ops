@@ -69,6 +69,33 @@ DOCS_HTML_TEMPLATE = """<!DOCTYPE html>
     th, td {{ padding: 0.75rem 1rem; border: 1px solid var(--border); }}
     th {{ background: #1e293b; color: #f8fafc; font-weight: 600; }}
     tr:nth-child(even) {{ background: rgba(255, 255, 255, 0.02); }}
+    header.doc-header {{
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }}
+    .visualizer-header-link {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--primary);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s;
+    }}
+    .visualizer-header-link:hover {{
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+    }}
   </style>
 </head>
 <body>
@@ -77,6 +104,11 @@ DOCS_HTML_TEMPLATE = """<!DOCTYPE html>
     {sidebar_nav}
   </nav>
   <main class="content">
+    <header class="doc-header">
+      <nav class="header-nav">
+        <a href="{base_url}visualizer/" class="visualizer-header-link">🌐 2D Graph Visualizer</a>
+      </nav>
+    </header>
     {content}
   </main>
 </body>

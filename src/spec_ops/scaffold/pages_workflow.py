@@ -7,9 +7,20 @@ def generate_pages_workflow(
     project_name: str = "SpecOps",
     base_url: str | None = None,
     timeout_minutes: int = 15,
+    standalone: bool = False,
 ) -> str:
     """Generates an opinionated GitHub Actions workflow to compile and deploy documentation to GitHub Pages."""
     base_url_flag = f"--base-url {base_url}" if base_url else "--base-url /${{ github.event.repository.name }}/"
+
+    if standalone:
+        build_step = f"""      - name: Build Diataxis Documentation and Living Visualizer
+        run: uv tool run --from git+https://github.com/tyevans/spec-ops.git spec-ops docs build {base_url_flag}"""
+    else:
+        build_step = f"""      - name: Install dependencies
+        run: uv sync
+
+      - name: Build Diataxis Documentation and Living Visualizer
+        run: uv run spec-ops docs build {base_url_flag}"""
 
     return f"""name: Deploy Documentation & Living Visualizer to GitHub Pages ({project_name})
 
@@ -51,11 +62,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Build Diataxis Documentation and Living Visualizer
-        run: uv run spec-ops docs build {base_url_flag}
+{build_step}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
