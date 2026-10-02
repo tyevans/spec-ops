@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .benchmark import run_comparative_benchmark
+from .digest import compute_git_tree_digest
 from .entropy_plugins import (
     EntropyFinding,
     EntropyRule,
@@ -144,6 +145,7 @@ __all__ = [
     "collect_project_artifacts",
     "compile_compliance_manifest",
     "compute_file_sha256",
+    "compute_git_tree_digest",
     "create_interceptor_shims",
     "detect_lockfile_mutations",
     "extract_executables",

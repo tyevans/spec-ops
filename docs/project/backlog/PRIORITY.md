@@ -212,7 +212,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0237 (Complete)**: [`0237-decouple-prd-from-cli-in-srcspec-opsprdpersona-fri`](complete/0237-decouple-prd-from-cli-in-srcspec-opsprdpersona-fri.md)
 - **TASK-0238 (Complete)**: [`0238-decouple-profiles-from-scaffold-in-srcspec-opsprof`](complete/0238-decouple-profiles-from-scaffold-in-srcspec-opsprof.md)
 - **TASK-0239 (Complete)**: [`0239-decouple-security-from-backlog-in-srcspec-opssecur`](complete/0239-decouple-security-from-backlog-in-srcspec-opssecur.md)
-- **TASK-0240 (Refined)**: [`0240-decouple-security-from-prd-in-srcspec-opssecurityr`](refined/0240-decouple-security-from-prd-in-srcspec-opssecurityr.md)
+- **TASK-0240 (Complete)**: [`0240-decouple-security-from-prd-in-srcspec-opssecurityr`](complete/0240-decouple-security-from-prd-in-srcspec-opssecurityr.md)
 - **TASK-0241 (Proposed)**: [`0241-decouple-security-from-rescue-in-srcspec-opssecuri`](proposed/0241-decouple-security-from-rescue-in-srcspec-opssecuri.md)
 - **TASK-0242 (Proposed)**: [`0242-decouple-security-from-worker-in-srcspec-opssecuri`](proposed/0242-decouple-security-from-worker-in-srcspec-opssecuri.md)
 - **TASK-0243 (Proposed)**: [`0243-decouple-spike-from-worker-in-srcspec-opsspikesand`](proposed/0243-decouple-spike-from-worker-in-srcspec-opsspikesand.md)

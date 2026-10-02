@@ -247,7 +247,7 @@ def verify_release_manifest_data(
         if uat_status != "Approved":
             errors.append(f"Strict validation requires Approved UAT status; got '{uat_status}'")
         if repo_root and tree_digest:
-            from ..prd.manifest import compute_git_tree_digest
+            from .digest import compute_git_tree_digest
 
             curr_tree, clean, errs = compute_git_tree_digest(repo_root, allow_uncommitted=False)
             if errs or curr_tree != tree_digest:
