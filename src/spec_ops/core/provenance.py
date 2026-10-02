@@ -32,6 +32,7 @@ class CommitRecord:
     provenance: str = ""
     is_autonomous: bool = False
     verification_status: str = ""
+    is_merge: bool = False
 
 
 @dataclass
@@ -93,7 +94,7 @@ def is_autonomous_contributor(trailers: dict[str, str], author: str = "", email:
 
 
 def parse_commit_from_raw(
-    full_hash: str, short_hash: str, author: str, email: str, date: str, subject: str, body: str
+    full_hash: str, short_hash: str, author: str, email: str, date: str, subject: str, body: str, is_merge: bool = False
 ) -> CommitRecord:
     """Parses raw git log fields into CommitRecord."""
     full_text = f"{subject}\n\n{body}".strip()
@@ -106,6 +107,7 @@ def parse_commit_from_raw(
         full_hash=full_hash, short_hash=short_hash, author=author, email=email,
         date=date, subject=subject, body=body, trailers=trailers, task_ids=task_ids,
         provenance=prov, is_autonomous=is_auto, verification_status=v_status,
+        is_merge=is_merge,
     )
 
 
@@ -120,7 +122,7 @@ def extract_commit_records(
     if not (repo / ".git").exists() and not (repo / ".git").is_file():
         return []
     sep_f, sep_r = "\x1f", "\x1e"
-    fmt = f"%H{sep_f}%h{sep_f}%an{sep_f}%ae{sep_f}%ad{sep_f}%s{sep_f}%B{sep_r}"
+    fmt = f"%H{sep_f}%h{sep_f}%an{sep_f}%ae{sep_f}%ad{sep_f}%s{sep_f}%p{sep_f}%B{sep_r}"
 
     git_args = ["git", "log"]
     effective_since = since or baseline_commit
@@ -146,7 +148,12 @@ def extract_commit_records(
     records: list[CommitRecord] = []
     for block in res.stdout.split(sep_r):
         fields = block.strip().split(sep_f)
-        if len(fields) >= 7:
+        if len(fields) >= 8:
+            is_merge = len(fields[6].strip().split()) > 1
+            records.append(parse_commit_from_raw(
+                fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[7], is_merge=is_merge
+            ))
+        elif len(fields) >= 7:
             records.append(parse_commit_from_raw(
                 fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6]
             ))
@@ -263,7 +270,8 @@ def audit_provenance(
 
     for c in commits:
         if not c.task_ids:
-            unanchored.append(c)
+            if not c.is_merge:
+                unanchored.append(c)
         else:
             for tid in c.task_ids:
                 if tid in tasks_by_id:
