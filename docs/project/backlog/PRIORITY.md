@@ -222,6 +222,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0249 (Complete)**: [`0249-pre-existing-docs-detection-and-workflow-deconfliction`](complete/0249-pre-existing-docs-detection-and-workflow-deconfliction.md)
 - **TASK-0250 (Complete)**: [`0250-brownfield-technical-debt-ratchet-and-ast-decomposition`](complete/0250-brownfield-technical-debt-ratchet-and-ast-decomposition.md)
 - **TASK-0251 (Complete)**: [`0251-security-and-provenance-adoption-scaffolding`](complete/0251-security-and-provenance-adoption-scaffolding.md)
+- **TASK-0252 (Refined)**: [`0252-responsive-mobile-layout-and-clarity-visualizer-guided-tour`](refined/0252-responsive-mobile-layout-and-clarity-visualizer-guided-tour.md)
 - **TASK-0205 (Refined)**: [`0205-architectural-spike--user-interface---co`](refined/0205-architectural-spike--user-interface---co.md)
 - **TASK-0206 (Refined)**: [`0206-user-interface---component-stories-for-r`](refined/0206-user-interface---component-stories-for-r.md)
 - **TASK-0207 (Refined)**: [`0207-user-interface---component-stories-for-r`](refined/0207-user-interface---component-stories-for-r.md)

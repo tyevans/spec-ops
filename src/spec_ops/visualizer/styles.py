@@ -24,14 +24,16 @@ _BASE_CSS = """
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
+html, body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 header {
@@ -342,6 +344,16 @@ main { flex: 1; display: flex; position: relative; overflow: hidden; }
 .markdown-box pre { background: #030712; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; overflow-x: auto; margin-bottom: 10px; }
 .markdown-box pre code { background: transparent; padding: 0; color: #a5b4fc; }
 .markdown-box blockquote { border-left: 3px solid #6366f1; padding-left: 12px; color: #94a3b8; font-style: italic; margin-bottom: 8px; }
+@media (max-width: 768px) {
+  header { flex-wrap: wrap; padding: 8px 12px; gap: 8px; height: auto; max-width: 100vw; }
+  .header-left { flex-wrap: wrap; gap: 8px; width: 100%; justify-content: space-between; }
+  .header-center { flex-wrap: wrap; width: 100%; justify-content: flex-start; gap: 6px; }
+  .search-box { width: 100%; }
+  .stats-bar { width: 100%; overflow-x: auto; padding-bottom: 2px; }
+  .nav-tabs-bar { max-width: 100vw; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 6px 10px; }
+  .graph-filter-toolbar { flex-wrap: wrap; max-width: 100vw; padding: 6px 10px; height: auto; }
+  #canvas-view, #dashboard-view, main { max-width: 100vw; overflow-x: hidden; }
+}
 """
 
 VISUALIZER_CSS = _BASE_CSS + "\n" + MATRIX_CSS + "\n" + LEAD_CONSOLE_CSS + "\n" + SECURITY_RADAR_CSS

@@ -202,6 +202,9 @@ _BASE_SHELL = """<!DOCTYPE html>
           <button class="ctrl-btn" id="tour-skip-btn" onclick="closeTour()">Skip Tour</button>
           <button class="ctrl-btn active" id="tour-next-btn" onclick="nextTourStep()">Next →</button>
         </div>
+      </div>
+    </div>
+
     <div id="drift-audit-modal" class="tour-overlay" style="display:none;">
       <div id="drift-audit-modal-content" class="tour-modal" style="max-width:760px; width:92%; max-height:86vh; overflow-y:auto;">
         <div class="tour-header">
