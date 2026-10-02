@@ -2,7 +2,7 @@
 id: 0196
 title: Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable
   outcomes and missing persona links with line-level suggestions and remediation hints.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,7 +13,11 @@ governing_prds:
 governing_stories:
 - US-0119
 target_bc: prd
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T04:54:11.614939+00:00'
+commit_signature_status: SIGNED
 persona: Taylor (The Product Manager & Technical Writer)
+has_signed_commits: true
 ---
 
 # TASK-0196: Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints.

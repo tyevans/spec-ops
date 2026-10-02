@@ -44,6 +44,8 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
 
     p_lint = prd_subs.add_parser("lint", help="Lint PRD markdown files for mandatory sections and falsifiable outcomes")
     p_lint.add_argument("path", nargs="?", default=None, help="PRD file or directory to lint (default: all PRDs)")
+    p_lint.add_argument("--remediate", action="store_true", help="Apply line-level remediation rewrites to files on disk")
+    p_lint.add_argument("--json", action="store_true", help="Output lint report as structured JSON")
 
     p_promote = prd_subs.add_parser("promote", help="Promote PRD through lifecycle stages")
     p_promote.add_argument("prd_id", help="PRD canonical ID (e.g. PRD-0002) or file path")

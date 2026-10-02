@@ -19,6 +19,7 @@ from .lint_engine import (
     PRDLintEngine,
     PRDLintReport,
 )
+from .lint_runner import run_prd_lint
 from .lint_ui import LINT_COMPONENT_STORIES, render_lint_html
 from .linter import PRDLinter
 from .studio_api import dispatch_studio_api_request
@@ -67,5 +68,6 @@ __all__ = [
     "render_roadmap_html",
     "render_roadmap_svg",
     "run_deep_audit",
+    "run_prd_lint",
     "shape_prd",
 ]

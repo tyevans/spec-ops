@@ -144,12 +144,14 @@ def handle_prd_command(
         return 0
 
     if action == "lint":
-        linter = PRDLinter(config.root_dir)
-        results = linter.lint_path(getattr(args, "path", None))
-        report = linter.format_report(results)
-        print(report)
-        all_valid = all(r.is_valid for r in results) if results else True
-        return 0 if all_valid else 1
+        from ..prd.lint_runner import run_prd_lint
+
+        return run_prd_lint(
+            config,
+            target_path=getattr(args, "path", None),
+            remediate=getattr(args, "remediate", False),
+            json_output=getattr(args, "json", False),
+        )
 
     if action == "promote":
         lifecycle = PRDLifecycleManager(config)
