@@ -12,14 +12,17 @@ PRE_COMMIT_SCRIPT = """#!/bin/sh
 set -e
 
 # 1. Backlog Isolation Gate (ADR-0005)
-BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
-if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
-    STAGED_BACKLOG=$(git diff --cached --name-only 2>/dev/null | grep '^docs/project/backlog/' || true)
-    if [ -n "$STAGED_BACKLOG" ]; then
-        echo "Invariant Violation (ADR-0005): Feature branches are strictly forbidden from modifying docs/project/backlog/. Backlog transitions are managed automatically upon merge to main." >&2
-        exit 1
-    fi
-fi
+case "$BRANCH" in
+    main|master|chore/backlog*|sync/*)
+        ;;
+    *)
+        STAGED_BACKLOG=$(git diff --cached --name-only 2>/dev/null | grep '^docs/project/backlog/' || true)
+        if [ -n "$STAGED_BACKLOG" ]; then
+            echo "Invariant Violation (ADR-0005): Feature branches are strictly forbidden from modifying docs/project/backlog/. Backlog transitions are managed automatically upon merge to main." >&2
+            exit 1
+        fi
+        ;;
+esac
 
 # 2. Supply-Chain Lockfile Verification (ADR-0011)
 if git diff --cached --name-only 2>/dev/null | grep -q -E '^(uv\\.lock|pyproject\\.toml)$'; then
