@@ -1,7 +1,9 @@
 ---
 id: '0246'
 title: Decouple PRD from Visualizer in src/spec_ops/prd/studio_runner.py
-status: Proposed
+status: Refined
+dependencies:
+- TASK-0243
 governing_adrs:
 - ADR-0007
 - ADR-0021
