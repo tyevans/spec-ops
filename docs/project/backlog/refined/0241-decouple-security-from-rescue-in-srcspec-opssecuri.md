@@ -1,7 +1,9 @@
 ---
 id: '0241'
-title: 'Decouple Security from Rescue in src/spec_ops/security/dual_custody.py'
-status: Proposed
+title: Decouple Security from Rescue in src/spec_ops/security/dual_custody.py
+status: Refined
+dependencies:
+- TASK-0244
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: security
+allows_dependencies: true
 ---
 
 # TASK-0241: Decouple Security from Rescue in src/spec_ops/security/dual_custody.py
