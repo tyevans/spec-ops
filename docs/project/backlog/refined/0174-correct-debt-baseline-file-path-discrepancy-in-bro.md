@@ -1,11 +1,16 @@
 ---
 id: '0174'
 title: Correct Debt Baseline File Path Discrepancy in Brownfield Adoption Guide
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0001
 - ADR-0002
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0001
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0174: Correct Debt Baseline File Path Discrepancy in Brownfield Adoption Guide
@@ -31,3 +36,25 @@ The how-to guide `docs/how-to/adopt-brownfield-codebase-with-debt-baseline.md` (
 1. Documentation and implementation agree on baseline file locations.
 2. `spec-ops docs build` cleanly re-renders the updated guide.
 3. Invariant tests verify consistent documentation links.
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Correct Debt Baseline File Path Discrepancy in Brownfield Adoption Guide
+  Given the system is initialized and ready
+  When the user executes the workflow for "Correct Debt Baseline File Path Discrepancy in Brownfield Adoption Guide"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/core/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).
+
+## Scope & Architectural Invariants
+- Target Bounded Context: `core` (single bounded context)
+- Estimated Implementation Diff: <400 lines
+- File Length Limit: all touched source files strictly <500 lines (ADR-0002).

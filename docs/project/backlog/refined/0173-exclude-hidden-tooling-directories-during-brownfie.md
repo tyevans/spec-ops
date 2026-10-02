@@ -1,11 +1,16 @@
 ---
 id: '0173'
 title: Exclude Hidden Tooling Directories During Brownfield Debt Scanning
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0001
 - ADR-0002
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0001
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0173: Exclude Hidden Tooling Directories During Brownfield Debt Scanning
@@ -52,3 +57,18 @@ target_bc: core
 1. Unit test verifying that files under `.claude/` or other dot-directories are not included in `scan_and_record_grandfathered_debt()`.
 2. Running `spec-ops adopt` on a codebase with `.claude/worktrees/` does not grandfather files inside `.claude/`.
 3. All source files strictly under 500 lines.
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Exclude Hidden Tooling Directories During Brownfield Debt Scanning
+  Given the system is initialized and ready
+  When the user executes the workflow for "Exclude Hidden Tooling Directories During Brownfield Debt Scanning"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Scope & Architectural Invariants
+- Target Bounded Context: `core` (single bounded context)
+- Estimated Implementation Diff: <400 lines
+- File Length Limit: all touched source files strictly <500 lines (ADR-0002).

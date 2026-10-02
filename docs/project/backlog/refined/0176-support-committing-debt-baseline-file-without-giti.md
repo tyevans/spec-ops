@@ -1,11 +1,16 @@
 ---
 id: '0176'
 title: Support Committing Debt Baseline File Without Gitignore Suppression
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0001
 - ADR-0002
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0001
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0176: Support Committing Debt Baseline File Without Gitignore Suppression
@@ -33,3 +38,25 @@ The `.specops/` directory is ignored in `.gitignore` by default in SpecOps templ
 ## Definition of Done (Blackbox Frontdoor TDD)
 1. Verify `git add` and `git check-ignore` behave predictably for grandfathered debt files.
 2. Invariant verification passes in clean CI checkout scenarios.
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Support Committing Debt Baseline File Without Gitignore Suppression
+  Given the system is initialized and ready
+  When the user executes the workflow for "Support Committing Debt Baseline File Without Gitignore Suppression"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/core/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).
+
+## Scope & Architectural Invariants
+- Target Bounded Context: `core` (single bounded context)
+- Estimated Implementation Diff: <400 lines
+- File Length Limit: all touched source files strictly <500 lines (ADR-0002).

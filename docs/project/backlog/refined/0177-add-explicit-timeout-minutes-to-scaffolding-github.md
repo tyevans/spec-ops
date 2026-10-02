@@ -1,10 +1,15 @@
 ---
 id: '0177'
 title: Add Explicit timeout-minutes to Scaffolding GitHub Actions Workflow Jobs
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0004
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0001
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0177: Add Explicit timeout-minutes to Scaffolding GitHub Actions Workflow Jobs
@@ -36,3 +41,25 @@ The GitHub Actions workflow scaffolding templates in `src/spec_ops/scaffold/ci_w
 ## Definition of Done (Blackbox Frontdoor TDD)
 1. Unit test verifying generated workflows contain `timeout-minutes:` for each job.
 2. Adopted projects with workflow timeout assertions pass tests cleanly.
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Add Explicit timeout-minutes to Scaffolding GitHub Actions Workflow Jobs
+  Given the system is initialized and ready
+  When the user executes the workflow for "Add Explicit timeout-minutes to Scaffolding GitHub Actions Workflow Jobs"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/core/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).
+
+## Scope & Architectural Invariants
+- Target Bounded Context: `core` (single bounded context)
+- Estimated Implementation Diff: <400 lines
+- File Length Limit: all touched source files strictly <500 lines (ADR-0002).

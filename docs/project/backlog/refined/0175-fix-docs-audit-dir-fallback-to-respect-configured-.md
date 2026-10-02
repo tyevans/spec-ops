@@ -1,10 +1,15 @@
 ---
 id: '0175'
 title: Fix Docs Audit Dir Fallback to Respect Configured Docs Dir and Brownfield Layouts
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0001
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0001
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0175: Fix Docs Audit Dir Fallback to Respect Configured Docs Dir and Brownfield Layouts
@@ -30,3 +35,25 @@ target_bc: core
 1. CLI test verifying that omitting `--dir` uses `config.docs_dir`.
 2. `spec-ops docs audit` gracefully supports brownfield documentation layouts when configured.
 3. All source files strictly under 500 lines.
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Fix Docs Audit Dir Fallback to Respect Configured Docs Dir and Brownfield Layouts
+  Given the system is initialized and ready
+  When the user executes the workflow for "Fix Docs Audit Dir Fallback to Respect Configured Docs Dir and Brownfield Layouts"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/core/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).
+
+## Scope & Architectural Invariants
+- Target Bounded Context: `core` (single bounded context)
+- Estimated Implementation Diff: <400 lines
+- File Length Limit: all touched source files strictly <500 lines (ADR-0002).

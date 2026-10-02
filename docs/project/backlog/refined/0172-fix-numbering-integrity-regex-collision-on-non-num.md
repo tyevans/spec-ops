@@ -1,11 +1,16 @@
 ---
 id: '0172'
 title: Fix Numbering Integrity Regex Collision on Non-Numeric Stems and Embedded Digits
-status: Proposed
+status: Refined
 governing_adrs:
 - ADR-0001
 - ADR-0002
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0001
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0172: Fix Numbering Integrity Regex Collision on Non-Numeric Stems and Embedded Digits
@@ -44,3 +49,25 @@ In `src/spec_ops/core/numbering.py`, `audit_numbering_uniqueness` uses an unanch
 1. Add unit/property tests in `tests/test_numbering.py` or equivalent verifying that `TASK-REFACTOR-redstring-graph-adapters-neo4j.md` does not extract task number `4`.
 2. Ensure `spec-ops health` passes without numbering collision false positives when refactoring tasks exist.
 3. All source files strictly under 500 lines.
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Fix Numbering Integrity Regex Collision on Non-Numeric Stems and Embedded Digits
+  Given the system is initialized and ready
+  When the user executes the workflow for "Fix Numbering Integrity Regex Collision on Non-Numeric Stems and Embedded Digits"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/core/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).
+
+## Scope & Architectural Invariants
+- Target Bounded Context: `core` (single bounded context)
+- Estimated Implementation Diff: <400 lines
+- File Length Limit: all touched source files strictly <500 lines (ADR-0002).
