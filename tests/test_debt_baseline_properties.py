@@ -165,3 +165,50 @@ def test_hypothesis_legacy_alias_equivalency(tmp_path_factory, files_list, locat
     assert loaded == baseline_dict
 
 
+@settings(max_examples=40, deadline=None)
+@given(
+    st.lists(
+        st.sampled_from([
+            ".worktrees/",
+            ".specops",
+            ".specops/",
+            "/.specops/",
+            ".specops/*",
+            "!.specops/grandfathered_debt.json",
+            "dist/",
+            "site/",
+            "__pycache__/",
+            "*.pyc",
+            "# some comment",
+            "",
+            "custom_dir/",
+        ]),
+        max_size=10,
+    )
+)
+def test_hypothesis_ensure_debt_baseline_unignored_invariant(tmp_path_factory, initial_rules: list[str]):
+    """Invariant: ensure_debt_baseline_unignored always yields an unignored debt baseline and is idempotent."""
+    from spec_ops.core.debt_baseline import ensure_debt_baseline_unignored
+
+    tmp_path = tmp_path_factory.mktemp("hyp_unignore")
+    gi = tmp_path / ".gitignore"
+    gi.write_text("\n".join(initial_rules) + "\n", encoding="utf-8")
+
+    ensure_debt_baseline_unignored(tmp_path)
+    content = gi.read_text(encoding="utf-8")
+    lines = [line.strip() for line in content.splitlines()]
+
+    # Invariants
+    assert ".specops/*" in lines
+    assert "!.specops/grandfathered_debt.json" in lines
+    blanket_rules = {".specops", ".specops/", "/.specops", "/.specops/"}
+    for b in blanket_rules:
+        assert b not in lines
+
+    # Idempotence: second call must not modify and return False
+    second_modified = ensure_debt_baseline_unignored(tmp_path)
+    assert second_modified is False
+    assert gi.read_text(encoding="utf-8") == content
+
+
+

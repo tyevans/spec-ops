@@ -217,6 +217,56 @@ def evaluate_file_debt(
     )
 
 
+def ensure_debt_baseline_unignored(root_dir: Path) -> bool:
+    """Ensures .gitignore in root_dir allows tracking .specops/grandfathered_debt.json.
+
+    If .gitignore suppresses .specops/ directly, it modifies it to .specops/* and
+    explicitly unignores !.specops/grandfathered_debt.json.
+    """
+    root = root_dir.resolve()
+    gi_path = root / ".gitignore"
+    rule_ignore_dir = ".specops/*"
+    rule_unignore_debt = f"!{DEBT_BASELINE_FILE}"
+
+    if not gi_path.is_file():
+        gi_path.write_text(f"{rule_ignore_dir}\n{rule_unignore_debt}\n", encoding="utf-8")
+        return True
+
+    content = gi_path.read_text(encoding="utf-8")
+    lines = content.splitlines()
+    modified = False
+
+    blanket_rules = {".specops", ".specops/", "/.specops", "/.specops/"}
+    new_lines: list[str] = []
+    has_specops_wildcard = False
+    has_debt_unignore = False
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped in blanket_rules:
+            new_lines.append(rule_ignore_dir)
+            has_specops_wildcard = True
+            modified = True
+        else:
+            if stripped in (".specops/*", "/.specops/*"):
+                has_specops_wildcard = True
+            if stripped in (rule_unignore_debt, f"!/{DEBT_BASELINE_FILE}"):
+                has_debt_unignore = True
+            new_lines.append(line)
+
+    if not has_specops_wildcard:
+        new_lines.append(rule_ignore_dir)
+        modified = True
+    if not has_debt_unignore:
+        new_lines.append(rule_unignore_debt)
+        modified = True
+
+    if modified:
+        gi_path.write_text("\n".join(new_lines).rstrip() + "\n", encoding="utf-8")
+
+    return modified
+
+
 def scan_and_record_grandfathered_debt(root_dir: Path, limit: int = 500) -> dict[str, int]:
     """Scans all source files in root_dir, baselining oversized files into debt files."""
     root = root_dir.resolve()
@@ -239,4 +289,6 @@ def scan_and_record_grandfathered_debt(root_dir: Path, limit: int = 500) -> dict
 
     save_grandfathered_debt(root, oversized)
     update_specops_toml_grandfathered(root, list(oversized.keys()))
+    ensure_debt_baseline_unignored(root)
     return oversized
+

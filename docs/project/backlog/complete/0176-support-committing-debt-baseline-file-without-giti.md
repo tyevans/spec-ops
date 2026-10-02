@@ -1,7 +1,7 @@
 ---
 id: '0176'
 title: Support Committing Debt Baseline File Without Gitignore Suppression
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -10,7 +10,11 @@ governing_prds:
 governing_stories:
 - US-0001
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T02:41:34.888096+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0176: Support Committing Debt Baseline File Without Gitignore Suppression

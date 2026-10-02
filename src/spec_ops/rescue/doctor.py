@@ -140,12 +140,33 @@ class DeveloperEnvironmentDoctor:
         except Exception as e:
             return DoctorCheckResult(comp, chk, "FAIL", f"Health check failed: {e}", fixable=False)
 
+    def check_debt_baseline_gitignore(self) -> DoctorCheckResult:
+        """Audits .gitignore configuration to ensure grandfathered debt baseline is not suppressed."""
+        comp = "Technical Debt Baseline"
+        chk = "Debt baseline not suppressed by .gitignore"
+        gi = self.root_dir / ".gitignore"
+        if not gi.is_file():
+            return DoctorCheckResult(comp, chk, "PASS", ".gitignore does not exist.")
+        content = gi.read_text(encoding="utf-8")
+        lines = [line.strip() for line in content.splitlines()]
+        blanket = any(line in (".specops", ".specops/", "/.specops", "/.specops/") for line in lines)
+        if blanket:
+            return DoctorCheckResult(
+                comp,
+                chk,
+                "FAIL",
+                "Blanket .specops/ in .gitignore suppresses .specops/grandfathered_debt.json.",
+                fixable=True,
+            )
+        return DoctorCheckResult(comp, chk, "PASS", "Debt baseline is not suppressed by .gitignore.")
+
     def audit(self) -> DoctorReport:
         """Runs all developer workspace diagnostic checks."""
         return DoctorReport(
             results=[
                 self.check_uv(),
                 self.check_git_worktrees(),
+                self.check_debt_baseline_gitignore(),
                 self.check_pre_commit_hooks(),
                 self.check_line_limits(),
             ]
@@ -168,6 +189,14 @@ class DeveloperEnvironmentDoctor:
                 gi.write_text(".worktrees/\n", encoding="utf-8")
             (self.root_dir / ".worktrees").mkdir(parents=True, exist_ok=True)
             repairs.append("Configured .worktrees/ in .gitignore")
+
+        # 1b. Repair debt baseline suppression in gitignore
+        if self.check_debt_baseline_gitignore().status == "FAIL":
+            from ..core.debt_baseline import ensure_debt_baseline_unignored
+
+            if ensure_debt_baseline_unignored(self.root_dir):
+                repairs.append("Unignored .specops/grandfathered_debt.json in .gitignore")
+
 
         # 2. Repair pre-commit hook
         if self.check_pre_commit_hooks().status == "FAIL":
