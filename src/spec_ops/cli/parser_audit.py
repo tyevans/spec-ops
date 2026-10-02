@@ -69,3 +69,55 @@ def register_audit_subparsers(subparsers: argparse._SubParsersAction) -> None:
         help="Output Merkle manifest or verification result as JSON",
     )
 
+    p_audit_sink = audit_subs.add_parser(
+        "sink",
+        help="Export structured event audit sink archive and historical streams",
+    )
+    p_audit_sink.add_argument(
+        "--format",
+        choices=["jsonl", "sqlite"],
+        default="jsonl",
+        help="Audit sink archive format (default: jsonl)",
+    )
+    p_audit_sink.add_argument(
+        "--output",
+        "-o",
+        default=None,
+        help="Output file path for exported audit sink archive",
+    )
+    p_audit_sink.add_argument(
+        "--since",
+        default=None,
+        help="Filter events occurring on or after date/timestamp (ISO 8601 or YYYY-MM-DD)",
+    )
+    p_audit_sink.add_argument(
+        "--until",
+        default=None,
+        help="Filter events occurring on or before date/timestamp",
+    )
+    p_audit_sink.add_argument(
+        "--category",
+        default=None,
+        help="Filter events by category (e.g. security, worker, backlog)",
+    )
+    p_audit_sink.add_argument(
+        "--aggregate-type",
+        default=None,
+        help="Filter events by aggregate type (e.g. Task, Worker, Security)",
+    )
+    p_audit_sink.add_argument(
+        "--compress",
+        action="store_true",
+        help="Compress JSONL output with gzip",
+    )
+    p_audit_sink.add_argument(
+        "--db",
+        default=None,
+        help="Path to SQLite event store (default: .specops/events.db)",
+    )
+    p_audit_sink.add_argument(
+        "--json",
+        action="store_true",
+        help="Output execution summary as JSON",
+    )
+

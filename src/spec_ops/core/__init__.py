@@ -69,6 +69,13 @@ from .dag_cache import (
     DAGCachePayload,
     can_add_dependency,
 )
+from .audit_sink import (
+    AuditEntry,
+    AuditFilter,
+    AuditSinkExporter,
+    read_audit_sink,
+    verify_audit_sink,
+)
 
 __all__ = [
     "ADR",
@@ -142,5 +149,10 @@ __all__ = [
     "CyclePreCheckResult",
     "CyclicDependencyError",
     "can_add_dependency",
+    "AuditEntry",
+    "AuditFilter",
+    "AuditSinkExporter",
+    "read_audit_sink",
+    "verify_audit_sink",
 ]
 

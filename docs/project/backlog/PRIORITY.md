@@ -161,7 +161,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0157 (Complete)**: [`0157-lockfile-integrity-daemon-and-attestation-logger`](complete/0157-lockfile-integrity-daemon-and-attestation-logger.md)
 - **TASK-0158 (Complete)**: [`0158-architecture-profile-migration-engine`](complete/0158-architecture-profile-migration-engine.md)
 - **TASK-0159 (Complete)**: [`0159-worktree-stash-and-clean-reset-recovery`](complete/0159-worktree-stash-and-clean-reset-recovery.md)
-- **TASK-0160 (Refined)**: [`0160-distributed-audit-sink-exporter`](refined/0160-distributed-audit-sink-exporter.md)
+- **TASK-0160 (Complete)**: [`0160-distributed-audit-sink-exporter`](complete/0160-distributed-audit-sink-exporter.md)
 - **TASK-0161 (Refined)**: [`0161-relational-graph-mermaid-exporter`](refined/0161-relational-graph-mermaid-exporter.md)
 - **TASK-0162 (Refined)**: [`0162-persona-journey-friction-auditor`](refined/0162-persona-journey-friction-auditor.md)
 - **TASK-0163 (Refined)**: [`0163-cryptographic-commit-attestation-validator`](refined/0163-cryptographic-commit-attestation-validator.md)

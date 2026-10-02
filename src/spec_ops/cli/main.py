@@ -228,6 +228,9 @@ def main(argv: list[str] | None = None) -> int:
         return dashboard.run(initial_view=getattr(args, "view", "overview"))
 
     if args.command == "audit":
+        if getattr(args, "audit_action", None) == "sink":
+            from .audit_sink_handler import handle_audit_sink_command
+            return handle_audit_sink_command(args, config)
         from .security_handler import handle_audit_command
         return handle_audit_command(args, config, parser)
 

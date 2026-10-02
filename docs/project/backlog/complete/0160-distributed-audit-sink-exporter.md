@@ -1,7 +1,7 @@
 ---
 id: '0160'
 title: Distributed Event Bus and Structured Audit Sink Exporter
-status: Refined
+status: Complete
 dependencies:
 - TASK-0132
 - TASK-0154
@@ -17,6 +17,10 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T00:29:07.289325+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0160: Distributed Event Bus and Structured Audit Sink Exporter
