@@ -194,7 +194,7 @@ def test_handle_doctor_command_json_and_cli(tmp_path: Path, capsys: pytest.Captu
     out_json = capsys.readouterr().out
     data = json.loads(out_json)
     assert data["is_healthy"] is False
-    assert len(data["checks"]) == 4
+    assert len(data["checks"]) == 5
 
     # 3. Healthy run after fix
     with patch("subprocess.run", return_value=MagicMock(returncode=0)):

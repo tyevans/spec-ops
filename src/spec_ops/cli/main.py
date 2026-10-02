@@ -51,6 +51,10 @@ def main(argv: list[str] | None = None) -> int:
             print(msg)
             return 0
 
+    if args.command in ("architecture", "arch"):
+        from .architecture_handler import handle_architecture_command
+        return handle_architecture_command(args, config, parser)
+
     if args.command == "adopt":
         from .adopt_handler import handle_adopt_command
         return handle_adopt_command(args)
@@ -226,6 +230,10 @@ def main(argv: list[str] | None = None) -> int:
             dashboard.render_snapshot(view=getattr(args, "view", "overview"))
             return 0
         return dashboard.run(initial_view=getattr(args, "view", "overview"))
+
+    if args.command == "monitor":
+        from .monitor_handler import handle_monitor_command
+        return handle_monitor_command(args, config)
 
     if args.command == "audit":
         if getattr(args, "audit_action", None) == "sink":

@@ -22,3 +22,9 @@ Feature: Brownfield Codebase Adoption and Anti-Rot Invariant Baseline
     When the architect inspects "docs/project/backlog/proposed/"
     Then proposed tasks prefixed with "TASK-REFACTOR-" are generated for each grandfathered file
     And each task cites ADR-0002 and identifies the target submodule decomposition path
+
+  Scenario: Excluding hidden tooling directories during brownfield adoption
+    Given an existing git repository containing source files and hidden tooling workspaces in ".claude/worktrees/"
+    When the architect runs "spec-ops adopt --profile core,bdd,ddd --name LegacyService"
+    Then files inside ".claude/" are excluded from the grandfathered debt baseline
+

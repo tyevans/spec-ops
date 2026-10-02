@@ -24,6 +24,12 @@ except ImportError:
     settings = None  # type: ignore[assignment, misc]
 
 
+def is_hypothesis_available() -> bool:
+    """Returns True if Hypothesis dependency is installed and available."""
+    return settings is not None and HealthCheck is not None
+
+
+
 @dataclass
 class PropertyTestResult:
     """Outcome of a single generative property test execution."""
@@ -150,22 +156,32 @@ def _derive_suite_name(fn: Callable[..., Any]) -> str:
     return fn_name
 
 
+def find_workspace_root(start_path: Path | str | None = None) -> Path:
+    """Finds project workspace root by searching upwards for marker files."""
+    current = (Path(start_path) if start_path else Path.cwd()).resolve()
+    if current.is_file():
+        current = current.parent
+    for parent in [current, *current.parents]:
+        if (parent / "pyproject.toml").is_file() or (parent / "specops.toml").is_file() or (parent / ".git").is_dir():
+            return parent
+    return current
+
+
 def discover_property_tests(
     target_path: Path | str | None = None,
     root_dir: Path | None = None,
     filter_expr: str | None = None,
 ) -> list[tuple[str, Callable[..., Any], str, str]]:
     """Discovers Hypothesis property tests from target path or test suites."""
-    root = (root_dir or Path.cwd()).resolve()
+    target_p = Path(target_path) if target_path else None
+    root = (root_dir or find_workspace_root(target_p)).resolve()
     for extra_dir in [root / "src", root]:
         if extra_dir.is_dir() and str(extra_dir) not in sys.path:
             sys.path.insert(0, str(extra_dir))
 
     files_to_scan: list[Path] = []
-    if target_path:
-        target = Path(target_path)
-        if not target.is_absolute():
-            target = (root / target).resolve()
+    if target_p:
+        target = target_p if target_p.is_absolute() else (root / target_p).resolve()
         if target.is_file():
             files_to_scan.append(target)
         elif target.is_dir():
@@ -192,7 +208,9 @@ def discover_property_tests(
         sys.modules[mod_name] = module
         try:
             spec.loader.exec_module(module)
-        except Exception:
+        except Exception as exc:
+            if target_path:
+                print(f"⚠️ Warning: Failed to import property test module '{file_path}': {exc}", file=sys.stderr)
             continue
 
         for attr_name in dir(module):
@@ -282,12 +300,31 @@ def handle_properties_command(args: argparse.Namespace, config: Any) -> int:
     as_json = getattr(args, "json", False)
     filter_expr = getattr(args, "filter_expr", None)
 
-    report = run_property_tests(
-        target_path=target_path,
-        root_dir=getattr(config, "root_dir", None),
-        max_examples=max_examples,
-        filter_expr=filter_expr,
-    )
+    if not is_hypothesis_available():
+        err_msg = (
+            "Hypothesis is required for property test verification.\n"
+            "👉 Install hypothesis (`pip install hypothesis` or `uv add --dev hypothesis`)\n"
+            "👉 Or run within your project environment: `uv run spec-ops verify`"
+        )
+        if as_json:
+            print(json.dumps({"is_success": False, "error": err_msg}, indent=2))
+        else:
+            print(f"⚠️ {err_msg}", file=sys.stderr)
+        return 1
+
+    try:
+        report = run_property_tests(
+            target_path=target_path,
+            root_dir=getattr(config, "root_dir", None),
+            max_examples=max_examples,
+            filter_expr=filter_expr,
+        )
+    except RuntimeError as err:
+        if as_json:
+            print(json.dumps({"is_success": False, "error": str(err)}, indent=2))
+        else:
+            print(f"⚠️ {err}", file=sys.stderr)
+        return 1
 
     if as_json:
         print(json.dumps(report.to_dict(), indent=2))

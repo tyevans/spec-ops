@@ -16,7 +16,7 @@ def find_next_spike_number(root_dir: Path) -> int:
     backlog_dir = root_dir / "docs" / "project" / "backlog"
     if backlog_dir.exists():
         for p in backlog_dir.rglob("*.md"):
-            m = re.search(r"(?:spike[-_]|task[-_])?(\d+)", p.stem, re.IGNORECASE)
+            m = re.search(r"^(?:spike[-_]|task[-_])?(\d+)", p.stem, re.IGNORECASE)
             if m:
                 val = int(m.group(1))
                 if val > max_num:

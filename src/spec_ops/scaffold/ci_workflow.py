@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-def generate_ci_workflow(project_name: str = "SpecOps") -> str:
+def generate_ci_workflow(project_name: str = "SpecOps", timeout_minutes: int = 15) -> str:
     """Generates an opinionated GitHub Actions CI quality gate workflow with targeted path filters."""
     return f"""name: CI Quality Gate ({project_name})
 
@@ -21,7 +21,7 @@ jobs:
   preflight-and-invariants:
     name: SpecOps Invariant & Health Check
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: {timeout_minutes}
 
     steps:
       - name: Checkout repository

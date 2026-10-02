@@ -8,7 +8,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+_root_candidate = Path(__file__).resolve()
 SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+while _root_candidate.parent != _root_candidate:
+    if (_root_candidate / "src").is_dir() and (_root_candidate / "pyproject.toml").is_file():
+        SRC_DIR = str(_root_candidate / "src")
+        break
+    _root_candidate = _root_candidate.parent
+
 CLI_ENV = {**os.environ, "PYTHONPATH": f"{SRC_DIR}:{os.environ.get('PYTHONPATH', '')}".rstrip(":")}
 
 import pytest
@@ -173,6 +180,43 @@ def verify_violation_diagnostics(bdd_context: dict[str, Any]):
     assert "monolith.py" in stdout
     assert "550 lines" in stdout
     assert "limit: 500" in stdout
+
+
+@given("a task file with non-numeric slug containing embedded digits")
+def task_file_with_non_numeric_slug(bdd_context: dict[str, Any]):
+    target_dir = bdd_context["dir"]
+    subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "init", "--name", "HealthApp", "--dir", str(target_dir)],
+        capture_output=True,
+        text=True,
+        check=True,
+        env=CLI_ENV,
+    )
+    backlog_proposed = target_dir / "docs" / "project" / "backlog" / "proposed"
+    backlog_proposed.mkdir(parents=True, exist_ok=True)
+    task_file = backlog_proposed / "TASK-REFACTOR-redstring-graph-adapters-neo4j.md"
+    task_file.write_text(
+        "---\nid: REFACTOR-redstring-graph-adapters-neo4j\ntitle: Neo4j Adapter\nstatus: Proposed\n---\n# TASK-REFACTOR-neo4j\n",
+        encoding="utf-8",
+    )
+
+
+@when('the developer runs "spec-ops health --numbering"')
+def run_spec_ops_health_numbering(bdd_context: dict[str, Any]):
+    target_dir = bdd_context["dir"]
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "health", "--numbering"],
+        cwd=str(target_dir),
+        capture_output=True,
+        text=True,
+        env=CLI_ENV,
+    )
+    bdd_context["res"] = res
+
+
+@then('reports "Numbering Invariant Met"')
+def verify_numbering_invariant_met(bdd_context: dict[str, Any]):
+    assert "Numbering Invariant Met" in bdd_context["res"].stdout
 
 
 # --- US-0007 Steps ---

@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 import pytest
@@ -21,7 +22,9 @@ from spec_ops.core.properties_runner import (
     _derive_suite_name,
     configure_hypothesis_profile,
     discover_property_tests,
+    find_workspace_root,
     handle_properties_command,
+    is_hypothesis_available,
     run_property_tests,
 )
 
@@ -29,16 +32,12 @@ from spec_ops.core.properties_runner import (
 def test_derive_suite_name_keywords():
     def f_roundtrip():
         """Parser Round-Trip Invariant: Round trips."""
-
     def f_acyclic():
         """Graph Acyclicity: DAG test."""
-
     def f_boundary():
         """Boundary Classification: File limits."""
-
     def f_buffer():
         """Buffer Capacity: Backlog check."""
-
     def f_perm():
         """Graph Permutation Invariance: Order test."""
 
@@ -52,16 +51,12 @@ def test_derive_suite_name_keywords():
 def test_derive_suite_name_fallbacks():
     def f_custom():
         """Invariant: Custom Property Test."""
-
     def f_colon():
         """Prefix Invariant: Does something."""
-
     def test_property_something_cool():
         pass
-
     def test_plain_function():
         pass
-
     def raw_identifier():
         pass
 
@@ -272,3 +267,130 @@ def test_handle_properties_command_failure_text(tmp_path: Path, capsys: pytest.C
     assert rc == 1
     captured = capsys.readouterr()
     assert "Invariant Verification Failed" in captured.err
+
+
+def test_is_hypothesis_available_detects_presence_and_absence(monkeypatch: pytest.MonkeyPatch):
+    import spec_ops.core.properties_runner as pr
+
+    assert is_hypothesis_available() is True
+
+    monkeypatch.setattr(pr, "settings", None)
+    assert is_hypothesis_available() is False
+
+    monkeypatch.setattr(pr, "settings", object())
+    monkeypatch.setattr(pr, "HealthCheck", None)
+    assert is_hypothesis_available() is False
+
+
+def test_handle_properties_command_missing_hypothesis_text(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    import spec_ops.core.properties_runner as pr
+
+    monkeypatch.setattr(pr, "settings", None)
+    monkeypatch.setattr(pr, "HealthCheck", None)
+
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    args = argparse.Namespace(
+        path=str(tmp_path),
+        opt_path=None,
+        max_examples=10,
+        json=False,
+        filter_expr=None,
+    )
+
+    rc = handle_properties_command(args, cfg)
+    assert rc == 1
+    captured = capsys.readouterr()
+    assert "Hypothesis is required for property test verification" in captured.err
+    assert "uv run spec-ops verify" in captured.err
+
+
+def test_handle_properties_command_missing_hypothesis_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+):
+    import spec_ops.core.properties_runner as pr
+
+    monkeypatch.setattr(pr, "settings", None)
+    monkeypatch.setattr(pr, "HealthCheck", None)
+
+    cfg = SpecOpsConfig(root_dir=tmp_path)
+    args = argparse.Namespace(
+        path=str(tmp_path),
+        opt_path=None,
+        max_examples=10,
+        json=True,
+        filter_expr=None,
+    )
+
+    rc = handle_properties_command(args, cfg)
+    assert rc == 1
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert data["is_success"] is False
+    assert "Hypothesis is required" in data["error"]
+
+
+def test_configure_hypothesis_profile_raises_runtime_error_when_missing(monkeypatch: pytest.MonkeyPatch):
+    import spec_ops.core.properties_runner as pr
+
+    monkeypatch.setattr(pr, "settings", None)
+    with pytest.raises(RuntimeError, match="Hypothesis is required for property test verification"):
+        configure_hypothesis_profile(max_examples=50)
+
+
+def test_find_workspace_root(tmp_path: Path):
+    ws = tmp_path / "my_project"
+    ws.mkdir()
+    (ws / "pyproject.toml").write_text("[project]\nname = 'test'\n", encoding="utf-8")
+    nested = ws / "tests" / "sub" / "deep"
+    nested.mkdir(parents=True)
+    file_p = nested / "sample.py"
+    file_p.write_text("x = 1\n", encoding="utf-8")
+
+    assert find_workspace_root(file_p) == ws
+    assert find_workspace_root(nested) == ws
+
+
+def test_discover_property_tests_adds_src_and_root_to_sys_path(tmp_path: Path):
+    ws = tmp_path / "proj"
+    ws.mkdir()
+    (ws / "pyproject.toml").write_text("[project]\nname = 'proj'\n", encoding="utf-8")
+    src = ws / "src" / "sample_pkg"
+    src.mkdir(parents=True)
+    (src / "__init__.py").write_text("MAGIC_NUM = 777\n", encoding="utf-8")
+
+    test_file = ws / "tests" / "test_pkg_properties.py"
+    test_file.parent.mkdir(parents=True)
+    test_file.write_text(
+        "from sample_pkg import MAGIC_NUM\n"
+        "def test_property_pkg():\n"
+        "    '''Invariant: Package Import.'''\n"
+        "    assert MAGIC_NUM == 777\n",
+        encoding="utf-8",
+    )
+
+    discovered = discover_property_tests(target_path=test_file, root_dir=ws)
+    assert len(discovered) == 1
+    assert discovered[0][0] == "Package Import"
+    assert str(ws / "src") in sys.path
+
+
+def test_discover_property_tests_surfaces_import_error_on_explicit_target(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+):
+    broken_file = tmp_path / "test_broken_import_properties.py"
+    broken_file.write_text(
+        "import non_existent_super_module_xyz_123\n"
+        "def test_property_dummy():\n"
+        "    pass\n",
+        encoding="utf-8",
+    )
+
+    discovered = discover_property_tests(target_path=broken_file, root_dir=tmp_path)
+    assert len(discovered) == 0
+    captured = capsys.readouterr()
+    assert "Failed to import property test module" in captured.err
+    assert "non_existent_super_module_xyz_123" in captured.err
+
+

@@ -376,5 +376,9 @@ def handle_security_command(args: argparse.Namespace, config: SpecOpsConfig, par
             as_json=as_json,
         )
 
+    if args.security_action == "check-trailers":
+        from .trailer_handler import handle_check_trailers_command
+        return handle_check_trailers_command(args, config)
+
     parser.parse_args(["security", "--help"])
     return 0

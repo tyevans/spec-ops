@@ -290,6 +290,22 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
         from ..graph.mermaid_export import handle_mermaid_command
         return handle_mermaid_command(args, config)
 
+    if action == "deadlock":
+        from ..core.deadlock_breaker import TaskDeadlockResolver
+        resolver = TaskDeadlockResolver(config.root_dir)
+        report = resolver.analyze()
+        if getattr(args, "resolve", False):
+            dry_run = getattr(args, "dry_run", False)
+            resolver.resolve_deadlocks(report, dry_run=dry_run)
+            if not dry_run:
+                report = resolver.analyze()
+
+        if getattr(args, "json", False):
+            print(json.dumps(report.to_dict(), indent=2))
+        else:
+            print(report.format_text())
+        return 0 if report.is_acyclic else 1
+
     print(f"❌ Unknown graph action: {action}", file=sys.stderr)
     return 1
 

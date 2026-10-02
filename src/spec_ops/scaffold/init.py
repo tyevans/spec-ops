@@ -302,7 +302,21 @@ Establish initial system architecture, core domain models, and blackbox test har
 
     # 7. .gitignore additions
     gitignore = root / ".gitignore"
-    ignores = [".worktrees/", "dist/", "site/", "__pycache__/", "*.pyc", ".pytest_cache/", ".hypothesis/", ".mutmut-cache/", "mutants/", ".task-prompt.md", "HANDOVER.md"]
+    ignores = [
+        ".worktrees/",
+        "dist/",
+        "site/",
+        "__pycache__/",
+        "*.pyc",
+        ".pytest_cache/",
+        ".hypothesis/",
+        ".mutmut-cache/",
+        "mutants/",
+        ".task-prompt.md",
+        "HANDOVER.md",
+        ".specops/*",
+        "!.specops/grandfathered_debt.json",
+    ]
     if gitignore.exists():
         existing = gitignore.read_text(encoding="utf-8")
         to_add = [ig for ig in ignores if ig not in existing]
@@ -310,6 +324,11 @@ Establish initial system architecture, core domain models, and blackbox test har
             gitignore.write_text(existing.rstrip() + "\n" + "\n".join(to_add) + "\n", encoding="utf-8")
     else:
         _write(Path(".gitignore"), "\n".join(ignores))
+
+    from ..core.debt_baseline import ensure_debt_baseline_unignored
+
+    ensure_debt_baseline_unignored(root)
+
 
     # 8. Diataxis 4-quadrant documentation
     if diataxis:

@@ -248,5 +248,17 @@ def handle_prd_command(
             print(f"❌ Error decomposing {args.prd_id}: {exc}")
             return 1
 
+    if action == "gate":
+        from ..prd.uat_gatekeeper import handle_prd_gate
+
+        return handle_prd_gate(
+            config,
+            prd=args.prd,
+            strict=getattr(args, "strict", False),
+            json_output=getattr(args, "json", False),
+            export=getattr(args, "export", False),
+        )
+
     parser.parse_args(["prd", "--help"])
     return 0
+

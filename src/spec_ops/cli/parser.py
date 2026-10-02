@@ -25,7 +25,9 @@ from .parser_subcommands import (
     register_test_subparsers,
     register_worker_subparsers,
 )
+from .parser_architecture import register_architecture_subparsers
 from .parser_bridge import register_backlog_bridge_subparsers, register_bridge_subparsers
+from .parser_monitor import register_monitor_subparsers
 from .parser_orchestrate import register_orchestrate_subparsers
 from .parser_persona import register_persona_subparsers
 from .parser_review import register_review_subparsers
@@ -248,6 +250,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_tui.add_argument("--once", action="store_true", help="Render dashboard snapshot and exit without interactive loop")
     p_tui.add_argument("--view", choices=["overview", "backlog", "tree", "health"], default="overview", help="Initial view to display (default: overview)")
 
+    # monitor
+    register_monitor_subparsers(subparsers)
+
     # queue
     register_queue_subparsers(subparsers)
 
@@ -344,5 +349,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     # story
     register_story_subparsers(subparsers)
+
+    # architecture
+    register_architecture_subparsers(subparsers)
 
     return parser

@@ -105,7 +105,11 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_friction.add_argument("--persona", default=None, help="Filter audit by persona name or ID")
     p_friction.add_argument("--json", action="store_true", help="Output friction audit report as structured JSON")
     p_friction.add_argument("--threshold", type=float, default=None, help="Flag workflows exceeding cognitive friction score threshold")
-
+    p_gate = prd_subs.add_parser("gate", help="Evaluate customer UAT sign-off tokens and verify release gate readiness")
+    p_gate.add_argument("--prd", required=True, help="Target PRD canonical ID (e.g. PRD-0003)")
+    p_gate.add_argument("--strict", action="store_true", help="Block release if any checkable outcome lacks verified UAT sign-off")
+    p_gate.add_argument("--json", action="store_true", help="Output UAT gate decision as structured JSON")
+    p_gate.add_argument("--export", action="store_true", help="Export cryptographic customer UAT sign-off token")
 
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:
@@ -161,9 +165,12 @@ def register_adr_subparsers(subparsers: argparse._SubParsersAction) -> None:
     adr_subs = p_adr.add_subparsers(dest="adr_action", help="ADR action")
 
     p_sup = adr_subs.add_parser("supersede", help="Supersede an existing ADR with a new decision")
-    p_sup.add_argument("old_id", help="Canonical ID or path of superseded ADR (e.g. ADR-0003)")
+    p_sup.add_argument("old_id", nargs="?", default=None, help="Canonical ID or path of superseded ADR (e.g. ADR-0003)")
     p_sup.add_argument("new_id_pos", nargs="?", default=None, help="Superseding ADR identifier or path")
+    p_sup.add_argument("--old", dest="opt_old", default=None, help="Target old ADR to supersede")
+    p_sup.add_argument("--title", default=None, help="Title of new superseding ADR")
     p_sup.add_argument("--by", "--with", dest="by", default=None, help="Superseding ADR identifier or path (e.g. ADR-0015)")
+    p_sup.add_argument("--dry-run", action="store_true", default=False, help="Simulate supersession without modifying files")
 
 
 def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
@@ -221,18 +228,14 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_g_merm.add_argument("--direction", choices=["TD", "LR", "TB", "RL"], default="TD", help="Diagram layout direction")
     p_g_merm.add_argument("--output", "-o", default=None, help="Output file path to save diagram")
 
-
-from .parser_queue import register_queue_subparsers
-
-
-from .parser_rescue import FlexibleRescueParser, register_rescue_subparsers
-
-
-
-from .parser_spike import register_spike_subparsers
-
-
+    p_g_dead = graph_subs.add_parser("deadlock", help="Detect circular task dependencies and compute minimal feedback arc cuts")
+    p_g_dead.add_argument("--resolve", action="store_true", help="Apply proposed minimal dependency cuts to task files")
+    p_g_dead.add_argument("--dry-run", action="store_true", default=False, help="Simulate dependency cut resolution without modifying task files")
+    p_g_dead.add_argument("--json", action="store_true", help="Output deadlock analysis and cut recommendations as JSON")
 from .parser_audit import register_audit_subparsers
+from .parser_queue import register_queue_subparsers
+from .parser_rescue import FlexibleRescueParser, register_rescue_subparsers
+from .parser_spike import register_spike_subparsers
 
 
 def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:
@@ -355,6 +358,10 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
     p_scan_sec.add_argument("--threshold", type=float, default=3.7, help="Shannon entropy threshold (default: 3.7)")
     p_scan_sec.add_argument("--json", action="store_true", help="Output results as structured JSON")
 
+    p_trailers = sec_subs.add_parser("check-trailers", help="Verify conventional commit messages and RFC-822 SpecOps traceability trailers")
+    p_trailers.add_argument("--range", dest="rev_range", default="main..HEAD", help="Git revision range to verify (default: main..HEAD)")
+    p_trailers.add_argument("--strict", action="store_true", help="Reject commits missing required SpecOps-Task trailer")
+    p_trailers.add_argument("--json", action="store_true", help="Output trailer validation report as JSON")
 
     p_hook = sec_subs.add_parser("hook", help="Automated pre-commit git hook installer and supply-chain sentinel")
     hook_subs = p_hook.add_subparsers(dest="hook_action", help="Hook action")
@@ -371,8 +378,6 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
 
     p_h_run = hook_subs.add_parser("run", help="Execute pre-commit sentinel checks against currently staged files")
     p_h_run.add_argument("--path", default=".", help="Directory of repository (default: current directory)")
-
-
 from .parser_scaffold import register_scaffold_subparsers
 from .parser_report import register_report_subparsers
 

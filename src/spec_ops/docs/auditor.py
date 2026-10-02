@@ -16,6 +16,16 @@ from .models import (
 from .snippet_tester import check_code_snippets
 
 
+def _find_specops_toml(start_dir: Path) -> Path | None:
+    current = start_dir.resolve()
+    while current.parent != current:
+        candidate = current / "specops.toml"
+        if candidate.is_file():
+            return candidate
+        current = current.parent
+    return None
+
+
 def check_diataxis_structure(docs_dir: Path) -> tuple[list[AuditViolation], list[str]]:
     """Validates that all documentation files reside in approved Diataxis quadrants."""
     violations: list[AuditViolation] = []
@@ -55,12 +65,11 @@ def check_diataxis_structure(docs_dir: Path) -> tuple[list[AuditViolation], list
                         severity="error",
                     )
                 )
-
     # 2. Check for configured allowed extra directories or root files
     extra_dirs: set[str] = set()
     extra_root: set[str] = set()
-    toml_path = docs_dir.parent / "specops.toml"
-    if toml_path.is_file():
+    toml_path = _find_specops_toml(docs_dir)
+    if toml_path and toml_path.is_file():
         try:
             import sys
             if sys.version_info >= (3, 11):
@@ -70,8 +79,15 @@ def check_diataxis_structure(docs_dir: Path) -> tuple[list[AuditViolation], list
             with toml_path.open("rb") as f:
                 tdata = tomllib.load(f)
             doc_cfg = tdata.get("documentation", {})
-            extra_dirs = set(doc_cfg.get("allowed_directories", []))
-            extra_root = set(doc_cfg.get("allowed_root_files", []))
+            extra_dirs = (
+                set(doc_cfg.get("allowed_directories", []))
+                | set(doc_cfg.get("ignored_directories", []))
+                | set(doc_cfg.get("ignored_dirs", []))
+            )
+            extra_root = (
+                set(doc_cfg.get("allowed_root_files", []))
+                | set(doc_cfg.get("ignored_root_files", []))
+            )
         except Exception:
             pass
 

@@ -12,6 +12,10 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     """Executes the rescue subcommand actions."""
     action = getattr(args, "rescue_action", None) or getattr(args, "task_id", None)
 
+    if action == "playbooks":
+        from ..rescue.strategy_indexer import handle_playbooks_command
+        return handle_playbooks_command(args, config)
+
     if action == "quota":
         import json as json_lib
         from ..rescue.prune_daemon import audit_worktree_quotas, format_quota_table, parse_threshold_bytes, format_bytes

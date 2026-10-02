@@ -99,12 +99,22 @@ class SecuritySettings:
 
 
 @dataclass
+class DocumentationSettings:
+    docs_dir: str = "docs"
+    allowed_directories: list[str] = field(default_factory=list)
+    ignored_directories: list[str] = field(default_factory=list)
+    allowed_root_files: list[str] = field(default_factory=list)
+    ignored_root_files: list[str] = field(default_factory=list)
+
+
+@dataclass
 class SpecOpsConfig:
     project: ProjectSettings = field(default_factory=ProjectSettings)
     architecture: ArchitectureSettings = field(default_factory=ArchitectureSettings)
     vertical_slices: list[SliceConfig] = field(default_factory=list)
     quality: QualitySettings = field(default_factory=QualitySettings)
     execution: ExecutionSettings = field(default_factory=ExecutionSettings)
+    documentation: DocumentationSettings = field(default_factory=DocumentationSettings)
     security: SecuritySettings | None = None
     root_dir: Path = field(default_factory=Path.cwd)
 
@@ -120,7 +130,7 @@ class SpecOpsConfig:
 
     @property
     def docs_dir(self) -> Path:
-        return (self.root_dir / "docs").resolve()
+        return (self.root_dir / self.documentation.docs_dir).resolve()
 
     @property
     def backlog_dir(self) -> Path:
@@ -138,6 +148,3 @@ class SpecOpsConfig:
     def adr_dir(self) -> Path:
         return self.project_docs_dir / "adrs"
 
-    @property
-    def docs_dir(self) -> Path:
-        return (self.root_dir / "docs").resolve()

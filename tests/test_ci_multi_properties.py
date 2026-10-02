@@ -33,17 +33,20 @@ ENV_KEY_CHARS = st.characters(codec="ascii", whitelist_categories=("Lu",), white
         st.text(ALPHANUM_CHARS, min_size=1, max_size=20),
         max_size=4,
     ),
+    timeout_minutes=st.integers(min_value=1, max_value=120),
 )
 def test_github_ci_generative_manifest_schema_invariants(
     project_name: str,
     python_versions: list[str],
     custom_env: dict[str, str],
+    timeout_minutes: int,
 ):
     """Asserts all generated GitHub Actions manifests parse as valid, strictly-typed schemas."""
     manifest = generate_github_ci_workflow(
         project_name=project_name,
         python_versions=python_versions,
         custom_env=custom_env,
+        timeout_minutes=timeout_minutes,
     )
 
     parsed = yaml.safe_load(manifest)
@@ -53,6 +56,7 @@ def test_github_ci_generative_manifest_schema_invariants(
     assert "pull_request" in parsed["on"]
 
     job = parsed["jobs"]["specops-quality-gate"]
+    assert job["timeout-minutes"] == timeout_minutes
     assert job["strategy"]["matrix"]["python-version"] == python_versions
 
     steps = job["steps"]

@@ -88,16 +88,18 @@ class DORSynthesizer:
         # 1. Normalize ID and Title
         raw_id = str(meta.get("id", ""))
         clean_num = raw_id.upper().replace("TASK-", "").replace("SPIKE-", "").lstrip("0")
-        if not clean_num:
-            m_stem = re.search(r"(\d+)", task_path.stem)
-            clean_num = m_stem.group(1) if m_stem else "1"
-        num_str = f"{int(clean_num):04d}"
-        is_spike = "spike" in task_path.name.lower() or raw_id.upper().startswith("SPIKE")
-        canonical_id = f"{'SPIKE' if is_spike else 'TASK'}-{num_str}"
-
-        if not meta.get("id"):
-            meta["id"] = num_str
-            changes.append(f"Frontmatter ID: {num_str}")
+        if not clean_num or not clean_num.isdigit():
+            m_stem = re.search(r"^(?:(?:task|spike)[-_])?(\d+)", task_path.stem, re.IGNORECASE)
+            clean_num = m_stem.group(1) if m_stem else ""
+        if clean_num.isdigit():
+            num_str = f"{int(clean_num):04d}"
+            is_spike = "spike" in task_path.name.lower() or raw_id.upper().startswith("SPIKE")
+            canonical_id = f"{'SPIKE' if is_spike else 'TASK'}-{num_str}"
+            if not meta.get("id"):
+                meta["id"] = num_str
+                changes.append(f"Frontmatter ID: {num_str}")
+        else:
+            canonical_id = raw_id or task_path.stem
 
         title = str(meta.get("title", ""))
         if not title:

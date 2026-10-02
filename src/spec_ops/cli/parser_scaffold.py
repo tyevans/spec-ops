@@ -61,6 +61,14 @@ def register_scaffold_subparsers(subparsers: argparse._SubParsersAction) -> None
         "--matrix",
         help="Comma-separated Python versions for matrix testing (e.g. 3.12,3.13)",
     )
+    p_scaffold_ci.add_argument(
+        "--timeout",
+        "--timeout-minutes",
+        dest="timeout_minutes",
+        type=int,
+        default=None,
+        help="Explicit timeout in minutes for CI workflow jobs (default: 15)",
+    )
 
     p_scaffold_hooks = scaffold_subs.add_parser("hooks", help="Scaffold native, zero-dependency git hooks")
     p_scaffold_hooks.add_argument("--force", action="store_true", help="Overwrite existing hooks")

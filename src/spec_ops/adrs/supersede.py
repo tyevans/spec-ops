@@ -175,14 +175,14 @@ def discover_superseded_adrs(adrs_dir: Path) -> dict[str, str]:
     return superseded_map
 
 
-def detect_supersession_cycles(existing_map: dict[str, str], new_pair: tuple[str, str]) -> None:
+def detect_supersession_cycles(existing_map: dict[str, str], new_pair: tuple[str, str] | None = None) -> None:
     """Validates that adding (old_id -> new_id) does not create circular supersession."""
-    old_id, new_id = new_pair
-    if old_id == new_id:
-        raise CircularSupersessionError(f"ADR {old_id} cannot supersede itself.")
-
     temp_map = dict(existing_map)
-    temp_map[old_id] = new_id
+    if new_pair is not None:
+        old_id, new_id = new_pair
+        if old_id == new_id:
+            raise CircularSupersessionError(f"ADR {old_id} cannot supersede itself.")
+        temp_map[old_id] = new_id
 
     for start in temp_map:
         curr = start

@@ -91,7 +91,7 @@ def extract_numbers_for_file(file_path: Path, prefix: str, stem_regex: str) -> s
     except OSError:
         return numbers
 
-    m_id = re.search(r"id:\s*['\"]?(?:" + prefix + r"-)?(\d+)['\"]?", content, re.IGNORECASE)
+    m_id = re.search(r"(?m)^\s*id:\s*['\"]?(?:" + prefix + r"-)?(\d+)['\"]?\s*$", content, re.IGNORECASE)
     if m_id:
         numbers.add(int(m_id.group(1)))
 
@@ -159,7 +159,7 @@ def audit_numbering_uniqueness(target: Any) -> NumberingAuditReport:
     groups: list[tuple[str, Path, str, str]] = [
         ("adrs", project_docs / "adrs", "ADR", r"^(?:adr-)?(\d+)"),
         ("prds", project_docs / "product", "PRD", r"^(?:prd-)?(\d+)"),
-        ("tasks", project_docs / "backlog", "TASK", r"^(?:task-)?(\d+)"),
+        ("tasks", project_docs / "backlog", "TASK", r"^(?:(?:task|spike)-)?(\d+)"),
         ("stories", project_docs / "user_stories", "US", r"^(?:us-)?(\d+)"),
     ]
 

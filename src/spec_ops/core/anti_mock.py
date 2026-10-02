@@ -25,20 +25,7 @@ PROHIBITED_CALL_NAMES = {
     "spy",
 }
 
-EXCLUDE_DIRS = {
-    ".git",
-    ".venv",
-    "venv",
-    "node_modules",
-    "__pycache__",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".worktrees",
-    ".specops",
-    "mutants",
-    ".mutmut-cache",
-    ".hypothesis",
-}
+from .debt_baseline import EXCLUDE_DIRS, is_excluded_path
 
 
 @dataclass
@@ -287,8 +274,8 @@ def scan_test_tree(root_path: Path | str) -> list[AntiMockViolation]:
 
     violations: list[AntiMockViolation] = []
     for p in sorted(root.rglob("*.py")):
-        rel_parts = p.relative_to(root).parts if root.is_dir() else p.parts
-        if any(part in EXCLUDE_DIRS for part in rel_parts):
+        rel = p.relative_to(root) if root.is_dir() else p
+        if is_excluded_path(rel):
             continue
         violations.extend(scan_test_file(p))
     return violations
@@ -348,7 +335,7 @@ def audit_test_suite(
     elif target.is_dir():
         scanned_count = len([
             p for p in target.rglob("*.py")
-            if not any(part in EXCLUDE_DIRS for part in p.relative_to(target).parts)
+            if not is_excluded_path(p.relative_to(target))
         ])
     else:
         scanned_count = 0

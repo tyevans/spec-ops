@@ -299,6 +299,10 @@ main { flex: 1; display: flex; position: relative; overflow: hidden; }
   font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
   color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;
 }
+.card-box code {
+  background: rgba(255, 255, 255, 0.1); padding: 1px 5px; border-radius: 4px;
+  font-family: ui-monospace, monospace; font-size: 0.8em; color: #93c5fd;
+}
 .pills-container { display: flex; flex-wrap: wrap; gap: 6px; }
 .entity-pill {
   display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 6px;

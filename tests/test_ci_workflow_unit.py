@@ -110,3 +110,50 @@ def test_generate_gitlab_ci_workflow_valid_yaml():
     data = yaml.safe_load(gitlab_yaml)
     assert "specops-quality-gate" in data
     assert "stages" in data
+
+
+def test_generate_ci_workflow_has_explicit_timeout():
+    from spec_ops.scaffold.ci_workflow import generate_ci_workflow
+
+    # Default timeout
+    default_wf = yaml.safe_load(generate_ci_workflow("ProjectA"))
+    assert default_wf["jobs"]["preflight-and-invariants"]["timeout-minutes"] == 15
+
+    # Custom timeout
+    custom_wf = yaml.safe_load(generate_ci_workflow("ProjectB", timeout_minutes=45))
+    assert custom_wf["jobs"]["preflight-and-invariants"]["timeout-minutes"] == 45
+
+
+def test_generate_pages_workflow_has_explicit_timeout():
+    from spec_ops.scaffold.pages_workflow import generate_pages_workflow
+
+    # Default timeout
+    default_pages = yaml.safe_load(generate_pages_workflow("ProjectA"))
+    assert default_pages["jobs"]["deploy-pages"]["timeout-minutes"] == 15
+
+    # Custom timeout
+    custom_pages = yaml.safe_load(generate_pages_workflow("ProjectB", timeout_minutes=25))
+    assert custom_pages["jobs"]["deploy-pages"]["timeout-minutes"] == 25
+
+
+def test_every_scaffolded_github_workflow_job_has_explicit_timeout():
+    """Governance audit: Assert that every job in all generated GitHub Actions workflows has timeout-minutes."""
+    from spec_ops.scaffold.ci_multi import generate_github_ci_workflow
+    from spec_ops.scaffold.ci_workflow import generate_ci_workflow
+    from spec_ops.scaffold.pages_workflow import generate_pages_workflow
+
+    workflows = [
+        generate_ci_workflow("TestApp"),
+        generate_pages_workflow("TestApp"),
+        generate_github_ci_workflow("TestApp"),
+    ]
+
+    for wf_str in workflows:
+        parsed = yaml.safe_load(wf_str)
+        jobs = parsed.get("jobs", {})
+        assert len(jobs) > 0
+        for job_id, job_def in jobs.items():
+            assert "timeout-minutes" in job_def, f"Job '{job_id}' missing timeout-minutes in workflow:\n{wf_str}"
+            assert isinstance(job_def["timeout-minutes"], int)
+            assert job_def["timeout-minutes"] > 0
+

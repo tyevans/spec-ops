@@ -21,7 +21,7 @@ class FlexibleRescueParser(argparse.ArgumentParser):
                     first_pos = a
                     break
 
-            if first_pos not in ("reset", "salvage", "patch", "quota", "prune", "cluster"):
+            if first_pos not in ("reset", "salvage", "patch", "quota", "prune", "cluster", "playbooks"):
                 sub_action = None
                 for act in list(self._actions):
                     if isinstance(act, argparse._SubParsersAction):
@@ -95,3 +95,9 @@ def register_rescue_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_cluster = rescue_subs.add_parser("cluster", help="Autonomous failure post-mortem clustering and prompt anti-loop synthesizer")
     p_cluster.add_argument("--json", action="store_true", help="Output failure clusters and negative constraints in JSON format")
     p_cluster.add_argument("--task", default=None, help="Target task canonical ID to filter failure clusters")
+
+    p_playbooks = rescue_subs.add_parser("playbooks", help="Search and generate autonomous failure healing playbooks")
+    p_playbooks.add_argument("--query", "-q", default=None, help="Filter healing playbooks by error pattern, invariant, or failure signature")
+    p_playbooks.add_argument("--json", action="store_true", help="Output healing strategies in JSON format")
+    p_playbooks.add_argument("--export", default=None, help="Export compiled healing playbook to file path")
+

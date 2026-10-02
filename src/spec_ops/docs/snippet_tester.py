@@ -32,8 +32,11 @@ def _validate_bash_cli_invocations(
             if "spec-ops" not in cmd:
                 continue
 
+            sanitized_cmd = re.sub(r"<[^>]+>", "DUMMY_ARG", cmd)
+            sanitized_cmd = re.sub(r"\{[^}]+\}", "DUMMY_ARG", sanitized_cmd)
+
             try:
-                tokens = shlex.split(cmd)
+                tokens = shlex.split(sanitized_cmd)
             except ValueError:
                 continue
 
@@ -85,8 +88,16 @@ def check_code_snippets(
     snippet_count = 0
 
     extra_dirs: set[str] = set()
-    toml_path = docs_dir.parent / "specops.toml"
-    if toml_path.is_file():
+    current = docs_dir.resolve()
+    toml_path: Path | None = None
+    while current.parent != current:
+        candidate = current / "specops.toml"
+        if candidate.is_file():
+            toml_path = candidate
+            break
+        current = current.parent
+
+    if toml_path and toml_path.is_file():
         try:
             import sys
             if sys.version_info >= (3, 11):
@@ -95,7 +106,12 @@ def check_code_snippets(
                 import tomli as tomllib  # type: ignore
             with toml_path.open("rb") as f:
                 tdata = tomllib.load(f)
-            extra_dirs = set(tdata.get("documentation", {}).get("allowed_directories", []))
+            doc_cfg = tdata.get("documentation", {})
+            extra_dirs = (
+                set(doc_cfg.get("allowed_directories", []))
+                | set(doc_cfg.get("ignored_directories", []))
+                | set(doc_cfg.get("ignored_dirs", []))
+            )
         except Exception:
             pass
 
@@ -127,10 +143,12 @@ def check_code_snippets(
 
             elif clean_lang in ("bash", "sh", "shell", "zsh"):
                 snippet_count += 1
+                sanitized_bash = re.sub(r"<[^>\n]+>", "dummy_placeholder", code)
+                sanitized_bash = re.sub(r"\{[^}\n]+\}", "dummy_placeholder", sanitized_bash)
                 try:
                     import textwrap
                     res = subprocess.run(
-                        ["bash", "-n", "-c", textwrap.dedent(code)],
+                        ["bash", "-n", "-c", textwrap.dedent(sanitized_bash)],
                         capture_output=True,
                         text=True,
                     )
