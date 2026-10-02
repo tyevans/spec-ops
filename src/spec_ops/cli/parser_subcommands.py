@@ -221,6 +221,11 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_g_merm.add_argument("--direction", choices=["TD", "LR", "TB", "RL"], default="TD", help="Diagram layout direction")
     p_g_merm.add_argument("--output", "-o", default=None, help="Output file path to save diagram")
 
+    p_g_dead = graph_subs.add_parser("deadlock", help="Detect circular task dependencies and compute minimal feedback arc cuts")
+    p_g_dead.add_argument("--resolve", action="store_true", help="Apply proposed minimal dependency cuts to task files")
+    p_g_dead.add_argument("--dry-run", action="store_true", default=False, help="Simulate dependency cut resolution without modifying task files")
+    p_g_dead.add_argument("--json", action="store_true", help="Output deadlock analysis and cut recommendations as JSON")
+
 
 from .parser_queue import register_queue_subparsers
 

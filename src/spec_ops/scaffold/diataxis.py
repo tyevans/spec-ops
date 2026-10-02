@@ -104,6 +104,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops graph audit` | None | Full bidirectional graph traceability and orphan work item audit |
 | `spec-ops graph watch` | `[--interval INTERVAL] [--debounce-ms DEBOUNCE_MS] [--json] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
 | `spec-ops graph mermaid` | `[--root ROOT] [--depth DEPTH] [--format {{mermaid,dot}}] [--direction {{TD,LR,TB,RL}}] [--output OUTPUT]` | Export relational knowledge graph subgraph as Mermaid or Graphviz diagram |
+| `spec-ops graph deadlock` | `[--resolve] [--dry-run] [--json]` | Detect circular task dependencies and compute minimal feedback arc cuts |
 | `spec-ops watch` | `[--debounce-ms DEBOUNCE_MS] [--event-stream] [--dir DIR] [--once] [--max-iterations MAX_ITERATIONS]` | Real-time in-memory graph event bus and workspace change watcher |
 | `spec-ops trace` | `[--verify]` | Audit end-to-end bidirectional graph linkages and traceability |
 | `spec-ops backlog bottlenecks` | `[--forecast]` | Detect circular dependency deadlocks and choke points |

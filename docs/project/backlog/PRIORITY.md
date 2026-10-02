@@ -165,7 +165,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0161 (Complete)**: [`0161-relational-graph-mermaid-exporter`](complete/0161-relational-graph-mermaid-exporter.md)
 - **TASK-0162 (Complete)**: [`0162-persona-journey-friction-auditor`](complete/0162-persona-journey-friction-auditor.md)
 - **TASK-0163 (Complete)**: [`0163-cryptographic-commit-attestation-validator`](complete/0163-cryptographic-commit-attestation-validator.md)
-- **TASK-0164 (Refined)**: [`0164-deadlock-breaker-and-cycle-resolution`](refined/0164-deadlock-breaker-and-cycle-resolution.md)
+- **TASK-0164 (Complete)**: [`0164-deadlock-breaker-and-cycle-resolution`](complete/0164-deadlock-breaker-and-cycle-resolution.md)
 - **TASK-0165 (Refined)**: [`0165-living-adr-supersession-and-evolution`](refined/0165-living-adr-supersession-and-evolution.md)
 - **TASK-0166 (Refined)**: [`0166-worker-lease-heartbeat-and-claim-reclaimer`](refined/0166-worker-lease-heartbeat-and-claim-reclaimer.md)
 - **TASK-0167 (Refined)**: [`0167-terminal-dashboard-live-monitor`](refined/0167-terminal-dashboard-live-monitor.md)
