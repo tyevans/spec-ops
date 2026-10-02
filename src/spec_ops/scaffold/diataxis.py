@@ -85,7 +85,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops scaffold docs` | `[--bc BC] [--bounded-context BC] [--title TITLE] [--force] [--overwrite]` | Scaffold 4-quadrant Diataxis documentation for a bounded context (alias: diataxis) |
 | `spec-ops scaffold hooks` | `[--force] [--native]` | Scaffold zero-dependency native POSIX shell git hooks and propagate to worktrees |
-| `spec-ops scaffold ci` | `[--platform PLATFORM] [--force] [--update] [--matrix MATRIX]` | Scaffold multi-platform CI/CD quality gate workflows across GitHub Actions and GitLab CI |
+| `spec-ops scaffold ci` | `[--platform PLATFORM] [--force] [--update] [--matrix MATRIX] [--timeout TIMEOUT] [--timeout-minutes TIMEOUT_MINUTES]` | Scaffold multi-platform CI/CD quality gate workflows across GitHub Actions and GitLab CI |
 | `spec-ops scaffold skill` | `[--target TARGET] [--output-dir OUTPUT_DIR] [--dry-run] [--force]` | Package and scaffold universal multi-platform skill bundles across agent platforms |
 | `spec-ops constitution sync` | `[--repo PATH]` | Synchronize AGENTS.md constitution and docs/operating-manual.md while preserving human custom sections |
 | `spec-ops constitution check` | `[--repo PATH]` | CI drift detection gate comparing specops.toml settings against AGENTS.md |
