@@ -139,3 +139,30 @@ def test_scaffold_skill_command_custom_output_dir(tmp_path: Path):
     res = scaffold_skill_command(root_dir=tmp_path, target="antigravity", output_dir=custom_out)
     assert res == 0
     assert (custom_out / ".agents" / "skills" / "spec-ops" / "SKILL.md").is_file()
+
+
+def test_inline_skill_contract_and_protocols():
+    """Verifies that .agents/skills/spec-ops/SKILL.md satisfies PMaC inline skill contracts (TASK-0184)."""
+    bundle = package_antigravity()
+    skill_content = bundle[".agents/skills/spec-ops/SKILL.md"]
+
+    # 1. Frontmatter check
+    assert skill_content.startswith("---\n")
+    assert "name: spec-ops\n" in skill_content
+    assert "description:" in skill_content
+
+    # 2. Executable runbooks
+    assert "uv run spec-ops curate" in skill_content
+    assert "uv run spec-ops health" in skill_content
+    assert "uv run spec-ops worktree create" in skill_content
+
+    # 3. Subagent orchestration protocols
+    assert "Multi-Agent Orchestration Protocol" in skill_content
+    assert "references/orchestration_protocol.md" in skill_content
+    assert "references/cli_primer.md" in skill_content
+    assert "references/balancing_loop.md" in skill_content
+
+    # 4. Invariant checks
+    assert "File Length Limit (<500 lines)" in skill_content
+    assert "Blackbox Frontdoor Verification" in skill_content
+    assert "Strict Backlog Isolation" in skill_content
