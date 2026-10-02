@@ -12,6 +12,7 @@ from .bdd_matrix import (
     StoryCoverageReport,
 )
 from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecord, PersonaJourneyMap
+from .lint_api import dispatch_lint_api_request, lint_prd_api
 from .lint_engine import (
     LineLevelSuggestion,
     PRDLintDiagnostic,
@@ -54,10 +55,12 @@ __all__ = [
     "StoryCoverageReport",
     "calculate_outcome_coverage",
     "discover_prd",
+    "dispatch_lint_api_request",
     "dispatch_studio_api_request",
     "export_roadmap",
     "interactive_new_prd",
     "launch_prd_studio",
+    "lint_prd_api",
     "render_roadmap_html",
     "render_roadmap_svg",
     "run_deep_audit",

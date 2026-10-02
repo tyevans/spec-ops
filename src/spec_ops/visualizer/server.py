@@ -54,6 +54,18 @@ class VisualizerHandler(BaseHTTPRequestHandler):
         elif path == "/api/data":
             data = serialize_project_data(self.config)
             self._send_json(200, data)
+        elif path.startswith("/api/prd/lint"):
+            from ..prd.lint_api import dispatch_lint_api_request
+            from ..prd.lint_engine import PRDLintEngine
+
+            root = getattr(self.config, "root_dir", Path.cwd())
+            eng = getattr(self.server, "lint_engine", None)
+            if eng is None:
+                eng = PRDLintEngine(root_dir=root)
+                self.server.lint_engine = eng
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            code, res = dispatch_lint_api_request(eng, "GET", path, query_params=query_params)
+            self._send_json(code, res)
         elif path in ("/api/prd/draft", "/api/prd/status"):
             query_params = urllib.parse.parse_qs(parsed_url.query)
             root = getattr(self.config, "root_dir", Path.cwd())
@@ -178,6 +190,18 @@ class VisualizerHandler(BaseHTTPRequestHandler):
             code, res = dispatch_studio_api_request(
                 self._get_studio_manager(), "POST", path, payload=payload
             )
+            self._send_json(code, res)
+            return
+
+        if path.startswith("/api/prd/lint"):
+            from ..prd.lint_api import dispatch_lint_api_request
+            from ..prd.lint_engine import PRDLintEngine
+
+            eng = getattr(self.server, "lint_engine", None)
+            if eng is None:
+                eng = PRDLintEngine(root_dir=root)
+                self.server.lint_engine = eng
+            code, res = dispatch_lint_api_request(eng, "POST", path, payload=payload)
             self._send_json(code, res)
             return
 

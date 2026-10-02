@@ -2,7 +2,7 @@
 id: 0194
 title: Public API Contracts for Running `spec-ops prd lint` flags unfalsifiable outcomes
   and missing persona links with line-level suggestions and remediation hints.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,9 +13,11 @@ governing_prds:
 governing_stories:
 - US-0119
 target_bc: prd
-claimed_by: spec-ops-worker
-branch: task/TASK-0194
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T04:36:31.443738+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0194: Public API Contracts for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints.
