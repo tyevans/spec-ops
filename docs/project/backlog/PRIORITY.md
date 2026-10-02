@@ -242,3 +242,4 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0226 (Proposed)**: [`0226-blackbox-frontdoor-test-suite-for-runnin`](proposed/0226-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0227 (Proposed)**: [`0227-blackbox-frontdoor-test-suite-for-runnin`](proposed/0227-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0228 (Proposed)**: [`0228-blackbox-frontdoor-test-suite-for-runnin`](proposed/0228-blackbox-frontdoor-test-suite-for-runnin.md)
+- **TASK-0247 (Proposed)**: [`0247-support-versioned-library-releases-semver-bump-`](proposed/0247-support-versioned-library-releases-semver-bump-.md)

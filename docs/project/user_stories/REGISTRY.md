@@ -119,4 +119,6 @@
 | `US-0115` | Concurrent Architectural Task Review and Feedback Loop | Accepted | Morgan & Jordan | FEAT-REV-01 | `PRD-0004` |
 | `US-0116` | Inference-Driven Backlog Refinement, Architectural Drift Reconciliation, and Scope Slicing | Accepted | Jordan & Alex | FEAT-CUR-01 | `PRD-0005` |
 | `US-0117` | Autonomous Full-Lifecycle SDLC Orchestrator Skill & Multi-Agent Coordination | Accepted | Alex & Jordan | FEAT-ORCH-01 | `PRD-0006` |
-
+| `US-0122` | First-Class Versioned Library Releases and SemVer Progression | Accepted | Alex | FEAT-REL-02 | `PRD-0001` |
+| `US-0123` | Target Repository Virtualenv Dependency and License Resolution | Accepted | Sasha | FEAT-SEC-05 | `PRD-0002` |
+| `US-0124` | Self-Contained GitHub Pages and Visualizer Scaffolding for Brownfield Repositories | Accepted | Devon | FEAT-ADOPT-02 | `PRD-0001` |

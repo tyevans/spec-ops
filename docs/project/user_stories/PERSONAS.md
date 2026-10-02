@@ -77,3 +77,17 @@ Archetypes representing the software architects, engineering leads, and autonomo
 - **Goals with SpecOps**:
   - Hard sandboxing boundaries and dependency lockfile invariants for all autonomous worker sessions.
   - Cryptographic provenance and human sign-off verification for production-bound specification changes.
+
+---
+
+## 7. Devon — The Brownfield Migration Engineer
+- **Role**: Staff engineer, platform lead, or DevOps practitioner onboarding existing production codebases into SpecOps.
+- **Pain Points**:
+  - Existing brownfield repositories have legacy documentation generators (MkDocs, Sphinx), established CI/CD deploy workflows, and grandfathered architectural debt that greenfield tools break.
+  - Onboarding workflows that fail in clean CI environments because the governance tool is not a dependency in the target repository's lockfile.
+  - Difficulty bridging existing published docs with newly introduced living graph visualizers without conflicting deployment pipelines.
+- **Goals with SpecOps**:
+  - Turnkey `spec-ops adopt` that sets up self-contained GitHub Pages workflows deploying both Diataxis docs and the 2D living visualizer without lockfile contamination.
+  - Intelligent detection and bridging for pre-existing documentation systems (e.g. MkDocs) and duplicate deploy workflows.
+  - Painless incremental debt baselining that protects existing code while establishing frontdoor verification and PMaC guardrails.
+
