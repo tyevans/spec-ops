@@ -12,7 +12,12 @@ from .bdd_matrix import (
     StoryCoverageReport,
 )
 from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecord, PersonaJourneyMap
-from .lifecycle import PRDLifecycleManager
+from .lint_engine import (
+    LineLevelSuggestion,
+    PRDLintDiagnostic,
+    PRDLintEngine,
+    PRDLintReport,
+)
 from .linter import PRDLinter
 from .studio_api import dispatch_studio_api_request
 from .studio_runner import launch_prd_studio
@@ -27,10 +32,14 @@ __all__ = [
     "CustomerJourneyReport",
     "DeepPRDAuditor",
     "JourneyMapEngine",
+    "LineLevelSuggestion",
     "OutcomeAuditResult",
     "PRDAuditResult",
     "PRDDecomposer",
     "PRDLifecycleManager",
+    "PRDLintDiagnostic",
+    "PRDLintEngine",
+    "PRDLintReport",
     "PRDLinter",
     "PRDManager",
     "PRDStudioSessionState",
