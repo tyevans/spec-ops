@@ -149,18 +149,26 @@ def generate_uat_receipt(
 
 
 TOUR_CSS = r"""
-.tour-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); }
-.tour-modal { background: #0f172a; border: 1px solid #38bdf8; border-radius: 12px; padding: 24px; max-width: 520px; width: 90%; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); color: #e2e8f0; }
+.tour-overlay { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.45); max-width: 100vw; box-sizing: border-box; padding: 16px; overflow-y: auto; }
+.tour-modal { background: #0f172a; border: 1px solid #38bdf8; border-radius: 12px; padding: 24px; max-width: 520px; width: 92%; max-height: 85vh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); color: #e2e8f0; }
 .tour-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .tour-step-badge { font-size: 0.72rem; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 8px; border-radius: 9999px; }
 .tour-close-btn { background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; line-height: 1; }
 .tour-close-btn:hover { color: #fff; }
 .tour-modal h3 { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
 .tour-modal p { font-size: 0.84rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px; }
-.tour-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; border-top: 1px solid rgba(51, 65, 85, 0.6); padding-top: 14px; }
+.tour-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; border-top: 1px solid rgba(51, 65, 85, 0.6); padding-top: 14px; }
 .tour-btn { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .tour-btn:hover { background: rgba(56, 189, 248, 0.25); border-color: #38bdf8; }
 .tour-highlight { outline: 3px solid #38bdf8 !important; box-shadow: 0 0 15px rgba(56, 189, 248, 0.6) !important; }
+@media (max-width: 768px) {
+  .tour-overlay { padding: 12px; }
+  .tour-modal { width: 95%; max-width: calc(100vw - 24px); padding: 16px 14px; }
+  .tour-modal h3 { font-size: 0.95rem; }
+  .tour-modal p { font-size: 0.8rem; }
+  .tour-footer { gap: 8px; }
+  .tour-btn { padding: 5px 9px; font-size: 0.75rem; }
+}
 .badge-pmac-ready { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; }
 .badge-pmac-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; }
 .bdd-badge-verified { display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
@@ -196,7 +204,12 @@ TOUR_JS = r"""
     clearTourHighlights();
     if (!sel || typeof document === "undefined") return;
     const el = (document.querySelector && document.querySelector(sel)) || (document.getElementById && document.getElementById(sel.replace(/^#/, "")));
-    if (el && el.classList && el.classList.add) el.classList.add("tour-highlight");
+    if (el && el.classList && el.classList.add) {
+      el.classList.add("tour-highlight");
+      if (typeof el.scrollIntoView === "function") {
+        try { el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" }); } catch (e) {}
+      }
+    }
   }
   function updateTourView() {
     const s = TOUR_STEPS[currentTourStep], b = document.getElementById("tour-step-badge"), t = document.getElementById("tour-title"), d = document.getElementById("tour-desc"), p = document.getElementById("tour-prev-btn"), n = document.getElementById("tour-next-btn");

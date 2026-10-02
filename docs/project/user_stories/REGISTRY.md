@@ -126,3 +126,4 @@
 | `US-0126` | Incremental Brownfield Technical Debt Baselining and Seam Refactoring Synthesis | Accepted | Devon | FEAT-ADOPT-01 | `PRD-0007` |
 | `US-0127` | Zero-Contamination Tool Execution and Isolated Target Environment Inspection | Accepted | Devon | FEAT-ADOPT-04 | `PRD-0007` |
 | `US-0128` | Brownfield Commit Provenance Baselining and Rev-Range Auditing | Accepted | Devon | FEAT-AUDIT-02 | `PRD-0007` |
+| `US-0129` | Mobile Responsive Layout and Background Clarity for Visualizer Guided Tour | Accepted | Taylor | FEAT-VIS-07 | `PRD-0005` |
