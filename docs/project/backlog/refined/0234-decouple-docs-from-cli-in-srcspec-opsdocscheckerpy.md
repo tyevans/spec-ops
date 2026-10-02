@@ -1,7 +1,8 @@
 ---
 id: '0234'
 title: 'Decouple Docs from CLI in src/spec_ops/docs/checker.py'
-status: Proposed
+status: Refined
+allows_dependencies: true
 governing_adrs:
 - ADR-0007
 - ADR-0021
