@@ -354,6 +354,10 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
     p_scan_sec.add_argument("--threshold", type=float, default=3.7, help="Shannon entropy threshold (default: 3.7)")
     p_scan_sec.add_argument("--json", action="store_true", help="Output results as structured JSON")
 
+    p_trailers = sec_subs.add_parser("check-trailers", help="Verify conventional commit messages and RFC-822 SpecOps traceability trailers")
+    p_trailers.add_argument("--range", dest="rev_range", default="main..HEAD", help="Git revision range to verify (default: main..HEAD)")
+    p_trailers.add_argument("--strict", action="store_true", help="Reject commits missing required SpecOps-Task trailer")
+    p_trailers.add_argument("--json", action="store_true", help="Output trailer validation report as JSON")
 
     p_hook = sec_subs.add_parser("hook", help="Automated pre-commit git hook installer and supply-chain sentinel")
     hook_subs = p_hook.add_subparsers(dest="hook_action", help="Hook action")
@@ -370,8 +374,6 @@ def register_security_subparsers(subparsers: argparse._SubParsersAction) -> None
 
     p_h_run = hook_subs.add_parser("run", help="Execute pre-commit sentinel checks against currently staged files")
     p_h_run.add_argument("--path", default=".", help="Directory of repository (default: current directory)")
-
-
 from .parser_scaffold import register_scaffold_subparsers
 from .parser_report import register_report_subparsers
 

@@ -1,7 +1,7 @@
 ---
 id: 0168
 title: Automated Conventional Commit RFC-822 Trailer Sanitizer and Signer Pre-Gate
-status: Refined
+status: Complete
 dependencies:
 - TASK-0048
 - TASK-0163
@@ -16,6 +16,10 @@ governing_prds:
 governing_stories:
 - US-0113
 target_bc: security
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T01:21:23.930762+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0168: Automated Conventional Commit RFC-822 Trailer Sanitizer and Signer Pre-Gate

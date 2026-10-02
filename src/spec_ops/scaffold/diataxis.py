@@ -190,6 +190,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops doctor` | `[--fix] [--json]` | Audit and repair local developer workspace and tooling |
 | `spec-ops security verify-lock` | `[--path PATH]` | Verify supply-chain lockfile cryptographic hashes and pinning |
 | `spec-ops security verify-commits` | `[--range REV_RANGE] [--keyring KEYRING] [--strict] [--json]` | Verify cryptographic commit signatures across rev-range against authorized keyring |
+| `spec-ops security check-trailers` | `[--range REV_RANGE] [--strict] [--json]` | Verify conventional commit messages and RFC-822 SpecOps traceability trailers |
 | `spec-ops security sentinel` | `[--path PATH] [--fix] [--json]` | Inspect and enforce supply-chain lockfile mutation immutability |
 | `spec-ops security audit-lockfile` | `[--verify] [--json] [--record]` | Audit supply-chain lockfile integrity, record attestations, and detect tampering |
 | `spec-ops security scan` | `[--path PATH] [--entropy] [--threshold THRESHOLD] [--json]` | Scan source files using Shannon entropy analysis and custom rule plugins |

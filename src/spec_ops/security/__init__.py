@@ -97,11 +97,17 @@ from .supply_chain_daemon import (
     compute_file_sha256,
     handle_audit_lockfile,
 )
+from .trailer_sanitizer import (
+    CommitValidationResult,
+    TrailerSanitizer,
+    parse_rfc822_trailers,
+)
 
 __all__ = [
     "AuthorizedSigner",
     "BenchmarkReport",
     "BenchmarkResult",
+    "CommitValidationResult",
     "ComplianceDeliverable",
     "ComplianceManifest",
     "EntropyFinding",
@@ -158,7 +164,9 @@ __all__ = [
     "is_loopback_address",
     "is_protected_lockfile",
     "isolated_network",
+    "TrailerSanitizer",
     "parse_allowed_signers",
+    "parse_rfc822_trailers",
     "record_security_violation",
     "remediate_lockfile_mutations",
     "resolve_audit_log_path",

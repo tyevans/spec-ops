@@ -169,7 +169,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0165 (Complete)**: [`0165-living-adr-supersession-and-evolution`](complete/0165-living-adr-supersession-and-evolution.md)
 - **TASK-0166 (Complete)**: [`0166-worker-lease-heartbeat-and-claim-reclaimer`](complete/0166-worker-lease-heartbeat-and-claim-reclaimer.md)
 - **TASK-0167 (Complete)**: [`0167-terminal-dashboard-live-monitor`](complete/0167-terminal-dashboard-live-monitor.md)
-- **TASK-0168 (Refined)**: [`0168-commit-trailer-sanitizer-and-signer`](refined/0168-commit-trailer-sanitizer-and-signer.md)
+- **TASK-0168 (Complete)**: [`0168-commit-trailer-sanitizer-and-signer`](complete/0168-commit-trailer-sanitizer-and-signer.md)
 - **TASK-0169 (Refined)**: [`0169-customer-uat-token-gatekeeper`](refined/0169-customer-uat-token-gatekeeper.md)
 - **TASK-0170 (Refined)**: [`0170-bounded-context-seam-auditor`](refined/0170-bounded-context-seam-auditor.md)
 - **TASK-0171 (Refined)**: [`0171-failure-memory-strategy-indexer`](refined/0171-failure-memory-strategy-indexer.md)
