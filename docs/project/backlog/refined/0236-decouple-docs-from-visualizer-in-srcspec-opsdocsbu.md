@@ -13,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: docs
+allows_dependencies: true
 ---
 
 # TASK-0236: Decouple Docs from Visualizer in src/spec_ops/docs/builder.py
