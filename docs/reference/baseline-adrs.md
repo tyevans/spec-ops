@@ -25,6 +25,7 @@ SpecOps bundles 7 foundational ADRs organized across architectural profiles.
 ## Profile: `ddd`
 
 - **ADR-0007: Domain-Driven Design & Bounded Contexts**: Code organized by business domains with strict state encapsulation.
+- **ADR-0021: Application Orchestration Layer and Dependency Inversion Boundaries**: Application service orchestration layer (`spec_ops.app`) at Layer 4, downward foundation relocation, and dependency inversion for projections and introspection.
 
 ---
 
