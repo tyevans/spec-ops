@@ -156,22 +156,32 @@ def _derive_suite_name(fn: Callable[..., Any]) -> str:
     return fn_name
 
 
+def find_workspace_root(start_path: Path | str | None = None) -> Path:
+    """Finds project workspace root by searching upwards for marker files."""
+    current = (Path(start_path) if start_path else Path.cwd()).resolve()
+    if current.is_file():
+        current = current.parent
+    for parent in [current, *current.parents]:
+        if (parent / "pyproject.toml").is_file() or (parent / "specops.toml").is_file() or (parent / ".git").is_dir():
+            return parent
+    return current
+
+
 def discover_property_tests(
     target_path: Path | str | None = None,
     root_dir: Path | None = None,
     filter_expr: str | None = None,
 ) -> list[tuple[str, Callable[..., Any], str, str]]:
     """Discovers Hypothesis property tests from target path or test suites."""
-    root = (root_dir or Path.cwd()).resolve()
+    target_p = Path(target_path) if target_path else None
+    root = (root_dir or find_workspace_root(target_p)).resolve()
     for extra_dir in [root / "src", root]:
         if extra_dir.is_dir() and str(extra_dir) not in sys.path:
             sys.path.insert(0, str(extra_dir))
 
     files_to_scan: list[Path] = []
-    if target_path:
-        target = Path(target_path)
-        if not target.is_absolute():
-            target = (root / target).resolve()
+    if target_p:
+        target = target_p if target_p.is_absolute() else (root / target_p).resolve()
         if target.is_file():
             files_to_scan.append(target)
         elif target.is_dir():
@@ -198,7 +208,9 @@ def discover_property_tests(
         sys.modules[mod_name] = module
         try:
             spec.loader.exec_module(module)
-        except Exception:
+        except Exception as exc:
+            if target_path:
+                print(f"⚠️ Warning: Failed to import property test module '{file_path}': {exc}", file=sys.stderr)
             continue
 
         for attr_name in dir(module):
