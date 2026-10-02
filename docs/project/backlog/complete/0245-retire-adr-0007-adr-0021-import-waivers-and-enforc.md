@@ -2,7 +2,7 @@
 id: '0245'
 title: Retire ADR-0007 / ADR-0021 Import Waivers and Enforce Zero Prohibited Dependencies
   in CI Radar
-status: Refined
+status: Complete
 dependencies:
 - TASK-0229
 - TASK-0230
@@ -30,7 +30,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:59:30.699318+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0245: Retire ADR-0007 / ADR-0021 Import Waivers and Enforce Zero Prohibited Dependencies in CI Radar

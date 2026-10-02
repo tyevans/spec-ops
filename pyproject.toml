@@ -110,17 +110,7 @@ layers = [
     "spec_ops.core : spec_ops.security : spec_ops.docs",
     "spec_ops.config",
 ]
-ignore_imports = [
-    "spec_ops.backlog.milestone_briefing -> spec_ops.visualizer.burndown_deck",
-    "spec_ops.backlog.rollover -> spec_ops.visualizer.burndown_deck",
-    "spec_ops.backlog.worker -> spec_ops.worker.*",
-    "spec_ops.backlog.queue -> spec_ops.worker.*",
-    "spec_ops.backlog.rescue -> spec_ops.worker.*",
-    "spec_ops.backlog.prompts -> spec_ops.worker.*",
-    "spec_ops.backlog.rescue -> spec_ops.rescue.*",
-    "spec_ops.backlog.worker -> spec_ops.rescue.*",
-    "spec_ops.backlog.velocity -> spec_ops.rescue.memory",
-]
+ignore_imports = []
 
 
 
