@@ -184,7 +184,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0179 (Complete)**: [`0179-ensure-sys-path-includes-workspace-root-in-properties`](complete/0179-ensure-sys-path-includes-workspace-root-in-properties.md)
 - **TASK-0180 (Complete)**: [`0180-support-test-classes-and-hypothesis-attributes-in-pro`](complete/0180-support-test-classes-and-hypothesis-attributes-in-pro.md)
 - **TASK-0181 (Complete)**: [`0181-fix-lockfile-sentinel-global-waiver-leak-outside-task`](complete/0181-fix-lockfile-sentinel-global-waiver-leak-outside-task.md)
-- **TASK-0182 (Refined)**: [`0182-detect-unindexed-backlog-tasks-in-health-priority-sync`](refined/0182-detect-unindexed-backlog-tasks-in-health-priority-sync.md)
+- **TASK-0182 (Complete)**: [`0182-detect-unindexed-backlog-tasks-in-health-priority-sync`](complete/0182-detect-unindexed-backlog-tasks-in-health-priority-sync.md)
 - **TASK-0184 (Refined)**: [`0184-an-inline-skill-agentsskillsspec-opsskillmd-is-pre`](refined/0184-an-inline-skill-agentsskillsspec-opsskillmd-is-pre.md)
 - **TASK-0185 (Refined)**: [`0185-scaffolding-specops-agent-adapters-spec-ops-scaffo`](refined/0185-scaffolding-specops-agent-adapters-spec-ops-scaffo.md)
 - **TASK-0186 (Refined)**: [`0186-the-skill-includes-a-standalone-cli-primer-and-pro`](refined/0186-the-skill-includes-a-standalone-cli-primer-and-pro.md)
