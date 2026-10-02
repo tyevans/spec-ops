@@ -215,3 +215,33 @@ def test_subagent_orchestration_guidelines_spec_consultation():
     assert "In-Worktree Peer Review" in protocol
     assert "Ambiguity Resolution & Escalation" in protocol
     assert "Execution State Reporting" in protocol
+
+
+def test_lifecycle_gate_invariants_dor_and_dod():
+    """Verifies that orchestration protocol embeds explicit DoR and DoD lifecycle gate invariants (TASK-0188)."""
+    bundle = package_antigravity()
+    protocol = bundle[".agents/skills/spec-ops/references/orchestration_protocol.md"]
+
+    # 1. Definition of Ready (DoR) Gate checks
+    assert "Lifecycle Gate Invariants: Definition of Ready (DoR) & Definition of Done (DoD)" in protocol
+    assert "Definition of Ready (DoR) Gate (Phase 5)" in protocol
+    assert "Task Metadata Complete" in protocol
+    assert "Governing Artifacts Linked" in protocol
+    assert "Executable BDD Specification" in protocol
+    assert "Generative Property Invariants Identified" in protocol
+    assert "Mutation Testing Scope Defined" in protocol
+    assert "INVEST Criteria Satisfied" in protocol
+    assert "Documentation Review" in protocol
+
+    # 2. Definition of Done (DoD) Gate checks
+    assert "Definition of Done (DoD) Gate (Phase 7)" in protocol
+    assert "Blackbox Frontdoor Verification" in protocol
+    assert "Executable BDD Scenarios Passing" in protocol
+    assert "Hypothesis Property Tests Passing" in protocol
+    assert "Mutmut Mutation Score Attained" in protocol
+    assert "Codebase Health Check" in protocol
+    assert "Lockfile Integrity" in protocol
+    assert "Documentation Integrity (Diataxis)" in protocol
+    assert "Strict Backlog Progression" in protocol
+    assert "Commit Provenance" in protocol
+    assert "Dual-Custody Human Sign-Off" in protocol

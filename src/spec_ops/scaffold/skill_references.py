@@ -296,7 +296,34 @@ Subagents coordinate through structured inquiries and peer reviews via native to
 
 ---
 
-## 5. Failure Recovery & Continuous Dogfooding
+## 5. Lifecycle Gate Invariants: Definition of Ready (DoR) & Definition of Done (DoD)
+
+### 5.1. Definition of Ready (DoR) Gate (Phase 5)
+Tasks may only transition to `refined/` and enter active development when all 7 DoR rules pass:
+1. **Task Metadata Complete**: `id`, `title`, `status: Refined`, `target_bc`, and explicit dependencies.
+2. **Governing Artifacts Linked**: Reference PRD in `docs/project/product/accepted/`, Persona in `docs/project/user_stories/PERSONAS.md`, and governing ADRs in `docs/project/adrs/accepted/` are cited.
+3. **Executable BDD Specification**: Executable Gherkin scenarios verifiable without private mocks (ADR-0006).
+4. **Generative Property Invariants Identified**: Domain invariants identified for Hypothesis `@given(...)` testing (ADR-0009).
+5. **Mutation Testing Scope Defined**: Target domain modules identified with target >=80% mutant kill score under Mutmut (ADR-0009).
+6. **INVEST Criteria Satisfied**: Validated as a thin vertical slice with files strictly <500 lines (ADR-0002).
+7. **Documentation Review**: Existing docs reviewed to prevent conflicting conventions.
+
+### 5.2. Definition of Done (DoD) Gate (Phase 7)
+Work is complete and ready for integration into `main` only when all 10 DoD rules pass:
+1. **Blackbox Frontdoor Verification**: 100% test pass rate verifying contracts with zero private mocks (ADR-0003).
+2. **Executable BDD Scenarios Passing**: All Gherkin acceptance criteria executed via pytest-bdd pass cleanly (ADR-0006).
+3. **Hypothesis Property Tests Passing**: Generative property tests verify invariants without shrinking failures (ADR-0009).
+4. **Mutmut Mutation Score Attained**: Target domain modules achieve >=80% mutant kill score (ADR-0009).
+5. **Codebase Health Check**: `spec-ops health` reports 0 file limit violations (<500 lines), 0 warnings, and PRIORITY.md sync (ADR-0002).
+6. **Lockfile Integrity**: `uv lock --check` passes cleanly without unstaged dependency drifts.
+7. **Documentation Integrity (Diataxis)**: Reusable patterns documented in `docs/how-to/` or `docs/reference/` and docs build cleanly.
+8. **Strict Backlog Progression**: Task is moved from `refined/` to `complete/` and `PRIORITY.md` updated atomically upon integration (ADR-0005).
+9. **Commit Provenance**: Commits include structured RFC 822 trailers (`SpecOps-Task: TASK-XXXX`).
+10. **Dual-Custody Human Sign-Off**: Task frontmatter contains verified `signed_off_by`, review signed, and commit signatures cryptographically validated (ADR-0016).
+
+---
+
+## 6. Failure Recovery & Continuous Dogfooding
 
 If any subagent encounters a blocker, stall, or test failure:
 1. **Never Silently Discard**: Inspect diagnostics using `uv run spec-ops rescue inspect TASK-XXXX`.

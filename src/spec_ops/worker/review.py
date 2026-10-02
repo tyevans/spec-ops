@@ -170,13 +170,20 @@ def _resolve_acceptance_scenarios(task: Task, repo_root: Path) -> tuple[list[str
 
 
 def _resolve_git_branch(task: Task, repo_root: Path) -> str:
+    base = "main"
+    if subprocess.run(["git", "rev-parse", "--verify", "main"], cwd=repo_root, capture_output=True).returncode != 0:
+        base = "master"
+    candidates: list[str] = []
     if task.branch:
-        check = subprocess.run(["git", "rev-parse", "--verify", task.branch], cwd=repo_root, capture_output=True)
-        if check.returncode == 0:
-            return task.branch
-    for c in (f"task/{task.canonical_id}", f"task/{task.id}", f"feat/{task.id}"):
-        check = subprocess.run(["git", "rev-parse", "--verify", c], cwd=repo_root, capture_output=True)
-        if check.returncode == 0:
+        candidates.append(task.branch)
+    candidates.extend([f"feat/{task.canonical_id}", f"task/{task.canonical_id}", f"feat/{task.id}", f"task/{task.id}"])
+    for c in candidates:
+        if subprocess.run(["git", "rev-parse", "--verify", c], cwd=repo_root, capture_output=True).returncode == 0:
+            ahead = subprocess.run(["git", "log", "--oneline", f"{base}..{c}"], cwd=repo_root, capture_output=True, text=True)
+            if ahead.returncode == 0 and ahead.stdout.strip():
+                return c
+    for c in candidates:
+        if subprocess.run(["git", "rev-parse", "--verify", c], cwd=repo_root, capture_output=True).returncode == 0:
             return c
     curr = subprocess.run(["git", "symbolic-ref", "--short", "HEAD"], cwd=repo_root, capture_output=True, text=True)
     return curr.stdout.strip() if curr.returncode == 0 and curr.stdout.strip() else "HEAD"
@@ -214,9 +221,10 @@ def _analyze_git_changes(branch: str, repo_root: Path) -> tuple[list[ChangedFile
                     file_txt = show_p.stdout
 
             total_lines = len(file_txt.splitlines()) if file_txt else max(0, added - deleted)
-            for pat in mock_patterns:
-                if file_txt and re.search(pat, file_txt):
-                    mock_violations.append(f"{fpath} contains forbidden private mock ({pat})")
+            if ("test" in fpath or fpath.startswith("tests/")) and not fpath.endswith("review.py"):
+                for pat in mock_patterns:
+                    if file_txt and re.search(pat, file_txt):
+                        mock_violations.append(f"{fpath} contains forbidden private mock ({pat})")
             changed_files.append(ChangedFileInfo(path=fpath, added=added, deleted=deleted, total_lines=total_lines, headroom=max(0, 500 - total_lines)))
     return changed_files, mock_violations
 

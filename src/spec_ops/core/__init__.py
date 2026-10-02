@@ -158,6 +158,11 @@ __all__ = [
     "SubagentConsultationRequest",
     "SubagentConsultationResponse",
     "SpecConsultationValidator",
+    "ALL_DOR_GATE_RULES",
+    "ALL_DOD_GATE_RULES",
+    "DoRGateResult",
+    "DoDGateResult",
+    "LifecycleGateOrchestrator",
 ]
 
 from .subagent_consultation import (
@@ -165,5 +170,12 @@ from .subagent_consultation import (
     SpecConsultationValidator,
     SubagentConsultationRequest,
     SubagentConsultationResponse,
+)
+from .lifecycle_gates import (
+    ALL_DOD_GATE_RULES,
+    ALL_DOR_GATE_RULES,
+    DoDGateResult,
+    DoRGateResult,
+    LifecycleGateOrchestrator,
 )
 

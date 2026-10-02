@@ -1,6 +1,4 @@
-"""Generative Hypothesis property tests for subagent consultation invariants (ADR-0009)."""
-
-from __future__ import annotations
+import string
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -12,7 +10,8 @@ from spec_ops.core.subagent_consultation import (
     SubagentConsultationResponse,
 )
 
-SAFE_ALPHANUM = st.text(alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-", min_size=1, max_size=30)
+SAFE_CHARS = string.ascii_letters + string.digits + "_-"
+SAFE_ALPHANUM = st.text(alphabet=SAFE_CHARS, min_size=1, max_size=30)
 SPEC_TYPES = st.sampled_from(["persona", "prd", "story", "adr", "backlog"])
 
 

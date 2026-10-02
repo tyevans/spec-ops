@@ -189,7 +189,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0185 (Complete)**: [`0185-scaffolding-specops-agent-adapters-spec-ops-scaffo`](complete/0185-scaffolding-specops-agent-adapters-spec-ops-scaffo.md)
 - **TASK-0186 (Complete)**: [`0186-the-skill-includes-a-standalone-cli-primer-and-pro`](complete/0186-the-skill-includes-a-standalone-cli-primer-and-pro.md)
 - **TASK-0187 (Complete)**: [`0187-subagent-orchestration-guidelines-explicitly-speci`](complete/0187-subagent-orchestration-guidelines-explicitly-speci.md)
-- **TASK-0188 (Refined)**: [`0188-definition-of-ready-and-definition-of-done-checks-`](refined/0188-definition-of-ready-and-definition-of-done-checks-.md)
+- **TASK-0188 (Complete)**: [`0188-definition-of-ready-and-definition-of-done-checks-`](complete/0188-definition-of-ready-and-definition-of-done-checks-.md)
 - **TASK-0189 (Refined)**: [`0189-domain-model---state-handlers-for-runnin`](refined/0189-domain-model---state-handlers-for-runnin.md)
 - **TASK-0190 (Refined)**: [`0190-public-api-contracts-for-running--spec-o`](refined/0190-public-api-contracts-for-running--spec-o.md)
 - **TASK-0191 (Refined)**: [`0191-user-interface---component-stories-for-r`](refined/0191-user-interface---component-stories-for-r.md)

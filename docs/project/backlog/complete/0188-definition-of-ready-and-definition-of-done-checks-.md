@@ -2,7 +2,7 @@
 id: 0188
 title: Implement Definition of Ready and Definition of Done checks are rigorously
   embedded into the orchestration lifecycle.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,6 +13,10 @@ governing_prds:
 governing_stories:
 - US-0117
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T04:01:01.470298+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0188: Implement Definition of Ready and Definition of Done checks are rigorously embedded into the orchestration lifecycle.
