@@ -2,7 +2,7 @@
 id: 0190
 title: Public API Contracts for Running `spec-ops prd studio --open` launches a lightweight
   local web interface for authoring and validating PRDs without terminal interaction.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,9 +13,11 @@ governing_prds:
 governing_stories:
 - US-0118
 target_bc: prd
-claimed_by: spec-ops-worker
-branch: task/TASK-0190
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T04:16:25.741098+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0190: Public API Contracts for Running `spec-ops prd studio --open` launches a lightweight local web interface for authoring and validating PRDs without terminal interaction.

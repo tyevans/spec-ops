@@ -20,11 +20,29 @@ class VisualizerHandler(BaseHTTPRequestHandler):
     config: SpecOpsConfig
     default_view: str = "visualizer"
 
+    def _get_studio_manager(self) -> Any:
+        root = getattr(self.config, "root_dir", Path.cwd())
+        mgr = getattr(self.server, "studio_manager", None)
+        if mgr is None:
+            from ..prd.studio_state import PRDStudioStateManager
+
+            mgr = PRDStudioStateManager(repo_root=root)
+            self.server.studio_manager = mgr
+        return mgr
+
     def do_GET(self) -> None:
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
 
-        if path in ("/", "/index.html"):
+        if path.startswith("/api/studio/"):
+            from ..prd.studio_api import dispatch_studio_api_request
+
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            code, res = dispatch_studio_api_request(
+                self._get_studio_manager(), "GET", path, query_params=query_params
+            )
+            self._send_json(code, res)
+        elif path in ("/", "/index.html"):
             if getattr(self, "default_view", "visualizer") == "studio":
                 html = render_studio_html()
             else:
@@ -153,6 +171,15 @@ class VisualizerHandler(BaseHTTPRequestHandler):
             return
 
         root = getattr(self.config, "root_dir", Path.cwd())
+
+        if path.startswith("/api/studio/"):
+            from ..prd.studio_api import dispatch_studio_api_request
+
+            code, res = dispatch_studio_api_request(
+                self._get_studio_manager(), "POST", path, payload=payload
+            )
+            self._send_json(code, res)
+            return
 
         if path == "/api/prd/save":
             from .prd_sync import handle_prd_save_post

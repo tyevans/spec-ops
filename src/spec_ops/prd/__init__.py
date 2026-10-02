@@ -14,7 +14,7 @@ from .bdd_matrix import (
 from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecord, PersonaJourneyMap
 from .lifecycle import PRDLifecycleManager
 from .linter import PRDLinter
-from .manager import PRDAuditResult, PRDManager
+from .studio_api import dispatch_studio_api_request
 from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
 from .traceability import PersonaCoverageReport, PersonaLineageRecord, PersonaTraceabilityEngine
 
@@ -42,6 +42,7 @@ __all__ = [
     "StoryCoverageReport",
     "calculate_outcome_coverage",
     "discover_prd",
+    "dispatch_studio_api_request",
     "export_roadmap",
     "interactive_new_prd",
     "render_roadmap_html",
