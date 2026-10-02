@@ -12,6 +12,7 @@ PRE_COMMIT_SCRIPT = """#!/bin/sh
 set -e
 
 # 1. Backlog Isolation Gate (ADR-0005)
+BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 case "$BRANCH" in
     main|master|chore/backlog*|sync/*)
         ;;
