@@ -74,6 +74,15 @@ class VisualizerHandler(BaseHTTPRequestHandler):
             query_params = urllib.parse.parse_qs(parsed_url.query)
             code, res = dispatch_lint_api_request(eng, "GET", path, query_params=query_params)
             self._send_json(code, res)
+        elif path.startswith("/api/prd/coverage/outcomes") or path.startswith("/api/prd/outcome-coverage"):
+            from ..prd.outcome_coverage_api import dispatch_outcome_coverage_api_request
+            from ..prd.outcome_coverage import PRDOutcomeCoverageEngine
+
+            root = getattr(self.config, "root_dir", Path.cwd())
+            eng = PRDOutcomeCoverageEngine(repo_root=root)
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            code, res = dispatch_outcome_coverage_api_request(eng, "GET", path, query_params=query_params)
+            self._send_json(code, res)
         elif path in ("/api/prd/draft", "/api/prd/status"):
             query_params = urllib.parse.parse_qs(parsed_url.query)
             root = getattr(self.config, "root_dir", Path.cwd())
@@ -210,6 +219,15 @@ class VisualizerHandler(BaseHTTPRequestHandler):
                 eng = PRDLintEngine(root_dir=root)
                 self.server.lint_engine = eng
             code, res = dispatch_lint_api_request(eng, "POST", path, payload=payload)
+            self._send_json(code, res)
+            return
+
+        if path.startswith("/api/prd/coverage/outcomes") or path.startswith("/api/prd/outcome-coverage"):
+            from ..prd.outcome_coverage_api import dispatch_outcome_coverage_api_request
+            from ..prd.outcome_coverage import PRDOutcomeCoverageEngine
+
+            eng = PRDOutcomeCoverageEngine(repo_root=root)
+            code, res = dispatch_outcome_coverage_api_request(eng, "POST", path, payload=payload)
             self._send_json(code, res)
             return
 

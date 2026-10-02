@@ -2,7 +2,7 @@
 id: 0198
 title: Public API Contracts for Running `spec-ops prd audit PRD-0003` computes test
   coverage across checkable outcomes and linked BDD scenarios.
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -13,7 +13,11 @@ governing_prds:
 governing_stories:
 - US-0120
 target_bc: prd
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T05:05:49.309622+00:00'
+commit_signature_status: SIGNED
 persona: Taylor (The Product Manager & Technical Writer)
+has_signed_commits: true
 ---
 
 # TASK-0198: Public API Contracts for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios.

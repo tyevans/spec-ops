@@ -27,6 +27,10 @@ from .outcome_coverage import (
     PRDOutcomeCoverageEngine,
     PRDTestCoverageReport,
 )
+from .outcome_coverage_api import (
+    audit_prd_outcome_coverage_api,
+    dispatch_outcome_coverage_api_request,
+)
 from .studio_api import dispatch_studio_api_request
 from .studio_runner import launch_prd_studio
 from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
@@ -64,9 +68,11 @@ __all__ = [
     "PersonaTraceabilityEngine",
     "STUDIO_COMPONENT_STORIES",
     "StoryCoverageReport",
+    "audit_prd_outcome_coverage_api",
     "calculate_outcome_coverage",
     "discover_prd",
     "dispatch_lint_api_request",
+    "dispatch_outcome_coverage_api_request",
     "dispatch_studio_api_request",
     "export_roadmap",
     "interactive_new_prd",
