@@ -161,3 +161,45 @@ def test_property_remediation_restores_git_worktree_cleanliness(
     assert target_lockfile in result.remediated
     # Content must have been reverted to original HEAD
     assert lock_path.read_text(encoding="utf-8") == "initial lockfile content\n"
+
+
+@given(
+    target_task_id=st.integers(min_value=1, max_value=999),
+    other_task_id=st.integers(min_value=1000, max_value=1999),
+    on_matching_branch=st.booleans(),
+)
+@settings(max_examples=10, deadline=None)
+def test_property_task_waiver_strictly_isolated_to_active_task(
+    tmp_path_factory, target_task_id: int, other_task_id: int, on_matching_branch: bool
+):
+    """Invariant: Task waivers are strictly isolated to the exact active task branch."""
+    repo = tmp_path_factory.mktemp("prop_waiver")
+    subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Tester"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "tester@example.com"], cwd=repo, check=True, capture_output=True)
+
+    (repo / "uv.lock").write_text("# baseline\n", encoding="utf-8")
+    subprocess.run(["git", "add", "uv.lock"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "chore: baseline"], cwd=repo, check=True, capture_output=True)
+
+    task_dir = repo / "docs" / "project" / "backlog" / "refined"
+    task_dir.mkdir(parents=True, exist_ok=True)
+    (task_dir / f"{other_task_id:04d}-other-task.md").write_text(
+        f"---\nid: TASK-{other_task_id:04d}\ntitle: Other Task\nstatus: Refined\nallows_dependencies: true\n---\n",
+        encoding="utf-8",
+    )
+
+    if on_matching_branch:
+        subprocess.run(["git", "checkout", "-b", f"task/TASK-{other_task_id:04d}"], cwd=repo, check=True, capture_output=True)
+    else:
+        subprocess.run(["git", "checkout", "-b", f"task/TASK-{target_task_id:04d}"], cwd=repo, check=True, capture_output=True)
+
+    (repo / "uv.lock").write_text("# mutated\n", encoding="utf-8")
+    res = inspect_lockfile_sentinel(repo)
+
+    if on_matching_branch:
+        assert res.ok is True
+        assert res.waiver_applied is True
+    else:
+        assert res.ok is False
+        assert res.waiver_applied is False
