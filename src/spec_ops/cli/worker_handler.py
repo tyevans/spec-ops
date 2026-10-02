@@ -144,8 +144,67 @@ def handle_worker_diagnose(args: argparse.Namespace, config: SpecOpsConfig) -> i
     return 0
 
 
+def handle_worker_lease(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+    """Handles 'spec-ops worker lease' execution."""
+    from ..worker.lease_manager import WorkerLeaseManager
+
+    as_json = getattr(args, "json", False)
+    dry_run = getattr(args, "dry_run", False)
+    ttl = getattr(args, "ttl", 300) or 300
+    mgr = WorkerLeaseManager(config.root_dir, default_ttl_seconds=ttl)
+
+    if getattr(args, "heartbeat", False):
+        task_id = getattr(args, "task_id", None)
+        if not task_id:
+            print("❌ Error: --task must be specified to record a lease heartbeat.", file=sys.stderr)
+            return 1
+        lease = mgr.record_heartbeat(task_id)
+        if not lease:
+            print(f"❌ Error: No active worker lease found for {task_id}.", file=sys.stderr)
+            return 1
+        if as_json:
+            print(json.dumps(lease.to_dict(), indent=2))
+        else:
+            print(f"💓 Heartbeat recorded for {lease.task_id} (PID {lease.pid}). Expires at {lease.expires_at}.")
+        return 0
+
+    if getattr(args, "reclaim", False):
+        reclaimed, active = mgr.reclaim_zombies(dry_run=dry_run)
+        if as_json:
+            print(json.dumps({"reclaimed": reclaimed, "active": active, "dry_run": dry_run}, indent=2))
+            return 0
+
+        mode_str = " [SIMULATED]" if dry_run else ""
+        print(f"=== Worker Lease Reconciliation & Zombie Claim Reclaimer{mode_str} ===")
+        print(f"Active Leases:    {len(active)}")
+        print(f"Reclaimed Claims: {len(reclaimed)}")
+        for rec in reclaimed:
+            print(f"  🔄 Revoked zombie claim {rec['task_id']} ({rec['reason']}) -> Restored to Refined")
+        for act in active:
+            print(f"  ⚡ Active lease {act['task_id']} held by worker {act['worker_id']} (PID {act['pid']})")
+        return 0
+
+    # Default: --status / inspect leases
+    leases = mgr.list_leases()
+    if as_json:
+        print(json.dumps([l.to_dict() for l in leases], indent=2))
+        return 0
+
+    print("=== SpecOps Worker Lease Status ===")
+    if not leases:
+        print("No active worker leases registered on disk.")
+        return 0
+
+    for lease in leases:
+        valid, reason = mgr.evaluate_lease(lease)
+        icon = "⚡ [ACTIVE]" if valid else "⚠️  [ZOMBIE]"
+        print(f"{icon} {lease.task_id}: Worker={lease.worker_id}, PID={lease.pid}, Reason={reason}")
+        print(f"    Expires: {lease.expires_at} | Last Heartbeat: {lease.last_heartbeat}")
+    return 0
+
+
 def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
-    """Dispatches worker command to orchestrator, rebase, diagnose, or legacy cycle_handler."""
+    """Dispatches worker command to orchestrator, rebase, diagnose, lease, or legacy cycle_handler."""
     worker_action = getattr(args, "worker_action", None)
     action_or_task = getattr(args, "action_or_task", None)
 
@@ -158,7 +217,11 @@ def handle_worker_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
     if worker_action == "diagnose" or (isinstance(action_or_task, str) and action_or_task.lower() == "diagnose"):
         return handle_worker_diagnose(args, config)
 
+    if worker_action == "lease" or (isinstance(action_or_task, str) and action_or_task.lower() == "lease"):
+        return handle_worker_lease(args, config)
+
     from .cycle_handler import handle_worker_command as handle_legacy_worker
 
     return handle_legacy_worker(args, config)
+
 

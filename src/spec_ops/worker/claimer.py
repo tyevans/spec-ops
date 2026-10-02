@@ -239,6 +239,8 @@ class TaskClaimer:
                 task.branch = branch
                 try:
                     write_task_file(task)
+                    from .lease_manager import WorkerLeaseManager
+                    WorkerLeaseManager(self.repo_root).create_lease(task.canonical_id, worker_id=worker_name)
                 except Exception:
                     pass
 
@@ -307,6 +309,8 @@ class TaskClaimer:
             task.branch = branch
             try:
                 write_task_file(task)
+                from .lease_manager import WorkerLeaseManager
+                WorkerLeaseManager(self.repo_root).create_lease(task.canonical_id, worker_id=worker_name)
             except Exception:
                 pass
 

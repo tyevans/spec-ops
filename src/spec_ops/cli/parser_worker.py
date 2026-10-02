@@ -85,3 +85,13 @@ def register_worker_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_diag.add_argument("--text", dest="trace_text", default=None, metavar="TEXT", help="Raw failure traceback or preflight output text")
     p_diag.add_argument("--json", action="store_true", help="Output diagnostic cards as JSON")
 
+    p_lease = worker_subs.add_parser("lease", help="Inspect worker process leases, record heartbeats, and auto-reclaim zombie claims")
+    p_lease.add_argument("--status", action="store_true", help="Display active worker lease status table (default)")
+    p_lease.add_argument("--reclaim", action="store_true", help="Reconcile active leases and automatically reclaim zombie task claims")
+    p_lease.add_argument("--heartbeat", action="store_true", help="Record liveness heartbeat for a claimed task lease")
+    p_lease.add_argument("--task", "--task-id", dest="task_id", default=None, help="Target task canonical ID (e.g. TASK-0010)")
+    p_lease.add_argument("--dry-run", action="store_true", help="Simulate zombie reclamation without modifying task files")
+    p_lease.add_argument("--ttl", type=int, default=300, help="Lease time-to-live in seconds (default: 300)")
+    p_lease.add_argument("--json", action="store_true", help="Output lease inspection or reclamation results as JSON")
+
+

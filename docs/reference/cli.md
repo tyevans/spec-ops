@@ -80,6 +80,7 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops worker orchestrate` | `[TASK_ID] [--task-id TASK_ID] [--task TASK_ID] [--max-attempts N] [--peer-review] [--consultation] [--no-peer-review] [--dry-run] [--json]` | Multi-agent in-worktree execution loop with active spec consultation, peer review, and AST self-healing |
 | `spec-ops worker rebase` | `[task-id] [--abort-on-conflict] [--dry-run] [--json]` | Autonomous worktree auto-rebase against main with conflict resolution |
 | `spec-ops worker diagnose` | `[--log LOG] [--text TEXT] [--json]` | AST self-healing diagnostic analysis of preflight failures and retry prompt synthesis |
+| `spec-ops worker lease` | `[--status] [--reclaim] [--heartbeat] [--task TASK_ID] [--task-id TASK_ID] [--dry-run] [--ttl TTL] [--json]` | Inspect worker process leases, record liveness heartbeats, and auto-reclaim dead zombie claims |
 | `spec-ops orchestrate retrospect` | `[--log-dir LOG_DIR] [--dry-run] [--json]` | Analyze session artifacts and failure logs to categorize invariant breaches and synthesize proposed remediation tasks |
 | `spec-ops orchestrate health` | `[--log-dir LOG_DIR] [--json]` | Summarize orchestration health, pass/fail rates, stalled worktrees, and unaddressed bugs |
 | `spec-ops cycle` | `[--max-tasks N] [--max-concurrency N] [--drain] [--dry-run] [--no-merge] [--build-docs] [--no-review] [--skip-review] [--adaptive]` | Run end-to-end autonomous development cycle |

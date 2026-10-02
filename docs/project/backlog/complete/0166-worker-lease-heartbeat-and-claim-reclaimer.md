@@ -1,7 +1,7 @@
 ---
 id: '0166'
 title: Dynamic Worker Lease Heartbeat and Zombie Claim Auto-Reclaimer
-status: Refined
+status: Complete
 dependencies:
 - TASK-0105
 - TASK-0150
@@ -16,6 +16,10 @@ governing_prds:
 governing_stories:
 - US-0081
 target_bc: worker
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T01:11:30.325946+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0166: Dynamic Worker Lease Heartbeat and Zombie Claim Auto-Reclaimer

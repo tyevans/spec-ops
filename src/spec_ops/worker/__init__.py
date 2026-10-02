@@ -101,6 +101,11 @@ from .sandbox_env import (
     is_sensitive_key,
     sanitize_environment,
 )
+from .lease_manager import (
+    WorkerLease,
+    WorkerLeaseManager,
+    is_pid_alive,
+)
 from .worktree import cleanup_worktree, create_worktree
 
 __all__ = [
@@ -131,6 +136,8 @@ __all__ = [
     "StageResult",
     "SystemMetrics",
     "TaskClaimer",
+    "WorkerLease",
+    "WorkerLeaseManager",
     "WorkerOrchestrationReport",
     "WorkerOrchestrator",
     "auto_rebase_worktree",
@@ -158,6 +165,7 @@ __all__ = [
     "install_pre_commit_hook",
     "interpolate_runner_template",
     "is_command_approved",
+    "is_pid_alive",
     "is_rebase_in_progress",
     "is_sensitive_key",
     "parse_commit_trailers",

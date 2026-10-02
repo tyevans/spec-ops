@@ -167,7 +167,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0163 (Complete)**: [`0163-cryptographic-commit-attestation-validator`](complete/0163-cryptographic-commit-attestation-validator.md)
 - **TASK-0164 (Complete)**: [`0164-deadlock-breaker-and-cycle-resolution`](complete/0164-deadlock-breaker-and-cycle-resolution.md)
 - **TASK-0165 (Complete)**: [`0165-living-adr-supersession-and-evolution`](complete/0165-living-adr-supersession-and-evolution.md)
-- **TASK-0166 (Refined)**: [`0166-worker-lease-heartbeat-and-claim-reclaimer`](refined/0166-worker-lease-heartbeat-and-claim-reclaimer.md)
+- **TASK-0166 (Complete)**: [`0166-worker-lease-heartbeat-and-claim-reclaimer`](complete/0166-worker-lease-heartbeat-and-claim-reclaimer.md)
 - **TASK-0167 (Refined)**: [`0167-terminal-dashboard-live-monitor`](refined/0167-terminal-dashboard-live-monitor.md)
 - **TASK-0168 (Refined)**: [`0168-commit-trailer-sanitizer-and-signer`](refined/0168-commit-trailer-sanitizer-and-signer.md)
 - **TASK-0169 (Refined)**: [`0169-customer-uat-token-gatekeeper`](refined/0169-customer-uat-token-gatekeeper.md)
