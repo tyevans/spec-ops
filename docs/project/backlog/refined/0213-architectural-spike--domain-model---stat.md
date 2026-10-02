@@ -3,7 +3,7 @@ id: '0213'
 title: 'Architectural Spike: Domain Model & State Handlers for Running `spec-ops prd
   ship PRD-0003` verifies 100% completion of implementing tasks and generates automated
   customer release notes.'
-status: Proposed
+status: Refined
 governing_prds:
 - PRD-0003
 governing_stories:

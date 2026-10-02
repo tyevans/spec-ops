@@ -208,7 +208,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0210 (Proposed)**: [`0210-blackbox-frontdoor-test-suite-for-runnin`](proposed/0210-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0211 (Proposed)**: [`0211-blackbox-frontdoor-test-suite-for-runnin`](proposed/0211-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0212 (Proposed)**: [`0212-blackbox-frontdoor-test-suite-for-runnin`](proposed/0212-blackbox-frontdoor-test-suite-for-runnin.md)
-- **TASK-0213 (Proposed)**: [`0213-architectural-spike--domain-model---stat`](proposed/0213-architectural-spike--domain-model---stat.md)
+- **TASK-0213 (Refined)**: [`0213-architectural-spike--domain-model---stat`](refined/0213-architectural-spike--domain-model---stat.md)
 - **TASK-0214 (Proposed)**: [`0214-domain-model---state-handlers-for-runnin`](proposed/0214-domain-model---state-handlers-for-runnin.md)
 - **TASK-0215 (Proposed)**: [`0215-domain-model---state-handlers-for-runnin`](proposed/0215-domain-model---state-handlers-for-runnin.md)
 - **TASK-0216 (Proposed)**: [`0216-domain-model---state-handlers-for-runnin`](proposed/0216-domain-model---state-handlers-for-runnin.md)
