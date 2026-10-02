@@ -1,4 +1,8 @@
-"""Worktree rescue and human takeover manager for SpecOps."""
+"""Worktree rescue and human takeover manager for SpecOps.
+
+Governed by ADR-0007 and ADR-0021. Relocated to spec_ops.rescue to eliminate backward
+dependency from backlog (layer 2) to rescue (layer 3).
+"""
 
 from __future__ import annotations
 
@@ -8,12 +12,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from ..backlog.queue import BacklogQueue
+from ..backlog.worker import BacklogWorkerEngine
 from ..config.models import SpecOpsConfig
 from ..core.models import Task
 from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
 from ..worker.merge_lock import MergeLockManager
-from .queue import BacklogQueue
-from .worker import BacklogWorkerEngine
 
 
 @dataclass
@@ -72,7 +76,7 @@ class WorktreeRescueManager:
                 capture_output=True,
                 text=True,
             )
-            is_dirty = bool(status_res.stdout.strip())
+            is_dirty = bool(status_res.stdout.strip()) if status_res.returncode == 0 else False
 
             # Feedback check
             prompt_file = p / ".task-prompt.md"
@@ -160,7 +164,7 @@ class WorktreeRescueManager:
     ) -> tuple[bool, str]:
         """Runs preflight verification and merges human-rescued worktree into main."""
         if salvage:
-            from ..rescue.salvage import complete_salvage
+            from .salvage import complete_salvage
 
             return complete_salvage(self.config, task_id_input, author=author, rescued_by=rescued_by)
 
@@ -180,7 +184,7 @@ class WorktreeRescueManager:
             return False, f"Task {clean_id} not found in backlog."
 
         # 2. Purge ephemeral handover brief and prompts prior to git staging
-        from ..rescue.handover import purge_ephemeral_handover_artifacts
+        from .handover import purge_ephemeral_handover_artifacts
 
         purge_ephemeral_handover_artifacts(info.worktree_dir)
 
@@ -220,7 +224,7 @@ class WorktreeRescueManager:
                 sync_security_profile(info.worktree_dir, sync_worktrees=False)
 
         # 4. Run preflight (bypass caches for full preflight pipeline revalidation)
-        from ..rescue.incremental_runner import clear_step_cache
+        from .incremental_runner import clear_step_cache
 
         clear_step_cache(info.worktree_dir)
         print("🔄 Bypassing preflight caches: executing full, un-truncated preflight verification pipeline...")
@@ -230,7 +234,6 @@ class WorktreeRescueManager:
             print(log)
         if not ok:
             return False, f"Preflight failed in rescued worktree:\n{log}"
-
 
         # 5. Enforce backlog isolation before merge
         if self.config.execution.backlog_isolation:
@@ -296,4 +299,3 @@ class WorktreeRescueManager:
             count += 1
         subprocess.run(["git", "worktree", "prune"], cwd=self.repo_root, capture_output=True)
         return count
-

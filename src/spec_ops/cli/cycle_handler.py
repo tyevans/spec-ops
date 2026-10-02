@@ -224,7 +224,7 @@ def handle_cycle_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
 
 def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> int:
     """Handles 'spec-ops rescue' worktree diagnostics and recovery."""
-    from ..backlog.rescue import WorktreeRescueManager
+    from ..rescue.manager import WorktreeRescueManager
 
     mgr = WorktreeRescueManager(config)
 

@@ -1,7 +1,7 @@
 ---
 id: 0229
 title: Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py
-status: Refined
+status: Complete
 dependencies:
 - TASK-0244
 governing_adrs:
@@ -13,7 +13,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: backlog
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T15:45:03.545304+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0229: Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py

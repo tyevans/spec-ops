@@ -374,8 +374,12 @@ class BacklogWorkerEngine:
                         f"Autonomous Worker Execution Failure Report\nTask: {task.canonical_id}\n\nLast Failure Log:\n{agent_log or 'Preflight verification failed'}\n",
                         encoding="utf-8",
                     )
-                    from ..rescue.handover import generate_handover_brief
-                    generate_handover_brief(worktree_dir, task, agent_log or "Preflight verification failed", getattr(self, "last_attempt_history", None), self.config)
+                    try:
+                        import importlib
+                        handover_mod = importlib.import_module("spec_ops.rescue.handover")
+                        handover_mod.generate_handover_brief(worktree_dir, task, agent_log or "Preflight verification failed", getattr(self, "last_attempt_history", None), self.config)
+                    except Exception:
+                        pass
                     print(f"⚠️ Worker stalled. Preserved worktree at {worktree_dir} for human rescue ('spec-ops rescue {task.canonical_id}').")
                     print(f"spec-ops rescue {task.canonical_id}")
             else:

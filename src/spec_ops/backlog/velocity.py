@@ -10,7 +10,7 @@ from typing import Any
 
 from ..core.models import Task
 from ..core.provenance import CommitRecord, extract_commit_records, is_autonomous_contributor
-from ..rescue.memory import extract_failed_invariants, parse_task_memory
+from ..core.task_memory import extract_failed_invariants, parse_task_memory
 from .velocity_format import format_rescues_table, format_velocity_table
 from .velocity_models import (
     ContributorVelocity,

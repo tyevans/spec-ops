@@ -3,8 +3,8 @@
 import subprocess
 from pathlib import Path
 
-from spec_ops.backlog.rescue import WorktreeRescueManager
 from spec_ops.config.models import SpecOpsConfig
+from spec_ops.rescue.manager import WorktreeRescueManager
 
 
 def test_rescue_manager_list_and_inspect(tmp_path: Path):

@@ -135,7 +135,7 @@ def handle_rescue_command(args: argparse.Namespace, config: SpecOpsConfig) -> in
 
         return handle_cluster_cli(config, args)
 
-    from ..backlog.rescue import WorktreeRescueManager
+    from ..rescue.manager import WorktreeRescueManager
 
     mgr = WorktreeRescueManager(config)
 
