@@ -121,4 +121,7 @@
 | `US-0117` | Autonomous Full-Lifecycle SDLC Orchestrator Skill & Multi-Agent Coordination | Accepted | Alex & Jordan | FEAT-ORCH-01 | `PRD-0006` |
 | `US-0122` | First-Class Versioned Library Releases and SemVer Progression | Accepted | Alex | FEAT-REL-02 | `PRD-0001` |
 | `US-0123` | Target Repository Virtualenv Dependency and License Resolution | Accepted | Sasha | FEAT-SEC-05 | `PRD-0002` |
-| `US-0124` | Self-Contained GitHub Pages and Visualizer Scaffolding for Brownfield Repositories | Accepted | Devon | FEAT-ADOPT-02 | `PRD-0001` |
+| `US-0124` | Self-Contained GitHub Pages and Visualizer Scaffolding for Brownfield Repositories | Accepted | Devon | FEAT-ADOPT-02 | `PRD-0007` |
+| `US-0125` | Intelligent Pre-Existing Documentation Bridging and Workflow Deconfliction | Accepted | Devon | FEAT-ADOPT-03 | `PRD-0007` |
+| `US-0126` | Incremental Brownfield Technical Debt Baselining and Seam Refactoring Synthesis | Accepted | Devon | FEAT-ADOPT-01 | `PRD-0007` |
+| `US-0127` | Zero-Contamination Tool Execution and Isolated Target Environment Inspection | Accepted | Devon | FEAT-ADOPT-04 | `PRD-0007` |

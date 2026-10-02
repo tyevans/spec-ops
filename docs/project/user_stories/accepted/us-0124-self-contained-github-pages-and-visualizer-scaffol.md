@@ -6,7 +6,7 @@ created: 2026-10-02
 persona: "Devon"
 target_bc: "docs"
 feature: "FEAT-ADOPT-02"
-governing_prd: "PRD-0001"
+governing_prd: "PRD-0007"
 scenarios:
   - "Scaffolding self-contained GitHub Pages deployment workflow without target lockfile dependency"
   - "Detecting pre-existing documentation tools and deployment workflows"
@@ -16,7 +16,7 @@ scenarios:
 # US-0124 — Self-Contained GitHub Pages and Visualizer Scaffolding for Brownfield Repositories
 
 ## Governing PRD
-- [`PRD-0001: SpecOps Autonomous Project Management Engine`](../../product/accepted/prd-0001-spec-ops-autonomous-project-management-engine.md)
+- [`PRD-0007: Brownfield Codebase Adoption, Technical Debt Baselining & Documentation Bridging Engine`](../../product/accepted/prd-0007-brownfield-codebase-adoption-and-onboarding-engine.md)
 
 ## User Story
 

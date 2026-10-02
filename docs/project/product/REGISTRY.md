@@ -8,3 +8,4 @@
 | `PRD-0004` | Autonomous Multi-Worker Fleet & Preserved Worktree Rescue Engine | Accepted | Morgan, Riley | worker |
 | `PRD-0005` | Relational Knowledge Graph, Architectural Profiles & Living Reporting | Accepted | Alex, Jordan | core |
 | `PRD-0006` | Autonomous Full-Lifecycle SDLC Orchestrator Skill & Multi-Agent Company-in-a-Box | Accepted | Alex, Jordan | core |
+| `PRD-0007` | Brownfield Codebase Adoption, Technical Debt Baselining & Documentation Bridging Engine | Accepted | Devon (The Brownfield Migration Engineer) | adopt |
