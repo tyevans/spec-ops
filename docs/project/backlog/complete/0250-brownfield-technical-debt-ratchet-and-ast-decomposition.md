@@ -1,7 +1,7 @@
 ---
 id: '0250'
 title: Brownfield Technical Debt Baselining Ratchet and AST Decomposition Task Emission
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -14,7 +14,9 @@ governing_stories:
 target_bc: core
 signed_off_by: Ty Evans <tyevans@gmail.com>
 signed_off_at: '2026-10-02T19:52:11.020920+00:00'
+commit_signature_status: SIGNED
 persona: Devon
+has_signed_commits: true
 ---
 
 # TASK-0250: Brownfield Technical Debt Baselining Ratchet and AST Decomposition Task Emission
