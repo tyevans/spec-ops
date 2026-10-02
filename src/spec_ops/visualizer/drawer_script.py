@@ -3,21 +3,26 @@
 DRAWER_JS = r"""
   let currentEntity = null;
 
+  function renderInlineMarkdown(text) {
+    if (!text) return "";
+    return String(text)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/~~([^~]+)~~/g, "<del>$1</del>")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#67e8f9; text-decoration:underline;">$1</a>');
+  }
+
   function renderMarkdown(md) {
     if (!md) return "";
     return md
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/```([a-z]*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
-      .replace(/`([^`]+)`/g, "<code>$1</code>")
-      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*([^*]+)\*/g, "<em>$1</em>")
-      .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-      .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-      .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-      .replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>")
-      .replace(/^\s*-\s+(.*$)/gim, "<li>$1</li>")
-      .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
-      .replace(/\n\n+/g, "<p></p>");
+      .replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/~~([^~]+)~~/g, "<del>$1</del>")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#67e8f9; text-decoration:underline;">$1</a>')
+      .replace(/^### (.*$)/gim, "<h3>$1</h3>").replace(/^## (.*$)/gim, "<h2>$1</h2>").replace(/^# (.*$)/gim, "<h1>$1</h1>")
+      .replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>").replace(/^\s*-\s+(.*$)/gim, "<li>$1</li>")
+      .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>").replace(/\n\n+/g, "<p></p>");
   }
 
   function findEntity(id) {
@@ -129,7 +134,7 @@ DRAWER_JS = r"""
           <div style="display:flex; flex-direction:column; gap:6px;">
             ${s.scenarios.map(sc => `
               <div style="background:rgba(15,23,42,0.6); border:1px solid var(--border-subtle); border-radius:6px; padding:8px 10px; font-size:0.8rem; display:flex; gap:8px; align-items:flex-start;">
-                <span style="color:#10b981; font-weight:bold;">✓</span><span style="color:#e2e8f0;">${sc}</span>
+                <span style="color:#10b981; font-weight:bold; flex-shrink:0;">✓</span><span style="color:#e2e8f0; line-height:1.45;">${renderInlineMarkdown(sc)}</span>
               </div>`).join("")}
           </div>
         </div>` : ""}
@@ -154,7 +159,7 @@ DRAWER_JS = r"""
           <div style="display:flex; flex-direction:column; gap:6px;">
             ${p.outcomes.map(o => `
               <div style="background:rgba(15,23,42,0.6); border:1px solid var(--border-subtle); border-radius:6px; padding:8px 10px; font-size:0.8rem; display:flex; gap:8px;">
-                <span style="color:#f43f5e; font-weight:bold;">•</span><span style="color:#e2e8f0;">${o}</span>
+                <span style="color:#f43f5e; font-weight:bold; flex-shrink:0;">•</span><span style="color:#e2e8f0; line-height:1.45;">${renderInlineMarkdown(o)}</span>
               </div>`).join("")}
           </div>
         </div>` : ""}
@@ -370,6 +375,9 @@ DRAWER_JS = r"""
       showSuccess();
     }
   };
+
+  window.renderInlineMarkdown = renderInlineMarkdown;
+  window.renderPrdCard = renderPrdCard;
 
   canvas.addEventListener("click", e => {
     const rect = canvas.getBoundingClientRect();
