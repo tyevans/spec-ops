@@ -172,7 +172,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0168 (Complete)**: [`0168-commit-trailer-sanitizer-and-signer`](complete/0168-commit-trailer-sanitizer-and-signer.md)
 - **TASK-0169 (Complete)**: [`0169-customer-uat-token-gatekeeper`](complete/0169-customer-uat-token-gatekeeper.md)
 - **TASK-0170 (Complete)**: [`0170-bounded-context-seam-auditor`](complete/0170-bounded-context-seam-auditor.md)
-- **TASK-0171 (Refined)**: [`0171-failure-memory-strategy-indexer`](refined/0171-failure-memory-strategy-indexer.md)
+- **TASK-0171 (Complete)**: [`0171-failure-memory-strategy-indexer`](complete/0171-failure-memory-strategy-indexer.md)
 - **TASK-0172 (Proposed)**: [`0172-fix-numbering-integrity-regex-collision-on-non-num`](proposed/0172-fix-numbering-integrity-regex-collision-on-non-num.md)
 - **TASK-0173 (Proposed)**: [`0173-exclude-hidden-tooling-directories-during-brownfie`](proposed/0173-exclude-hidden-tooling-directories-during-brownfie.md)
 - **TASK-0174 (Proposed)**: [`0174-correct-debt-baseline-file-path-discrepancy-in-bro`](proposed/0174-correct-debt-baseline-file-path-discrepancy-in-bro.md)
