@@ -15,6 +15,7 @@ from .models import (
     ArchitectureSettings,
     ComplianceSettings,
     ComponentConfig,
+    DocumentationSettings,
     ExecutionSettings,
     LicenseSettings,
     ProjectSettings,
@@ -196,12 +197,34 @@ def load_config(config_path: Path | None = None, root_dir: Path | None = None) -
             compliance=compliance,
         )
 
+    # Parse documentation section
+    doc_data = data.get("documentation", {})
+    doc_docs_dir = doc_data.get("docs_dir")
+    if not doc_docs_dir:
+        proj_docs = proj_data.get("docs_dir")
+        if proj_docs and proj_docs != "docs/project":
+            doc_docs_dir = proj_docs
+        else:
+            doc_docs_dir = "docs"
+
+    documentation = DocumentationSettings(
+        docs_dir=doc_docs_dir,
+        allowed_directories=list(doc_data.get("allowed_directories", [])),
+        ignored_directories=list(
+            doc_data.get("ignored_directories", []) + doc_data.get("ignored_dirs", [])
+        ),
+        allowed_root_files=list(doc_data.get("allowed_root_files", [])),
+        ignored_root_files=list(doc_data.get("ignored_root_files", [])),
+    )
+
     return SpecOpsConfig(
         project=project,
         architecture=architecture,
         vertical_slices=slices,
         quality=quality,
         execution=execution,
+        documentation=documentation,
         security=security,
         root_dir=root,
     )
+

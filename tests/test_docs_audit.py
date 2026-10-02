@@ -201,3 +201,94 @@ def test_cli_docs_audit_drift_fails(tmp_path: Path):
     assert res.returncode == 1
     assert "Status: ❌ DRIFT DETECTED" in res.stdout
     assert "unknown_quadrant" in res.stdout
+
+
+def test_structure_ignored_and_allowed_directories_in_specops_toml(tmp_path: Path):
+    docs = _create_minimal_docs_tree(tmp_path)
+    (docs / "adr").mkdir()
+    (docs / "adr" / "ADR-0001.md").write_text("# ADR 1\n", encoding="utf-8")
+    (docs / "plans").mkdir()
+    (docs / "plans" / "plan.md").write_text("# Plan\n", encoding="utf-8")
+    (docs / "custom_root.txt").write_text("Custom root\n", encoding="utf-8")
+
+    # Before adding specops.toml, these are violations
+    violations, _ = check_diataxis_structure(docs)
+    assert len(violations) >= 3
+
+    # Add specops.toml with ignored/allowed directories and root files
+    (tmp_path / "specops.toml").write_text(
+        """[documentation]
+ignored_directories = ["adr"]
+allowed_directories = ["plans"]
+ignored_root_files = ["custom_root.txt"]
+""",
+        encoding="utf-8",
+    )
+
+    violations_after, _ = check_diataxis_structure(docs)
+    assert len(violations_after) == 0
+
+
+def test_snippet_tester_with_angle_bracket_and_brace_placeholders(tmp_path: Path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+
+    md_content = """# Placeholders
+```bash
+spec-ops queue claim <task id>
+spec-ops commit -m <message file>
+spec-ops review {task_id}
+```
+"""
+    (docs / "placeholders.md").write_text(md_content, encoding="utf-8")
+
+    dummy_parser = argparse.ArgumentParser(prog="spec-ops")
+    subs = dummy_parser.add_subparsers(dest="command")
+    q = subs.add_parser("queue")
+    q_sub = q.add_subparsers(dest="subcommand")
+    q_claim = q_sub.add_parser("claim")
+    q_claim.add_argument("task_id")
+
+    c = subs.add_parser("commit")
+    c.add_argument("-m", "--message-file")
+
+    r = subs.add_parser("review")
+    r.add_argument("task_id")
+
+    violations, count = check_code_snippets(docs, dummy_parser)
+    assert count == 1
+    assert len(violations) == 0
+
+
+def test_cli_docs_audit_respects_configured_docs_dir(tmp_path: Path):
+    import os
+    import shutil
+
+    target = tmp_path / "custom_app"
+    init_project(target, name="CustomApp", diataxis=True)
+
+    # Rename docs to documentation
+    shutil.move(str(target / "docs"), str(target / "documentation"))
+
+    # Update specops.toml
+    specops_toml = target / "specops.toml"
+    current_content = specops_toml.read_text(encoding="utf-8")
+    specops_toml.write_text(
+        current_content + "\n[documentation]\ndocs_dir = \"documentation\"\n",
+        encoding="utf-8",
+    )
+
+    env = dict(os.environ)
+    res = subprocess.run(
+        [sys.executable, "-m", "spec_ops.cli.main", "docs", "audit"],
+        cwd=str(target),
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert res.returncode == 0
+    assert "Documentation Directory: " in res.stdout
+    assert "documentation" in res.stdout
+    assert "Status: ✅ CLEAN" in res.stdout
+
+

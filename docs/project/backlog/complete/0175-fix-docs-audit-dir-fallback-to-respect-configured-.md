@@ -1,7 +1,7 @@
 ---
 id: '0175'
 title: Fix Docs Audit Dir Fallback to Respect Configured Docs Dir and Brownfield Layouts
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 governing_prds:
@@ -9,7 +9,11 @@ governing_prds:
 governing_stories:
 - US-0001
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T02:36:51.376526+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0175: Fix Docs Audit Dir Fallback to Respect Configured Docs Dir and Brownfield Layouts
