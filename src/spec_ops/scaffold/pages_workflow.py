@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 
-def generate_pages_workflow(project_name: str = "SpecOps", base_url: str | None = None) -> str:
+def generate_pages_workflow(
+    project_name: str = "SpecOps",
+    base_url: str | None = None,
+    timeout_minutes: int = 15,
+) -> str:
     """Generates an opinionated GitHub Actions workflow to compile and deploy documentation to GitHub Pages."""
     base_url_flag = f"--base-url {base_url}" if base_url else "--base-url /${{ github.event.repository.name }}/"
 
@@ -29,7 +33,7 @@ jobs:
       name: github-pages
       url: ${{{{ steps.deployment.outputs.page_url }}}}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: {timeout_minutes}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

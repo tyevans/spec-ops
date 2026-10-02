@@ -179,7 +179,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0174 (Complete)**: [`0174-correct-debt-baseline-file-path-discrepancy-in-bro`](complete/0174-correct-debt-baseline-file-path-discrepancy-in-bro.md)
 - **TASK-0175 (Complete)**: [`0175-fix-docs-audit-dir-fallback-to-respect-configured-`](complete/0175-fix-docs-audit-dir-fallback-to-respect-configured-.md)
 - **TASK-0176 (Complete)**: [`0176-support-committing-debt-baseline-file-without-giti`](complete/0176-support-committing-debt-baseline-file-without-giti.md)
-- **TASK-0177 (Refined)**: [`0177-add-explicit-timeout-minutes-to-scaffolding-github`](refined/0177-add-explicit-timeout-minutes-to-scaffolding-github.md)
+- **TASK-0177 (Complete)**: [`0177-add-explicit-timeout-minutes-to-scaffolding-github`](complete/0177-add-explicit-timeout-minutes-to-scaffolding-github.md)
 - **TASK-0178 (Refined)**: [`0178-handle-missing-hypothesis-dependency-in-properties`](refined/0178-handle-missing-hypothesis-dependency-in-properties.md)
 - **TASK-0179 (Refined)**: [`0179-ensure-sys-path-includes-workspace-root-in-properties`](refined/0179-ensure-sys-path-includes-workspace-root-in-properties.md)
 - **TASK-0180 (Refined)**: [`0180-support-test-classes-and-hypothesis-attributes-in-pro`](refined/0180-support-test-classes-and-hypothesis-attributes-in-pro.md)

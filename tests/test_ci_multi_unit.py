@@ -245,3 +245,35 @@ def test_resolve_python_versions_malformed_toml(tmp_path: Path):
     (tmp_path / "specops.toml").write_text("malformed toml [[[", encoding="utf-8")
     assert resolve_python_versions(tmp_path) == DEFAULT_PYTHON_VERSIONS
 
+
+def test_resolve_workflow_timeout(tmp_path: Path):
+    from spec_ops.scaffold.ci_multi import resolve_workflow_timeout
+
+    # Default
+    assert resolve_workflow_timeout(tmp_path) == 15
+
+    # CLI override takes precedence
+    assert resolve_workflow_timeout(tmp_path, cli_timeout=25) == 25
+
+    # Configured in specops.toml
+    (tmp_path / "specops.toml").write_text('[ci]\ntimeout_minutes = 35\n', encoding="utf-8")
+    assert resolve_workflow_timeout(tmp_path) == 35
+
+    # CLI override still beats specops.toml
+    assert resolve_workflow_timeout(tmp_path, cli_timeout=10) == 10
+
+    # Malformed toml falls back to default
+    (tmp_path / "specops.toml").write_text('broken [[ toml', encoding="utf-8")
+    assert resolve_workflow_timeout(tmp_path) == 15
+
+
+def test_scaffold_ci_command_sets_timeout(tmp_path: Path):
+    rc = scaffold_ci_command(tmp_path, platform="github", force=True, timeout_minutes=40)
+    assert rc == 0
+
+    gh_file = tmp_path / ".github" / "workflows" / "specops.yml"
+    assert gh_file.is_file()
+    data = yaml.safe_load(gh_file.read_text(encoding="utf-8"))
+    assert data["jobs"]["specops-quality-gate"]["timeout-minutes"] == 40
+
+

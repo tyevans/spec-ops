@@ -4,10 +4,16 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 import textwrap
 from typing import Any
 
 import yaml
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib  # type: ignore
 
 DEFAULT_PYTHON_VERSIONS = ["3.12", "3.13"]
 BEGIN_CUSTOM_ENV = "# BEGIN CUSTOM ENV"
@@ -102,10 +108,6 @@ def resolve_python_versions(root_dir: Path, cli_matrix: str | None = None) -> li
     specops_toml = root_dir / "specops.toml"
     if specops_toml.is_file():
         try:
-            import tomllib
-        except ImportError:
-            import tomli as tomllib  # type: ignore
-        try:
             data = tomllib.loads(specops_toml.read_text(encoding="utf-8"))
             for sec in ("project", "ci", "quality", "architecture"):
                 sub = data.get(sec, {})
@@ -125,12 +127,30 @@ def resolve_python_versions(root_dir: Path, cli_matrix: str | None = None) -> li
     return list(DEFAULT_PYTHON_VERSIONS)
 
 
+def resolve_workflow_timeout(root_dir: Path, cli_timeout: int | None = None) -> int:
+    """Resolves workflow job timeout-minutes from CLI, specops.toml, or default (15)."""
+    if cli_timeout and cli_timeout > 0:
+        return cli_timeout
+    specops_toml = root_dir / "specops.toml"
+    if specops_toml.is_file():
+        try:
+            data = tomllib.loads(specops_toml.read_text(encoding="utf-8"))
+            for sec in ("ci", "project", "quality"):
+                val = data.get(sec, {}).get("timeout_minutes", data.get(sec, {}).get("timeout"))
+                if isinstance(val, int) and val > 0:
+                    return val
+        except Exception:
+            pass
+    return 15
+
+
 def generate_github_ci_workflow(
     project_name: str = "SpecOps",
     python_versions: list[str] | None = None,
     custom_env: dict[str, Any] | None = None,
     raw_custom_env: str | None = None,
     custom_steps: str | None = None,
+    timeout_minutes: int = 15,
 ) -> str:
     """Generates a GitHub Actions quality gate workflow with matrix testing and preservation seams."""
     py_versions = python_versions or list(DEFAULT_PYTHON_VERSIONS)
@@ -167,6 +187,7 @@ jobs:
   specops-quality-gate:
     name: SpecOps Invariant & Health Check (Python ${{{{ matrix.python-version }}}})
     runs-on: ubuntu-latest
+    timeout-minutes: {timeout_minutes}
     strategy:
       matrix:
         python-version: {matrix_json}
@@ -304,6 +325,7 @@ def scaffold_ci_command(
     force: bool = False,
     matrix: str | None = None,
     project_name: str = "SpecOps",
+    timeout_minutes: int | None = None,
 ) -> int:
     """Executes CI workflow scaffolding across requested platforms with preservation support."""
     normalized_platform = platform.lower().strip()
@@ -312,12 +334,12 @@ def scaffold_ci_command(
         return 1
 
     python_versions = resolve_python_versions(root_dir, matrix)
+    timeout = resolve_workflow_timeout(root_dir, timeout_minutes)
 
     targets: list[tuple[str, Path]] = []
     if normalized_platform in ("github", "all"):
         gh_target = resolve_github_path(root_dir)
         targets.append(("github", gh_target))
-        # If ci.yml also exists alongside specops.yml and force is requested, update ci.yml too
         alt_ci = root_dir / ".github" / "workflows" / "ci.yml"
         if force and gh_target.name == "specops.yml" and alt_ci.exists():
             targets.append(("github", alt_ci))
@@ -352,6 +374,7 @@ def scaffold_ci_command(
                 custom_env=custom_env,
                 raw_custom_env=raw_env,
                 custom_steps=custom_steps,
+                timeout_minutes=timeout,
             )
         else:
             content = generate_gitlab_ci_workflow(
