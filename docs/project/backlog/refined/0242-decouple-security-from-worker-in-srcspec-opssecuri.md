@@ -1,7 +1,9 @@
 ---
 id: '0242'
 title: 'Decouple Security from Worker in src/spec_ops/security/sandbox.py'
-status: Proposed
+status: Refined
+dependencies:
+- TASK-0241
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: security
+allows_dependencies: true
 ---
 
 # TASK-0242: Decouple Security from Worker in src/spec_ops/security/sandbox.py
