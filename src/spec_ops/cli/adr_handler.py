@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from ..adrs.supersede import ADRNotFoundError, CircularSupersessionError, supersede_adr
+from ..adrs.supersede import ADRNotFoundError, CircularSupersessionError
+from ..adrs.supersession import ADRSupersessionEngine
 from ..config.models import SpecOpsConfig
 
 
@@ -14,24 +15,35 @@ def handle_adr_command(args: Any, config: SpecOpsConfig) -> int:
     """Dispatches 'spec-ops adr' subcommands."""
     action = getattr(args, "adr_action", None)
     if action == "supersede":
+        old_id = getattr(args, "opt_old", None) or getattr(args, "old_id", None)
         new_target = getattr(args, "by", None) or getattr(args, "new_id_pos", None)
-        if not new_target:
+        title = getattr(args, "title", None)
+        dry_run = getattr(args, "dry_run", False)
+
+        if not old_id:
+            print("❌ Error: Target ADR ID to supersede must be specified.", file=sys.stderr)
+            return 1
+
+        if not new_target and not title:
             print(
-                "❌ Error: Superseding ADR must be specified via --by, --with, or positional argument.",
+                "❌ Error: Superseding ADR must be specified via --by, positional argument, or --title.",
                 file=sys.stderr,
             )
             return 1
 
         try:
-            res = supersede_adr(
-                old_target=args.old_id,
+            engine = ADRSupersessionEngine(root_dir=config.root_dir)
+            res = engine.supersede(
+                old_target=old_id,
                 new_target=new_target,
-                docs_dir=config.project_docs_dir,
+                title=title,
+                dry_run=dry_run,
             )
-            print(f"✨ Superseded {res.old_id} by {res.new_id}")
+            mode_prefix = "[Simulated] " if dry_run else ""
+            print(f"✨ {mode_prefix}Superseded {res.old_id} by {res.new_id}")
             print(f"📄 Updated {res.old_file.relative_to(config.root_dir)} status to 'Superseded'")
-            print(f"📄 Promoted {res.new_file.relative_to(config.root_dir)} status to 'Accepted'")
-            print(f"📋 Updated {config.docs_dir / 'adrs' / 'REGISTRY.md'}")
+            print(f"📄 Generated {res.new_file.relative_to(config.root_dir)} status as 'Accepted'")
+            print(f"📋 Synchronized {config.docs_dir / 'adrs' / 'REGISTRY.md'}")
             for w in res.warnings:
                 print(f"⚠️ Warning: {w}")
             return 0
@@ -39,5 +51,5 @@ def handle_adr_command(args: Any, config: SpecOpsConfig) -> int:
             print(f"❌ Error: {err}", file=sys.stderr)
             return 1
 
-    print("Usage: spec-ops adr supersede <old-id> --by <new-id>", file=sys.stderr)
+    print("Usage: spec-ops adr supersede <old-id> [--title <title> | --by <new-id>]", file=sys.stderr)
     return 1

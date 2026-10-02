@@ -1,7 +1,7 @@
 ---
 id: '0165'
 title: Living Architectural Decision Record Supersession and Evolution Engine
-status: Refined
+status: Complete
 dependencies:
 - TASK-0078
 - TASK-0158
@@ -15,6 +15,10 @@ governing_prds:
 governing_stories:
 - US-0106
 target_bc: core
+signed_off_by: Ty Evans <tyler@poorlythoughtout.com>
+signed_off_at: '2026-10-02T01:06:30.914595+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0165: Living Architectural Decision Record Supersession and Evolution Engine

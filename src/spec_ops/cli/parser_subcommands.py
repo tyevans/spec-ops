@@ -161,9 +161,12 @@ def register_adr_subparsers(subparsers: argparse._SubParsersAction) -> None:
     adr_subs = p_adr.add_subparsers(dest="adr_action", help="ADR action")
 
     p_sup = adr_subs.add_parser("supersede", help="Supersede an existing ADR with a new decision")
-    p_sup.add_argument("old_id", help="Canonical ID or path of superseded ADR (e.g. ADR-0003)")
+    p_sup.add_argument("old_id", nargs="?", default=None, help="Canonical ID or path of superseded ADR (e.g. ADR-0003)")
     p_sup.add_argument("new_id_pos", nargs="?", default=None, help="Superseding ADR identifier or path")
+    p_sup.add_argument("--old", dest="opt_old", default=None, help="Target old ADR to supersede")
+    p_sup.add_argument("--title", default=None, help="Title of new superseding ADR")
     p_sup.add_argument("--by", "--with", dest="by", default=None, help="Superseding ADR identifier or path (e.g. ADR-0015)")
+    p_sup.add_argument("--dry-run", action="store_true", default=False, help="Simulate supersession without modifying files")
 
 
 def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
@@ -225,19 +228,10 @@ def register_graph_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_g_dead.add_argument("--resolve", action="store_true", help="Apply proposed minimal dependency cuts to task files")
     p_g_dead.add_argument("--dry-run", action="store_true", default=False, help="Simulate dependency cut resolution without modifying task files")
     p_g_dead.add_argument("--json", action="store_true", help="Output deadlock analysis and cut recommendations as JSON")
-
-
-from .parser_queue import register_queue_subparsers
-
-
-from .parser_rescue import FlexibleRescueParser, register_rescue_subparsers
-
-
-
-from .parser_spike import register_spike_subparsers
-
-
 from .parser_audit import register_audit_subparsers
+from .parser_queue import register_queue_subparsers
+from .parser_rescue import FlexibleRescueParser, register_rescue_subparsers
+from .parser_spike import register_spike_subparsers
 
 
 def register_test_subparsers(subparsers: argparse._SubParsersAction) -> None:
