@@ -20,6 +20,7 @@ dependencies:
 - TASK-0242
 - TASK-0243
 - TASK-0244
+- TASK-0246
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -29,6 +30,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: core
+allows_dependencies: true
 ---
 
 # TASK-0245: Retire ADR-0007 / ADR-0021 Import Waivers and Enforce Zero Prohibited Dependencies in CI Radar
