@@ -51,6 +51,10 @@ def main(argv: list[str] | None = None) -> int:
             print(msg)
             return 0
 
+    if args.command in ("architecture", "arch"):
+        from .architecture_handler import handle_architecture_command
+        return handle_architecture_command(args, config, parser)
+
     if args.command == "adopt":
         from .adopt_handler import handle_adopt_command
         return handle_adopt_command(args)

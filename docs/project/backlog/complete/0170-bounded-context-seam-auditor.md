@@ -1,7 +1,7 @@
 ---
 id: '0170'
 title: Autonomous Bounded Context Seam Auditor and Cross-Context Coupling Heatmap
-status: Refined
+status: Complete
 dependencies:
 - TASK-0085
 - TASK-0153
@@ -15,6 +15,10 @@ governing_prds:
 governing_stories:
 - US-0106
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T01:44:15.594689+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0170: Autonomous Bounded Context Seam Auditor and Cross-Context Coupling Heatmap
