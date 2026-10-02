@@ -29,6 +29,13 @@ class ArchitecturalContract:
     def is_independent(self, src: str, tgt: str) -> bool:
         return (src, tgt) in self.independent_pairs
 
+    def is_forbidden(self, src: str, tgt: str) -> bool:
+        import fnmatch
+        for p in self.forbidden_rules.get(src, []):
+            if fnmatch.fnmatch(tgt, p) or tgt == p:
+                return True
+        return False
+
     def is_ignored_import(self, src_mod: str, tgt_imp: str) -> bool:
         return is_ignored_import(src_mod, tgt_imp, self.ignored_imports)
 

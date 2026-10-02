@@ -141,7 +141,7 @@ class PRDStudioStateManager:
 
     def add_outcome(self, outcome_text: str) -> tuple[bool, list[str]]:
         """Appends a new checkable outcome to the draft."""
-        clean = outcome_text.strip().lstrip("-").strip()
+        clean = outcome_text.strip()
         if clean:
             self.state.outcomes.append(clean)
             self.state.is_dirty = True
