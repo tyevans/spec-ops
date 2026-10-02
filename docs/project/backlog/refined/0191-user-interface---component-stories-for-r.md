@@ -4,17 +4,19 @@ title: User Interface & Component Stories for Running `spec-ops prd studio --ope
   launches a lightweight local web interface for authoring and validating PRDs without
   terminal interaction.
 status: Refined
-governing_prds:
-- PRD-0003
-governing_stories:
-- US-0118
-target_bc: prd
-persona: Taylor (The Product Manager & Technical Writer)
 governing_adrs:
 - ADR-0001
 - ADR-0002
 - ADR-0003
 - ADR-0004
+governing_prds:
+- PRD-0003
+governing_stories:
+- US-0118
+target_bc: prd
+claimed_by: spec-ops-worker
+branch: task/TASK-0191
+persona: Taylor (The Product Manager & Technical Writer)
 ---
 
 # TASK-0191: User Interface & Component Stories for Running `spec-ops prd studio --open` launches a lightweight local web interface for authoring and validating PRDs without terminal interaction.
