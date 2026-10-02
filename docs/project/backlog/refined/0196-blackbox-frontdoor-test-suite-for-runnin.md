@@ -1,19 +1,19 @@
 ---
-id: 0199
-title: User Interface & Component Stories for Running `spec-ops prd audit PRD-0003`
-  computes test coverage across checkable outcomes and linked BDD scenarios.
-status: Proposed
+id: 0196
+title: Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable
+  outcomes and missing persona links with line-level suggestions and remediation hints.
+status: Refined
 governing_prds:
 - PRD-0003
 governing_stories:
-- US-0120
+- US-0119
 target_bc: prd
 ---
 
-# TASK-0199: User Interface & Component Stories for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios.
+# TASK-0196: Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints.
 
 ## Summary
-Implement user interface & component stories in component `prd` fulfilling Outcome 3 of PRD-0003.
+Implement blackbox frontdoor test suite in component `prd` fulfilling Outcome 2 of PRD-0003.
 
 ## Problem Statement
 Deliver focused slice satisfying INVEST criteria and Hard Invariant 6 (<500 lines).
@@ -28,7 +28,7 @@ Deliver focused slice satisfying INVEST criteria and Hard Invariant 6 (<500 line
 ### Scenario 1: ## Problem Statement
 ```gherkin
 Given the system is initialized and ready
-When the user executes the workflow for "User Interface & Component Stories for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios."
+When the user executes the workflow for "Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints."
 Then ## Problem Statement
 And observable outputs satisfy public contracts without backdoor tampering.
 ```
@@ -36,7 +36,7 @@ And observable outputs satisfy public contracts without backdoor tampering.
 ### Scenario 2: Public interfaces or standard domain contracts implemented
 ```gherkin
 Given the system is initialized and ready
-When the user executes the workflow for "User Interface & Component Stories for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios."
+When the user executes the workflow for "Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints."
 Then Public interfaces or standard domain contracts implemented
 And observable outputs satisfy public contracts without backdoor tampering.
 ```
@@ -44,7 +44,7 @@ And observable outputs satisfy public contracts without backdoor tampering.
 ### Scenario 3: Verified via automated blackbox tests with zero private backdoor manipulation
 ```gherkin
 Given the system is initialized and ready
-When the user executes the workflow for "User Interface & Component Stories for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios."
+When the user executes the workflow for "Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints."
 Then Verified via automated blackbox tests with zero private backdoor manipulation
 And observable outputs satisfy public contracts without backdoor tampering.
 ```
