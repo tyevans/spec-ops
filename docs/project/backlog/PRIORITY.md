@@ -204,7 +204,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0206 (Proposed)**: [`0206-user-interface---component-stories-for-r`](proposed/0206-user-interface---component-stories-for-r.md)
 - **TASK-0207 (Proposed)**: [`0207-user-interface---component-stories-for-r`](proposed/0207-user-interface---component-stories-for-r.md)
 - **TASK-0208 (Proposed)**: [`0208-user-interface---component-stories-for-r`](proposed/0208-user-interface---component-stories-for-r.md)
-- **TASK-0209 (Proposed)**: [`0209-architectural-spike--blackbox-frontdoor-`](proposed/0209-architectural-spike--blackbox-frontdoor-.md)
+- **TASK-0209 (Refined)**: [`0209-architectural-spike--blackbox-frontdoor-`](refined/0209-architectural-spike--blackbox-frontdoor-.md)
 - **TASK-0210 (Proposed)**: [`0210-blackbox-frontdoor-test-suite-for-runnin`](proposed/0210-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0211 (Proposed)**: [`0211-blackbox-frontdoor-test-suite-for-runnin`](proposed/0211-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0212 (Proposed)**: [`0212-blackbox-frontdoor-test-suite-for-runnin`](proposed/0212-blackbox-frontdoor-test-suite-for-runnin.md)

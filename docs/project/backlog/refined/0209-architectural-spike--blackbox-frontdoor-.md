@@ -1,18 +1,18 @@
 ---
-id: '0217'
-title: 'Architectural Spike: Public API Contracts for Running `spec-ops prd ship PRD-0003`
-  verifies 100% completion of implementing tasks and generates automated customer
-  release notes.'
-status: Proposed
+id: 0209
+title: 'Architectural Spike: Blackbox Frontdoor Test Suite for Running `spec-ops prd
+  audit PRD-0003` computes test coverage across checkable outcomes and linked BDD
+  scenarios.'
+status: Refined
 governing_prds:
 - PRD-0003
 governing_stories:
-- US-0121
+- US-0120
 target_bc: prd
 ---
 
 ## Summary
-Investigate architectural boundaries, evaluate interface trade-offs, and prototype foundational contracts for Public API Contracts for Running `spec-ops prd ship PRD-0003` verifies 100% completion of implementing tasks and generates automated customer release notes..
+Investigate architectural boundaries, evaluate interface trade-offs, and prototype foundational contracts for Blackbox Frontdoor Test Suite for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios..
 
 ## Problem Statement
 Mitigate architectural uncertainty and validate thin vertical slice decomposition before executing implementation slices.
@@ -33,7 +33,7 @@ estimated_lines: 150
 ### Scenario 1: Validate domain interfaces and data schemas across target bounded contexts
 ```gherkin
 Given the system is initialized and ready
-When the user executes the workflow for "Architectural Spike: Public API Contracts for Running `spec-ops prd ship PRD-0003` verifies 100% completion of implementing tasks and generates automated customer release notes."
+When the user executes the workflow for "Architectural Spike: Blackbox Frontdoor Test Suite for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios."
 Then Validate domain interfaces and data schemas across target bounded contexts
 And observable outputs satisfy public contracts without backdoor tampering.
 ```
@@ -41,7 +41,7 @@ And observable outputs satisfy public contracts without backdoor tampering.
 ### Scenario 2: Benchmark and verify public frontdoor integration boundaries
 ```gherkin
 Given the system is initialized and ready
-When the user executes the workflow for "Architectural Spike: Public API Contracts for Running `spec-ops prd ship PRD-0003` verifies 100% completion of implementing tasks and generates automated customer release notes."
+When the user executes the workflow for "Architectural Spike: Blackbox Frontdoor Test Suite for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios."
 Then Benchmark and verify public frontdoor integration boundaries
 And observable outputs satisfy public contracts without backdoor tampering.
 ```
@@ -49,7 +49,7 @@ And observable outputs satisfy public contracts without backdoor tampering.
 ### Scenario 3: Ensure all downstream slices remain strictly under 400 lines (ADR-0002)
 ```gherkin
 Given the system is initialized and ready
-When the user executes the workflow for "Architectural Spike: Public API Contracts for Running `spec-ops prd ship PRD-0003` verifies 100% completion of implementing tasks and generates automated customer release notes."
+When the user executes the workflow for "Architectural Spike: Blackbox Frontdoor Test Suite for Running `spec-ops prd audit PRD-0003` computes test coverage across checkable outcomes and linked BDD scenarios."
 Then Ensure all downstream slices remain strictly under 400 lines (ADR-0002)
 And observable outputs satisfy public contracts without backdoor tampering.
 ```
