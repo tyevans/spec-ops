@@ -11,6 +11,7 @@ import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 from ..config.models import SpecOpsConfig
 from .models import ProjectData, Task
@@ -287,7 +288,11 @@ def format_traceability_matrix_table(rows: list[dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
-def run_provenance_audit(args: argparse.Namespace, config: SpecOpsConfig) -> int:
+def run_provenance_audit(
+    args: argparse.Namespace,
+    config: SpecOpsConfig,
+    site_updater: Callable[[SpecOpsConfig], None] | None = None,
+) -> int:
     """CLI frontdoor execution entrypoint for 'spec-ops audit provenance/traceability'."""
     repo_arg = getattr(args, "repo", ".")
     repo_dir = Path(repo_arg).resolve() if Path(repo_arg).is_absolute() else (config.root_dir / repo_arg).resolve()
@@ -300,15 +305,12 @@ def run_provenance_audit(args: argparse.Namespace, config: SpecOpsConfig) -> int
     if getattr(args, "contributions", False):
         print("Contributor Provenance Breakdown:")
         print(format_contributions_table(report.contributor_stats))
-        try:
-            from ..visualizer.generator import generate_standalone_html
-            html = generate_standalone_html(config)
-            dist_dir = config.root_dir / "dist"
-            if dist_dir.exists():
-                (dist_dir / "visualizer.html").write_text(html, encoding="utf-8")
-        except Exception:
-            pass
-        print("✨ Updated visualizer Traceability view with contributor filter chips.")
+        if site_updater is not None:
+            try:
+                site_updater(config)
+            except Exception:
+                pass
+            print("✨ Updated visualizer Traceability view with contributor filter chips.")
 
     print("Verified Traceability Matrix:")
     print(format_traceability_matrix_table(report.lineage_matrix))

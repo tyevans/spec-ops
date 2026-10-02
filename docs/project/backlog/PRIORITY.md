@@ -205,7 +205,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0230 (Complete)**: [`0230-decouple-backlog-from-visualizer-in-srcspec-opsbac`](complete/0230-decouple-backlog-from-visualizer-in-srcspec-opsbac.md)
 - **TASK-0231 (Complete)**: [`0231-decouple-backlog-from-worker-in-srcspec-opsbacklog`](complete/0231-decouple-backlog-from-worker-in-srcspec-opsbacklog.md)
 - **TASK-0232 (Complete)**: [`0232-decouple-core-from-backlog-in-srcspec-opscoreevent`](complete/0232-decouple-core-from-backlog-in-srcspec-opscoreevent.md)
-- **TASK-0233 (Refined)**: [`0233-decouple-core-from-visualizer-in-srcspec-opscorepr`](refined/0233-decouple-core-from-visualizer-in-srcspec-opscorepr.md)
+- **TASK-0233 (Complete)**: [`0233-decouple-core-from-visualizer-in-srcspec-opscorepr`](complete/0233-decouple-core-from-visualizer-in-srcspec-opscorepr.md)
 - **TASK-0234 (Proposed)**: [`0234-decouple-docs-from-cli-in-srcspec-opsdocscheckerpy`](proposed/0234-decouple-docs-from-cli-in-srcspec-opsdocscheckerpy.md)
 - **TASK-0235 (Refined)**: [`0235-decouple-docs-from-prd-in-srcspec-opsdocsbuilderpy`](refined/0235-decouple-docs-from-prd-in-srcspec-opsdocsbuilderpy.md)
 - **TASK-0236 (Refined)**: [`0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu`](refined/0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu.md)

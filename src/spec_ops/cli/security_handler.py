@@ -18,7 +18,18 @@ def handle_audit_command(args: argparse.Namespace, config: SpecOpsConfig, parser
     if action in ("provenance", "traceability"):
         from ..core.provenance import run_provenance_audit
 
-        return run_provenance_audit(args, config)
+        def _update_visualizer_site(cfg: SpecOpsConfig) -> None:
+            try:
+                from ..visualizer.generator import generate_standalone_html
+
+                html = generate_standalone_html(cfg)
+                dist_dir = cfg.root_dir / "dist"
+                if dist_dir.exists():
+                    (dist_dir / "visualizer.html").write_text(html, encoding="utf-8")
+            except Exception:
+                pass
+
+        return run_provenance_audit(args, config, site_updater=_update_visualizer_site)
 
     if action == "export":
         from ..security.audit.exporter import export_compliance_manifest
