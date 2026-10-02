@@ -190,7 +190,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0186 (Complete)**: [`0186-the-skill-includes-a-standalone-cli-primer-and-pro`](complete/0186-the-skill-includes-a-standalone-cli-primer-and-pro.md)
 - **TASK-0187 (Complete)**: [`0187-subagent-orchestration-guidelines-explicitly-speci`](complete/0187-subagent-orchestration-guidelines-explicitly-speci.md)
 - **TASK-0188 (Complete)**: [`0188-definition-of-ready-and-definition-of-done-checks-`](complete/0188-definition-of-ready-and-definition-of-done-checks-.md)
-- **TASK-0189 (Refined)**: [`0189-domain-model---state-handlers-for-runnin`](refined/0189-domain-model---state-handlers-for-runnin.md)
+- **TASK-0189 (Complete)**: [`0189-domain-model---state-handlers-for-runnin`](complete/0189-domain-model---state-handlers-for-runnin.md)
 - **TASK-0190 (Refined)**: [`0190-public-api-contracts-for-running--spec-o`](refined/0190-public-api-contracts-for-running--spec-o.md)
 - **TASK-0191 (Refined)**: [`0191-user-interface---component-stories-for-r`](refined/0191-user-interface---component-stories-for-r.md)
 - **TASK-0192 (Refined)**: [`0192-blackbox-frontdoor-test-suite-for-runnin`](refined/0192-blackbox-frontdoor-test-suite-for-runnin.md)
