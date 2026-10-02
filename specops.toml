@@ -13,6 +13,30 @@ components = [
   { id = "core", name = "Core Engine", path = "src" }
 ]
 
+[architecture.layers]
+cli = 5
+visualizer = 4
+tui = 4
+worker = 3
+rescue = 3
+scaffold = 3
+release = 3
+backlog = 2
+prd = 2
+adrs = 2
+graph = 2
+profiles = 2
+spike = 2
+core = 1
+security = 1
+docs = 1
+config = 0
+
+[architecture.independent_contexts]
+pairs = [
+  ["visualizer", "tui"]
+]
+
 [vertical_slices]
 slices = [
   { type = "spike", name = "Architectural Spike", prefix = "SPIKE:", requires_adr = true },

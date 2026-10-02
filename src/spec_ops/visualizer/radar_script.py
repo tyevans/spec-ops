@@ -112,6 +112,7 @@ def detect_boundary_violations(
     forbidden_rules: dict[str, Sequence[str] | set[str]] | None = None,
     permissible_rules: dict[str, Sequence[str] | set[str]] | None = None,
     file_paths: dict[tuple[str, str], str] | None = None,
+    independent_pairs: set[tuple[str, str]] | None = None,
 ) -> list[BoundaryViolation]:
     """Evaluates cross-context dependencies against boundary rules, layer ordering, and domain purity."""
     violations: list[BoundaryViolation] = []
@@ -129,6 +130,18 @@ def detect_boundary_violations(
                 continue
 
             file_path = (file_paths or {}).get((source, target), "")
+
+            if independent_pairs and (source, target) in independent_pairs:
+                violations.append(
+                    BoundaryViolation(
+                        source=source,
+                        target=target,
+                        violation_type="unauthorized_import",
+                        message=f"Unauthorized import: independent context {source} cannot import sibling {target}",
+                        file_path=file_path,
+                    )
+                )
+                continue
 
             if forbidden_rules and source in forbidden_rules:
                 if any(_matches_pattern(target, forb) for forb in forbidden_rules[source]):
@@ -186,6 +199,8 @@ def detect_boundary_violations(
 
     return violations
 
+from ..core.layer_contracts import load_architectural_layers_and_rules
+
 
 def harvest_architecture_radar(config: SpecOpsConfig, data: ProjectData | None = None) -> dict[str, Any]:
     """Harvests coupling matrices, boundary violations, ADR supersessions, and spec drift."""
@@ -206,8 +221,9 @@ def harvest_architecture_radar(config: SpecOpsConfig, data: ProjectData | None =
             for tid in find_tasks_citing_adr(backlog_dir, old_id):
                 obsolete_citations.append({"task_id": tid, "adr_id": old_id})
 
-    # Harvest context dependencies
+    # Harvest context dependencies and counts
     context_deps: dict[str, set[str]] = {bc: set() for bc in bcs}
+    context_counts: dict[tuple[str, str], int] = {}
     file_paths: dict[tuple[str, str], str] = {}
     src_dir = config.root_dir / "src"
     if src_dir.is_dir():
@@ -226,37 +242,69 @@ def harvest_architecture_radar(config: SpecOpsConfig, data: ProjectData | None =
                     imp_ctx = checker._determine_context(imp)
                     if imp_ctx and imp_ctx != file_ctx:
                         context_deps[file_ctx].add(imp_ctx)
+                        context_counts[(file_ctx, imp_ctx)] = context_counts.get((file_ctx, imp_ctx), 0) + 1
                         file_paths[(file_ctx, imp_ctx)] = str(rel).replace("\\", "/")
             except OSError:
                 continue
 
-    layers = partition_acyclic_layers(context_deps)
-    forbidden_rules: dict[str, list[str]] = {}
+    context_layers, independent_pairs, contract_forbidden, ordered_layers = load_architectural_layers_and_rules(config.root_dir)
+
     for src_pat, forb_list, _ in checker.rules:
         prefix = src_pat.replace(".*", "")
-        forbidden_rules.setdefault(prefix, []).extend(forb_list)
+        contract_forbidden.setdefault(prefix, []).extend(forb_list)
+
+    layers = ordered_layers if ordered_layers else partition_acyclic_layers(context_deps)
 
     violations = detect_boundary_violations(
         context_deps,
         layers=layers,
-        forbidden_rules=forbidden_rules,
+        forbidden_rules=contract_forbidden,
         file_paths=file_paths,
+        independent_pairs=independent_pairs,
     )
 
-    # Coupling matrix
+    # Coupling matrix with architectural layers and independence semantics
+    node_to_layer: dict[str, int] = {}
+    for idx, layer_nodes in enumerate(layers):
+        for node in layer_nodes:
+            node_to_layer[node] = idx
+
     coupling_matrix = []
     for src in bcs:
         for tgt in bcs:
             if src == tgt:
                 continue
-            count = 1 if tgt in context_deps.get(src, set()) else 0
-            is_prohibited = any(v.source == src and v.target == tgt for v in violations)
+            count = context_counts.get((src, tgt), 0)
+            is_active_violation = any(v.source == src and v.target == tgt for v in violations)
+
+            src_layer = node_to_layer.get(src, context_layers.get(src))
+            tgt_layer = node_to_layer.get(tgt, context_layers.get(tgt))
+
+            if is_active_violation:
+                is_prohibited = True
+                status = "prohibited"
+            elif src_layer is not None and tgt_layer is not None and src_layer < tgt_layer:
+                # Lower layer attempting to import higher layer: Prohibited vector
+                is_prohibited = True
+                status = "prohibited"
+            elif (src, tgt) in independent_pairs:
+                # Independent sibling contexts
+                is_prohibited = count > 0
+                status = "prohibited" if count > 0 else "isolated"
+            elif contract_forbidden and src in contract_forbidden and any(_matches_pattern(tgt, forb) for forb in contract_forbidden[src]):
+                is_prohibited = True
+                status = "prohibited"
+            else:
+                # Permissible vector (downward or allowed sibling)
+                is_prohibited = False
+                status = "permissible"
+
             coupling_matrix.append({
                 "from_bc": src,
                 "to_bc": tgt,
                 "count": count,
                 "is_prohibited": is_prohibited,
-                "status": "prohibited" if is_prohibited else "permissible",
+                "status": status,
             })
 
     # Specification drift audit
