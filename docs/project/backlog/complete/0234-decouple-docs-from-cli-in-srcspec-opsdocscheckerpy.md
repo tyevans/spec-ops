@@ -1,8 +1,7 @@
 ---
 id: '0234'
-title: 'Decouple Docs from CLI in src/spec_ops/docs/checker.py'
-status: Refined
-allows_dependencies: true
+title: Decouple Docs from CLI in src/spec_ops/docs/checker.py
+status: Complete
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -12,6 +11,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: docs
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:16:21.370227+00:00'
+commit_signature_status: SIGNED
+allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0234: Decouple Docs from CLI in src/spec_ops/docs/checker.py

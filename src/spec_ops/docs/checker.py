@@ -4,6 +4,17 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Callable
+
+_DEFAULT_PARSER_FACTORY: Callable[[], argparse.ArgumentParser] | None = None
+
+
+def register_default_parser_factory(
+    factory: Callable[[], argparse.ArgumentParser] | None,
+) -> None:
+    """Registers a parser factory to avoid docs depending on cli (ADR-0021)."""
+    global _DEFAULT_PARSER_FACTORY
+    _DEFAULT_PARSER_FACTORY = factory
 
 
 def is_command_documented(command: str, doc_texts: list[str]) -> bool:
@@ -49,9 +60,18 @@ def check_docs_drift(
     Returns (exit_code, alert_messages).
     """
     if parser is None:
-        from ..cli.parser import build_parser
+        if _DEFAULT_PARSER_FACTORY is not None:
+            parser = _DEFAULT_PARSER_FACTORY()
+        else:
+            try:
+                import importlib
 
-        parser = build_parser()
+                mod = importlib.import_module("spec_ops.cli.parser")
+                parser = mod.build_parser()
+            except Exception:
+                raise ValueError(
+                    "An ArgumentParser instance must be provided via dependency injection (ADR-0021)."
+                )
 
     from .cli_inspector import extract_parser_commands
 
