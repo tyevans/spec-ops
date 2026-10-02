@@ -51,6 +51,14 @@ class VisualizerHandler(BaseHTTPRequestHandler):
         elif path in ("/prd-studio", "/studio"):
             html = render_studio_html()
             self._send_response_bytes(200, "text/html; charset=utf-8", html.encode("utf-8"))
+        elif path in ("/prd-lint", "/lint"):
+            from ..prd.lint_api import lint_prd_api
+            from ..prd.lint_ui import render_lint_html
+
+            root = getattr(self.config, "root_dir", Path.cwd())
+            reports_res = lint_prd_api(repo_root=root)
+            html = render_lint_html(reports=reports_res.get("reports", []))
+            self._send_response_bytes(200, "text/html; charset=utf-8", html.encode("utf-8"))
         elif path == "/api/data":
             data = serialize_project_data(self.config)
             self._send_json(200, data)

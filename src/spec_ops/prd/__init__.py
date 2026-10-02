@@ -19,6 +19,7 @@ from .lint_engine import (
     PRDLintEngine,
     PRDLintReport,
 )
+from .lint_ui import LINT_COMPONENT_STORIES, render_lint_html
 from .linter import PRDLinter
 from .studio_api import dispatch_studio_api_request
 from .studio_runner import launch_prd_studio
@@ -33,6 +34,7 @@ __all__ = [
     "CustomerJourneyReport",
     "DeepPRDAuditor",
     "JourneyMapEngine",
+    "LINT_COMPONENT_STORIES",
     "LineLevelSuggestion",
     "OutcomeAuditResult",
     "PRDAuditResult",
@@ -61,6 +63,7 @@ __all__ = [
     "interactive_new_prd",
     "launch_prd_studio",
     "lint_prd_api",
+    "render_lint_html",
     "render_roadmap_html",
     "render_roadmap_svg",
     "run_deep_audit",

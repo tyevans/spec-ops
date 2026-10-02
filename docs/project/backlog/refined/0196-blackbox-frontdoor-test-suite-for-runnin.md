@@ -3,11 +3,17 @@ id: 0196
 title: Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable
   outcomes and missing persona links with line-level suggestions and remediation hints.
 status: Refined
+governing_adrs:
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0004
 governing_prds:
 - PRD-0003
 governing_stories:
 - US-0119
 target_bc: prd
+persona: Taylor (The Product Manager & Technical Writer)
 ---
 
 # TASK-0196: Blackbox Frontdoor Test Suite for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints.
