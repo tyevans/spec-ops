@@ -1,7 +1,9 @@
 ---
 id: '0238'
-title: 'Decouple Profiles from Scaffold in src/spec_ops/profiles/security.py'
-status: Proposed
+title: Decouple Profiles from Scaffold in src/spec_ops/profiles/security.py
+status: Refined
+dependencies:
+- TASK-0244
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: profiles
+allows_dependencies: true
 ---
 
 # TASK-0238: Decouple Profiles from Scaffold in src/spec_ops/profiles/security.py

@@ -210,7 +210,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0235 (Complete)**: [`0235-decouple-docs-from-prd-in-srcspec-opsdocsbuilderpy`](complete/0235-decouple-docs-from-prd-in-srcspec-opsdocsbuilderpy.md)
 - **TASK-0236 (Complete)**: [`0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu`](complete/0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu.md)
 - **TASK-0237 (Complete)**: [`0237-decouple-prd-from-cli-in-srcspec-opsprdpersona-fri`](complete/0237-decouple-prd-from-cli-in-srcspec-opsprdpersona-fri.md)
-- **TASK-0238 (Proposed)**: [`0238-decouple-profiles-from-scaffold-in-srcspec-opsprof`](proposed/0238-decouple-profiles-from-scaffold-in-srcspec-opsprof.md)
+- **TASK-0238 (Refined)**: [`0238-decouple-profiles-from-scaffold-in-srcspec-opsprof`](refined/0238-decouple-profiles-from-scaffold-in-srcspec-opsprof.md)
 - **TASK-0239 (Proposed)**: [`0239-decouple-security-from-backlog-in-srcspec-opssecur`](proposed/0239-decouple-security-from-backlog-in-srcspec-opssecur.md)
 - **TASK-0240 (Proposed)**: [`0240-decouple-security-from-prd-in-srcspec-opssecurityr`](proposed/0240-decouple-security-from-prd-in-srcspec-opssecurityr.md)
 - **TASK-0241 (Proposed)**: [`0241-decouple-security-from-rescue-in-srcspec-opssecuri`](proposed/0241-decouple-security-from-rescue-in-srcspec-opssecuri.md)
