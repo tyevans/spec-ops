@@ -8,6 +8,12 @@ governing_prds:
 governing_stories:
 - US-0119
 target_bc: prd
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+governing_adrs:
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0004
 ---
 
 # TASK-0194: Public API Contracts for Running `spec-ops prd lint` flags unfalsifiable outcomes and missing persona links with line-level suggestions and remediation hints.
@@ -52,3 +58,7 @@ And observable outputs satisfy public contracts without backdoor tampering.
 ## Hypothesis Invariant Properties
 
 - `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/prd/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
