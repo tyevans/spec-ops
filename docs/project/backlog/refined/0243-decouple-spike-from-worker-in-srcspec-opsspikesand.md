@@ -1,7 +1,9 @@
 ---
 id: '0243'
 title: 'Decouple Spike from Worker in src/spec_ops/spike/sandbox.py'
-status: Proposed
+status: Refined
+dependencies:
+- TASK-0242
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,6 +13,7 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: spike
+allows_dependencies: true
 ---
 
 # TASK-0243: Decouple Spike from Worker in src/spec_ops/spike/sandbox.py

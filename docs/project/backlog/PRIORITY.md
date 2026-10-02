@@ -215,7 +215,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0240 (Complete)**: [`0240-decouple-security-from-prd-in-srcspec-opssecurityr`](complete/0240-decouple-security-from-prd-in-srcspec-opssecurityr.md)
 - **TASK-0241 (Complete)**: [`0241-decouple-security-from-rescue-in-srcspec-opssecuri`](complete/0241-decouple-security-from-rescue-in-srcspec-opssecuri.md)
 - **TASK-0242 (Complete)**: [`0242-decouple-security-from-worker-in-srcspec-opssecuri`](complete/0242-decouple-security-from-worker-in-srcspec-opssecuri.md)
-- **TASK-0243 (Proposed)**: [`0243-decouple-spike-from-worker-in-srcspec-opsspikesand`](proposed/0243-decouple-spike-from-worker-in-srcspec-opsspikesand.md)
+- **TASK-0243 (Refined)**: [`0243-decouple-spike-from-worker-in-srcspec-opsspikesand`](refined/0243-decouple-spike-from-worker-in-srcspec-opsspikesand.md)
 - **TASK-0245 (Proposed)**: [`0245-retire-adr-0007-adr-0021-import-waivers-and-enforc`](proposed/0245-retire-adr-0007-adr-0021-import-waivers-and-enforc.md)
 - **TASK-0246 (Proposed)**: [`0246-decouple-prd-from-visualizer-in-srcspec-opsprdstud`](proposed/0246-decouple-prd-from-visualizer-in-srcspec-opsprdstud.md)
 - **TASK-0205 (Refined)**: [`0205-architectural-spike--user-interface---co`](refined/0205-architectural-spike--user-interface---co.md)
