@@ -22,3 +22,4 @@
 | ADR-0018 | Immutable Supply-Chain Lockfile Enforcement | Accepted | 2026-09-29 |
 | ADR-0019 | Real-Time Secret Scanning and Credential Leak Defense | Accepted | 2026-09-29 |
 | ADR-0020 | Version-Controlled Failure Post-Mortems and Anti-Loop Memory | Accepted | 2026-09-30 |
+| ADR-0021 | Application Orchestration Layer and Dependency Inversion Boundaries | Accepted | 2026-10-01 |
