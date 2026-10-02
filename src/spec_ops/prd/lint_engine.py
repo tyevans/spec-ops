@@ -51,6 +51,7 @@ class PRDLintReport:
     diagnostics: list[PRDLintDiagnostic] = field(default_factory=list)
     falsifiable_count: int = 0
     unfalsifiable_count: int = 0
+    outcome_checks: list[Any] = field(default_factory=list)
 
     @property
     def error_count(self) -> int:
@@ -252,6 +253,7 @@ class PRDLintEngine:
             diagnostics=diagnostics,
             falsifiable_count=falsifiable_count,
             unfalsifiable_count=unfalsifiable_count,
+            outcome_checks=base_result.outcome_checks,
         )
 
     def lint_file(self, target_file: Path | str) -> PRDLintReport:

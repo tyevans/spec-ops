@@ -107,6 +107,13 @@ def run_prd_lint(
             pass
 
         remed_msg = f" (Remediated {remediated_counts.get(str(r.file_path), 0)} line(s))" if remediate else ""
+        if r.outcome_checks:
+            for idx, oc in enumerate(r.outcome_checks, 1):
+                if oc.is_falsifiable:
+                    print(f"   [Outcome {idx}] passes as a valid falsifiable frontdoor contract")
+                else:
+                    print(f"   [Outcome {idx}] flags Outcome {idx}: Subjective adjective '{oc.subjective_term}' is unfalsifiable")
+
         if r.is_valid:
             print(f"✅ {rel_path}{remed_msg}")
             print(f"   {r.falsifiable_count} checkable outcome(s) verified as falsifiable and observable.")
@@ -114,6 +121,8 @@ def run_prd_lint(
             print(f"❌ {rel_path}{remed_msg}")
             for d in r.diagnostics:
                 print(f"   Line {d.line} [{d.rule_id}] ({d.severity.upper()}): {d.message}")
+                if d.guidance:
+                    print(f"      💡 Guidance: {d.guidance}")
                 if d.suggestion:
                     print(f"      - {d.suggestion.original_text}")
                     print(f"      + {d.suggestion.suggested_text}")

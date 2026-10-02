@@ -52,8 +52,11 @@ def parse_task_memory(content: str) -> tuple[dict[str, Any], str, list[dict[str,
     if not isinstance(data, dict):
         return {}, content, []
 
-    history = data.get("failure_history", [])
-    if not isinstance(history, list):
-        history = []
+    raw_history = data.get("failure_history", [])
+    history: list[dict[str, Any]] = []
+    if isinstance(raw_history, list):
+        for item in raw_history:
+            if isinstance(item, dict):
+                history.append(dict(item))
 
     return data, body, history

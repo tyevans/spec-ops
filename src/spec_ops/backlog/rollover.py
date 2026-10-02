@@ -14,7 +14,7 @@ from typing import Any
 
 from ..config.loader import SpecOpsConfig
 from ..core.migration import parse_frontmatter_and_body
-from ..visualizer.burndown_deck import parse_roadmap_milestones
+from ..core.roadmap import parse_roadmap_milestones
 
 
 def normalize_ms_token(s: str) -> str:

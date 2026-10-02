@@ -202,7 +202,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0198 (Complete)**: [`0198-public-api-contracts-for-running--spec-o`](complete/0198-public-api-contracts-for-running--spec-o.md)
 - **TASK-0244 (Complete)**: [`0244-scaffold-spec-opsapp-bounded-context-and-applicati`](complete/0244-scaffold-spec-opsapp-bounded-context-and-applicati.md)
 - **TASK-0229 (Complete)**: [`0229-decouple-backlog-from-rescue-in-srcspec-opsbacklog`](complete/0229-decouple-backlog-from-rescue-in-srcspec-opsbacklog.md)
-- **TASK-0230 (Refined)**: [`0230-decouple-backlog-from-visualizer-in-srcspec-opsbac`](refined/0230-decouple-backlog-from-visualizer-in-srcspec-opsbac.md)
+- **TASK-0230 (Complete)**: [`0230-decouple-backlog-from-visualizer-in-srcspec-opsbac`](complete/0230-decouple-backlog-from-visualizer-in-srcspec-opsbac.md)
 - **TASK-0231 (Refined)**: [`0231-decouple-backlog-from-worker-in-srcspec-opsbacklog`](refined/0231-decouple-backlog-from-worker-in-srcspec-opsbacklog.md)
 - **TASK-0232 (Proposed)**: [`0232-decouple-core-from-backlog-in-srcspec-opscoreevent`](proposed/0232-decouple-core-from-backlog-in-srcspec-opscoreevent.md)
 - **TASK-0233 (Proposed)**: [`0233-decouple-core-from-visualizer-in-srcspec-opscorepr`](proposed/0233-decouple-core-from-visualizer-in-srcspec-opscorepr.md)

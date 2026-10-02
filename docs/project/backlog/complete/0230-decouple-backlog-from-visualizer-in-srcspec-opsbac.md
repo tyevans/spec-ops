@@ -1,7 +1,7 @@
 ---
 id: '0230'
 title: Decouple Backlog from Visualizer in src/spec_ops/backlog/rollover.py
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,7 +11,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: backlog
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T15:59:26.190698+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0230: Decouple Backlog from Visualizer in src/spec_ops/backlog/rollover.py

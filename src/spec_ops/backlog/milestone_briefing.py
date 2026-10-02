@@ -12,7 +12,7 @@ from ..config.models import SpecOpsConfig
 from ..core.git_metadata import GitMetadataHarvester
 from ..core.models import ProjectData, Task
 from ..core.parser import SpecOpsParser
-from ..visualizer.burndown_deck import parse_roadmap_milestones
+from ..core.roadmap import parse_roadmap_milestones
 
 
 @dataclass
