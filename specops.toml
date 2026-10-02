@@ -14,7 +14,8 @@ components = [
 ]
 
 [architecture.layers]
-cli = 5
+cli = 6
+app = 5
 visualizer = 4
 tui = 4
 worker = 3

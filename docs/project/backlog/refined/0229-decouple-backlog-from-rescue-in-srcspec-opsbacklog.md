@@ -1,7 +1,7 @@
 ---
-id: '0229'
-title: 'Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py'
-status: Proposed
+id: 0229
+title: Decouple Backlog from Rescue in src/spec_ops/backlog/rescue.py
+status: Refined
 dependencies:
 - TASK-0244
 governing_adrs:

@@ -1,7 +1,7 @@
 ---
 id: '0231'
-title: 'Decouple Backlog from Worker in src/spec_ops/backlog/queue.py'
-status: Proposed
+title: Decouple Backlog from Worker in src/spec_ops/backlog/queue.py
+status: Refined
 dependencies:
 - TASK-0244
 governing_adrs:

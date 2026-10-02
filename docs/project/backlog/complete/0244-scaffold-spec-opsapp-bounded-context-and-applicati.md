@@ -1,7 +1,7 @@
 ---
 id: '0244'
 title: Scaffold spec_ops.app Bounded Context and Application Orchestration Layer Contracts
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0007
 - ADR-0021
@@ -11,7 +11,12 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: app
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T15:37:22.008158+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0244: Scaffold spec_ops.app Bounded Context and Application Orchestration Layer Contracts

@@ -103,6 +103,7 @@ name = "SpecOps Bounded Context Layers"
 type = "layers"
 layers = [
     "spec_ops.cli",
+    "spec_ops.app",
     "spec_ops.visualizer | spec_ops.tui",
     "spec_ops.worker : spec_ops.rescue : spec_ops.scaffold : spec_ops.release",
     "spec_ops.backlog : spec_ops.prd : spec_ops.adrs : spec_ops.graph : spec_ops.profiles : spec_ops.spike",

@@ -1,7 +1,7 @@
 ---
 id: '0236'
-title: 'Decouple Docs from Visualizer in src/spec_ops/docs/builder.py'
-status: Proposed
+title: Decouple Docs from Visualizer in src/spec_ops/docs/builder.py
+status: Refined
 dependencies:
 - TASK-0244
 governing_adrs:
