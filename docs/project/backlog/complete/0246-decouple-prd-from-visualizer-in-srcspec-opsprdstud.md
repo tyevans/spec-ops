@@ -1,7 +1,7 @@
 ---
 id: '0246'
 title: Decouple PRD from Visualizer in src/spec_ops/prd/studio_runner.py
-status: Refined
+status: Complete
 dependencies:
 - TASK-0243
 governing_adrs:
@@ -13,6 +13,10 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: prd
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:56:49.616433+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0246: Decouple PRD from Visualizer in src/spec_ops/prd/studio_runner.py

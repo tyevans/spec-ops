@@ -39,7 +39,7 @@ from .outcome_coverage_api import (
     dispatch_outcome_coverage_api_request,
 )
 from .studio_api import dispatch_studio_api_request
-from .studio_runner import launch_prd_studio
+from .studio_runner import launch_prd_studio, register_default_server_launcher
 from .studio_state import PRDStudioSessionState, PRDSummary, PRDStudioStateManager
 from .studio_ui import STUDIO_COMPONENT_STORIES, render_studio_html
 from .traceability import PersonaCoverageReport, PersonaLineageRecord, PersonaTraceabilityEngine
@@ -88,6 +88,7 @@ __all__ = [
     "launch_prd_studio",
     "lint_prd_api",
     "register_default_parser_factory",
+    "register_default_server_launcher",
     "render_lint_html",
     "render_roadmap_html",
     "render_roadmap_svg",

@@ -217,7 +217,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0242 (Complete)**: [`0242-decouple-security-from-worker-in-srcspec-opssecuri`](complete/0242-decouple-security-from-worker-in-srcspec-opssecuri.md)
 - **TASK-0243 (Complete)**: [`0243-decouple-spike-from-worker-in-srcspec-opsspikesand`](complete/0243-decouple-spike-from-worker-in-srcspec-opsspikesand.md)
 - **TASK-0245 (Refined)**: [`0245-retire-adr-0007-adr-0021-import-waivers-and-enforc`](refined/0245-retire-adr-0007-adr-0021-import-waivers-and-enforc.md)
-- **TASK-0246 (Refined)**: [`0246-decouple-prd-from-visualizer-in-srcspec-opsprdstud`](refined/0246-decouple-prd-from-visualizer-in-srcspec-opsprdstud.md)
+- **TASK-0246 (Complete)**: [`0246-decouple-prd-from-visualizer-in-srcspec-opsprdstud`](complete/0246-decouple-prd-from-visualizer-in-srcspec-opsprdstud.md)
 - **TASK-0205 (Refined)**: [`0205-architectural-spike--user-interface---co`](refined/0205-architectural-spike--user-interface---co.md)
 - **TASK-0206 (Proposed)**: [`0206-user-interface---component-stories-for-r`](proposed/0206-user-interface---component-stories-for-r.md)
 - **TASK-0207 (Proposed)**: [`0207-user-interface---component-stories-for-r`](proposed/0207-user-interface---component-stories-for-r.md)

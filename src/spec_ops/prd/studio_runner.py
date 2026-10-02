@@ -1,14 +1,33 @@
-"""PRD Studio server launcher and frontdoor execution runner."""
+"""PRD Studio server launcher and frontdoor execution runner.
+
+Governed by ADR-0007, ADR-0021. Decoupled from visualizer via callback registration.
+"""
 
 from __future__ import annotations
 
 import threading
 import time
+from typing import Any, Callable
 import webbrowser
-from typing import Any
 
 from ..config.models import SpecOpsConfig
-from ..visualizer.server import serve_visualizer
+
+_server_launcher: Callable[..., Any] | None = None
+
+
+def register_default_server_launcher(launcher: Callable[..., Any]) -> None:
+    """Registers the server launcher callback for PRD Studio."""
+    global _server_launcher
+    _server_launcher = launcher
+
+
+def _get_server_launcher() -> Callable[..., Any]:
+    global _server_launcher
+    if _server_launcher is not None:
+        return _server_launcher
+    import importlib
+    mod = importlib.import_module("spec_ops.visualizer.server")
+    return getattr(mod, "serve_visualizer")
 
 
 def launch_prd_studio(
@@ -26,9 +45,11 @@ def launch_prd_studio(
 
         threading.Thread(target=_open, daemon=True).start()
 
+    launcher = _get_server_launcher()
+
     if not block:
         t = threading.Thread(
-            target=serve_visualizer,
+            target=launcher,
             args=(config,),
             kwargs={"host": host, "port": port, "default_view": "studio"},
             daemon=True,
@@ -37,5 +58,5 @@ def launch_prd_studio(
         time.sleep(0.4)
         return 0
 
-    serve_visualizer(config, host=host, port=port, default_view="studio")
+    launcher(config, host=host, port=port, default_view="studio")
     return 0

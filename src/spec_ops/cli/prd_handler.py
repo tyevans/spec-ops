@@ -86,8 +86,10 @@ def handle_prd_command(
         return dispatch_uat_command(args, config, parser)
 
     if action == "studio":
-        from ..prd.studio_runner import launch_prd_studio
+        from ..prd.studio_runner import launch_prd_studio, register_default_server_launcher
+        from ..visualizer.server import serve_visualizer
 
+        register_default_server_launcher(serve_visualizer)
         return launch_prd_studio(
             config,
             host=getattr(args, "host", "127.0.0.1"),
