@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from .debt_baseline import EXCLUDE_DIRS, SOURCE_EXTENSIONS
+from .debt_baseline import EXCLUDE_DIRS, SOURCE_EXTENSIONS, is_excluded_path
 
 
 def count_file_lines(file_path: Path) -> int:
@@ -212,7 +212,7 @@ class ModularityDebtAnalyzer:
             except ValueError:
                 continue
 
-            if any(part in EXCLUDE_DIRS for part in rel.parts):
+            if is_excluded_path(rel):
                 continue
             if p.suffix not in SOURCE_EXTENSIONS:
                 continue

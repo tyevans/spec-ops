@@ -181,3 +181,31 @@ def then_tasks_cite_adr0002(repo_context: dict[str, Any]):
         content = rf.read_text(encoding="utf-8")
         assert "ADR-0002" in content
         assert "Target Submodule Decomposition Path" in content or "target submodule decomposition path" in content.lower()
+
+
+# Scenario 4: Hidden Tooling Workspaces Exclusion
+@given('an existing git repository containing source files and hidden tooling workspaces in ".claude/worktrees/"')
+def given_repo_with_hidden_tooling_workspaces(repo_context: dict[str, Any]):
+    repo = repo_context["repo"]
+    src_dir = repo / "src"
+    src_dir.mkdir(parents=True, exist_ok=True)
+    (src_dir / "legacy_main.py").write_text("\n".join([f"# Line {i}" for i in range(550)]) + "\n", encoding="utf-8")
+
+    claude_dir = repo / ".claude" / "worktrees" / "temp"
+    claude_dir.mkdir(parents=True, exist_ok=True)
+    (claude_dir / "hidden_tool_file.py").write_text("\n".join([f"# Hidden {i}" for i in range(600)]) + "\n", encoding="utf-8")
+
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "chore: setup repo with hidden tooling"], cwd=repo, check=True, capture_output=True)
+
+
+@then('files inside ".claude/" are excluded from the grandfathered debt baseline')
+@then('Then files inside ".claude/" are excluded from the grandfathered debt baseline')
+def then_claude_files_excluded(repo_context: dict[str, Any]):
+    repo = repo_context["repo"]
+    toml_path = repo / "specops.toml"
+    assert toml_path.is_file()
+    content = toml_path.read_text(encoding="utf-8")
+    assert ".claude" not in content
+    assert "hidden_tool_file.py" not in content
+    assert "src/legacy_main.py" in content

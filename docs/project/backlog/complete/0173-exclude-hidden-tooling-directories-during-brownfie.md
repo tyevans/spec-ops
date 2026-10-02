@@ -1,7 +1,7 @@
 ---
 id: '0173'
 title: Exclude Hidden Tooling Directories During Brownfield Debt Scanning
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -10,7 +10,11 @@ governing_prds:
 governing_stories:
 - US-0001
 target_bc: core
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T02:20:22.266321+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0173: Exclude Hidden Tooling Directories During Brownfield Debt Scanning

@@ -117,3 +117,22 @@ def test_scan_and_record_grandfathered_debt(tmp_path: Path):
     assert "src/huge.py" in oversized
     assert oversized["src/huge.py"] == 530
     assert "src/small.py" not in oversized
+
+
+def test_scan_and_record_excludes_hidden_tooling_directories(tmp_path: Path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "huge.py").write_text("\n".join(f"# line {i}" for i in range(530)) + "\n", encoding="utf-8")
+
+    claude_dir = tmp_path / ".claude" / "worktrees" / "sub"
+    claude_dir.mkdir(parents=True)
+    (claude_dir / "hidden_huge.py").write_text("\n".join(f"# line {i}" for i in range(600)) + "\n", encoding="utf-8")
+
+    cursor_dir = tmp_path / ".cursor"
+    cursor_dir.mkdir(parents=True)
+    (cursor_dir / "cursor_huge.py").write_text("\n".join(f"# line {i}" for i in range(700)) + "\n", encoding="utf-8")
+
+    oversized = scan_and_record_grandfathered_debt(tmp_path, limit=500)
+    assert "src/huge.py" in oversized
+    assert not any(".claude" in k or ".cursor" in k for k in oversized.keys())
+

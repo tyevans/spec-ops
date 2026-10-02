@@ -112,3 +112,26 @@ def test_hypothesis_health_rejects_expanded_grandfathered_debt(
     assert expanded_violation is not None
     assert expanded_violation.is_expanded is True
     assert expanded_violation.lines == new_line_count
+
+
+@settings(max_examples=30, deadline=None)
+@given(
+    st.sampled_from([".claude", ".cursor", ".vscode", ".idea", ".superpowers", ".custom_tool"]),
+    st.text(alphabet=st.characters(whitelist_categories=("Ll",)), min_size=3, max_size=10),
+    st.integers(min_value=510, max_value=800),
+)
+def test_hypothesis_hidden_directories_never_baselined(
+    tmp_path_factory, hidden_dir_name: str, sub_path: str, line_count: int
+):
+    """Invariant: Files inside hidden dot-directories are never baselined into grandfathered debt."""
+    from spec_ops.core.debt_baseline import scan_and_record_grandfathered_debt
+
+    tmp_path = tmp_path_factory.mktemp("hyp_hidden")
+    hidden_dir = tmp_path / hidden_dir_name / sub_path
+    hidden_dir.mkdir(parents=True)
+    file_path = hidden_dir / "oversized.py"
+    file_path.write_text("\n".join(f"# line {i}" for i in range(line_count)) + "\n", encoding="utf-8")
+
+    oversized = scan_and_record_grandfathered_debt(tmp_path, limit=500)
+    assert len(oversized) == 0
+

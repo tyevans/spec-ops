@@ -304,6 +304,7 @@ def run_hook_sentinel(
         EXCLUDE_DIRS,
         SOURCE_EXTENSIONS,
         evaluate_file_debt,
+        is_excluded_path,
         load_grandfathered_debt,
     )
 
@@ -312,7 +313,7 @@ def run_hook_sentinel(
 
     for rel_path_str in staged_files:
         p = Path(rel_path_str)
-        if any(part in EXCLUDE_DIRS for part in p.parts):
+        if is_excluded_path(p):
             continue
         if p.suffix not in SOURCE_EXTENSIONS:
             continue

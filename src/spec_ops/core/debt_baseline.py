@@ -24,6 +24,10 @@ EXCLUDE_DIRS = {
     ".mutmut-cache",
     ".hypothesis",
     ".worktrees",
+    ".claude",
+    ".cursor",
+    ".vscode",
+    ".idea",
 }
 
 SOURCE_EXTENSIONS = {
