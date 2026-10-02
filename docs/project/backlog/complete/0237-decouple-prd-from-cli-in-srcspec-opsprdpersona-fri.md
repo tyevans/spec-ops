@@ -1,7 +1,7 @@
 ---
 id: '0237'
 title: Decouple PRD from CLI in src/spec_ops/prd/persona_friction.py
-status: Refined
+status: Complete
 dependencies:
 - TASK-0244
 governing_adrs:
@@ -13,7 +13,11 @@ governing_stories:
 - US-0013
 - US-0106
 target_bc: prd
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T17:30:46.050474+00:00'
+commit_signature_status: SIGNED
 allows_dependencies: true
+has_signed_commits: true
 ---
 
 # TASK-0237: Decouple PRD from CLI in src/spec_ops/prd/persona_friction.py

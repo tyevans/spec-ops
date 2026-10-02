@@ -12,6 +12,11 @@ from .bdd_matrix import (
     StoryCoverageReport,
 )
 from .journey_map import CustomerJourneyReport, JourneyMapEngine, PainPointRecord, PersonaJourneyMap
+from .persona_friction import (
+    FrictionAuditReport,
+    PersonaFrictionAuditor,
+    register_default_parser_factory,
+)
 from .lint_api import dispatch_lint_api_request, lint_prd_api
 from .lint_engine import (
     LineLevelSuggestion,
@@ -45,6 +50,7 @@ __all__ = [
     "BDDScenarioItem",
     "CustomerJourneyReport",
     "DeepPRDAuditor",
+    "FrictionAuditReport",
     "JourneyMapEngine",
     "LINT_COMPONENT_STORIES",
     "LineLevelSuggestion",
@@ -65,6 +71,7 @@ __all__ = [
     "PRDTestCoverageReport",
     "PainPointRecord",
     "PersonaCoverageReport",
+    "PersonaFrictionAuditor",
     "PersonaJourneyMap",
     "PersonaLineageRecord",
     "PersonaTraceabilityEngine",
@@ -80,6 +87,7 @@ __all__ = [
     "interactive_new_prd",
     "launch_prd_studio",
     "lint_prd_api",
+    "register_default_parser_factory",
     "render_lint_html",
     "render_roadmap_html",
     "render_roadmap_svg",

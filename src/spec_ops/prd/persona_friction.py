@@ -192,6 +192,15 @@ class FrictionAuditReport:
         return "\n".join(lines)
 
 
+_DEFAULT_PARSER_FACTORY: Any = None
+
+
+def register_default_parser_factory(factory: Any) -> None:
+    """Registers an external CLI parser factory callback for dependency inversion."""
+    global _DEFAULT_PARSER_FACTORY
+    _DEFAULT_PARSER_FACTORY = factory
+
+
 class PersonaFrictionAuditor:
     """Evaluates cognitive friction and operational ceremony across user persona touchpoints."""
 
@@ -245,8 +254,17 @@ class PersonaFrictionAuditor:
         elif parser is not None:
             commands = extract_parser_commands(parser)
         else:
-            from ..cli.parser import build_parser
-            commands = extract_parser_commands(build_parser())
+            factory = _DEFAULT_PARSER_FACTORY
+            if factory is not None:
+                commands = extract_parser_commands(factory())
+            else:
+                try:
+                    import importlib
+                    cli_mod = importlib.import_module("spec_ops.cli.parser")
+                    build_fn = getattr(cli_mod, "build_parser")
+                    commands = extract_parser_commands(build_fn())
+                except Exception:
+                    commands = {}
 
         workflows: list[WorkflowFriction] = []
 
