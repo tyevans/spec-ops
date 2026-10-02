@@ -1,15 +1,17 @@
 ---
 id: '0247'
 title: Support Versioned Library Releases, SemVer Bump Workflows, and Git Tag Orchestration
-status: Proposed
+status: Refined
 governing_adrs:
-  - ADR-0001
-  - ADR-0004
+- ADR-0001
+- ADR-0004
 governing_prds:
-  - PRD-0001
+- PRD-0001
+- PRD-0003
 governing_stories:
-  - US-0122
+- US-0122
 target_bc: core
+persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
 ---
 
 # TASK-0247: Support Versioned Library Releases, SemVer Bump Workflows, and Git Tag Orchestration
@@ -34,3 +36,20 @@ SpecOps today focuses primarily on continuous application deployment and milesto
 2. Multi-file version synchronization verified against test project with dual declarations.
 3. Git tag creation and signature verification pass preflight checks.
 4. Code strictly adheres to ADR-0002 (<500 lines limit).
+
+## Acceptance Criteria
+
+```gherkin
+Scenario: Verify Support Versioned Library Releases, SemVer Bump Workflows, and Git Tag Orchestration
+  Given the system is initialized and ready
+  When the user executes the workflow for "Support Versioned Library Releases, SemVer Bump Workflows, and Git Tag Orchestration"
+  Then observable outputs satisfy public contracts without backdoor tampering
+  And no internal invariants are violated.
+```
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/core/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
+
+## Hypothesis Invariant Properties
+- `@given(...)`: Generative property tests asserting state invariants across randomized inputs without shrinking failures (ADR-0009).

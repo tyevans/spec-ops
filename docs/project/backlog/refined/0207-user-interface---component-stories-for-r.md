@@ -3,9 +3,14 @@ id: '0207'
 title: "User Interface & Component Stories for Running `spec-ops prd audit PRD-0003`\
   \ computes test coverage across checkable outcomes and linked BDD scenarios. \u2014\
   \ Frontdoor API & Workflow Execution"
-status: Proposed
+status: Refined
 dependencies:
 - TASK-0206
+governing_adrs:
+- ADR-0001
+- ADR-0002
+- ADR-0003
+- ADR-0004
 governing_prds:
 - PRD-0003
 governing_stories:
@@ -51,3 +56,7 @@ And observable outputs satisfy public contracts without backdoor tampering.
 ## Hypothesis Invariant Properties
 
 - `@given(...)`: Generative invariant verification asserting that valid domain operations preserve state consistency across randomized inputs without shrinking failures.
+
+## Mutation Testing Scope
+- Target domain module: `src/spec_ops/prd/...`
+- Minimum mutation kill score: >=80% under Mutmut (ADR-0009).
