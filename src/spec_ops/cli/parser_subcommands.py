@@ -105,7 +105,11 @@ def register_prd_subparsers(subparsers: argparse._SubParsersAction) -> None:
     p_friction.add_argument("--persona", default=None, help="Filter audit by persona name or ID")
     p_friction.add_argument("--json", action="store_true", help="Output friction audit report as structured JSON")
     p_friction.add_argument("--threshold", type=float, default=None, help="Flag workflows exceeding cognitive friction score threshold")
-
+    p_gate = prd_subs.add_parser("gate", help="Evaluate customer UAT sign-off tokens and verify release gate readiness")
+    p_gate.add_argument("--prd", required=True, help="Target PRD canonical ID (e.g. PRD-0003)")
+    p_gate.add_argument("--strict", action="store_true", help="Block release if any checkable outcome lacks verified UAT sign-off")
+    p_gate.add_argument("--json", action="store_true", help="Output UAT gate decision as structured JSON")
+    p_gate.add_argument("--export", action="store_true", help="Export cryptographic customer UAT sign-off token")
 
 
 def register_profile_subparsers(subparsers: argparse._SubParsersAction) -> None:

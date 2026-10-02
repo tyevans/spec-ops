@@ -301,7 +301,6 @@ def handle_graph_command(args: argparse.Namespace, config: SpecOpsConfig) -> int
                 report = resolver.analyze()
 
         if getattr(args, "json", False):
-            import json
             print(json.dumps(report.to_dict(), indent=2))
         else:
             print(report.format_text())

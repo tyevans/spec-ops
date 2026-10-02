@@ -1,7 +1,7 @@
 ---
 id: 0169
 title: Customer UAT Sign-Off Cryptographic Token Exporter and Release Gatekeeper
-status: Refined
+status: Complete
 dependencies:
 - TASK-0041
 - TASK-0126
@@ -16,6 +16,10 @@ governing_prds:
 governing_stories:
 - US-0100
 target_bc: prd
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T01:38:01.180569+00:00'
+commit_signature_status: SIGNED
+has_signed_commits: true
 ---
 
 # TASK-0169: Customer UAT Sign-Off Cryptographic Token Exporter and Release Gatekeeper
