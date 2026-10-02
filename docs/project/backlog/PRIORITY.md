@@ -208,7 +208,7 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0233 (Complete)**: [`0233-decouple-core-from-visualizer-in-srcspec-opscorepr`](complete/0233-decouple-core-from-visualizer-in-srcspec-opscorepr.md)
 - **TASK-0234 (Complete)**: [`0234-decouple-docs-from-cli-in-srcspec-opsdocscheckerpy`](complete/0234-decouple-docs-from-cli-in-srcspec-opsdocscheckerpy.md)
 - **TASK-0235 (Complete)**: [`0235-decouple-docs-from-prd-in-srcspec-opsdocsbuilderpy`](complete/0235-decouple-docs-from-prd-in-srcspec-opsdocsbuilderpy.md)
-- **TASK-0236 (Refined)**: [`0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu`](refined/0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu.md)
+- **TASK-0236 (Complete)**: [`0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu`](complete/0236-decouple-docs-from-visualizer-in-srcspec-opsdocsbu.md)
 - **TASK-0237 (Proposed)**: [`0237-decouple-prd-from-cli-in-srcspec-opsprdpersona-fri`](proposed/0237-decouple-prd-from-cli-in-srcspec-opsprdpersona-fri.md)
 - **TASK-0238 (Proposed)**: [`0238-decouple-profiles-from-scaffold-in-srcspec-opsprof`](proposed/0238-decouple-profiles-from-scaffold-in-srcspec-opsprof.md)
 - **TASK-0239 (Proposed)**: [`0239-decouple-security-from-backlog-in-srcspec-opssecur`](proposed/0239-decouple-security-from-backlog-in-srcspec-opssecur.md)

@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 
 from ..config.models import SpecOpsConfig
-from ..visualizer.generator import generate_standalone_html, serialize_project_data
 from .templates import DOCS_HTML_TEMPLATE
 
 
@@ -250,6 +249,8 @@ def _generate_sidebar(pages: list[DocPage], current_html: str, base_url: str) ->
 
 
 _DEFAULT_ROADMAP_EXPORTER: Any = None
+_DEFAULT_VISUALIZER_GENERATOR: Any = None
+_DEFAULT_PROJECT_SERIALIZER: Any = None
 
 
 def register_default_roadmap_exporter(exporter: Any) -> None:
@@ -258,12 +259,26 @@ def register_default_roadmap_exporter(exporter: Any) -> None:
     _DEFAULT_ROADMAP_EXPORTER = exporter
 
 
+def register_default_visualizer_generator(generator: Any) -> None:
+    """Registers an external visualizer generator callback."""
+    global _DEFAULT_VISUALIZER_GENERATOR
+    _DEFAULT_VISUALIZER_GENERATOR = generator
+
+
+def register_default_project_serializer(serializer: Any) -> None:
+    """Registers an external project data serializer callback."""
+    global _DEFAULT_PROJECT_SERIALIZER
+    _DEFAULT_PROJECT_SERIALIZER = serializer
+
+
 def build_docs_site(
     config: SpecOpsConfig,
     out_dir: Path | None = None,
     base_url: str = "/spec-ops/",
     include_visualizer: bool = True,
     roadmap_exporter: Any = None,
+    visualizer_generator: Any = None,
+    project_serializer: Any = None,
 ) -> Path:
     """Compiles Diataxis documentation into a clean static site with embedded visualizer."""
     root_dir = config.root_dir
@@ -279,16 +294,36 @@ def build_docs_site(
 
     # 2. Compile standalone visualizer bundle
     if include_visualizer:
-        visualizer_html = generate_standalone_html(config, back_link="../index.html")
-        (dist_dir / "visualizer.html").write_text(visualizer_html, encoding="utf-8")
+        gen = visualizer_generator or _DEFAULT_VISUALIZER_GENERATOR
+        if gen is None:
+            try:
+                import importlib
+                viz_gen_mod = importlib.import_module("spec_ops.visualizer.generator")
+                gen = getattr(viz_gen_mod, "generate_standalone_html", None)
+            except Exception:
+                gen = None
 
-        vis_dir = site_dir / "visualizer"
-        vis_dir.mkdir(parents=True, exist_ok=True)
-        (vis_dir / "index.html").write_text(visualizer_html, encoding="utf-8")
+        if gen:
+            visualizer_html = gen(config, back_link="../index.html")
+            (dist_dir / "visualizer.html").write_text(visualizer_html, encoding="utf-8")
+
+            vis_dir = site_dir / "visualizer"
+            vis_dir.mkdir(parents=True, exist_ok=True)
+            (vis_dir / "index.html").write_text(visualizer_html, encoding="utf-8")
 
     # 3. Export project JSON data and roadmap SVG artifacts
-    payload = serialize_project_data(config)
-    (site_dir / "project-data.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    serializer = project_serializer or _DEFAULT_PROJECT_SERIALIZER
+    if serializer is None:
+        try:
+            import importlib
+            viz_gen_mod = importlib.import_module("spec_ops.visualizer.generator")
+            serializer = getattr(viz_gen_mod, "serialize_project_data", None)
+        except Exception:
+            serializer = None
+
+    if serializer:
+        payload = serializer(config)
+        (site_dir / "project-data.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     exporter = roadmap_exporter or _DEFAULT_ROADMAP_EXPORTER
     if exporter is None:

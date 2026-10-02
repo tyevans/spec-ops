@@ -6,6 +6,7 @@ and PRD roadmap exports across docs, visualizer, and prd contexts. Governed by A
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -54,13 +55,15 @@ class SiteBundlerService:
         # 2. Compile and embed standalone visualizer bundle via visualizer context
         vis_embedded = False
         if include_visualizer:
-            from ..visualizer.generator import generate_standalone_html
+            from ..visualizer.generator import generate_standalone_html, serialize_project_data
 
             vis_html = generate_standalone_html(self.config, back_link="../index.html")
             vis_dir = out_path / "visualizer"
             vis_dir.mkdir(parents=True, exist_ok=True)
             (vis_dir / "index.html").write_text(vis_html, encoding="utf-8")
             (out_path / "visualizer.html").write_text(vis_html, encoding="utf-8")
+            payload = serialize_project_data(self.config)
+            (out_path / "project-data.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
             vis_embedded = True
 
         # 3. Export PRD roadmaps via prd context
