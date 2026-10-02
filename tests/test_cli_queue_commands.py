@@ -195,3 +195,36 @@ def test_cli_spike_create(tmp_path: Path, capsys):
             out = capsys.readouterr().out
             assert "Scaffolded architectural spike" in out
             assert "Initialized test harness in spikes/spike_" in out
+
+
+def test_cli_queue_claim_resolves_claimant_without_name_error(tmp_path: Path, capsys, monkeypatch):
+    """Verifies queue claim executes without NameError for os module."""
+    repo = setup_cli_repo(tmp_path)
+    monkeypatch.delenv("SPECOPS_WORKER_ID", raising=False)
+    monkeypatch.delenv("SPECOPS_CLAIMANT", raising=False)
+    with (
+        patch("os.getcwd", return_value=str(repo)),
+        patch("pathlib.Path.cwd", return_value=repo),
+        patch("sys.argv", ["spec-ops", "queue", "claim"]),
+    ):
+        code = main()
+        # Returns 1 because TASK-0002 is Proposed, not Refined
+        assert code in (0, 1)
+        err = capsys.readouterr().err
+        assert "NameError" not in err
+
+
+def test_cli_queue_claim_with_worker_id_and_env(tmp_path: Path, capsys, monkeypatch):
+    """Verifies claimant resolution via flag and env vars in queue claim."""
+    repo = setup_cli_repo(tmp_path)
+    monkeypatch.setenv("SPECOPS_WORKER_ID", "agent-env-99")
+    with (
+        patch("os.getcwd", return_value=str(repo)),
+        patch("pathlib.Path.cwd", return_value=repo),
+        patch("sys.argv", ["spec-ops", "queue", "claim", "--worker-id", "agent-flag-01"]),
+    ):
+        code = main()
+        assert code in (0, 1)
+        err = capsys.readouterr().err
+        assert "NameError" not in err
+

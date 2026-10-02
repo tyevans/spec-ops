@@ -1,7 +1,7 @@
 ---
 id: 0183
 title: Fix Missing os Import in Queue Handler Claim Action
-status: Refined
+status: Complete
 governing_adrs:
 - ADR-0001
 - ADR-0002
@@ -11,7 +11,11 @@ governing_prds:
 governing_stories:
 - US-0001
 target_bc: cli
+signed_off_by: Ty Evans <tyevans@gmail.com>
+signed_off_at: '2026-10-02T02:03:17.116474+00:00'
+commit_signature_status: SIGNED
 persona: Jordan (The AI-Native Engineering Lead) & Alex (The Agentic Systems Architect)
+has_signed_commits: true
 ---
 
 # TASK-0183: Fix Missing os Import in Queue Handler Claim Action
