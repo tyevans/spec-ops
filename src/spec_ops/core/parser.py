@@ -10,7 +10,9 @@ import yaml
 
 from .models import ADR, PRD, BlockerInfo, Persona, ProjectData, Task, UserStory
 
-FRONTMATTER_PATTERN = re.compile(r"^---\s*(?:\r?\n)(.*?)\r?\n---\s*(?:\r?\n|\Z)", re.DOTALL)
+FRONTMATTER_PATTERN = re.compile(
+    r"^---\s*(?:\r?\n)(.*?)\r?\n---\s*(?:\r?\n|\Z)", re.DOTALL
+)
 
 
 def extract_frontmatter(content: str) -> tuple[dict[str, Any], str]:
@@ -20,7 +22,7 @@ def extract_frontmatter(content: str) -> tuple[dict[str, Any], str]:
         return {}, content
     try:
         data = yaml.safe_load(match.group(1)) or {}
-        body = content[match.end():]
+        body = content[match.end() :]
         return data, body
     except yaml.YAMLError:
         return {}, content
@@ -71,7 +73,9 @@ def parse_personas(persona_file: Path) -> list[Persona]:
         pid = name.lower().split()[0]
 
         pain_points = []
-        pain_match = re.search(r"- \*\*Pain Points\*\*:(.*?)(?=- \*\*|\Z)", sec, re.DOTALL)
+        pain_match = re.search(
+            r"- \*\*Pain Points\*\*:(.*?)(?=- \*\*|\Z)", sec, re.DOTALL
+        )
         if pain_match:
             pain_points = [
                 re.sub(r"^\s*-\s*", "", l).strip()
@@ -111,9 +115,17 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
     if file_path.parent.name == "complete":
         status = "Graduated" if raw_status == "Graduated" else "Complete"
     elif file_path.parent.name == "refined":
-        status = str(raw_status) if raw_status in ("In-Progress", "Review", "Ready") else "Refined"
+        status = (
+            str(raw_status)
+            if raw_status in ("In-Progress", "Review", "Ready")
+            else "Refined"
+        )
     elif file_path.parent.name == "proposed":
-        status = str(raw_status) if raw_status and str(raw_status).startswith("Blocked") else "Proposed"
+        status = (
+            str(raw_status)
+            if raw_status and str(raw_status).startswith("Blocked")
+            else "Proposed"
+        )
     else:
         status = str(raw_status or "Proposed")
 
@@ -142,7 +154,14 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
             else ([str(meta["governing_adr"])] if "governing_adr" in meta else [])
         ),
         governing_prds=[str(p) for p in meta.get("governing_prds", [])],
-        governing_stories=[str(s) for s in (meta.get("governing_stories") or meta.get("stories") or ([meta["story"]] if "story" in meta else []))],
+        governing_stories=[
+            str(s)
+            for s in (
+                meta.get("governing_stories")
+                or meta.get("stories")
+                or ([meta["story"]] if "story" in meta else [])
+            )
+        ],
         target_bc=str(meta.get("target_bc", "")),
         target_release=str(meta.get("target_release", "")),
         prs=[str(p) for p in meta.get("prs", [])],
@@ -161,7 +180,9 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         has_signed_commits=meta.get("has_signed_commits"),
         commit_signature_status=str(meta.get("commit_signature_status", "")),
         blocker=blocker_info,
-        slice_type=str(meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat").lower(),
+        slice_type=str(
+            meta.get("slice_type") or meta.get("slice") or meta.get("type") or "feat"
+        ).lower(),
         unblocked=bool(meta.get("unblocked", False)),
         failure_history=list(meta.get("failure_history", []) or []),
         completed_at=str(meta.get("completed_at", "")),
@@ -172,19 +193,24 @@ def parse_task(file_path: Path, priority_rank: int = 999999) -> Task:
         pinned=bool(meta.get("pinned", False) or meta.get("priority_pin") is not None),
         priority_pin=(
             int(meta["priority_pin"])
-            if meta.get("priority_pin") is not None and str(meta["priority_pin"]).isdigit()
+            if meta.get("priority_pin") is not None
+            and str(meta["priority_pin"]).isdigit()
             else (
                 meta["pinned"]
-                if isinstance(meta.get("pinned"), int) and not isinstance(meta.get("pinned"), bool)
+                if isinstance(meta.get("pinned"), int)
+                and not isinstance(meta.get("pinned"), bool)
                 else None
             )
         ),
         persona=str(meta.get("persona") or meta.get("target_persona") or ""),
-        mutation_scope=str(meta.get("mutation_scope", "")),
+        mutation_scope=(
+            meta["mutation_scope"]
+            if isinstance(meta.get("mutation_scope"), list)
+            else str(meta.get("mutation_scope", ""))
+        ),
         expected_lines=int(meta.get("expected_lines", 0) or 0),
         external_ref=str(meta.get("external_ref") or meta.get("issue_url") or ""),
     )
-
 
 
 def parse_user_story(file_path: Path) -> UserStory:
@@ -228,16 +254,21 @@ def parse_prd(file_path: Path) -> PRD:
         f"TASK-{m.zfill(4)}" for m in re.findall(r"TASK-(\d+)", content, re.IGNORECASE)
     ]
 
-    prob_m = re.search(r"## What the person cannot do today\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+    prob_m = re.search(
+        r"## What the person cannot do today\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL
+    )
     problem_statement = prob_m.group(1).strip() if prob_m else ""
 
     outcomes = []
-    outcomes_m = re.search(r"## Checkable Outcomes\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL)
+    outcomes_m = re.search(
+        r"## Checkable Outcomes\s*\n(.*?)(?=\n##|\Z)", content, re.DOTALL
+    )
     if outcomes_m:
         outcomes = [
             re.sub(r"^\s*(?:\d+\.|\*|-)\s*", "", l).strip()
             for l in outcomes_m.group(1).splitlines()
-            if l.strip() and (l.strip()[0].isdigit() or l.strip().startswith(("-", "*")))
+            if l.strip()
+            and (l.strip()[0].isdigit() or l.strip().startswith(("-", "*")))
         ]
 
     return PRD(
@@ -259,10 +290,18 @@ def parse_adr(file_path: Path) -> ADR:
     content = file_path.read_text(encoding="utf-8")
     meta, body = extract_frontmatter(content)
     num_match = re.search(r"adr-(\d+)", file_path.stem, re.IGNORECASE)
-    raw_id = f"ADR-{num_match.group(1).zfill(4)}" if num_match else str(meta.get("id", file_path.stem.upper()))
+    raw_id = (
+        f"ADR-{num_match.group(1).zfill(4)}"
+        if num_match
+        else str(meta.get("id", file_path.stem.upper()))
+    )
     clean_title = str(meta.get("title", ""))
     if not clean_title:
-        title_line = body.strip().splitlines()[0] if body.strip() else (content.splitlines()[0] if content else file_path.stem)
+        title_line = (
+            body.strip().splitlines()[0]
+            if body.strip()
+            else (content.splitlines()[0] if content else file_path.stem)
+        )
         clean_title = re.sub(r"^#\s*(ADR-\d+:\s*)?", "", title_line).strip()
 
     status = str(meta.get("status", "Accepted"))
@@ -302,14 +341,24 @@ class SpecOpsParser:
         us_dir = self.docs_dir / "user_stories"
         if us_dir.exists():
             for p in sorted(us_dir.rglob("*.md")):
-                if p.is_file() and p.name != "PERSONAS.md" and p.name != "REGISTRY.md" and p.name != "PRIORITY.md":
+                if (
+                    p.is_file()
+                    and p.name != "PERSONAS.md"
+                    and p.name != "REGISTRY.md"
+                    and p.name != "PRIORITY.md"
+                ):
                     data.stories.append(parse_user_story(p))
 
         # 3. PRDs
         prd_dir = self.docs_dir / "product"
         if prd_dir.exists():
             for p in sorted(prd_dir.rglob("*.md")):
-                if p.is_file() and p.name != "REGISTRY.md" and p.name != "FEATURE_INVENTORY.md" and p.name != "README.md":
+                if (
+                    p.is_file()
+                    and p.name != "REGISTRY.md"
+                    and p.name != "FEATURE_INVENTORY.md"
+                    and p.name != "README.md"
+                ):
                     data.prds.append(parse_prd(p))
 
         # 4. ADRs

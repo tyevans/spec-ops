@@ -57,7 +57,7 @@ class TaskFrontmatter(BaseModel):
     failure_history: list[Any] = Field(default_factory=list)
     external_ref: Optional[str] = None
     issue_url: Optional[str] = None
-    mutation_scope: Optional[str] = None
+    mutation_scope: list[str] | str | None = None
 
 
 class UserStoryFrontmatter(BaseModel):
@@ -132,7 +132,9 @@ class SchemaDiagnosticError:
         return self.format_error()
 
 
-def detect_document_type(file_path: Path | str, meta: dict[str, Any] | None = None) -> str:
+def detect_document_type(
+    file_path: Path | str, meta: dict[str, Any] | None = None
+) -> str:
     """Determines specification document type from path and frontmatter clues."""
     path_obj = Path(file_path)
     parts = [p.lower() for p in path_obj.parts]
@@ -151,7 +153,12 @@ def detect_document_type(file_path: Path | str, meta: dict[str, Any] | None = No
             return "prd"
         if "persona" in meta or "feature" in meta or "governing_prd" in meta:
             return "story"
-        if "target_bc" in meta or "dependencies" in meta or "governing_adrs" in meta or "governing_adr" in meta:
+        if (
+            "target_bc" in meta
+            or "dependencies" in meta
+            or "governing_adrs" in meta
+            or "governing_adr" in meta
+        ):
             return "task"
 
     return "task"
@@ -194,7 +201,11 @@ def validate_frontmatter_dict(
         for legacy_k, replacement in LEGACY_FIELD_HINTS.items():
             if legacy_k in meta:
                 loc = locations.get(legacy_k, (2, 1))
-                snippet = lines[loc[0] - 1] if 0 < loc[0] <= len(lines) else f"{legacy_k}: {meta[legacy_k]}"
+                snippet = (
+                    lines[loc[0] - 1]
+                    if 0 < loc[0] <= len(lines)
+                    else f"{legacy_k}: {meta[legacy_k]}"
+                )
                 errors.append(
                     SchemaDiagnosticError(
                         file_path=file_path,
@@ -224,7 +235,9 @@ def validate_frontmatter_dict(
             err_msg = err.get("msg", "Invalid value")
 
             # Avoid duplicating legacy field errors already recorded
-            if field_name in LEGACY_FIELD_HINTS and any(e.message.find(f"'{field_name}'") != -1 for e in errors):
+            if field_name in LEGACY_FIELD_HINTS and any(
+                e.message.find(f"'{field_name}'") != -1 for e in errors
+            ):
                 continue
 
             if field_name in locations:
@@ -234,7 +247,9 @@ def validate_frontmatter_dict(
 
             snippet = lines[line_num - 1] if 0 < line_num <= len(lines) else ""
             if err_type == "missing":
-                msg = f"Missing required field '{field_name}' for schema {SCHEMA_VERSION}"
+                msg = (
+                    f"Missing required field '{field_name}' for schema {SCHEMA_VERSION}"
+                )
             elif err_type == "extra_forbidden":
                 msg = f"Forbidden extra field '{field_name}' in schema {SCHEMA_VERSION}"
             else:
@@ -253,7 +268,9 @@ def validate_frontmatter_dict(
     return errors
 
 
-def validate_document(content: str, file_path: Path | str = "") -> list[SchemaDiagnosticError]:
+def validate_document(
+    content: str, file_path: Path | str = ""
+) -> list[SchemaDiagnosticError]:
     """Validates markdown document frontmatter syntax and schema conformance."""
     str_path = str(file_path)
     file_lines = content.splitlines()

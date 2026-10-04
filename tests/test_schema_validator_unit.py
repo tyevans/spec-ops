@@ -48,7 +48,9 @@ def test_schema_diagnostic_error_formatting():
 
 def test_detect_document_type():
     # By path
-    assert detect_document_type("docs/project/user_stories/accepted/us-0001.md") == "story"
+    assert (
+        detect_document_type("docs/project/user_stories/accepted/us-0001.md") == "story"
+    )
     assert detect_document_type("us-0002.md") == "story"
     assert detect_document_type("docs/project/product/accepted/prd-0001.md") == "prd"
     assert detect_document_type("prd-0002.md") == "prd"
@@ -111,7 +113,12 @@ def test_validate_frontmatter_dict():
     assert any("Missing required field 'title'" in e.message for e in errs)
 
     # Extra forbidden field
-    extra_meta = {"id": "0076", "title": "T", "status": "Refined", "unknown_field": "val"}
+    extra_meta = {
+        "id": "0076",
+        "title": "T",
+        "status": "Refined",
+        "unknown_field": "val",
+    }
     errs = validate_frontmatter_dict(extra_meta, "task", file_path="task.md")
     assert any("Forbidden extra field 'unknown_field'" in e.message for e in errs)
 
@@ -123,7 +130,9 @@ def test_validate_document_edge_cases():
     assert "File does not start with standard YAML '---' delimiter" in errs[0].message
 
     # Syntax error in YAML
-    errs = validate_document("---\nid: '0001'\n  bad_indent: 123\n---\n# Body\n", file_path="bad_yaml.md")
+    errs = validate_document(
+        "---\nid: '0001'\n  bad_indent: 123\n---\n# Body\n", file_path="bad_yaml.md"
+    )
     assert len(errs) == 1
     assert errs[0].line >= 2
 
@@ -193,13 +202,40 @@ def test_collect_and_validate_specifications(tmp_path: Path):
 
     # Add invalid file
     task2 = docs / "task-0002.md"
-    task2.write_text(
-        "---\n"
-        "id: '0002'\n"
-        "status: Refined\n"
-        "---\n"
-    )
+    task2.write_text("---\nid: '0002'\nstatus: Refined\n---\n")
     is_valid, errors, count = validate_specifications(tmp_path)
     assert is_valid is False
     assert count == 2
     assert len(errors) >= 1
+
+
+def test_task_frontmatter_accepts_list_and_string_mutation_scope():
+    dict_list = {
+        "id": "0001",
+        "title": "Task 1",
+        "status": "Refined",
+        "target_bc": "core",
+        "mutation_scope": ["src/module.py"],
+    }
+    errs = validate_frontmatter_dict(dict_list, "task")
+    assert errs == []
+
+    dict_empty_list = {
+        "id": "0001",
+        "title": "Task 1",
+        "status": "Refined",
+        "target_bc": "core",
+        "mutation_scope": [],
+    }
+    errs = validate_frontmatter_dict(dict_empty_list, "task")
+    assert errs == []
+
+    dict_str = {
+        "id": "0001",
+        "title": "Task 1",
+        "status": "Refined",
+        "target_bc": "core",
+        "mutation_scope": "src/module.py",
+    }
+    errs = validate_frontmatter_dict(dict_str, "task")
+    assert errs == []

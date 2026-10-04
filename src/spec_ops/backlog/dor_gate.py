@@ -29,7 +29,16 @@ ALL_DOR_RULES: list[str] = [
     RULE_MUTATION_SCOPE,
 ]
 
-KNOWN_PERSONAS = {"alex", "jordan", "morgan", "riley", "taylor", "developer", "architect", "user"}
+KNOWN_PERSONAS = {
+    "alex",
+    "jordan",
+    "morgan",
+    "riley",
+    "taylor",
+    "developer",
+    "architect",
+    "user",
+}
 
 
 @dataclass
@@ -111,9 +120,17 @@ def audit_task_health(
     t_id = _get(task, "id")
     t_title = _get(task, "title")
     t_status = _get(task, "status")
-    if not t_id or not str(t_id).strip() or not t_title or not str(t_title).strip() or not t_status:
+    if (
+        not t_id
+        or not str(t_id).strip()
+        or not t_title
+        or not str(t_title).strip()
+        or not t_status
+    ):
         rules[RULE_YAML_FRONTMATTER] = False
-        errors.append("Missing complete YAML frontmatter: id, title, and status are required")
+        errors.append(
+            "Missing complete YAML frontmatter: id, title, and status are required"
+        )
     else:
         rules[RULE_YAML_FRONTMATTER] = True
 
@@ -121,31 +138,59 @@ def audit_task_health(
     target_bc = str(_get(task, "target_bc") or "").strip()
     if not target_bc:
         rules[RULE_BOUNDED_CONTEXT] = False
-        errors.append("Missing target bounded context: task frontmatter must include target_bc")
+        errors.append(
+            "Missing target bounded context: task frontmatter must include target_bc"
+        )
     else:
         rules[RULE_BOUNDED_CONTEXT] = True
 
     # 3. Feasible File Limit Scope & Single-Responsibility (ADR-0002)
     bcs_raw = _get(task, "target_bcs")
-    target_bcs_count = len(bcs_raw) if isinstance(bcs_raw, list) else (len([b for b in target_bc.split(",") if b.strip()]) if "," in target_bc else 1)
-    bc_mention_match = re.search(r"(?:modifying|spanning|spans)\s+(\d+)\s+(?:different\s+)?bounded\s+contexts", text, re.I)
+    target_bcs_count = (
+        len(bcs_raw)
+        if isinstance(bcs_raw, list)
+        else (
+            len([b for b in target_bc.split(",") if b.strip()])
+            if "," in target_bc
+            else 1
+        )
+    )
+    bc_mention_match = re.search(
+        r"(?:modifying|spanning|spans)\s+(\d+)\s+(?:different\s+)?bounded\s+contexts",
+        text,
+        re.I,
+    )
     bc_count_from_text = int(bc_mention_match.group(1)) if bc_mention_match else 0
-    multi_bc = target_bcs_count > 1 or bc_count_from_text > 1 or bool(re.search(r"multiple\s+unrelated\s+bounded\s+contexts", text, re.I))
+    multi_bc = (
+        target_bcs_count > 1
+        or bc_count_from_text > 1
+        or bool(re.search(r"multiple\s+unrelated\s+bounded\s+contexts", text, re.I))
+    )
 
     lines_exceeded = bool(
-        re.search(r"(?:spanning\s+)?(?:>\s*500|exceeding\s+500)\s+(?:expected\s+)?lines", text, re.I)
+        re.search(
+            r"(?:spanning\s+)?(?:>\s*500|exceeding\s+500)\s+(?:expected\s+)?lines",
+            text,
+            re.I,
+        )
         or re.search(r">\s*500\s+lines", text, re.I)
     )
     expected_lines = _get(task, "expected_lines")
     if isinstance(expected_lines, (int, float)) and expected_lines > 500:
         lines_exceeded = True
 
-    if multi_bc or lines_exceeded or (strict and (target_bcs_count > 1 or lines_exceeded)):
+    if (
+        multi_bc
+        or lines_exceeded
+        or (strict and (target_bcs_count > 1 or lines_exceeded))
+    ):
         rules[RULE_FILE_LIMIT_SCOPE] = False
         errors.append(
             "DoR Scope Violation: Task violates single-responsibility scope (modifying multiple bounded contexts or spanning >500 expected lines). Advice: decompose into thin vertical slices or architectural spikes (ADR-0002)."
         )
-        recommendations.append("Decompose into thin vertical slices or architectural spikes (ADR-0002).")
+        recommendations.append(
+            "Decompose into thin vertical slices or architectural spikes (ADR-0002)."
+        )
     else:
         rules[RULE_FILE_LIMIT_SCOPE] = True
 
@@ -155,7 +200,9 @@ def audit_task_health(
         governing_adrs = [governing_adrs]
     adr_errors: list[str] = []
     if not governing_adrs:
-        adr_errors.append("Missing governing ADRs: task must link at least 1 accepted ADR")
+        adr_errors.append(
+            "Missing governing ADRs: task must link at least 1 accepted ADR"
+        )
     else:
         adrs_dir = getattr(config, "adr_dir", None)
         if not adrs_dir:
@@ -168,7 +215,10 @@ def audit_task_health(
             found = False
             if adrs_dir.exists():
                 for p in adrs_dir.rglob("*.md"):
-                    if (target_stem in p.stem.upper() or str(adr_ref).upper() in p.name.upper()) and p.is_file():
+                    if (
+                        target_stem in p.stem.upper()
+                        or str(adr_ref).upper() in p.name.upper()
+                    ) and p.is_file():
                         if p.parent.name.lower() == "accepted":
                             found = True
                             break
@@ -177,7 +227,9 @@ def audit_task_health(
                             found = True
                             break
             if not found:
-                adr_errors.append(f"Missing governing ADRs: task must link at least 1 accepted ADR ({adr_ref} not found in accepted/)")
+                adr_errors.append(
+                    f"Missing governing ADRs: task must link at least 1 accepted ADR ({adr_ref} not found in accepted/)"
+                )
 
     if adr_errors:
         rules[RULE_GOVERNING_ADRS] = False
@@ -192,7 +244,9 @@ def audit_task_health(
     prd_errors: list[str] = []
     found_prds: list[Path] = []
     if not governing_prds:
-        prd_errors.append("Missing governing PRD: task must link at least 1 accepted PRD")
+        prd_errors.append(
+            "Missing governing PRD: task must link at least 1 accepted PRD"
+        )
     else:
         prd_dir = getattr(config, "prd_dir", None)
         if not prd_dir:
@@ -205,18 +259,26 @@ def audit_task_health(
             found = False
             if prd_dir.exists():
                 for p in prd_dir.rglob("*.md"):
-                    if (target_stem in p.stem.upper() or str(prd_ref).upper() in p.name.upper()) and p.is_file():
+                    if (
+                        target_stem in p.stem.upper()
+                        or str(prd_ref).upper() in p.name.upper()
+                    ) and p.is_file():
                         if p.parent.name.lower() in ("accepted", "shipped"):
                             found = True
                             found_prds.append(p)
                             break
                         meta, _ = extract_frontmatter(p.read_text(encoding="utf-8"))
-                        if str(meta.get("status", "")).strip().lower() in ("accepted", "shipped"):
+                        if str(meta.get("status", "")).strip().lower() in (
+                            "accepted",
+                            "shipped",
+                        ):
                             found = True
                             found_prds.append(p)
                             break
             if not found:
-                prd_errors.append(f"Missing governing PRD: task must link at least 1 accepted PRD ({prd_ref} not found in accepted/)")
+                prd_errors.append(
+                    f"Missing governing PRD: task must link at least 1 accepted PRD ({prd_ref} not found in accepted/)"
+                )
 
     # Persona check
     stories_dir = getattr(config, "user_stories_dir", None)
@@ -242,7 +304,9 @@ def audit_task_health(
             if re.search(rf"\b{kp}\b", text, re.I):
                 persona_found = True
                 break
-    if not persona_found and re.search(r"(?:persona|as a)\s*[:—]\s*([a-zA-Z]+)", text, re.I):
+    if not persona_found and re.search(
+        r"(?:persona|as a)\s*[:—]\s*([a-zA-Z]+)", text, re.I
+    ):
         persona_found = True
 
     governing_stories = _get(task, "governing_stories") or []
@@ -254,7 +318,10 @@ def audit_task_health(
             clean_s = str(s_ref).upper().replace("US-", "").lstrip("0") or "0"
             target_stem = clean_s.zfill(4)
             for p in stories_dir.rglob("*.md"):
-                if (target_stem in p.stem.upper() or str(s_ref).upper() in p.name.upper()) and p.is_file():
+                if (
+                    target_stem in p.stem.upper()
+                    or str(s_ref).upper() in p.name.upper()
+                ) and p.is_file():
                     found_stories.append(p)
                     if not persona_found:
                         meta, _ = extract_frontmatter(p.read_text(encoding="utf-8"))
@@ -270,7 +337,9 @@ def audit_task_health(
                 break
 
     if not persona_found:
-        prd_errors.append("Missing linked persona: task, governing story, or PRD must reference a valid persona from PERSONAS.md")
+        prd_errors.append(
+            "Missing linked persona: task, governing story, or PRD must reference a valid persona from PERSONAS.md"
+        )
 
     if prd_errors:
         rules[RULE_PERSONA_PRD] = False
@@ -286,7 +355,9 @@ def audit_task_health(
     )
     if not has_gherkin:
         if not governing_stories:
-            errors.append("Missing governing story: task must trace back to an accepted BDD user story")
+            errors.append(
+                "Missing governing story: task must trace back to an accepted BDD user story"
+            )
         for s_file in found_stories:
             s_content = s_file.read_text(encoding="utf-8")
             if (
@@ -299,20 +370,27 @@ def audit_task_health(
 
     if not has_gherkin:
         rules[RULE_GHERKIN_SCENARIOS] = False
-        errors.append(f"{task_id}: DoR Violation - Missing executable Gherkin acceptance criteria (ADR-0006)")
+        errors.append(
+            f"{task_id}: DoR Violation - Missing executable Gherkin acceptance criteria (ADR-0006)"
+        )
     else:
         rules[RULE_GHERKIN_SCENARIOS] = True
 
     # 7. Mutation Testing Scope Defined (ADR-0009)
     mutation_scope = _get(task, "mutation_scope")
     has_mutation = bool(
-        mutation_scope
+        (
+            mutation_scope is not None
+            and (mutation_scope != "" or isinstance(mutation_scope, list))
+        )
         or re.search(r"\bmutmut\b", text, re.I)
         or re.search(r"\bmutation\s+(?:testing\s+)?scope\b", text, re.I)
     )
     if not has_mutation:
         rules[RULE_MUTATION_SCOPE] = False
-        errors.append("Missing mutation testing scope: task must identify target modules for mutmut mutation testing (ADR-0009)")
+        errors.append(
+            "Missing mutation testing scope: task must identify target modules for mutmut mutation testing (ADR-0009)"
+        )
     else:
         rules[RULE_MUTATION_SCOPE] = True
 

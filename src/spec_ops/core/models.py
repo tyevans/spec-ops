@@ -68,7 +68,9 @@ class BlockerInfo:
 class Task:
     id: str
     title: str
-    status: str = "Proposed"  # Proposed, Refined, Complete, In-Progress, Review, Blocked
+    status: str = (
+        "Proposed"  # Proposed, Refined, Complete, In-Progress, Review, Blocked
+    )
     dependencies: list[str] = field(default_factory=list)
     governing_adrs: list[str] = field(default_factory=list)
     governing_prds: list[str] = field(default_factory=list)
@@ -103,7 +105,7 @@ class Task:
     pinned: bool = False
     priority_pin: int | None = None
     persona: str = ""
-    mutation_scope: str = ""
+    mutation_scope: list[str] | str = ""
     expected_lines: int = 0
     external_ref: str = ""
 
@@ -115,7 +117,9 @@ class Task:
 
     @property
     def slug(self) -> str:
-        clean = "".join(c if c.isalnum() else "-" for c in self.title.lower()).strip("-")
+        clean = "".join(c if c.isalnum() else "-" for c in self.title.lower()).strip(
+            "-"
+        )
         clean_id = self.canonical_id.lower().replace("task-", "").replace("spike-", "")
         return f"{clean_id}-{clean[:40]}"
 
