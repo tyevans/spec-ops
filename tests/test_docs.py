@@ -110,3 +110,32 @@ def foo():
     assert "<ol>" in html_out
     assert '<div class="table-wrapper"><table>' in html_out
     assert '<code class="language-python">' in html_out
+
+
+def test_simple_markdown_to_html_mermaid():
+    md = """# Architecture
+```mermaid
+flowchart TD
+    A --> B
+```
+"""
+    html_out = simple_markdown_to_html(md)
+    assert '<pre class="mermaid">' in html_out
+    assert "flowchart TD" in html_out
+    assert "</pre>" in html_out
+    assert "<code" not in html_out
+
+
+def test_docs_template_responsive_and_mermaid_support():
+    from spec_ops.docs.templates import DOCS_HTML_TEMPLATE
+
+    # Verify widescreen responsiveness: no restrictive max-width: 960px
+    assert "max-width: 960px;" not in DOCS_HTML_TEMPLATE
+    assert "min-width: 0;" in DOCS_HTML_TEMPLATE
+    assert "width: 100%;" in DOCS_HTML_TEMPLATE
+
+    # Verify mermaid dynamic loader and styling
+    assert ".mermaid" in DOCS_HTML_TEMPLATE
+    assert "mermaid.esm.min.mjs" in DOCS_HTML_TEMPLATE
+    assert "mermaid.initialize" in DOCS_HTML_TEMPLATE
+    assert "mermaid.run" in DOCS_HTML_TEMPLATE
