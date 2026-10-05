@@ -68,6 +68,7 @@ def simple_markdown_to_html(md: str) -> str:
     lines = md.splitlines()
     html_lines: list[str] = []
     in_code_block = False
+    in_mermaid = False
     in_ul = False
     in_ol = False
     in_table = False
@@ -92,11 +93,13 @@ def simple_markdown_to_html(md: str) -> str:
         if line.startswith("```"):
             close_blocks()
             if in_code_block:
-                html_lines.append("</code></pre>")
+                html_lines.append("</pre>" if in_mermaid else "</code></pre>")
                 in_code_block = False
+                in_mermaid = False
             else:
-                lang = line[3:].strip()
-                html_lines.append(f'<pre><code class="language-{lang}">')
+                lang = line[3:].strip().lower()
+                in_mermaid = lang == "mermaid"
+                html_lines.append('<pre class="mermaid">' if in_mermaid else f'<pre><code class="language-{lang}">')
                 in_code_block = True
             continue
 
@@ -195,7 +198,7 @@ def simple_markdown_to_html(md: str) -> str:
 
     close_blocks()
     if in_code_block:
-        html_lines.append("</code></pre>")
+        html_lines.append("</pre>" if in_mermaid else "</code></pre>")
 
     return "\n".join(html_lines)
 
@@ -253,6 +256,14 @@ _DEFAULT_VISUALIZER_GENERATOR: Any = None
 _DEFAULT_PROJECT_SERIALIZER: Any = None
 
 
+def _safe_import_attr(mod_name: str, attr_name: str) -> Any:
+    try:
+        import importlib
+        return getattr(importlib.import_module(mod_name), attr_name, None)
+    except Exception:
+        return None
+
+
 def register_default_roadmap_exporter(exporter: Any) -> None:
     """Registers an external roadmap exporter callback (e.g. from prd or app context)."""
     global _DEFAULT_ROADMAP_EXPORTER
@@ -294,15 +305,7 @@ def build_docs_site(
 
     # 2. Compile standalone visualizer bundle
     if include_visualizer:
-        gen = visualizer_generator or _DEFAULT_VISUALIZER_GENERATOR
-        if gen is None:
-            try:
-                import importlib
-                viz_gen_mod = importlib.import_module("spec_ops.visualizer.generator")
-                gen = getattr(viz_gen_mod, "generate_standalone_html", None)
-            except Exception:
-                gen = None
-
+        gen = visualizer_generator or _DEFAULT_VISUALIZER_GENERATOR or _safe_import_attr("spec_ops.visualizer.generator", "generate_standalone_html")
         if gen:
             visualizer_html = gen(config, back_link="../index.html")
             (dist_dir / "visualizer.html").write_text(visualizer_html, encoding="utf-8")
@@ -312,28 +315,12 @@ def build_docs_site(
             (vis_dir / "index.html").write_text(visualizer_html, encoding="utf-8")
 
     # 3. Export project JSON data and roadmap SVG artifacts
-    serializer = project_serializer or _DEFAULT_PROJECT_SERIALIZER
-    if serializer is None:
-        try:
-            import importlib
-            viz_gen_mod = importlib.import_module("spec_ops.visualizer.generator")
-            serializer = getattr(viz_gen_mod, "serialize_project_data", None)
-        except Exception:
-            serializer = None
-
+    serializer = project_serializer or _DEFAULT_PROJECT_SERIALIZER or _safe_import_attr("spec_ops.visualizer.generator", "serialize_project_data")
     if serializer:
         payload = serializer(config)
         (site_dir / "project-data.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
-    exporter = roadmap_exporter or _DEFAULT_ROADMAP_EXPORTER
-    if exporter is None:
-        try:
-            import importlib
-            prd_exporter_mod = importlib.import_module("spec_ops.prd.exporter")
-            exporter = getattr(prd_exporter_mod, "export_roadmap", None)
-        except Exception:
-            exporter = None
-
+    exporter = roadmap_exporter or _DEFAULT_ROADMAP_EXPORTER or _safe_import_attr("spec_ops.prd.exporter", "export_roadmap")
     if exporter:
         assets_dir = site_dir / "assets"
         assets_dir.mkdir(parents=True, exist_ok=True)

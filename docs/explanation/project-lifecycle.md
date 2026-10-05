@@ -17,11 +17,11 @@ Rather than a rigid waterfall or an uncontrolled sprint churn, a SpecOps-managed
 
 ```mermaid
 flowchart TD
-    classDef arch fill:#f9f0ff,stroke:#7b2cbf,stroke-width:2px;
-    classDef prod fill:#e8f4fd,stroke:#1d3557,stroke-width:2px;
-    classDef eng fill:#e6f9e6,stroke:#2d6a4f,stroke-width:2px;
-    classDef sec fill:#fff3cd,stroke:#b9770e,stroke-width:2px;
-    classDef doc fill:#fde2e4,stroke:#c9184a,stroke-width:2px;
+    classDef arch fill:#f9f0ff,stroke:#7b2cbf,stroke-width:2px,color:#0f172a;
+    classDef prod fill:#e8f4fd,stroke:#1d3557,stroke-width:2px,color:#0f172a;
+    classDef eng fill:#e6f9e6,stroke:#2d6a4f,stroke-width:2px,color:#0f172a;
+    classDef sec fill:#fff3cd,stroke:#b9770e,stroke-width:2px,color:#0f172a;
+    classDef doc fill:#fde2e4,stroke:#c9184a,stroke-width:2px,color:#0f172a;
 
     subgraph Phase0["Phase 0: Constitutional Bootstrap & Architecture"]
         P0_Init["spec-ops init --profile core,bdd,ddd\n(Alex / Sasha)"]:::arch

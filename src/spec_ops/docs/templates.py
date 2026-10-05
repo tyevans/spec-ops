@@ -48,7 +48,8 @@ DOCS_HTML_TEMPLATE = """<!DOCTYPE html>
     main.content {{
       flex: 1;
       padding: 3rem 4rem;
-      max-width: 960px;
+      min-width: 0;
+      width: 100%;
     }}
     h1 {{ font-size: 2.2rem; color: #fff; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }}
     h2 {{ font-size: 1.5rem; color: #f1f5f9; margin-top: 2rem; margin-bottom: 0.75rem; }}
@@ -62,9 +63,38 @@ DOCS_HTML_TEMPLATE = """<!DOCTYPE html>
     code {{ background: #1e293b; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.85em; color: #38bdf8; }}
     pre {{ background: #0f172a; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin-bottom: 1.5rem; }}
     pre code {{ background: none; padding: 0; color: #e2e8f0; }}
+    .mermaid {{
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }}
+    .mermaid svg {{
+      max-width: 100%;
+      height: auto;
+    }}
+    .mermaid .node.arch .nodeLabel,
+    .mermaid .node.prod .nodeLabel,
+    .mermaid .node.eng .nodeLabel,
+    .mermaid .node.sec .nodeLabel,
+    .mermaid .node.doc .nodeLabel {{
+      color: #0f172a !important;
+      font-weight: 500;
+    }}
+    .mermaid .node.arch .nodeLabel p,
+    .mermaid .node.prod .nodeLabel p,
+    .mermaid .node.eng .nodeLabel p,
+    .mermaid .node.sec .nodeLabel p,
+    .mermaid .node.doc .nodeLabel p {{
+      color: #0f172a !important;
+    }}
     a {{ color: var(--primary); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
-    .table-wrapper {{ overflow-x: auto; margin-bottom: 1.5rem; }}
+    .table-wrapper {{ overflow-x: auto; margin-bottom: 1.5rem; width: 100%; }}
     table {{ width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }}
     th, td {{ padding: 0.75rem 1rem; border: 1px solid var(--border); }}
     th {{ background: #1e293b; color: #f8fafc; font-weight: 600; }}
@@ -111,6 +141,29 @@ DOCS_HTML_TEMPLATE = """<!DOCTYPE html>
     </header>
     {content}
   </main>
+  <script type="module">
+    const mermaidNodes = document.querySelectorAll('.mermaid, pre code.language-mermaid');
+    if (mermaidNodes.length > 0) {{
+      document.querySelectorAll('pre code.language-mermaid').forEach(code => {{
+        const pre = code.parentElement;
+        if (pre && pre.tagName.toLowerCase() === 'pre') {{
+          pre.className = 'mermaid';
+          pre.textContent = code.textContent;
+        }}
+      }});
+      try {{
+        const {{ default: mermaid }} = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+        mermaid.initialize({{
+          startOnLoad: false,
+          theme: 'dark',
+          securityLevel: 'loose',
+        }});
+        await mermaid.run();
+      }} catch (err) {{
+        console.error('Failed to load or render Mermaid diagrams:', err);
+      }}
+    }}
+  </script>
 </body>
 </html>
 """
