@@ -11,63 +11,18 @@ from ..config.models import SpecOpsConfig
 from ..core.models import Task
 from ..core.parser import extract_frontmatter
 
-RULE_YAML_FRONTMATTER = "Complete YAML frontmatter"
-RULE_PERSONA_PRD = "Linked Persona & PRD"
-RULE_GOVERNING_ADRS = "Cited Governing ADRs"
-RULE_GHERKIN_SCENARIOS = "Executable Gherkin Scenarios"
-RULE_BOUNDED_CONTEXT = "Defined Target Bounded Context"
-RULE_FILE_LIMIT_SCOPE = "Feasible File Limit Scope"
-RULE_MUTATION_SCOPE = "Mutation Testing Scope Defined"
-
-ALL_DOR_RULES: list[str] = [
-    RULE_YAML_FRONTMATTER,
-    RULE_PERSONA_PRD,
-    RULE_GOVERNING_ADRS,
-    RULE_GHERKIN_SCENARIOS,
+from .dor_rules import (
+    ALL_DOR_RULES,
+    KNOWN_PERSONAS,
     RULE_BOUNDED_CONTEXT,
     RULE_FILE_LIMIT_SCOPE,
+    RULE_GHERKIN_SCENARIOS,
+    RULE_GOVERNING_ADRS,
     RULE_MUTATION_SCOPE,
-]
-
-KNOWN_PERSONAS = {
-    "alex",
-    "jordan",
-    "morgan",
-    "riley",
-    "taylor",
-    "developer",
-    "architect",
-    "user",
-}
-
-
-@dataclass
-class DoRAuditReport:
-    """Report detailing Definition of Ready (DoR) audit outcomes."""
-
-    task_id: str
-    is_ready: bool
-    rules: dict[str, bool] = field(default_factory=dict)
-    errors: list[str] = field(default_factory=list)
-    recommendations: list[str] = field(default_factory=list)
-
-    def format_report(self) -> str:
-        """Renders a human-readable table of DoR rule checks."""
-        lines = [f"=== Definition of Ready (DoR) Audit: {self.task_id} ==="]
-        lines.append(f"{'Rule Check':<34} | Status")
-        lines.append(f"{'-' * 34}-|-------")
-        for rule in ALL_DOR_RULES:
-            status = "Pass" if self.rules.get(rule, False) else "Fail"
-            lines.append(f"{rule:<34} | {status}")
-        if self.errors:
-            lines.append("\nViolations:")
-            for err in self.errors:
-                lines.append(f"  ❌ {err}")
-        if self.recommendations:
-            lines.append("\nRecommendations:")
-            for rec in self.recommendations:
-                lines.append(f"  💡 {rec}")
-        return "\n".join(lines)
+    RULE_PERSONA_PRD,
+    RULE_YAML_FRONTMATTER,
+    DoRAuditReport,
+)
 
 
 def _get(task: Task | dict[str, Any], field_name: str) -> Any:
@@ -219,12 +174,13 @@ def audit_task_health(
                         target_stem in p.stem.upper()
                         or str(adr_ref).upper() in p.name.upper()
                     ) and p.is_file():
-                        if p.parent.name.lower() == "accepted":
-                            found = True
-                            break
                         meta, _ = extract_frontmatter(p.read_text(encoding="utf-8"))
-                        if str(meta.get("status", "")).strip().lower() == "accepted":
+                        status_str = str(meta.get("status", "")).strip().lower()
+                        if p.parent.name.lower() == "accepted" or status_str == "accepted" or status_str.startswith("accepted"):
                             found = True
+                            raw_amended_by = meta.get("amended_by", [])
+                            if isinstance(raw_amended_by, list) and raw_amended_by:
+                                recommendations.append(f"ADR {adr_ref} has active amendments [{', '.join(str(x) for x in raw_amended_by)}].")
                             break
             if not found:
                 adr_errors.append(

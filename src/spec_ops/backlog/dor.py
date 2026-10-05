@@ -42,8 +42,8 @@ def validate_task_dor(task: Task | dict[str, Any], config: SpecOpsConfig) -> tup
                         if p.parent.name.lower() == "accepted":
                             found = True
                             break
-                        meta, _ = extract_frontmatter(p.read_text(encoding="utf-8"))
-                        if str(meta.get("status", "")).strip().lower() == "accepted":
+                        status_str = str(meta.get("status", "")).strip().lower()
+                        if status_str == "accepted" or status_str.startswith("accepted"):
                             found = True
                             break
             if not found:

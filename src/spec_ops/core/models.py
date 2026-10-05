@@ -136,6 +136,10 @@ class ADR:
     implementing_tasks: list[str] = field(default_factory=list)
     raw_markdown: str = ""
     file_path: Path | None = None
+    supersedes: str = ""
+    superseded_by: str = ""
+    amends: list[str] = field(default_factory=list)
+    amended_by: list[str] = field(default_factory=list)
 
 
 @dataclass

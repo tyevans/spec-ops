@@ -98,6 +98,10 @@ class ADRFrontmatter(BaseModel):
     title: str
     status: str = "Accepted"
     domain: Optional[str] = "Architecture"
+    supersedes: Optional[Any] = None
+    superseded_by: Optional[Any] = None
+    amends: Optional[Any] = None
+    amended_by: Optional[Any] = None
 
 
 @dataclass

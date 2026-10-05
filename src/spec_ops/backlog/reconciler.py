@@ -114,6 +114,46 @@ class ArchitecturalReconciler:
 
         return superseded_map
 
+    def discover_amended_adrs(self) -> dict[str, list[str]]:
+        """Discovers amended ADR mapping: {target_adr_id: [amending_adr_ids]}."""
+        amended_map: dict[str, list[str]] = {}
+        adrs_dir = self.docs_dir / "adrs"
+        if not adrs_dir.exists():
+            return amended_map
+
+        for p in adrs_dir.rglob("*.md"):
+            if not p.is_file() or p.name in ("REGISTRY.md", "README.md"):
+                continue
+            try:
+                content = p.read_text(encoding="utf-8")
+                meta, _ = extract_frontmatter(content)
+                adr_id_match = re.search(r"ADR-\d+", p.stem.upper())
+                curr_id = str(meta.get("id", adr_id_match.group(0) if adr_id_match else "")).upper()
+                if not curr_id.startswith("ADR-") and curr_id.isdigit():
+                    curr_id = f"ADR-{curr_id.zfill(4)}"
+
+                raw_amends = meta.get("amends", [])
+                targets = [str(x).upper() for x in raw_amends] if isinstance(raw_amends, list) else ([str(raw_amends).upper()] if raw_amends else [])
+                for tgt in targets:
+                    if not tgt.startswith("ADR-") and tgt.isdigit():
+                        tgt = f"ADR-{tgt.zfill(4)}"
+                    amended_map.setdefault(tgt, [])
+                    if curr_id not in amended_map[tgt]:
+                        amended_map[tgt].append(curr_id)
+
+                raw_amended_by = meta.get("amended_by", [])
+                by_targets = [str(x).upper() for x in raw_amended_by] if isinstance(raw_amended_by, list) else ([str(raw_amended_by).upper()] if raw_amended_by else [])
+                for b in by_targets:
+                    if not b.startswith("ADR-") and b.isdigit():
+                        b = f"ADR-{b.zfill(4)}"
+                    amended_map.setdefault(curr_id, [])
+                    if b not in amended_map[curr_id]:
+                        amended_map[curr_id].append(b)
+            except OSError:
+                continue
+
+        return amended_map
+
     def discover_active_bounded_contexts(self) -> set[str]:
         """Discovers active bounded contexts from directory layout."""
         contexts: set[str] = set()
@@ -195,6 +235,20 @@ class ArchitecturalReconciler:
             if old_adr in updated_body:
                 updated_body = re.sub(rf"\b{re.escape(old_adr)}\b", active_adr, updated_body)
 
+        # 1b. Audit Active Amendments (informational, non-destructive)
+        amended_adrs = self.discover_amended_adrs()
+        for adr_ref in updated_governing_adrs:
+            clean_ref = adr_ref.upper()
+            if clean_ref in amended_adrs:
+                amds = amended_adrs[clean_ref]
+                changes.append(
+                    ReconciliationChange(
+                        change_type="active_amendment_notice",
+                        target=clean_ref,
+                        details=f"ADR {clean_ref} has active amendments {amds}",
+                    )
+                )
+
         # 2. Reconcile Stale File Paths mentioned in task body
         path_matches = set(re.findall(r"src/[a-zA-Z0-9_\-/]+\.py", updated_body))
         for ref_path in path_matches:
@@ -224,7 +278,7 @@ class ArchitecturalReconciler:
             )
             updated_bc = new_bc
 
-        modified = len(changes) > 0
+        modified = any(c.change_type != "active_amendment_notice" for c in changes)
         reconciled_task = Task(
             id=task.id,
             title=task.title,
