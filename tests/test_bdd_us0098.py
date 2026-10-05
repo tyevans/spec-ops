@@ -310,3 +310,18 @@ def verify_spike_branch_tagged(grad_context: dict[str, Any], branch: str, tag_na
         text=True,
     )
     assert tag_name in chk.stdout, f"Tag {tag_name} not found"
+
+
+@then("spike pre-commit hooks and transient metadata are cleaned up")
+def verify_hooks_and_metadata_cleaned(grad_context: dict[str, Any]):
+    repo: Path = grad_context["repo"]
+    chk = subprocess.run(
+        ["git", "config", "--get", "core.hooksPath"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+    )
+    assert chk.returncode != 0 or chk.stdout.strip() != ".specops/hooks"
+    assert not (repo / ".specops" / "hooks" / "pre-commit").exists()
+    assert not (repo / ".specops" / "spike.json").exists()
+

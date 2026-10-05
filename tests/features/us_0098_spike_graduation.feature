@@ -25,3 +25,4 @@ Feature: Empirical Spike Hypothesis Validation and Automated ADR Synthesis
     When graduation completes
     Then the ephemeral worktree ".worktrees/spike-0002" is removed cleanly
     And the spike branch "spike/SPIKE-0002" is tagged "spike/SPIKE-0002-graduated" for audit history.
+    And spike pre-commit hooks and transient metadata are cleaned up

@@ -79,6 +79,12 @@ def test_graduate_spike_proven_direct(tmp_path: Path):
     branches = subprocess.check_output(["git", "branch", "-l"], cwd=repo, text=True)
     assert "spike/SPIKE-0002" in branches
 
+    # Verify pre-commit hooks and spike metadata cleanup
+    chk_hooks = subprocess.run(["git", "config", "--get", "core.hooksPath"], cwd=repo, capture_output=True, text=True)
+    assert chk_hooks.returncode != 0 or chk_hooks.stdout.strip() != ".specops/hooks"
+    assert not (repo / ".specops" / "hooks" / "pre-commit").exists()
+    assert not (repo / ".specops" / "spike.json").exists()
+
     # Verify message
     expected_msg = "✨ Successfully graduated SPIKE-0002 into ADR-0008 (adr-0008-adopt-faster-than-sqlite.md). Updated 1 dependent task(s)."
     assert res.message == expected_msg
@@ -163,3 +169,50 @@ def test_graduate_spike_no_task_file(tmp_path: Path):
     )
     assert res.success is True
     assert "adr-0008-architectural-finding-rejection-of-evaluate-spike-0009.md" in res.adr_file.name
+
+
+def test_graduate_spike_restores_preexisting_hooks_and_cleans_metadata(tmp_path: Path):
+    repo = tmp_path / "repo_custom"
+    repo.mkdir()
+    init_project(name="CustomApp", target_dir=repo)
+
+    subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Alex"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "alex@specops.dev"], cwd=repo, check=True, capture_output=True)
+    # Configure a custom pre-existing core.hooksPath
+    subprocess.run(["git", "config", "core.hooksPath", ".custom-hooks"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "init"], cwd=repo, check=True, capture_output=True)
+
+    proposed = repo / "docs" / "project" / "backlog" / "proposed"
+    proposed.mkdir(parents=True, exist_ok=True)
+    spike_f = proposed / "0005-bench.md"
+    task = Task(id="SPIKE-0005", title="Custom Hook Spike", hypothesis="Validate hooks", file_path=spike_f)
+    write_task_file(task)
+
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "propose"], cwd=repo, check=True, capture_output=True)
+
+    sandbox = start_spike(repo, "SPIKE-0005", hypothesis="Validate hooks", timebox="1h")
+    assert sandbox.worktree_dir.exists()
+    assert (sandbox.worktree_dir / ".specops" / "spike.json").exists()
+
+    bench_txt = sandbox.harness_dir / "benchmark.txt"
+    bench_txt.write_text("p95 latency = 10ms", encoding="utf-8")
+
+    res = graduate_spike(
+        repo_root=repo,
+        spike_id="SPIKE-0005",
+        result="proven",
+    )
+    assert res.success is True
+    assert not sandbox.worktree_dir.exists()
+
+    # Pre-existing core.hooksPath must be restored
+    chk_hooks = subprocess.run(["git", "config", "--get", "core.hooksPath"], cwd=repo, capture_output=True, text=True)
+    assert chk_hooks.stdout.strip() == ".custom-hooks"
+
+    # Metadata and transient hook files must be removed
+    assert not (repo / ".specops" / "hooks" / "pre-commit").exists()
+    assert not (repo / ".specops" / "spike.json").exists()
+
