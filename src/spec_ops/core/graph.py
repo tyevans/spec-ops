@@ -118,6 +118,30 @@ def generate_traceability_edges(data: ProjectData) -> list[TraceabilityEdge]:
             dep_id = f"TASK-{clean.zfill(4)}" if clean else d
             add(TraceabilityEdge("task", t.canonical_id, "task", dep_id, "depends_on"))
 
+    # ADR amends ADR and ADR supersedes ADR
+    existing_adr_edges = {(e.source_id, e.target_id, e.relation) for e in edges}
+    for a in data.adrs:
+        for target_adr in a.amends:
+            norm_target = f"ADR-{target_adr.split('-')[-1].zfill(4)}" if target_adr.startswith("ADR-") else target_adr
+            if (a.id, norm_target, "amends") not in existing_adr_edges:
+                add(TraceabilityEdge("adr", a.id, "adr", norm_target, "amends"))
+                existing_adr_edges.add((a.id, norm_target, "amends"))
+        for amending_adr in a.amended_by:
+            norm_src = f"ADR-{amending_adr.split('-')[-1].zfill(4)}" if amending_adr.startswith("ADR-") else amending_adr
+            if (norm_src, a.id, "amends") not in existing_adr_edges:
+                add(TraceabilityEdge("adr", norm_src, "adr", a.id, "amends"))
+                existing_adr_edges.add((norm_src, a.id, "amends"))
+        if a.supersedes:
+            norm_target = f"ADR-{a.supersedes.split('-')[-1].zfill(4)}" if a.supersedes.startswith("ADR-") else a.supersedes
+            if (a.id, norm_target, "supersedes") not in existing_adr_edges:
+                add(TraceabilityEdge("adr", a.id, "adr", norm_target, "supersedes"))
+                existing_adr_edges.add((a.id, norm_target, "supersedes"))
+        if a.superseded_by:
+            norm_src = f"ADR-{a.superseded_by.split('-')[-1].zfill(4)}" if a.superseded_by.startswith("ADR-") else a.superseded_by
+            if (norm_src, a.id, "supersedes") not in existing_adr_edges:
+                add(TraceabilityEdge("adr", norm_src, "adr", a.id, "supersedes"))
+                existing_adr_edges.add((norm_src, a.id, "supersedes"))
+
     data.edges = edges
     return edges
 

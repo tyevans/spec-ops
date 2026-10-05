@@ -98,7 +98,30 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
     preflight_chain = "uv lock --check && uv run pytest && uv run spec-ops health"
     limit = getattr(config.architecture, "file_length_limit", 500)
     bc = task.target_bc or "core"
-    adrs = ", ".join(task.governing_adrs) or "None"
+    adrs_dir = Path(config.project.docs_dir) / "adrs"
+    if not adrs_dir.is_absolute():
+        adrs_dir = config.root_dir / adrs_dir
+
+    amendments_by_target = {}
+    if adrs_dir.exists():
+        from ..adrs.amend import discover_amendments_by_target
+        amendments_by_target = discover_amendments_by_target(adrs_dir)
+
+    adr_entries = []
+    all_amends = []
+    for adr_ref in task.governing_adrs:
+        clean_num = adr_ref.upper().replace("ADR-", "").lstrip("0")
+        target_norm = f"ADR-{clean_num.zfill(4)}" if clean_num else adr_ref.upper()
+        active_amends = amendments_by_target.get(target_norm, [])
+        if active_amends:
+            adr_entries.append(f"{adr_ref} (active amendments: {', '.join(sorted(active_amends))})")
+            for a in active_amends:
+                if a not in all_amends:
+                    all_amends.append(a)
+        else:
+            adr_entries.append(adr_ref)
+
+    adrs = ", ".join(adr_entries) or "None"
     prds = ", ".join(task.governing_prds) or "None"
     stories = ", ".join(task.governing_stories) or "None"
 
@@ -110,11 +133,15 @@ def hydrate_task_prompt(task: Task, config: SpecOpsConfig) -> str:
         f"- Governing ADRs: {adrs}",
         f"- Governing PRDs: {prds}",
         f"- Governing Stories: {stories}",
+    ]
+    if all_amends:
+        lines.append(f"- Active ADR Amendments: {', '.join(sorted(all_amends))} (incorporate active delta refinements from amending decisions).")
+    lines.extend([
         f"- File Length Invariant: Every new or edited source file must contain fewer than {limit} lines (500-line file length limit invariant governed by ADR-0002).",
         "- Testing Invariant: Features must be verified blackbox style through public entry points without private backdoors (blackbox frontdoor verification rules with zero private mocks governed by ADR-0003).",
         "- Backlog Isolation: Files under docs/project/backlog/ must not be modified on feature branches. Accidental edits will be intercepted and discarded (ADR-0005).",
         "- Dependency Immutability Invariant: You must NOT edit `pyproject.toml` or `uv.lock` unless `allows_dependencies: true` is explicitly declared in task frontmatter (US-0111). Modifying `pyproject.toml` without authorization triggers an immediate security failure. Do not edit `pyproject.toml` for `[tool.mutmut]`; mutation coverage already scans `src/spec_ops/`.",
-    ]
+    ])
 
     from ..rescue.memory import format_failure_memory_prompt
 

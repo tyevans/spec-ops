@@ -104,7 +104,7 @@ def main(argv: list[str] | None = None) -> int:
         from .parse_handler import handle_parse_command
         return handle_parse_command(args, config)
 
-    if args.command == "graph":
+    if args.command in ("graph", "pathfinder"):
         from .graph_handler import handle_graph_command
         return handle_graph_command(args, config)
 

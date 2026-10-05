@@ -82,7 +82,7 @@ class DirectedGraph:
             prs = list(getattr(t, "prs", []))
             g.add_node(t.canonical_id, type="task", label=t.title, status=getattr(t, "status", ""), bc=getattr(t, "target_bc", ""), prs=prs)
         for a in getattr(data, "adrs", []):
-            g.add_node(a.id, type="adr", label=a.title, domain=getattr(a, "domain", ""))
+            g.add_node(a.id, type="adr", label=a.title, domain=getattr(a, "domain", ""), status=getattr(a, "status", ""))
 
         for e in getattr(data, "edges", []):
             src = getattr(e, "source_id", getattr(e, "source", None))

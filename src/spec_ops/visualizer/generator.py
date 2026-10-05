@@ -94,6 +94,11 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
         sup_by = str(a_meta.get("superseded_by") or superseded_map.get(a.id) or "")
         sup_title = adr_titles.get(sup_by, "")
         status = "Superseded" if (sup_by or a.status == "Superseded" or a_meta.get("status") == "Superseded") else (a.status or "Accepted")
+        raw_amends = getattr(a, "amends", None) or a_meta.get("amends", [])
+        amends_list = [str(x).upper() for x in raw_amends] if isinstance(raw_amends, list) else ([str(raw_amends).upper()] if raw_amends else [])
+        raw_amended_by = getattr(a, "amended_by", None) or a_meta.get("amended_by", [])
+        amended_by_list = [str(x).upper() for x in raw_amended_by] if isinstance(raw_amended_by, list) else ([str(raw_amended_by).upper()] if raw_amended_by else [])
+
         adrs_payload.append({
             "id": a.id,
             "title": a.title,
@@ -106,7 +111,9 @@ def serialize_project_data(config: SpecOpsConfig) -> dict[str, Any]:
             "raw_markdown": a.raw_markdown,
             "superseded_by": sup_by,
             "superseded_by_title": sup_title,
-            "supersedes": str(a_meta.get("supersedes") or ""),
+            "supersedes": str(a_meta.get("supersedes") or getattr(a, "supersedes", "") or ""),
+            "amends": amends_list,
+            "amended_by": amended_by_list,
             "file_path": _rel_path(config.root_dir, a.file_path),
         })
 

@@ -183,10 +183,11 @@ window.renderArchitectureRadarView = function() {
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:12px;">
           ${adrs.map(a => {
             const isSuperseded = (a.status === 'Superseded') || Boolean(a.superseded_by);
-            const statusClass = isSuperseded ? "matrix-badge-superseded" : "matrix-badge-complete";
-            const badgeBg = isSuperseded ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)";
-            const badgeColor = isSuperseded ? "#fca5a5" : "#6ee7b7";
-            const badgeBorder = isSuperseded ? "1px solid rgba(239,68,68,0.4)" : "1px solid rgba(16, 185, 129, 0.4)";
+            const isAmended = !isSuperseded && ((a.amended_by && a.amended_by.length > 0) || (a.status && a.status.includes('Amended')));
+            const statusClass = isSuperseded ? "matrix-badge-superseded" : (isAmended ? "matrix-badge-amended" : "matrix-badge-complete");
+            const badgeBg = isSuperseded ? "rgba(239, 68, 68, 0.2)" : (isAmended ? "rgba(6, 182, 212, 0.2)" : "rgba(16, 185, 129, 0.2)");
+            const badgeColor = isSuperseded ? "#fca5a5" : (isAmended ? "#67e8f9" : "#6ee7b7");
+            const badgeBorder = isSuperseded ? "1px solid rgba(239,68,68,0.4)" : (isAmended ? "1px solid rgba(6,182,212,0.4)" : "1px solid rgba(16, 185, 129, 0.4)");
             const styleAttr = isSuperseded ? `style="background:${badgeBg}; color:${badgeColor}; border:${badgeBorder}; text-decoration:line-through;"` : `style="background:${badgeBg}; color:${badgeColor}; border:${badgeBorder};"`;
             const targetAdr = a.superseded_by ? adrs.find(x => x.id === a.superseded_by || x.id.replace("ADR-", "") === a.superseded_by.replace("ADR-", "")) : null;
             const targetTitle = (targetAdr && targetAdr.title) ? `: ${targetAdr.title}` : (a.superseded_by_title ? `: ${a.superseded_by_title}` : "");
@@ -195,7 +196,10 @@ window.renderArchitectureRadarView = function() {
               <div class="card-box adr-item-card" style="padding:12px; border:${isSuperseded ? '1px solid rgba(239,68,68,0.35)' : '1px solid var(--border-subtle)'}; background:${isSuperseded ? 'rgba(239,68,68,0.04)' : 'rgba(15,23,42,0.4)'};">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
                   <span class="entity-pill pill-adr" onclick="openDrawer('${escapeHtml(a.id)}')">${escapeHtml(a.id)}</span>
-                  <span class="matrix-badge ${statusClass}" ${styleAttr}>${isSuperseded ? 'Superseded' : escapeHtml(a.status || 'Accepted')}</span>
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <span class="matrix-badge ${statusClass}" ${styleAttr}>${isSuperseded ? 'Superseded' : escapeHtml(a.status || 'Accepted')}</span>
+                    ${isAmended ? `<span class="badge" style="background:rgba(6,182,212,0.15); color:#22d3ee; border:1px solid rgba(6,182,212,0.3); font-size:0.68rem; padding:1px 6px; border-radius:9999px;">Amended</span>` : ""}
+                  </div>
                 </div>
                 <h4 style="font-size:0.88rem; font-weight:700; color:#fff; cursor:pointer;" onclick="openDrawer('${escapeHtml(a.id)}')">${escapeHtml(a.title)}</h4>
                 ${isSuperseded && a.superseded_by ? `
@@ -204,6 +208,16 @@ window.renderArchitectureRadarView = function() {
                     <a href="#tab=adrs&entity=${escapeHtml(a.superseded_by)}" onclick="openDrawer('${escapeHtml(a.superseded_by)}')" style="color:#67e8f9; text-decoration:underline; font-weight:700;">
                       ${escapeHtml(a.superseded_by)}${escapeHtml(targetTitle)}
                     </a>
+                  </div>` : ""}
+                ${!isSuperseded && a.amended_by && a.amended_by.length > 0 ? `
+                  <div class="amendments-notice-box" style="margin-top:8px; padding:6px 10px; background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.25); border-radius:6px; font-size:0.74rem;">
+                    <span style="color:#67e8f9; font-weight:700;">Amended by: </span>
+                    ${a.amended_by.map(aid => `<a href="#tab=adrs&entity=${escapeHtml(aid)}" onclick="openDrawer('${escapeHtml(aid)}')" style="color:#67e8f9; text-decoration:underline; font-weight:700; margin-right:6px;">${escapeHtml(aid)}</a>`).join("")}
+                  </div>` : ""}
+                ${a.amends && a.amends.length > 0 ? `
+                  <div class="amends-notice-box" style="margin-top:8px; padding:6px 10px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.25); border-radius:6px; font-size:0.74rem;">
+                    <span style="color:#a5b4fc; font-weight:700;">Amends: </span>
+                    ${a.amends.map(aid => `<a href="#tab=adrs&entity=${escapeHtml(aid)}" onclick="openDrawer('${escapeHtml(aid)}')" style="color:#a5b4fc; text-decoration:underline; font-weight:700; margin-right:6px;">${escapeHtml(aid)}</a>`).join("")}
                   </div>` : ""}
                 <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center; font-size:0.72rem; color:var(--text-muted); border-top:1px solid rgba(51,65,85,0.4); padding-top:6px;">
                   <span>${escapeHtml(a.domain || 'Architecture')}</span>

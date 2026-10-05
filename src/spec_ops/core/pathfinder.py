@@ -115,6 +115,41 @@ def format_traceability_path(
     return "\n".join(lines)
 
 
+def _find_adr_amendments(
+    adr_id: str, graph: DirectedGraph | None = None, data: ProjectData | None = None
+) -> list[str]:
+    """Finds active amending ADR IDs for a given ADR ID."""
+    clean_id = adr_id.split(":")[-1].upper()
+    if not clean_id.startswith("ADR-") and clean_id.isdigit():
+        clean_id = f"ADR-{clean_id.zfill(4)}"
+
+    amendments: set[str] = set()
+
+    if data:
+        for a in getattr(data, "adrs", []):
+            a_id = getattr(a, "id", "").upper()
+            if a_id == clean_id:
+                for b in getattr(a, "amended_by", []):
+                    b_clean = b.upper() if b.startswith("ADR-") else f"ADR-{b.split('-')[-1].zfill(4)}"
+                    amendments.add(b_clean)
+            for m in getattr(a, "amends", []):
+                m_clean = m.upper() if m.startswith("ADR-") else f"ADR-{m.split('-')[-1].zfill(4)}"
+                if m_clean == clean_id:
+                    amendments.add(a_id)
+
+    if graph:
+        candidates = [clean_id, f"adr:{clean_id}", clean_id.lower(), f"adr:{clean_id.lower()}"]
+        for cand in candidates:
+            if cand in graph.rev_adj:
+                for src in graph.rev_adj[cand]:
+                    rel = graph.edge_relations.get((src, cand), "")
+                    if rel == "amends":
+                        src_clean = src.split(":")[-1].upper()
+                        amendments.add(src_clean)
+
+    return sorted(amendments)
+
+
 def inspect_entity(graph: DirectedGraph, entity_query: str, data: ProjectData | None = None) -> str:
     """Generates ASCII entity card displaying metadata, lineage, and 1st-degree neighbors."""
     node_id = resolve_node_id(graph, entity_query) or entity_query
@@ -167,14 +202,39 @@ def inspect_entity(graph: DirectedGraph, entity_query: str, data: ProjectData | 
                 persona_lineage = f"Jordan (via {governing_story})"
                 break
 
+    governing_adr_display = []
+    for a_ref in governing_adrs:
+        amends = _find_adr_amendments(a_ref, graph, data)
+        if amends:
+            governing_adr_display.append(f"{a_ref} (active amendments: {', '.join(amends)})")
+        else:
+            governing_adr_display.append(a_ref)
+
     card_rows = [
         ("Entity ID", clean_id),
         ("Type", type_display),
         ("Target BC", target_bc or "general"),
-        ("Governing ADRs", ", ".join(governing_adrs) if governing_adrs else "None"),
+        ("Governing ADRs", ", ".join(governing_adr_display) if governing_adr_display else "None"),
         ("Governing Story", governing_story or "None"),
         ("Persona Lineage", persona_lineage or "None"),
     ]
+
+    if clean_id.startswith("ADR-"):
+        amends_list = _find_adr_amendments(clean_id, graph, data)
+        if amends_list:
+            card_rows.append(("Amended By", ", ".join(amends_list)))
+        amends_targets: set[str] = set()
+        if data:
+            for a in getattr(data, "adrs", []):
+                if getattr(a, "id", "").upper() == clean_id:
+                    for t in getattr(a, "amends", []):
+                        amends_targets.add(t.upper() if t.startswith("ADR-") else f"ADR-{t.split('-')[-1].zfill(4)}")
+        for tgt in graph.adj.get(node_id, []):
+            if graph.edge_relations.get((node_id, tgt)) == "amends":
+                tgt_clean = tgt.split(":")[-1].upper()
+                amends_targets.add(tgt_clean)
+        if amends_targets:
+            card_rows.append(("Amends", ", ".join(sorted(amends_targets))))
 
     card_lines = [
         "+-----------------+---------------------------------------------+",

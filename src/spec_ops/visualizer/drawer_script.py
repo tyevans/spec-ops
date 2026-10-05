@@ -177,8 +177,11 @@ DRAWER_JS = r"""
   function renderAdrCard(a) {
     const supBy = a.superseded_by || (a.raw_markdown && (a.raw_markdown.match(/superseded[_-]?by[:\s]+[`"]?(ADR-\d+)[`"]?/i) || a.raw_markdown.match(/Superseded\s+by\s+(?:\[`?)?(ADR-\d+)/i)) ? RegExp.$1.toUpperCase() : "");
     const isSup = (a.status === "Superseded") || Boolean(supBy);
+    const amendments = a.amended_by || [];
+    const amendsList = a.amends || [];
+    const isAmended = !isSup && (amendments.length > 0 || (a.status && a.status.includes("Amended")));
     const statusText = isSup ? "Superseded" : (a.status || "Accepted");
-    const statusBg = isSup ? "rgba(239,68,68,0.2); color:#fca5a5; border-color:rgba(239,68,68,0.4); text-decoration:line-through;" : "rgba(99,102,241,0.2); color:#a5b4fc; border-color:rgba(99,102,241,0.4);";
+    const statusBg = isSup ? "rgba(239,68,68,0.2); color:#fca5a5; border-color:rgba(239,68,68,0.4); text-decoration:line-through;" : (isAmended ? "rgba(6,182,212,0.2); color:#67e8f9; border-color:rgba(6,182,212,0.4);" : "rgba(16,185,129,0.2); color:#6ee7b7; border-color:rgba(16,185,129,0.4);");
     let supNotice = "";
     if (supBy) {
       const tAdr = (data.adrs || []).find(x => x.id === supBy || x.id.replace("ADR-", "") === supBy.replace("ADR-", ""));
@@ -187,7 +190,9 @@ DRAWER_JS = r"""
     }
     return `
       ${supNotice}
-      <div class="card-box"><div style="display:flex; gap:8px; align-items:center;"><span class="adr-status-badge ${isSup ? 'strikethrough-badge' : ''}" style="padding:3px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; border:1px solid; background:${statusBg}">${statusText}</span><span class="entity-pill pill-adr">${a.domain || 'Architecture'}</span></div></div>
+      <div class="card-box"><div style="display:flex; gap:8px; align-items:center;"><span class="adr-status-badge ${isSup ? 'strikethrough-badge' : ''}" style="padding:3px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; border:1px solid; background:${statusBg}">${statusText}</span>${isAmended ? '<span class="amended-chip" style="padding:2px 8px; border-radius:9999px; font-size:0.7rem; font-weight:700; background:rgba(6,182,212,0.15); color:#22d3ee; border:1px solid rgba(6,182,212,0.3);">Amended</span>' : ''}<span class="entity-pill pill-adr">${a.domain || 'Architecture'}</span></div></div>
+      ${amendsList.length > 0 ? `<div class="card-box" id="adr-amends-section"><div class="card-box-title" style="color:#67e8f9">Amends</div><div class="pills-container">${amendsList.map(t => `<span style="font-size:0.8rem; color:#cbd5e1;">Amends: ${pill(t, "adr")}</span>`).join(" ")}</div></div>` : ""}
+      ${amendments.length > 0 ? `<div class="card-box" id="adr-amendments-section"><div class="card-box-title" style="color:#67e8f9">Amendments (${amendments.length})</div><div class="pills-container">${amendments.map(t => pill(t, "adr")).join("")}</div></div>` : ""}
       ${a.context ? `<div class="card-box"><div class="card-box-title" style="color:#a5b4fc">Context</div><div class="markdown-box">${renderMarkdown(a.context)}</div></div>` : ""}
       ${a.decision ? `<div class="card-box"><div class="card-box-title" style="color:#c4b5fd">Decision</div><div class="markdown-box">${renderMarkdown(a.decision)}</div></div>` : ""}
       ${a.consequences ? `<div class="card-box"><div class="card-box-title" style="color:#94a3b8">Consequences</div><div class="markdown-box">${renderMarkdown(a.consequences)}</div></div>` : ""}
@@ -242,11 +247,8 @@ DRAWER_JS = r"""
   window.filterByBc = function(bcName, targetTab) {
     if (!bcName) return;
     window.setFilter('bc', bcName);
-    if (targetTab) {
-      window.switchTab(targetTab);
-    } else if (activeTab !== 'graph') {
-      window.switchTab('graph');
-    }
+    if (targetTab) window.switchTab(targetTab);
+    else if (activeTab !== 'graph') window.switchTab('graph');
     if (typeof updateGraphToolbarUI === "function") updateGraphToolbarUI();
     if (typeof wakePhysics === "function") wakePhysics();
   };
