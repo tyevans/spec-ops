@@ -82,6 +82,9 @@ SpecOps provides a unified command-line interface (`spec-ops`).
 | `spec-ops profiles migrate` | `[--check] [--target-version TARGET_VERSION] [--dry-run] [--path PATH] [--json]` | Migrate profile configuration schema and validate evolvability |
 | `spec-ops architecture seams` | `[--strict] [--json] [--export-heatmap EXPORT_HEATMAP]` | Audit bounded context seams and cross-context coupling heatmap |
 | `spec-ops adr supersede` | `[<OLD_ID>] [--old OLD] [--title TITLE] [--by BY] [--with WITH] [--dry-run]` | Supersede an existing Architectural Decision Record with a new decision and audit active backlog citations |
+| `spec-ops adr amend` | `[<OLD_ID>] [--old OLD] [--title TITLE] [--by BY] [--with WITH] [--dry-run]` | Incrementally amend an active Architectural Decision Record without retiring the predecessor |
+| `spec-ops pathfinder inspect` | `<ENTITY>` | Inspect entity metadata, lineage card, active ADR amendments, and neighborhood (alias for spec-ops graph inspect) |
+| `spec-ops pathfinder path` | `--from ORIGIN --to DEST` | Reachability pathfinding and lineage tracing (alias for spec-ops graph path) |
 | `spec-ops scaffold` | `[--agent AGENT] [--agents AGENTS]` | Scaffold or regenerate project components and agent adapters |
 | `spec-ops scaffold agents` | None | Regenerate AGENTS.md constitution from installed profiles |
 | `spec-ops scaffold docs` | `[--bc BC] [--bounded-context BC] [--title TITLE] [--force] [--overwrite]` | Scaffold 4-quadrant Diataxis documentation for a bounded context (alias: diataxis) |

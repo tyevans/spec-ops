@@ -335,6 +335,12 @@ Establish initial system architecture, core domain models, and blackbox test har
         diataxis_files = scaffold_diataxis_docs(root, project_name, agents_md_content=agents_md)
         created_files.extend(diataxis_files)
 
+    # 8b. Default SpecOps SDLC Orchestrator Skill
+    from .skill_packager import package_antigravity
+
+    for skill_rel, skill_content in package_antigravity(root_dir=root).items():
+        _write(Path(skill_rel), skill_content)
+
     # 9. Multi-agent platform adapters (Claude, Cursor, Antigravity)
     if parsed_agents:
         adapter_files = scaffold_agent_adapters(

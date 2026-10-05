@@ -185,6 +185,8 @@ def plan_initialization(config: WizardConfig) -> InitializationPlan:
         "docs/project/backlog/README.md", "docs/project/backlog/PRIORITY.md",
         "docs/project/backlog/ROADMAP.md", "docs/project/backlog/refined/0001-initial-architecture-spike-and-setup.md",
         "docs/project/adrs/REGISTRY.md", ".gitignore", ".specops-scaffold.json",
+        ".agents/skills/spec-ops/SKILL.md", ".agents/skills/spec-ops/references/cli_primer.md",
+        ".agents/skills/spec-ops/references/balancing_loop.md", ".agents/skills/spec-ops/references/orchestration_protocol.md",
     ]
     for adr in composition.adrs:
         planned.append(f"docs/project/adrs/accepted/{adr.filename}")
@@ -211,7 +213,6 @@ def plan_initialization(config: WizardConfig) -> InitializationPlan:
             planned.extend([
                 "GEMINI.md", ".agents/skills/curate/SKILL.md",
                 ".agents/skills/health/SKILL.md", ".agents/skills/worker/SKILL.md",
-                ".agents/skills/spec-ops/SKILL.md",
             ])
         if "claude" in parsed_agents:
             planned.append("CLAUDE.md")

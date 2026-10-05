@@ -58,6 +58,7 @@ component: core
 ## Linked User Stories
 
 - `US-0117`
+- `US-0132`
 
 
 ## Implementing Backlog Tasks
@@ -67,3 +68,4 @@ component: core
 - `TASK-0186`
 - `TASK-0187`
 - `TASK-0188`
+- `TASK-0255`

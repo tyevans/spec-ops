@@ -208,6 +208,12 @@ def scaffold_skill_command(
     for rel_path in sorted(bundle.keys()):
         p = dest_dir / rel_path
         if p.exists():
+            if rel_path.startswith(".agents/skills/spec-ops/"):
+                try:
+                    if p.read_text(encoding="utf-8").strip() == bundle[rel_path].strip():
+                        continue
+                except Exception:
+                    pass
             existing_files.append(rel_path)
 
     if existing_files and not force and not dry_run:

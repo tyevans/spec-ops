@@ -228,7 +228,7 @@ def analyze_velocity_and_churn(repo_dir: Path | str, config: SpecOpsConfig | Non
         total_completed_tasks=len(task_stats), total_commits=commit_count, throughput_tasks_per_week=throughput,
         avg_lead_time_days=avg_l, median_lead_time_days=med_l, cadence_commits_per_day=cadence,
         time_window_days=final_span, task_stats=task_stats, churn_stats=churn_stats,
-        high_churn_files=[f for f in churn_stats[:10] if f.churn_score > 0],
+        high_churn_files=[f for f in churn_stats[:25] if f.churn_score > 0],
         complexity_warnings=[f for f in churn_stats if f.is_warning],
     )
 

@@ -129,3 +129,4 @@
 | `US-0129` | Mobile Responsive Layout and Background Clarity for Visualizer Guided Tour | Accepted | Taylor | FEAT-VIS-07 | `PRD-0005` |
 | `US-0130` | Architectural Decision Record Amendment Workflow and Frontmatter Lineage Tracking | Accepted | Alex | FEAT-ADR-03 | `PRD-0005` |
 | `US-0131` | Relational Graph Traceability and Architecture Radar Visualization for ADR Amendments | Accepted | Alex | FEAT-ADR-03 | `PRD-0005` |
+| `US-0132` | Default SpecOps SDLC Orchestrator Skill Scaffolding on Project Onboarding | Accepted | Alex & Morgan | FEAT-ORCH-01 | `PRD-0006` |
