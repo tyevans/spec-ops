@@ -34,6 +34,8 @@ component: core
    - In-memory graph event bus triggering reactive backlog replenishment upon task completion, protected by cross-process file locks.
 5. **Zero-Dependency Portable Visualizer & Fleet Telemetry**:
    - Standalone HTML bundle with 2D force-directed canvas, Gantt timeline, unified multi-perspective project matrix, and live worker fleet telemetry.
+6. **Incremental Architectural Decision Evolution & Lineage**:
+   - Living ADR lifecycle supporting both total replacement (`supersedes` / `superseded_by`) and non-destructive partial modifications (`amends` / `amended_by`), preserving active task governance and rendering decision DAGs in the Architecture Radar.
 
 ## What this does not do
 
@@ -47,6 +49,7 @@ component: core
 3. Running `spec-ops profile upgrade enterprise-security` diffs local ADRs against upstream profile versions and proposes non-destructive migrations.
 4. Running `spec-ops visualizer --build dist/visualizer.html` compiles all views, matrices, and telemetry into a self-contained offline bundle.
 5. Navigating visualizer deep links (`#tab=matrix`, `#entity=TASK-0013`) activates target views and detail drawers with URL state synchronization.
+6. Running `spec-ops adr amend <old-id> --title <title>` scaffolds an amending ADR, updates bidirectional frontmatter without marking the predecessor obsolete, and links both in the relational graph.
 
 ## Linked User Stories
 
@@ -95,6 +98,9 @@ component: core
 - `US-0106`
 - `US-0107`
 - `US-0116`
+- `US-0129`
+- `US-0130`
+- `US-0131`
 
 ## Implementing Backlog Tasks
 

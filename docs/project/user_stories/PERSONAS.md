@@ -10,10 +10,12 @@ Archetypes representing the software architects, engineering leads, and autonomo
   - Context rot when specifications stored in external SaaS tools (Jira, Linear) drift from git code.
   - Frustrating merge conflicts when multiple autonomous agents edit backlog files in parallel.
   - Monolithic file sprawl (>500 lines) causing LLMs to lose context and introduce subtle bugs.
+  - All-or-nothing ADR supersession causing loss of foundational decision context and false invalidation of active backlog tasks when decisions evolve incrementally.
 - **Goals with SpecOps**:
   - Version-lock all project specifications (Personas, PRDs, Stories, Tasks, ADRs) in git alongside code.
   - Strict backlog isolation allowing multiple agents to run concurrently in worktrees without merge conflicts.
   - Non-negotiable file length caps (<500 lines) keeping codebases modular and LLM-friendly.
+  - First-class incremental architectural decision lifecycles supporting both supersession (total replacement) and amendment (partial modification).
 
 ---
 

@@ -127,3 +127,5 @@
 | `US-0127` | Zero-Contamination Tool Execution and Isolated Target Environment Inspection | Accepted | Devon | FEAT-ADOPT-04 | `PRD-0007` |
 | `US-0128` | Brownfield Commit Provenance Baselining and Rev-Range Auditing | Accepted | Devon | FEAT-AUDIT-02 | `PRD-0007` |
 | `US-0129` | Mobile Responsive Layout and Background Clarity for Visualizer Guided Tour | Accepted | Taylor | FEAT-VIS-07 | `PRD-0005` |
+| `US-0130` | Architectural Decision Record Amendment Workflow and Frontmatter Lineage Tracking | Accepted | Alex | FEAT-ADR-03 | `PRD-0005` |
+| `US-0131` | Relational Graph Traceability and Architecture Radar Visualization for ADR Amendments | Accepted | Alex | FEAT-ADR-03 | `PRD-0005` |
