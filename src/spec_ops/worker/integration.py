@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Callable
 
 from ..config.models import SpecOpsConfig
+from ..core.git_worktree import resolve_repo_root
 from ..core.models import Task
 
 
@@ -287,6 +288,7 @@ def squash_merge_and_commit(
     main_branch: str = "main",
 ) -> tuple[bool, str]:
     """Squash-merges branch into main and commits under MERGE_LOCK with safety checks."""
+    repo_root = resolve_repo_root(repo_root)
     porc = subprocess.run(
         ["git", "status", "--porcelain"],
         cwd=repo_root,

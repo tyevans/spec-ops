@@ -179,12 +179,107 @@ class SpikeSandbox:
         )
         pre_commit_script.chmod(0o755)
 
+        # Detect and preserve previous hooks path if any
+        prev_hooks = ""
+        chk_target = self.worktree_dir if self.worktree_dir.exists() else self.repo_root
+        res = subprocess.run(
+            ["git", "config", "--get", "core.hooksPath"],
+            cwd=chk_target,
+            capture_output=True,
+            text=True,
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            prev_hooks = res.stdout.strip()
+
+        meta = self.load_metadata()
+        if "previous_hooks_path" not in meta:
+            meta["previous_hooks_path"] = prev_hooks
+            self.save_metadata(meta)
+
         # Configure git to use worktree hooks
         subprocess.run(
             ["git", "config", "core.hooksPath", ".specops/hooks"],
             cwd=self.worktree_dir,
             capture_output=True,
         )
+
+    def uninstall_preflight_hook(self) -> None:
+        """Removes the preflight hook script and restores git hooks configuration."""
+        meta = self.load_metadata()
+        prev_hooks = meta.get("previous_hooks_path", "")
+
+        targets = [d for d in [self.worktree_dir, self.repo_root] if d.exists()]
+        for target in targets:
+            res = subprocess.run(
+                ["git", "config", "--get", "core.hooksPath"],
+                cwd=target,
+                capture_output=True,
+                text=True,
+            )
+            curr = res.stdout.strip()
+            if curr in (
+                ".specops/hooks",
+                str(self.worktree_dir / ".specops" / "hooks"),
+                str(self.repo_root / ".specops" / "hooks"),
+            ):
+                if prev_hooks and prev_hooks != curr:
+                    subprocess.run(
+                        ["git", "config", "core.hooksPath", prev_hooks],
+                        cwd=target,
+                        capture_output=True,
+                    )
+                else:
+                    subprocess.run(
+                        ["git", "config", "--unset", "core.hooksPath"],
+                        cwd=target,
+                        capture_output=True,
+                    )
+
+            script = target / ".specops" / "hooks" / "pre-commit"
+            if script.exists():
+                try:
+                    script.unlink(missing_ok=True)
+                except Exception:
+                    pass
+
+            h_dir = target / ".specops" / "hooks"
+            if h_dir.exists():
+                try:
+                    if not any(h_dir.iterdir()):
+                        h_dir.rmdir()
+                except Exception:
+                    pass
+
+    def cleanup_metadata(self) -> None:
+        """Cleans up transient spike metadata and empty .specops directories."""
+        targets = [d for d in [self.worktree_dir, self.repo_root] if d.exists()]
+        for target in targets:
+            meta_file = target / ".specops" / "spike.json"
+            if meta_file.exists():
+                try:
+                    try:
+                        data = json.loads(meta_file.read_text(encoding="utf-8"))
+                        sid = data.get("spike_id") or data.get("num")
+                        if (
+                            not sid
+                            or sid == self.canonical_id
+                            or sid == self.num
+                            or str(sid).zfill(4) == self.num
+                            or target == self.worktree_dir
+                        ):
+                            meta_file.unlink(missing_ok=True)
+                    except Exception:
+                        meta_file.unlink(missing_ok=True)
+                except Exception:
+                    pass
+
+            specops_dir = target / ".specops"
+            if specops_dir.exists():
+                try:
+                    if not any(specops_dir.iterdir()):
+                        specops_dir.rmdir()
+                except Exception:
+                    pass
 
     def check_write_isolation(self) -> tuple[bool, str]:
         """Verifies that no source modifications occurred outside the spike harness."""

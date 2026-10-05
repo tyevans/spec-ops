@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 from ..backlog.queue import BacklogQueue
-from ..config.models import SpecOpsConfig
+from ..core.git_worktree import resolve_repo_root
 from ..core.models import Task
 from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
 from ..worker.merge_lock import MergeLockManager
@@ -28,9 +28,10 @@ def start_human_worktree(
     task_id_input: str,
 ) -> tuple[bool, str, Path | None]:
     """Provisions an isolated development worktree for human engineers."""
-    canonical_id, tid_num = _normalize_id(task_id_input)
-    repo_root = config.root_dir
+    repo_root = resolve_repo_root(config.root_dir)
+    config.root_dir = repo_root
 
+    canonical_id, tid_num = _normalize_id(task_id_input)
     queue = BacklogQueue(config.backlog_dir)
     target_task: Task | None = None
     for t in queue.list_all_tasks():
@@ -63,7 +64,9 @@ def finish_human_worktree(
     task_id_input: str | None = None,
 ) -> tuple[bool, str]:
     """Runs preflight verification, merges into main under MERGE_LOCK, and tears down worktree."""
-    repo_root = config.root_dir
+    repo_root = resolve_repo_root(config.root_dir)
+    config.root_dir = repo_root
+
     worktree_dir: Path | None = None
 
     if task_id_input:
@@ -71,7 +74,8 @@ def finish_human_worktree(
         candidate = repo_root / ".worktrees" / f"task-{tid_num}"
         if candidate.exists():
             worktree_dir = candidate
-    else:
+
+    if not worktree_dir:
         # Auto-detect from current working directory
         cwd = Path.cwd().resolve()
         for p in [cwd, *cwd.parents]:
@@ -89,9 +93,10 @@ def finish_human_worktree(
         return False, "Not inside an active task worktree. Specify task ID or run from within .worktrees/task-XXXX."
 
     # Identify task
-    m = re.match(r"^task-(\d+)", worktree_dir.name, re.IGNORECASE)
-    tid_num = m.group(1).zfill(4) if m else "0000"
-    canonical_id = f"TASK-{tid_num}"
+    if not task_id_input:
+        m = re.match(r"^task-(\d+)", worktree_dir.name, re.IGNORECASE)
+        tid_num = m.group(1).zfill(4) if m else "0000"
+        canonical_id = f"TASK-{tid_num}"
 
     queue = BacklogQueue(config.backlog_dir)
     target_task = None

@@ -10,6 +10,7 @@ from typing import Any
 
 from ..backlog.queue import BacklogQueue
 from ..config.models import SpecOpsConfig
+from ..core.git_worktree import resolve_repo_root
 from ..core.models import Task
 from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
 from ..worker.merge_lock import MergeLockManager
@@ -269,7 +270,9 @@ def complete_salvage(
     rescued_by: str | None = None,
 ) -> tuple[bool, str]:
     """Runs curated preflight, commits with dual-custody trailers, squash-merges into main, and completes task."""
-    repo_root = config.root_dir
+    repo_root = resolve_repo_root(config.root_dir)
+    config.root_dir = repo_root
+
     worktree_dir: Path | None = None
 
     if task_id_input:
@@ -277,7 +280,8 @@ def complete_salvage(
         candidate = repo_root / ".worktrees" / f"task-{tid_num}"
         if candidate.exists():
             worktree_dir = candidate
-    else:
+
+    if not worktree_dir:
         cwd = Path.cwd().resolve()
         for p in [cwd, *cwd.parents]:
             if p.parent.name == ".worktrees" and re.match(r"^task-\d+", p.name, re.IGNORECASE):

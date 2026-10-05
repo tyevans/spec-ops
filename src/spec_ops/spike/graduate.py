@@ -325,11 +325,19 @@ def graduate_spike(
     # 3. Update dependent tasks
     updated_deps = update_dependent_tasks(backlog_dir, canonical_id, num, result)
 
-    # 4. Tag git branch and clean worktree if it exists
+    # 4. Clean up preflight hook and transient spike metadata
+    sandbox.uninstall_preflight_hook()
+    sandbox.cleanup_metadata()
+
+    # Tag git branch and clean worktree if it exists
     tag_name = f"{sandbox.branch}-graduated"
     subprocess.run(["git", "tag", "-f", tag_name, sandbox.branch], cwd=root, capture_output=True)
     if sandbox.worktree_dir.exists():
         cleanup_worktree(root, sandbox.worktree_dir, sandbox.branch, delete_branch=False)
+
+    # Post-cleanup guarantee: ensure repository root has uninstalled hook and cleaned metadata
+    sandbox.uninstall_preflight_hook()
+    sandbox.cleanup_metadata()
 
     msg = (
         f"✨ Successfully graduated {canonical_id} into {target_adr_id} ({adr_filename}). "

@@ -10,30 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from ..core.git_worktree import resolve_repo_root
 from .lifecycle import get_worktree_branch, is_worktree_dirty
-
-
-def resolve_repo_root(target_dir: Path) -> Path:
-    """Resolves primary repository root from a worktree or repo directory."""
-    try:
-        res = subprocess.run(
-            ["git", "rev-parse", "--git-common-dir"],
-            cwd=target_dir,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        common_git = Path(res.stdout.strip())
-        if not common_git.is_absolute():
-            common_git = (target_dir / common_git).resolve()
-        return common_git.parent
-    except Exception:
-        pass
-    if (target_dir.parent.parent / ".specops").is_dir():
-        return target_dir.parent.parent
-    if (target_dir / ".specops").is_dir():
-        return target_dir
-    return target_dir
 
 
 @dataclass

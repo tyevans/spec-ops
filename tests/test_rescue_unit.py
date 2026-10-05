@@ -240,3 +240,64 @@ def test_human_sandbox_start_and_finish(unit_repo: Path, monkeypatch: pytest.Mon
     assert "successfully verified, merged to main" in msg
     assert not wt.exists()
     assert (cfg.backlog_dir / "complete" / "0010-human.md").exists()
+
+
+def test_human_sandbox_finish_from_secondary_worktree(unit_repo: Path, monkeypatch: pytest.MonkeyPatch):
+    """Verifies that worktree finish succeeds when executed from inside a secondary worktree."""
+    cfg = load_config(unit_repo)
+    cfg.quality.preflight = []
+
+    refined_dir = cfg.backlog_dir / "refined"
+    refined_dir.mkdir(parents=True, exist_ok=True)
+    task_file = refined_dir / "0011-secondary.md"
+    task = Task(id="0011", title="Secondary Worktree Feature", status="Refined", file_path=task_file)
+    write_task_file(task)
+
+    ok, msg, wt = start_human_worktree(cfg, "TASK-0011")
+    assert ok
+    assert wt is not None
+    assert wt.exists()
+
+    (wt / "solution.py").write_text("y = 100\n", encoding="utf-8")
+    monkeypatch.chdir(wt)
+
+    cfg_in_wt = load_config(root_dir=wt)
+    cfg_in_wt.quality.preflight = []
+    assert cfg_in_wt.root_dir == wt
+
+    ok, msg = finish_human_worktree(cfg_in_wt)
+    assert ok, f"Expected finish_human_worktree to succeed from secondary worktree, failed: {msg}"
+    assert "successfully verified, merged to main" in msg
+    assert not wt.exists()
+    assert (cfg.backlog_dir / "complete" / "0011-secondary.md").exists()
+    assert (unit_repo / "solution.py").read_text(encoding="utf-8") == "y = 100\n"
+
+
+def test_human_sandbox_finish_with_explicit_task_id_from_secondary_worktree(unit_repo: Path, monkeypatch: pytest.MonkeyPatch):
+    """Verifies that worktree finish --task-id succeeds when executed from inside a secondary worktree."""
+    cfg = load_config(unit_repo)
+    cfg.quality.preflight = []
+
+    refined_dir = cfg.backlog_dir / "refined"
+    refined_dir.mkdir(parents=True, exist_ok=True)
+    task_file = refined_dir / "0012-explicit.md"
+    task = Task(id="0012", title="Explicit ID Feature", status="Refined", file_path=task_file)
+    write_task_file(task)
+
+    ok, msg, wt = start_human_worktree(cfg, "TASK-0012")
+    assert ok
+    assert wt is not None
+    assert wt.exists()
+
+    (wt / "explicit.py").write_text("z = 200\n", encoding="utf-8")
+    monkeypatch.chdir(wt)
+
+    cfg_in_wt = load_config(root_dir=wt)
+    cfg_in_wt.quality.preflight = []
+
+    ok, msg = finish_human_worktree(cfg_in_wt, task_id_input="TASK-0012")
+    assert ok, f"Expected finish_human_worktree with task_id to succeed from secondary worktree, failed: {msg}"
+    assert "successfully verified, merged to main" in msg
+    assert not wt.exists()
+    assert (cfg.backlog_dir / "complete" / "0012-explicit.md").exists()
+    assert (unit_repo / "explicit.py").read_text(encoding="utf-8") == "z = 200\n"

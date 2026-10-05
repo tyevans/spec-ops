@@ -14,7 +14,7 @@ from typing import Any
 
 from ..backlog.queue import BacklogQueue
 from ..worker import BacklogWorkerEngine
-from ..config.models import SpecOpsConfig
+from ..core.git_worktree import resolve_repo_root
 from ..core.models import Task
 from ..worker.integration import rebase_with_inference_healing, squash_merge_and_commit
 from ..worker.merge_lock import MergeLockManager
@@ -35,10 +35,14 @@ class WorktreeRescueManager:
     """Manages human takeover and recovery of failed or stalled autonomous worktrees."""
 
     def __init__(self, config: SpecOpsConfig):
-        self.config = config
-        self.repo_root = config.root_dir
+        self.repo_root = resolve_repo_root(config.root_dir)
+        if self.repo_root != config.root_dir:
+            from ..config.loader import load_config
+            self.config = load_config(root_dir=self.repo_root)
+        else:
+            self.config = config
         self.worktrees_parent = self.repo_root / ".worktrees"
-        self.queue = BacklogQueue(config.backlog_dir)
+        self.queue = BacklogQueue(self.config.backlog_dir)
 
     def _normalize_task_id(self, task_id_input: str) -> str:
         clean = task_id_input.upper().replace("TASK-", "").lstrip("0")
