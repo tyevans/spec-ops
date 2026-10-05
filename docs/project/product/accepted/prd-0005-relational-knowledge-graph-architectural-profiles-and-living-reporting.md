@@ -11,7 +11,7 @@ component: core
 
 ## Who this is for
 
-- **Alex (The Agentic Systems Architect)**: Needs high-performance incremental graph caching, cycle detection, AST frontmatter resilience, and modular profile inheritance.
+- **Alex (The Agentic Systems Architect)**: Needs high-performance incremental graph caching, cycle detection, AST frontmatter resilience, modular profile inheritance, and non-destructive architectural decision amendment lifecycles.
 - **Jordan (The AI-Native Engineering Lead)**: Needs live worker fleet telemetry, bottleneck radar, multi-perspective matrix visualization, and automated standup digests.
 - **Riley (The Human IC Developer)**: Needs sub-50ms terminal graph reachability pathfinding, blast radius traversal, and deep-linked URL permalinks.
 
@@ -21,6 +21,7 @@ component: core
 - **Deadlocking Dependency Cycles**: Circular dependencies in task and PRD graphs lead to deadlocked curation queues and worker freezes.
 - **Profile & Constitution Drift**: Architectural profiles and AGENTS.md constitutions drift between enterprise repositories without automated version upgrade paths.
 - **Fragmented Delivery Visibility**: Engineering leads lack unified visibility into multi-agent fleet operations, blocker cascades, and milestone burnup.
+- **Destructive Architectural Supersession**: Architects and autonomous agents cannot evolve a decision incrementally without retiring the entire ADR (`status: Superseded`). This binary all-or-nothing model falsely invalidates active backlog tasks citing foundational ADRs, collapses decision history, and misrepresents living system architecture in the knowledge graph.
 
 ## What good looks like
 
@@ -35,7 +36,10 @@ component: core
 5. **Zero-Dependency Portable Visualizer & Fleet Telemetry**:
    - Standalone HTML bundle with 2D force-directed canvas, Gantt timeline, unified multi-perspective project matrix, and live worker fleet telemetry.
 6. **Incremental Architectural Decision Evolution & Lineage**:
-   - Living ADR lifecycle supporting both total replacement (`supersedes` / `superseded_by`) and non-destructive partial modifications (`amends` / `amended_by`), preserving active task governance and rendering decision DAGs in the Architecture Radar.
+   - First-class lifecycle support distinguishing total replacement (`supersedes` / `superseded_by`) from non-destructive refinement (`amends` / `amended_by`).
+   - Ergonomic CLI workflow (`spec-ops adr amend`) maintaining bidirectional frontmatter lineage links and synchronizing `REGISTRY.md` without marking predecessor decisions obsolete.
+   - Preserved backlog task governance: tasks citing amended ADRs remain fully valid under Definition of Ready (DoR) gates, while pathfinder and autonomous worker contracts automatically hydrate amendment delta context.
+   - First-class relational graph edges (`(ADR)-[:amends]->(ADR)` and `(ADR)-[:supersedes]->(ADR)`) compiled into the knowledge base and visually rendered in the Architecture Radar with decision lineage exploration drawers.
 
 ## What this does not do
 
@@ -49,7 +53,8 @@ component: core
 3. Running `spec-ops profile upgrade enterprise-security` diffs local ADRs against upstream profile versions and proposes non-destructive migrations.
 4. Running `spec-ops visualizer --build dist/visualizer.html` compiles all views, matrices, and telemetry into a self-contained offline bundle.
 5. Navigating visualizer deep links (`#tab=matrix`, `#entity=TASK-0013`) activates target views and detail drawers with URL state synchronization.
-6. Running `spec-ops adr amend <old-id> --title <title>` scaffolds an amending ADR, updates bidirectional frontmatter without marking the predecessor obsolete, and links both in the relational graph.
+6. Running `spec-ops adr amend <old-id> --title <title>` scaffolds an amending ADR, updates bidirectional frontmatter (`amends:` / `amended_by:`), keeps predecessor decisions active (`Accepted`), and compiles directed `amends` edges into `spec-ops graph`.
+7. Running `spec-ops health` and `spec-ops check` verifies that tasks citing amended ADRs pass the Definition of Ready (DoR) governing ADR gate without spurious warnings, while `spec-ops pathfinder` and worker hydration pipelines include active amendment deltas in task contexts.
 
 ## Linked User Stories
 
