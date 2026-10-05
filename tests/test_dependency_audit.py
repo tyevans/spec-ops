@@ -275,3 +275,17 @@ def test_queue_gating_blocks_refinement_and_completion(tmp_path: Path):
     ok_refine, msg_refine = queue.refine_task_with_gate(task, repo_root=tmp_path)
     assert ok_refine is False
     assert "refinement gate failed" in msg_refine.lower()
+
+
+def test_resolve_package_license_with_target_venv(tmp_path: Path):
+    sp = tmp_path / ".venv" / "lib" / "python3.13" / "site-packages"
+    dist_info = sp / "my_custom_tool-1.0.0.dist-info"
+    dist_info.mkdir(parents=True)
+    (dist_info / "METADATA").write_text(
+        "Metadata-Version: 2.1\nName: my-custom-tool\nVersion: 1.0.0\nLicense: Apache-2.0\n",
+        encoding="utf-8",
+    )
+
+    lic = resolve_package_license("my-custom-tool", repo_dir=tmp_path)
+    assert lic == "Apache-2.0"
+

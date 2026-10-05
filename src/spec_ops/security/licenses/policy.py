@@ -84,6 +84,8 @@ LICENSE_SYNONYMS: dict[str, str] = {
     "unlicense": "Unlicense",
     "python-2.0": "Python-2.0",
     "psf-2.0": "Python-2.0",
+    "psfl": "Python-2.0",
+    "psf": "Python-2.0",
     "python software foundation license": "Python-2.0",
     "cc0-1.0": "CC0-1.0",
     "mpl-2.0": "MPL-2.0",
@@ -97,8 +99,11 @@ LICENSE_SYNONYMS: dict[str, str] = {
     "agplv3": "AGPL-3.0",
     "gnu affero general public license v3": "AGPL-3.0",
     "gnu affero general public license": "AGPL-3.0",
+    "lgpl": "LGPL-3.0",
+    "lgpl-2.1": "LGPL-2.1",
     "lgpl-3.0": "LGPL-3.0",
     "lgplv3": "LGPL-3.0",
+    "gnu library or lesser general public license (lgpl)": "LGPL-3.0",
 }
 
 
@@ -178,22 +183,43 @@ def resolve_package_license(
     if pkg_lower in KNOWN_PACKAGE_LICENSES:
         return KNOWN_PACKAGE_LICENSES[pkg_lower]
 
-    try:
-        dist = importlib.metadata.distribution(package_name)
-        lic_expr = dist.metadata.get("License-Expression")
-        if lic_expr and lic_expr.upper() != "UNKNOWN":
-            return normalize_license(lic_expr)
-        raw_lic = dist.metadata.get("License")
-        if raw_lic and raw_lic.upper() not in ("UNKNOWN", "DUAL LICENSE"):
-            return normalize_license(raw_lic)
-        classifiers = dist.metadata.get_all("Classifier") or []
-        for c in classifiers:
-            if "License :: OSI Approved :: " in c:
-                return normalize_license(c.split("License :: OSI Approved :: ")[-1].strip())
-        if raw_lic and raw_lic.upper() != "UNKNOWN":
-            return normalize_license(raw_lic)
-    except Exception:
-        pass
+    search_paths: list[str] | None = None
+    if repo_dir:
+        venv_paths = [str(p) for p in repo_dir.glob(".venv/lib/python*/site-packages") if p.is_dir()]
+        if venv_paths:
+            search_paths = venv_paths
+
+    dist = None
+    if search_paths:
+        try:
+            dists = list(importlib.metadata.distributions(name=package_name, path=search_paths))
+            if dists:
+                dist = dists[0]
+        except Exception:
+            pass
+
+    if not dist:
+        try:
+            dist = importlib.metadata.distribution(package_name)
+        except Exception:
+            pass
+
+    if dist:
+        try:
+            lic_expr = dist.metadata.get("License-Expression")
+            if lic_expr and lic_expr.upper() != "UNKNOWN":
+                return normalize_license(lic_expr)
+            raw_lic = dist.metadata.get("License")
+            if raw_lic and raw_lic.upper() not in ("UNKNOWN", "DUAL LICENSE"):
+                return normalize_license(raw_lic)
+            classifiers = dist.metadata.get_all("Classifier") or []
+            for c in classifiers:
+                if "License :: OSI Approved :: " in c:
+                    return normalize_license(c.split("License :: OSI Approved :: ")[-1].strip())
+            if raw_lic and raw_lic.upper() != "UNKNOWN":
+                return normalize_license(raw_lic)
+        except Exception:
+            pass
 
     if "agpl" in pkg_lower:
         return "AGPL-3.0"
