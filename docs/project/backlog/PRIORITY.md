@@ -251,3 +251,6 @@ Strict sequential order of execution for engineering tasks.
 - **TASK-0228 (Proposed)**: [`0228-blackbox-frontdoor-test-suite-for-runnin`](proposed/0228-blackbox-frontdoor-test-suite-for-runnin.md)
 - **TASK-0247 (Refined)**: [`0247-support-versioned-library-releases-semver-bump-`](refined/0247-support-versioned-library-releases-semver-bump-.md)
 - **TASK-0255 (Complete)**: [`0255-default-specops-skill-scaffolding-on-project-init`](complete/0255-default-specops-skill-scaffolding-on-project-init.md)
+- **TASK-0256 (Proposed)**: [`0256-sanitize-worktree-relative-paths-in-ingest-tasks`](proposed/0256-sanitize-worktree-relative-paths-in-ingest-tasks.md)
+- **TASK-0257 (Proposed)**: [`0257-prevent-task-id-digit-collisions-in-normalization`](proposed/0257-prevent-task-id-digit-collisions-in-normalization.md)
+- **TASK-0258 (Proposed)**: [`0258-formalize-full-brownfield-onboarding-workflow`](proposed/0258-formalize-full-brownfield-onboarding-workflow.md)
