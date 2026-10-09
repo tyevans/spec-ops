@@ -139,3 +139,50 @@ def test_docs_template_responsive_and_mermaid_support():
     assert "mermaid.esm.min.mjs" in DOCS_HTML_TEMPLATE
     assert "mermaid.initialize" in DOCS_HTML_TEMPLATE
     assert "mermaid.run" in DOCS_HTML_TEMPLATE
+
+
+def test_simple_markdown_paragraph_buffering_no_double_newlines():
+    """Verify wrapped lines in markdown paragraphs are joined into a single <p>."""
+    md = """First line of paragraph.
+Second line of paragraph.
+Third line of paragraph.
+
+Second paragraph line 1.
+Second paragraph line 2.
+"""
+    html_out = simple_markdown_to_html(md)
+    assert "<p>First line of paragraph. Second line of paragraph. Third line of paragraph.</p>" in html_out
+    assert "<p>Second paragraph line 1. Second paragraph line 2.</p>" in html_out
+    assert html_out.count("<p>") == 2
+
+
+def test_simple_markdown_list_continuation_and_loose_lists():
+    """Verify indented continuation lines are joined to list items without splitting lists."""
+    md = """- First item line 1
+  first item continuation
+- Second item line 1
+  second item continuation
+
+- Third loose item
+"""
+    html_out = simple_markdown_to_html(md)
+    assert html_out.count("<ul>") == 1
+    assert html_out.count("</ul>") == 1
+    assert "<li>First item line 1 first item continuation</li>" in html_out
+    assert "<li>Second item line 1 second item continuation</li>" in html_out
+    assert "<li>Third loose item</li>" in html_out
+
+
+def test_simple_markdown_multiline_blockquotes():
+    """Verify multiline blockquotes are joined and blank quote lines separate paragraphs."""
+    md = """# Note
+> Quote line 1.
+> Quote line 2.
+>
+> Second quote paragraph.
+"""
+    html_out = simple_markdown_to_html(md)
+    assert html_out.count("<blockquote>") == 1
+    assert html_out.count("</blockquote>") == 1
+    assert "<blockquote>\n<p>Quote line 1. Quote line 2.</p>\n<p>Second quote paragraph.</p>\n</blockquote>" in html_out
+
